@@ -42,13 +42,13 @@ curl -sS https://getcomposer.org/installer | php
 sudo mv composer.phar /usr/local/bin/composer
 
 # Above is from original install.sh by Jeffrey Way. 
-# The following complete the set-up for a CNP test/dev machine.
+# The following complete the set-up for a gbe test/dev machine.
 
 sudo add-apt-repository -y ppa:ubuntugis/ubuntugis-unstable
 sudo apt-get update
 
 sudo rm -rf /vagrant/html
-sudo chmod -R 777 /vagrant/cnp/app/storage
+sudo chmod -R 777 /vagrant/gbe/storage
 
 # Change both APACHE_RUN_USER and APACHE_RUN_GROUP to vagrant from www-data to avoid getting frequent permission-denied
 # problems with the Laravel storage subdirectory
@@ -61,12 +61,12 @@ if [ "$www_user" != "" ]; then
 fi
 # End PRC
 
-if [ ! -e "/etc/apache2/sites-available/cnp.conf" ];
+if [ ! -e "/etc/apache2/sites-available/gbe.conf" ];
     then
 
     # PRC Revise Host Here
-    sudo cp /vagrant/FILES/cnp.conf /etc/apache2/sites-available
-    sudo a2ensite cnp
+    sudo cp /vagrant/setup/gbe.conf /etc/apache2/sites-available
+    sudo a2ensite gbe
     sudo service apache2 reload
 fi
 
@@ -90,26 +90,19 @@ echo 'Setting up database and GIS extensions'
 # sudo su postgres -c 'createuser -d -R -S vagrant'
 # sudo su postgres -c 'psql -c "ALTER USER vagrant WITH PASSWORD vagrant;"'
 sudo su postgres -c '/vagrant/SCRIPTS/create_postgres_users.sh'
-sudo su postgres -c 'createdb cnp'
-sudo su postgres -c 'psql -d cnp -c "CREATE EXTENSION postgis;"'
-sudo su postgres -c 'psql -d cnp -c "CREATE EXTENSION postgis_topology;"'
+sudo su postgres -c 'createdb gbe'
+sudo su postgres -c 'psql -d gbe -c "CREATE EXTENSION postgis;"'
+sudo su postgres -c 'psql -d gbe -c "CREATE EXTENSION postgis_topology;"'
 
 # PRC Start
-# Disable the default site, since we're now serving up CNP for all Vhosts or direct IP Access
+# Disable the default site, since we're now serving up gbe for all Vhosts or direct IP Access
 sudo a2dissite 000-default
 
 # Update the permissions on the web root to match the apache user
-sudo chown $www_user:$www_user -R /var/www/cnp
+sudo chown $www_user:$www_user -R /var/www/gbe
 # End PRC
 
 sudo service apache2 restart  # Needed to load pgsql driver.
 
 sudo apt-get install -y default-jdk
-
-
-
-
-
-
-
 
