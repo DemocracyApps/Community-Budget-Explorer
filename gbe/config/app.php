@@ -139,11 +139,11 @@ return [
 		/*
 		 * Application Service Providers...
 		 */
-		'App\Providers\AppServiceProvider',
-		'App\Providers\BusServiceProvider',
-		'App\Providers\ConfigServiceProvider',
-		'App\Providers\EventServiceProvider',
-		'App\Providers\RouteServiceProvider',
+		'DemocracyApps\GB\Providers\AppServiceProvider',
+		'DemocracyApps\GB\Providers\BusServiceProvider',
+		'DemocracyApps\GB\Providers\ConfigServiceProvider',
+		'DemocracyApps\GB\Providers\EventServiceProvider',
+		'DemocracyApps\GB\Providers\RouteServiceProvider',
 
 	],
 

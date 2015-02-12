@@ -1,4 +1,4 @@
-<?php namespace App\Providers;
+<?php namespace DemocracyApps\GB\Providers;
 
 use Illuminate\Support\ServiceProvider;
 

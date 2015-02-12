@@ -1,6 +1,6 @@
-<?php namespace App\Services;
+<?php namespace DemocracyApps\GB\Services;
 
-use App\User;
+use DemocracyApps\GB\User;
 use Validator;
 use Illuminate\Contracts\Auth\Registrar as RegistrarContract;
 

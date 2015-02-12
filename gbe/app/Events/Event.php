@@ -1,4 +1,4 @@
-<?php namespace App\Events;
+<?php namespace DemocracyApps\GB\Events;
 
 abstract class Event {
 
