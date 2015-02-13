@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: ericjackson
- * Date: 2/13/15
- * Time: 10:39 AM
- */
 
 namespace DemocracyApps\GB\Import\Commands;
 
@@ -33,10 +27,7 @@ class Transform extends DPCommand{
     public function process($input)
     {
         $output = array();
-        $i = 0;
         foreach ($input as $line) {
-           // $output[] = preg_replace($this->pattern, $this->replacement, $line, $this->limit);
-            //$output[] = preg_replace ("/^(,,,,)/", "ABC $1 ", $line);
             if ($this->limit != null) {
                 $output[] = preg_replace ($this->pattern, $this->replacement, $line, $this->limit);
             }

@@ -18,11 +18,13 @@ class Select extends DPCommand {
      */
     public function process($input)
     {
-
+        // TODO: Could implement this as preg_grep, no?
         $output = array();
         foreach ($input as $line) {
-            if (preg_match($this->specification, $line)) {
-                $output[] = $line;
+            $matches = array();
+            if (preg_match($this->specification, $line, $matches)) {
+               $output[] = $line;
+               // $output[] = $matches[0];
             }
         }
 

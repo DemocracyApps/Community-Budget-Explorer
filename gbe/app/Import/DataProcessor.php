@@ -26,27 +26,34 @@ class DataProcessor {
         ini_set('auto_detect_line_endings',true);
         $handle = null;
         $commands = null;
+        $header = null;
 
         if ($this->instructionFile != null) {
             $jp = new JsonProcessor();
             $tmp = $jp->minifyJson(file_get_contents($this->instructionFile));
-            $commands = $jp->decodeJson($tmp, null)['commands'];
+            $config = $jp->decodeJson($tmp, null);
+            $commands = $config['commands'];
+            if (array_key_exists('header', $config)) $header=$config['header'];
         }
 
         if ($this->outputFile != null) {
             $handle = fopen($this->outputFile, 'w');
         }
         $lines = file($this->inputFile,  FILE_SKIP_EMPTY_LINES | FILE_IGNORE_NEW_LINES);
-
         foreach ($commands as $cmd) {
             $cmdName = $cmd['name'];
-            $spec = $cmd['specification'];
-            $className = "\\DemocracyApps\\GB\\Import\\Commands\\" . ucfirst($cmdName);
-            $cmd = new $className ($spec);
-            $lines = $cmd->process($lines);
+            $run = true;
+            if (array_key_exists('run',$cmd) && $cmd['run'] == false) $run = false;
+            if ($run) {
+                $spec = $cmd['specification'];
+                $className = "\\DemocracyApps\\GB\\Import\\Commands\\" . ucfirst($cmdName);
+                $cmd = new $className ($spec);
+                $lines = $cmd->process($lines);
+            }
         }
 
         if ($handle != null) {
+            if ($header != null) fwrite($handle, $header. PHP_EOL);
             foreach ($lines as $line) {
                 $written = fwrite($handle, $line . PHP_EOL);
             }
