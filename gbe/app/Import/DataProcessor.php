@@ -44,7 +44,6 @@ class DataProcessor {
             $className = "\\DemocracyApps\\GB\\Import\\Commands\\" . ucfirst($cmdName);
             $cmd = new $className ($spec);
             $lines = $cmd->process($lines);
-
         }
 
         if ($handle != null) {

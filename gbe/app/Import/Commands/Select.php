@@ -14,7 +14,6 @@ class Select extends DPCommand {
 
     /**
      * @param string[] $input
-     * @param $specification
      * @return \string[] $output
      */
     public function process($input)
