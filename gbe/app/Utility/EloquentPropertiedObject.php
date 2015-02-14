@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: ericjackson
- * Date: 2/14/15
- * Time: 8:00 AM
- */
 
 namespace DemocracyApps\GB\Utility;
 
