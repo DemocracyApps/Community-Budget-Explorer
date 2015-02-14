@@ -3,6 +3,8 @@
 namespace DemocracyApps\GB;
 
 
-class Organization extends \Eloquent {
+use DemocracyApps\GB\Utility\EloquentPropertiedObject;
+
+class Organization extends EloquentPropertiedObject {
 
 }

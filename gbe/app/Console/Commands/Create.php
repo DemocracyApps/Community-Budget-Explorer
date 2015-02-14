@@ -69,7 +69,13 @@ class Create extends Command {
 			$name = $this->ask('Enter the organization name: ');
 			$org = new Organization();
 			$org->name = $name;
+			$org->setProperty('abc', 'One world');
 			$org->save();
+		}
+		else if ($objectType == 'test') {
+			$thing = Organization::find(1);
+			$value = $thing->getProperty('def');
+			dd($value);
 		}
 
 

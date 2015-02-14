@@ -16,6 +16,7 @@ class CreateOrganizationsTable extends Migration {
 		{
 			$table->increments('id');
 			$table->string('name');
+			$table->text('properties')->nullable();
 			$table->timestamps();
 		});
 	}
