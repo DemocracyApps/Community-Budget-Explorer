@@ -11,6 +11,9 @@
 |
 */
 
+Log::info("Top of routes with URI " . \Request::server('REQUEST_URI') .
+          " and method " .\Request::server('REQUEST_METHOD'));
+
 Route::get('/', 'HomeController@index');
 
 Route::get('home', 'HomeController@index');
@@ -19,3 +22,13 @@ Route::controllers([
 	'auth' => 'Auth\AuthController',
 	'password' => 'Auth\PasswordController',
 ]);
+
+/*************************************************
+ *************************************************
+ * Administrative pages for platform admins
+ *************************************************
+ *************************************************/
+Route::group(['prefix' => 'system'], function ()
+{
+    require __DIR__.'/Routes/system.php';
+});

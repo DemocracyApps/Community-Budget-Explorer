@@ -146,6 +146,8 @@ return [
 		'DemocracyApps\GB\Providers\RouteServiceProvider',
 
         'Laracasts\Utilities\JavaScript\JavascriptServiceProvider',
+        'Illuminate\Html\HtmlServiceProvider',
+        'Laravel\Socialite\SocialiteServiceProvider',
 
 	],
 
@@ -195,6 +197,10 @@ return [
 		'Validator' => 'Illuminate\Support\Facades\Validator',
 		'View'      => 'Illuminate\Support\Facades\View',
 
-	],
+        'Form'      => 'Illuminate\Html\FormFacade',
+        'Html'      => 'Illuminate\Html\HtmlFacade',
+        'Socialize' => 'Laravel\Socialite\Facades\Socialite',
+
+    ],
 
 ];
