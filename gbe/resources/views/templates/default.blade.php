@@ -42,32 +42,33 @@
             <h1>Government Budget Explorer</h1>
           </div>
           <div class="col-md-3 hdr-right">
-            <ul class="nav nav-pills">
-              <li role="presentation"><a href="/">Home</a></li>
-              <li role = "presentation" class="dropdown">
-                <a class="dropdown-Toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">
-                  Admin <span class="caret"></span>
-                </a>
-                <ul class="dropdown-menu" role="menu">
-                  <li role="presentation" ><a href="/user/profile">My Stuff</a></li>
-                  @if   (Auth::guest()) 
-                    <li role="presentation" ><a href="/auth/login">Log In</a></li>
+              <ul class="nav nav-pills">
+                  <li role="presentation"><a href="/">Home</a></li>
+                  @if (Auth::guest())
+                      <li role="presentation" ><a href="/auth/login">Log In</a></li>
                   @else
-                    <?php
-                      $user = Auth::user();
-                    ?>
-                    @if ($user->projectcreator)
-                      <li role="presentation" ><a href="/admin/projects">Projects</a></li>
-                    @endif
-                    @if ($user->superuser)
-                      <li role="presentation" ><a href="/system/settings">System</a></li>
-                    @endif
-                    <li role="presentation" ><a href="/auth/logout">Log Out</a></li>
-                  @endif
+                      <li role = "presentation" class="dropdown">
+                          <a class="dropdown-Toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">
+                      Admin <span class="caret"></span>
+                          </a>
+                          <ul class="dropdown-menu" role="menu">
+                              <li role="presentation" ><a href="/user/profile">My Stuff</a></li>
+                              <?php
+                                $user = Auth::user();
+                              ?>
+                              @if ($user->projectcreator)
+                                  <li role="presentation" ><a href="/admin/projects">Projects</a></li>
+                              @endif
+                              @if ($user->superuser)
+                                  <li role="presentation" ><a href="/system/settings">System</a></li>
+                              @endif
+                              <li role="presentation" ><a href="/auth/logout">Log Out</a></li>
 
-                  <li role="presentation" class="disabled" style="display:none;"><a href="#">Disabled link</a></li>
-                </ul>
-            </ul>
+                              <li role="presentation" class="disabled" style="display:none;"><a href="#">Disabled link</a></li>
+                          </ul>
+                      </li>
+                  @endif
+              </ul>
           </div>
         </div>
       </div>
