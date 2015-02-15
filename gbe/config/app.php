@@ -145,6 +145,8 @@ return [
 		'DemocracyApps\GB\Providers\EventServiceProvider',
 		'DemocracyApps\GB\Providers\RouteServiceProvider',
 
+        'Laracasts\Utilities\JavaScript\JavascriptServiceProvider',
+
 	],
 
 	/*
