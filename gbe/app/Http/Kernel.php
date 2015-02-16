@@ -27,6 +27,10 @@ class Kernel extends HttpKernel {
 		'auth' => 'DemocracyApps\GB\Http\Middleware\Authenticate',
 		'auth.basic' => 'Illuminate\Auth\Middleware\AuthenticateWithBasicAuth',
 		'guest' => 'DemocracyApps\GB\Http\Middleware\RedirectIfAuthenticated',
+        'cnp.auth' => 'DemocracyApps\GB\Http\Middleware\VerifyLoggedIn',
+        'cnp.admin' => 'DemocracyApps\GB\Http\Middleware\VerifyAdminAccess',
+        'cnp.project' => 'DemocracyApps\GB\Http\Middleware\VerifyProjectAccess',
+        'cnp.system' => 'DemocracyApps\GB\Http\Middleware\VerifySystemAccess',
 	];
 
 }

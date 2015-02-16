@@ -30,7 +30,7 @@ require app_path().'/Http/Routes/auth.php';
  * Administrative pages for platform admins
  *************************************************
  *************************************************/
-Route::group(['prefix' => 'system'], function ()
+Route::group(['prefix' => 'system', 'middleware' => 'cnp.system'], function ()
 {
     require __DIR__.'/Routes/system.php';
 });

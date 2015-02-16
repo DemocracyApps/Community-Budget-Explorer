@@ -35,6 +35,7 @@ class RedirectIfAuthenticated {
 	{
 		if ($this->auth->check())
 		{
+			dd("I am in the RedirectIfAuthenticated middleware");
 			return new RedirectResponse(url('/home'));
 		}
 
