@@ -33,5 +33,10 @@ return [
 		'model'  => 'User',
 		'secret' => '',
 	],
+    'facebook' => [
+        'client_id'     => env('FACEBOOK_CLIENT_ID', 'none'),
+        'client_secret' => env('FACEBOOK_CLIENT_SECRET', 'none'),
+        'redirect'      => env('FACEBOOK_REDIRECT', 'none'),
+    ],
 
 ];

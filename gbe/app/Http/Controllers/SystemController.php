@@ -1,7 +1,7 @@
 <?php namespace DemocracyApps\GB\Http\Controllers;
 
+use DemocracyApps\GB\Users\User;
 use Illuminate\Http\Request;
-use DemocracyApps\GB\User;
 
 class SystemController extends Controller
 {

@@ -28,7 +28,7 @@ return [
 	|
 	*/
 
-	'host' => 'smtp.mailgun.org',
+	'host' => 'smtp.gmail.com',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -54,7 +54,7 @@ return [
 	|
 	*/
 
-	'from' => ['address' => null, 'name' => null],
+    'from' => array('address' => env('EMAIL_DISPLAY_ADDRESS', 'none@none.com'), 'name' => env('EMAIL_DISPLAY_NAME', 'Nobody')),
 
 	/*
 	|--------------------------------------------------------------------------
@@ -80,7 +80,7 @@ return [
 	|
 	*/
 
-	'username' => null,
+    'username' => env('EMAIL_USER_NAME', 'none'),
 
 	/*
 	|--------------------------------------------------------------------------
@@ -93,7 +93,7 @@ return [
 	|
 	*/
 
-	'password' => null,
+    'password' => env('EMAIL_PASSWORD', 'password'),
 
 	/*
 	|--------------------------------------------------------------------------

@@ -28,7 +28,7 @@ return [
 	|
 	*/
 
-	'model' => 'DemocracyApps\GB\User',
+	'model' => 'DemocracyApps\GB\Users\User',
 
 	/*
 	|--------------------------------------------------------------------------

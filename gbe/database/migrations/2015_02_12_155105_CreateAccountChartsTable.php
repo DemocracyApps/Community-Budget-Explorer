@@ -16,7 +16,6 @@ class CreateAccountChartsTable extends Migration {
 		{
 			$table->increments('id');
 			$table->string('name');
-			$table->string('owner');
 			$table->integer('organization');
 			$table->foreign('organization')->references('id')->on('organizations');
 			$table->text('properties')->nullable();

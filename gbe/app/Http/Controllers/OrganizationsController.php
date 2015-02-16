@@ -1,5 +1,7 @@
 <?php namespace DemocracyApps\GB\Http\Controllers;
 
+use DemocracyApps\GB\Accounts\Account;
+use DemocracyApps\GB\Accounts\AccountChart;
 use DemocracyApps\GB\Http\Controllers\Controller;
 use DemocracyApps\GB\Organization;
 
@@ -47,6 +49,11 @@ class OrganizationsController extends Controller {
         $this->organization->name = $request->get('name');
         $this->organization->save();
 
+        // Now create the default chart of accounts
+        $chart = new AccountChart();
+        $chart->name = "default";
+        $chart->organization = $this->organization->id;
+        $chart->save();
         return redirect('/system/organizations');
 	}
 
@@ -58,7 +65,10 @@ class OrganizationsController extends Controller {
 	 */
 	public function show($id)
 	{
-		return redirect("/system/organizations");
+        $org = Organization::find($id);
+        if ($org == null) return redirect('/system/organizations');
+        $charts = AccountChart::where('organization', '=', $org->id)->get();
+        return view("system.organization.show", array('organization' => $org, 'charts' => $charts));
 	}
 
 	/**

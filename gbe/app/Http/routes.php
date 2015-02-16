@@ -18,10 +18,12 @@ Route::get('/', 'HomeController@index');
 
 Route::get('home', 'HomeController@index');
 
-Route::controllers([
-	'auth' => 'Auth\AuthController',
-	'password' => 'Auth\PasswordController',
-]);
+/*************************************************
+ *************************************************
+ * Sign-up & login pages
+ *************************************************
+ *************************************************/
+require app_path().'/Http/Routes/auth.php';
 
 /*************************************************
  *************************************************
@@ -32,3 +34,9 @@ Route::group(['prefix' => 'system'], function ()
 {
     require __DIR__.'/Routes/system.php';
 });
+
+//
+//Route::controllers([
+//    'auth' => 'Auth\AuthController',
+//    'password' => 'Auth\PasswordController',
+//]);

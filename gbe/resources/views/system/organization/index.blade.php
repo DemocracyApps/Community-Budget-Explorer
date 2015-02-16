@@ -16,8 +16,6 @@
     </div>
 </div>
 
-<table class="table">
-
   <table class="table">
       <tr>
           <th> ID </th>
@@ -28,7 +26,7 @@
       @foreach ($organizations as $organization)
           <tr>
               <td> {!!  $organization->id !!} </td>
-              <td> {!!  $organization->name  !!} </td>
+              <td> <a href="/system/organizations/{!! $organization->id !!}">{!!  $organization->name  !!} </a> </td>
               <td> <form method="GET" action="/system/organizations/{!! $organization->id !!}/edit" accept-charset="UTF-8" style="display:inline-block">
                       <input type="hidden" name="_token" value="{!! csrf_token() !!}">
                       <button style="display:inline-block;" type="submit" class="btn btn-warning btn-sm"><b>Edit</b></button>

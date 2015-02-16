@@ -1,4 +1,6 @@
-<?php namespace DemocracyApps\GB;
+<?php
+
+namespace DemocracyApps\GB\Users;
 
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
@@ -30,5 +32,18 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	 * @var array
 	 */
 	protected $hidden = ['password', 'remember_token'];
+
+    public function isVerified ()
+    {
+        return $this->verified;
+    }
+
+    public static function checkVerified($userId)
+    {
+        $verified = false;
+        $user = self::find($userId);
+        if ($user != null && $user->verified == true) $verified = true;
+        return $verified;
+    }
 
 }
