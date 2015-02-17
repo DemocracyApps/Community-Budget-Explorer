@@ -16,6 +16,8 @@ class CreateDatasetsTable extends Migration {
 		{
 			$table->increments('id');
             $table->string('name')->nullable();
+            $table->integer('year');
+            $table->string('type');
             $table->integer('chart');
             $table->foreign('chart')->references('id')->on('account_charts');
             $table->text('properties')->nullable();

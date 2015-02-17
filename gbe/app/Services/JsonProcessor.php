@@ -13,6 +13,6 @@ class JsonProcessor
 
     public function decodeJson($s, $b)
     {
-        return json_decode($s, true);
+        return json_decode($s, $b);
     }
 }

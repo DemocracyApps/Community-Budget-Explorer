@@ -13,12 +13,12 @@ class AccountCSVProcessor
         \Auth::login($user);
 
         $filePath = $data['filePath'];
-        $category = $data['category'];
+        $chart = $data['chart'];
 
 
         \Log::info("Starting processing of " . $filePath);
         $notification = Notification::find($data['notificationId']);
-        $notification->messages = Account::processCsvInput($filePath, $category);
+        $notification->messages = Account::processCsvInput($filePath, $chart);
         $notification->status = 'Completed';
         $notification->completed_at = date('Y-m-d H:i:s');
         $notification->save();

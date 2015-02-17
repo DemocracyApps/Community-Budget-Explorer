@@ -31,9 +31,12 @@ class DataProcessor {
         if ($this->instructionFile != null) {
             $jp = new JsonProcessor();
             $tmp = $jp->minifyJson(file_get_contents($this->instructionFile));
-            $config = $jp->decodeJson($tmp, null);
+            $config = $jp->decodeJson($tmp, true);
             $commands = $config['commands'];
             if (array_key_exists('header', $config)) $header=$config['header'];
+        }
+        else {
+            $commands = array();
         }
 
         if ($this->outputFile != null) {
