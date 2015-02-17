@@ -21,7 +21,7 @@ class AccountsController extends Controller {
         $chart = AccountChart::find($chart);
         $organization = Organization::find($chart->organization);
         $accounts = Account::where('chart', '=', $chart->id)->get();
-        $categories= AccountCategory::where('chart', '=', $chart->id)->get();
+        $categories= AccountCategory::where('chart', '=', $chart->id)->orderBy('order')->get();
         return view ('system.account.index', array('chart' => $chart, 'organization'=>$organization,
                                                     'accounts' => $accounts, 'categories' => $categories));
 	}

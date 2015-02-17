@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateAccountCategoriesTable extends Migration {
+class CreateDatasetsTable extends Migration {
 
 	/**
 	 * Run the migrations.
@@ -12,13 +12,12 @@ class CreateAccountCategoriesTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('account_categories', function(Blueprint $table)
+		Schema::create('datasets', function(Blueprint $table)
 		{
 			$table->increments('id');
-            $table->string('name');
+            $table->string('name')->nullable();
             $table->integer('chart');
             $table->foreign('chart')->references('id')->on('account_charts');
-            $table->integer('order');
             $table->text('properties')->nullable();
 			$table->timestamps();
 		});
@@ -31,7 +30,7 @@ class CreateAccountCategoriesTable extends Migration {
 	 */
 	public function down()
 	{
-		Schema::drop('account_categories');
+		Schema::drop('datasets');
 	}
 
 }

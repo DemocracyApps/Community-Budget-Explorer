@@ -25,6 +25,45 @@ class AccountCategoriesController extends Controller {
 		//
 	}
 
+    public function up (Request $request)
+    {
+        $current = AccountCategory::find($request->get('category'));
+        $target = $current->order - 1;
+        $items = AccountCategory::where('chart', '=', $current->chart)->get();
+
+        $done = false;
+        foreach ($items as $item) {
+            if (! $done && $item->order == $target) { // this is it
+                $item->order += 1;
+                $current->order -= 1;
+                $item->save();
+                $current->save();
+                $done = true;
+                break;
+            }
+        }
+        return redirect("/system/accounts?chart=" . $current->chart);
+    }
+
+    public function down (Request $request)
+    {
+        $current = AccountCategory::find($request->get('category'));
+        $target = $current->order + 1;
+        $items = AccountCategory::where('chart', '=', $current->chart)->get();
+
+        $done = false;
+        foreach ($items as $item) {
+            if (! $done && $item->order == $target) { // this is it
+                $item->order -= 1;
+                $current->order += 1;
+                $item->save();
+                $current->save();
+                $done = true;
+                break;
+            }
+        }
+        return redirect("/system/accounts?chart=" . $current->chart);
+    }
     /**
      * Upload form for CSV file with category values
      * @return Response
@@ -79,9 +118,12 @@ class AccountCategoriesController extends Controller {
     {
         $rules = ['name' => 'required'];
         $this->validate($request, $rules);
-
+        $chart = $request->get('chart');
+        $max = 0;
+        $max = AccountCategory::where('chart', '=', $chart)->max('order');
         $this->category->name = $request->get('name');
-        $this->category->chart = $request->get('chart');
+        $this->category->chart = $chart;
+        $this->category->order = $max + 1;
         $this->category->save();
 
         return redirect('/system/accountcategories/'.$this->category->id);
