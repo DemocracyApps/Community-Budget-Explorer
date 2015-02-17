@@ -1,9 +1,9 @@
 <?php namespace DemocracyApps\GB\Accounts\CSVProcessors;
 
-use DemocracyApps\GB\Accounts\Account;
+use DemocracyApps\GB\Accounts\AccountCategory;
 use DemocracyApps\GB\Utility\Notification;
 
-class AccountCSVProcessor
+class AccountCategoryCSVProcessor
 {
 
     public function fire($queueJob, $data)
@@ -18,7 +18,7 @@ class AccountCSVProcessor
 
         \Log::info("Starting processing of " . $filePath);
         $notification = Notification::find($data['notificationId']);
-        $notification->messages = Account::processCsvInput($filePath, $category);
+        $notification->messages = AccountCategory::processCsvInput($filePath, $category);
         $notification->status = 'Completed';
         $notification->completed_at = date('Y-m-d H:i:s');
         $notification->save();

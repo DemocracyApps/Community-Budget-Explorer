@@ -5,6 +5,7 @@ use DemocracyApps\GB\Utility\EloquentPropertiedObject;
 
 class Account extends EloquentPropertiedObject
 {
+    protected  $table = 'accounts';
     const UNKNOWN = 0;
     const REVENUE = 1;
     const EXPENSE = 2;

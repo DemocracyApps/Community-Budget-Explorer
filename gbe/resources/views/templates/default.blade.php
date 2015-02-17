@@ -97,7 +97,7 @@
         <div class="col-md-1">
         </div>
         <div class="col-md-5">
-          <div id="copyright">Copyright © 2014 - 2015 DemocracyApps</div>
+          <div id="copyright">Copyright 2015 DemocracyApps</div>
         </div>
         <div class="col-md-5" style="text-align:right;">
           @yield('footer_right')
