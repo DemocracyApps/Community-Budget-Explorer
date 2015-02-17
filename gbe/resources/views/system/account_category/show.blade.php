@@ -9,7 +9,7 @@
 
     <div class="row">
         <div class="col-xs-6">
-            <h1>Account Category: {!! $category->name !!}</h1>
+            <h1>Account Category: {!! $category->name !!}</h1> <p><a href="/system/accounts?chart={!! $category->chart !!}">Return</a></p>
         </div>
         <div class="col-xs-6">
             <button style="width:110px; float:right; position:relative; right:50px; bottom:-20px;" class="btn btn-success btn-sm disabled"

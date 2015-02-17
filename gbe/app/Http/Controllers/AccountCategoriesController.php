@@ -161,7 +161,7 @@ class AccountCategoriesController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function update($id)
+	public function update($id, Request $request)
 	{
         $rules = ['name' => 'required'];
         $this->validate($request, $rules);
