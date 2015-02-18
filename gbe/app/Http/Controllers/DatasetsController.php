@@ -60,8 +60,22 @@ class DatasetsController extends Controller {
         $this->dataset->chart = $request->get('chart');
         $this->dataset->year = $request->get('year');
         if ($request->has('description')) $this->dataset->description = $request->get('description');
-        dd($request);
         $this->dataset->save();
+
+        $file = $request->file('data');
+        $data = array();
+        $data['dataset'] = $this->dataset->id;
+        $data['userId'] = \Auth::user()->id;
+        $name = uniqid('upload');
+        $file->move('/var/www/gbe/public/downloads', $name);
+        $data['filePath'] = '/var/www/gbe/public/downloads/' . $name;
+        $notification = new \DemocracyApps\GB\Utility\Notification;
+        $notification->user_id = $data['userId'];
+        $notification->status = 'Scheduled';
+        $notification->type = 'DatasetUpload';
+        $notification->save();
+        $data['notificationId'] = $notification->id;
+        \Queue::push('\DemocracyApps\GB\Accounts\CSVProcessors\DatasetCSVProcessor', $data);
 
         return redirect('/system/organizations');
 	}
