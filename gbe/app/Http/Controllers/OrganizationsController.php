@@ -2,6 +2,7 @@
 
 use DemocracyApps\GB\Accounts\Account;
 use DemocracyApps\GB\Accounts\AccountChart;
+use DemocracyApps\GB\Accounts\Dataset;
 use DemocracyApps\GB\Http\Controllers\Controller;
 use DemocracyApps\GB\Organization;
 
@@ -68,7 +69,8 @@ class OrganizationsController extends Controller {
         $org = Organization::find($id);
         if ($org == null) return redirect('/system/organizations');
         $charts = AccountChart::where('organization', '=', $org->id)->get();
-        return view("system.organization.show", array('organization' => $org, 'charts' => $charts));
+        $datasets = Dataset::where('organization', '=', $org->id)->get();
+        return view("system.organization.show", array('organization' => $org, 'charts' => $charts, 'datasets'=>$datasets));
 	}
 
 	/**

@@ -11,3 +11,4 @@ Route::any('accountcategories/upload', 'AccountCategoriesController@upload');
 Route::resource('accountcategories', 'AccountCategoriesController');
 Route::resource('accountcategoryvalues', 'AccountCategoryValuesController');
 Route::get('projects', 'SystemController@projects');
+Route::resource('datasets', 'DatasetsController');
