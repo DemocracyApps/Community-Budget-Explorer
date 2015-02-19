@@ -71,18 +71,19 @@
                 <td> {!!  $dataset->id !!} </td>
                 <td> <a href="/system/datasets/{!!$dataset->id!!}"> {!!  $dataset->name  !!} </a> </td>
                 <td> {!! $dataset->year !!} </td>
-                <td> {!! $dataset->type !!} </td>
+                <td> {!! ucfirst($dataset->type) !!} </td>
                 <td> <form method="GET" action="/system/datasets/{!! $dataset->id !!}/edit" accept-charset="UTF-8" style="display:inline-block">
                         <input type="hidden" name="_token" value="{!! csrf_token() !!}">
                         <button style="display:inline-block;" type="submit" class="disabled btn btn-warning btn-sm"><b>Edit</b></button>
                     </form>
                 </td>
-                <td> <form method="POST" action="/system/datasets/{!! $datasets->id !!}" accept-charset="UTF-8" style="display:inline-block">
+                <td> <form method="POST" action="/system/datasets/{!! $dataset->id !!}" accept-charset="UTF-8" style="display:inline-block">
                         <input name="_method" type="hidden" value="DELETE">
                         <input type="hidden" name="_token" value="{!! csrf_token() !!}">
                         <button style="display:inline-block;" type="submit" class="disabled btn btn-danger btn-sm"><b>Delete</b></button>
                     </form>
                 </td>
+
             </tr>
         @endforeach
     </table>

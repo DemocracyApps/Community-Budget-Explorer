@@ -15,12 +15,12 @@ class CreateDataItemsTable extends Migration {
 		Schema::create('data_items', function(Blueprint $table)
 		{
 			$table->increments('id');
-            $table->decimal('amount');
+            $table->decimal('amount', 12, 2);
             $table->integer('account');
             $table->integer('category1')->nullable();
             $table->integer('category2')->nullable();
             $table->integer('category3')->nullable();
-            $table->integer('categoryN')->nullable();
+            $table->text('categoryN')->nullable();
             $table->integer('dataset');
             $table->foreign('dataset')->references('id')->on('datasets');
             $table->text('properties')->nullable();

@@ -4,8 +4,8 @@
 
     <form method="POST" action="/system/datasets" accept-charset="UTF-8" enctype="multipart/form-data">
         <input type="hidden" name="_token" value="{!! csrf_token() !!}">
-        <input type="hidden" name="organization" value="{!! $organization !!}">
-        <input type="hidden" name="chart" value="{!! $chart !!}">
+        <input type="hidden" name="organization" value="{!! $organization->id !!}">
+        <input type="hidden" name="chart" value="{!! $chart->id !!}">
 
         <h1>Upload A New Dataset</h1>
 

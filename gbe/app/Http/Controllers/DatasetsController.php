@@ -59,6 +59,7 @@ class DatasetsController extends Controller {
         $this->dataset->organization = $request->get('organization');
         $this->dataset->chart = $request->get('chart');
         $this->dataset->year = $request->get('year');
+        $this->dataset->type = $request->get('type');
         if ($request->has('description')) $this->dataset->description = $request->get('description');
         $this->dataset->save();
 

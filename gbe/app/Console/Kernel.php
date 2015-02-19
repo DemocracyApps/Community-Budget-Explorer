@@ -12,7 +12,8 @@ class Kernel extends ConsoleKernel {
 	 */
 	protected $commands = [
 		'DemocracyApps\GB\Console\Commands\Create',
-		'DemocracyApps\GB\Console\Commands\Process',
+        'DemocracyApps\GB\Console\Commands\Process',
+        'DemocracyApps\GB\Console\Commands\Validate',
 	];
 
 	/**
