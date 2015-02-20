@@ -41,7 +41,9 @@ class Validate extends Command {
         $filePath = $this->argument('input-file');
         $chart = $this->argument('chart-id');
         $messages = Dataset::validateCSVInput($filePath, $chart);
-        echo $messages . PHP_EOL;
+        foreach ($messages as $msg) {
+            echo $msg . PHP_EOL;
+        }
 	}
 
 	/**

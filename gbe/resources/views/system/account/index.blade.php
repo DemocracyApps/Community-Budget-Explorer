@@ -30,7 +30,7 @@
     </div>
     <!-- Account Categories -->
     <div class="row">
-        <h3>Categories</h3>
+        <h3>Categories, hi isaac</h3>
         <table class="table">
             <tr>
                 <th>Order</th>

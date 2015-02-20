@@ -27,7 +27,7 @@
       <!-- END STYLES TO MAKE IT NICER LOOKING -->
   </head>
   <?php
-          use DemocracyApps\GBE\Helpers as Helpers;
+          use DemocracyApps\GB\Helpers as Helpers;
   ?>
 
   <body>

@@ -73,6 +73,7 @@ class Dataset extends EloquentPropertiedObject {
 
     static public function validateCSVInput($filePath, $chart)
     {
+        $messages = array();
         ini_set("auto_detect_line_endings", true); // Deal with Mac line endings
         if ( !file_exists($filePath)) {
             \Log::info("Dataset.processCSVInput: The file " . $filePath . " does not exist");
@@ -109,17 +110,19 @@ class Dataset extends EloquentPropertiedObject {
                 $accountCode = strip_tags(trim($columns[0]));
                 $amount = strip_tags(trim($columns[1]));
 
-                if (! isset($amount)) throw new \Exception ("Amount not set: " . json_encode($columns));
+                if (! isset($amount)) $messages[] = "Amount not set: " . json_encode($columns);
 
                 // Look up the account
-                if (! array_key_exists($accountCode, $accountMap)) throw new \Exception ("Account not set: " . json_encode($columns));
-                $account = $accountMap[$accountCode];
-
-                for ($i=0; $i<5; ++$i) {
-                    $code = trim($columns[$i+2]);
-                    $map = $categoryMaps[$i];
-                    if (! array_key_exists($code, $map)) {
-                        throw new \Exception ("Category " . $code . " not set: " . json_encode($columns));
+                if (! array_key_exists($accountCode, $accountMap) && abs($amount) > 0.01) {
+                    $messages[] = "Line " . $count . " - Account not set: " . json_encode($columns);
+                }
+                if (abs($amount) > 0.01) {
+                    for ($i = 0; $i < 5; ++$i) {
+                        $code = trim($columns[$i + 2]);
+                        $map = $categoryMaps[$i];
+                        if (!array_key_exists($code, $map)) {
+                            $messages[] = "Line " . $count . " - Category " . $code . " not set: " . json_encode($columns);
+                        }
                     }
                 }
             }
@@ -130,7 +133,7 @@ class Dataset extends EloquentPropertiedObject {
                 }
             }
         }
-        return "Processed accounts file - total bad lines = " . $badLines;
+        return $messages;
     }
 
 }
