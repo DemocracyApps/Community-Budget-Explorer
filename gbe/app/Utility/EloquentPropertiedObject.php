@@ -17,9 +17,9 @@ class EloquentPropertiedObject extends \Eloquent
 
     }
 
-    public function newFromBuilder($attributes = array())
+    public function newFromBuilder($attributes = array(), $connection = NULL)
     {
-        $instance = parent::newFromBuilder($attributes);
+        $instance = parent::newFromBuilder($attributes, $connection);
         if (array_key_exists('properties', $instance->attributes)) {
             $instance->properties = json_decode($instance->attributes['properties'], true);
         }
