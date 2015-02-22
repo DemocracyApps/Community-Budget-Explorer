@@ -16,10 +16,9 @@ class DataProcessor {
     }
 
     /*
-     * Program commands
-     *  read - probably has options to deal with newlines and such
-     *  select <pattern> - keep only lines that match pattern
-     *  discard <pattern> - keep only lines that don't match the pattern
+     * Program commands - see DemocracyApps\GB\Input\Commands
+     *
+     * TODO: We need to have the ability from any command that manipulates the output to insert the line number from the original file
      */
     public function run()
     {
