@@ -19,6 +19,7 @@ class CreateAccountCategoriesTable extends Migration {
             $table->integer('chart');
             $table->foreign('chart')->references('id')->on('account_charts');
             $table->integer('order');
+            $table->text('description')->nullable();
             $table->text('properties')->nullable();
 			$table->timestamps();
 		});

@@ -35,6 +35,10 @@ Route::group(['prefix' => 'system', 'middleware' => 'cnp.system'], function ()
     require __DIR__.'/Routes/system.php';
 });
 
+Route::group(['prefix' => 'api/v1'], function () {
+    require __DIR__.'/Routes/apiv1.php';
+});
+
 //
 //Route::controllers([
 //    'auth' => 'Auth\AuthController',
