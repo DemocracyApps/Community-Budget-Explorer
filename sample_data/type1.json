@@ -1,0 +1,20 @@
+{
+  "header":"Account Description,Account Code,Fund,Department,Division,Object Code,Orig Approp, Transfrs&Adjstmts,Revised Budget,Actuals,Encumbrances,Available Budget,Pct Used",
+  "commands": [
+    {
+    {
+      "name":"select",
+      "specification":
+      "/((\\d{4})-(\\d{2})-(\\d{2})-([\\d\\w]{3})-)",
+      "run": true
+    },
+    {
+      "name":"transform",
+      "specification": {
+        "pattern": "/((\\d{4})-(\\d{2})-(\\d{2})-([\\d\\w]{3})-(\\d{4})-(\\d{5})-(\\d{5})-(\\d{3})-(\\d{6}))-([^,]*)(.*)/",
+        "replacement": "$11, $1, $2, $4, $5, $10 $12"
+      },
+      "run": true
+    }
+  ]
+}

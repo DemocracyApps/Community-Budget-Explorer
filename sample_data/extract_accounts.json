@@ -1,0 +1,85 @@
+{
+  "header":"Account Code,Account Name,Type",
+  "commands": [
+    {
+      "name":"select",
+      "specification":
+      "/(\\d+),\\s*(.*)/",
+      "run": true
+    },
+    {
+      "name":"transform",
+      "specification": {
+        "pattern":       "/((\\d)\\d+),\\s*(.*)/",
+        "replacement": "$1,$3,!!$2"
+      },
+      "run": true
+    },
+    {
+      "name":"transform",
+      "specification": {
+        "pattern": "/(.*),(.*),!!1/",
+        "replacement": "$1,$2,asset"
+      },
+      "run":true
+    },
+    {
+      "name":"transform",
+      "specification": {
+        "pattern": "/(.*),(.*),!!2/",
+        "replacement": "$1,$2,liability"
+      },
+      "run":true
+    },
+    {
+      "name":"transform",
+      "specification": {
+        "pattern": "/(.*),(.*),!!3/",
+        "replacement": "$1,$2,equity"
+      },
+      "run":true
+    },
+    {
+      "name":"transform",
+      "specification": {
+        "pattern": "/(.*),(.*),!!4/",
+        "replacement": "$1,$2,revenue"
+      },
+      "run":true
+    },
+    {
+      "name":"transform",
+      "specification": {
+        "pattern": "/(.*),(.*),!!5/",
+        "replacement": "$1,$2,expense"
+      },
+      "run":true
+    }
+  ,
+    {
+      "name":"transform",
+      "specification": {
+        "pattern": "/(.*),(.*),!!6/",
+        "replacement": "$1,$2,expense"
+      },
+      "run":true
+    },
+    {
+      "name":"transform",
+      "specification": {
+        "pattern": "/(.*),(.*),!!7/",
+        "replacement": "$1,$2,expense"
+      },
+      "run":true
+    },
+    {
+      "name":"transform",
+      "specification": {
+        "pattern": "/(.*),(.*),!!8/",
+        "replacement": "$1,$2,unknown"
+      },
+      "run":true
+    }
+
+  ]
+}

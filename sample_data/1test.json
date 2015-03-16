@@ -1,0 +1,39 @@
+{
+  "header":"Full Account Code,Fund,Dept,Division,Object Code,2013 Actual,2014 Orig Budget,2014 Revised Budget,2014 Actual,2014 Projection,2015 Approved,Pct Change",
+  "header":"Account Code,Budget,Fund,Department,Division,Function,Cost Center",
+  "commands": [
+    {
+      "name": "mergeTransform",
+      "specification": {
+        "trigger":"/(\\d{4})-(\\d{2})-(\\d{2})-([\\d\\w]{3})/",
+        "before":1,
+        "after":0,
+        "select":[1,0], // If not specified, we select all
+        "separator":",",
+        "transforms": [ // There must be 1+before+after entries, not just lines selected
+          {
+            "pattern":"/[^,]+,[^,]+,[^,]+,[^,]+,(.*)/",
+            "replacement":"$1",
+            "limit":1
+          },
+          {
+            //          1    2        3       4           5          6         7       8        9        10
+            "pattern":"/((\\d{4})-(\\d{2})-(\\d{2})-([\\d\\w]{3})-(\\d{4})-(\\d{5})-(\\d{5})-(\\d{3})-(\\d{6}))-(.*)/",
+            "replacement":"$10,$2,$4,$5,$3,$6"
+          }
+        ]
+      },
+      "run": true
+    },
+    {
+      "name":"pluckColumns",
+      "specification":[
+        1,12,2,3,4,5,6
+      ],
+      "run":true
+    }
+
+
+  ]
+}
+

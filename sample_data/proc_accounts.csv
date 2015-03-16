@@ -1,0 +1,1352 @@
+Account Code,Account Name,Type
+101000,Pooled Cash,asset
+101001,Wells Fargo,asset
+101002,Payroll - B of A,asset
+101003,Transit,asset
+101004,Civic Center Alcohol Checking,asset
+101005,Civic Center Box Office,asset
+101006,Section 108 Loan 2 Bank 7122,asset
+101007,Section 108 Loan 1 Bank 7711,asset
+101008,Home Program,asset
+101009,Work Comp - Gen Liab Bank Acct,asset
+101010,Employee Med Benefit Trust,asset
+101011,Employee Med Benefit Checking,asset
+101012,Affordable Housing Program,asset
+101013,Flexible Spending Checking Acc,asset
+101014,SCA Work Comp Bank Acct,asset
+101015,Civic Cent Box Office Checking,asset
+101016,Money Market,asset
+101017,Mutual Funds,asset
+101050,Installment PC FY11 - LivStCtr,asset
+101051,BB&T LOB 2012 Proceeds,asset
+101052,BB&T LOBS 2012 Prin.,asset
+101053,BB&T LOBS 2012 Int,asset
+101054,IL 2013 A TD Bank,asset
+101055,IL 2013 B TD Bank,asset
+101101,BNY COPS 97A Principal,asset
+101102,BNY COPS 97A Interest,asset
+101103,BNY COPS 97C Principal,asset
+101104,BNY COPS 97C Interest,asset
+101105,BNY Revenue 05 Principal,asset
+101106,BNY Revenue 05 Interest,asset
+101107,BNY Revenue 07 Principal,asset
+101108,BNY Revenue 07 Interest,asset
+102001,Change Fund - Water Cust Serv,asset
+102002,Petty Cash - Build Safety Adm,asset
+102003,Change Fund - Build Safe Permi,asset
+102004,Petty Cash - Legal,asset
+102005,Petty Cash - Police Patrol,asset
+102006,Change Fund - CC Box Office,asset
+102007,Change Fund - CivC Concessions,asset
+102008,Petty Cash - Finance Admin,asset
+102009,Change Fund - Purchasing,asset
+102010,Change Fund - Aston Park,asset
+102011,Change Fund - Malvern Pool,asset
+102012,Change Fund - Nature Center,asset
+102013,Change Fund - Golf Course,asset
+102014,Change Fund - Skateboard Park,asset
+102015,Petty Cash - PW Fleet,asset
+102016,Change Fund - Montford Center,asset
+102017,Petty Cash - Fire Admin,asset
+102018,Petty Cash - City Managers Off,asset
+102019,Petty Cash - Recreation,asset
+102020,Change Fund - Parking Garages,asset
+102021,Change Fund - Rec Park Pool,asset
+102022,Petty Cash - Festivals,asset
+102023,Change Fund - Walton St Pool,asset
+102024,Petty Cash - Public Works Admi,asset
+102025,Petty Cash - Police Admin.,asset
+102026,Petty Cash - Transit,asset
+111001,Income From Investments,asset
+111002,Riverside Cemetery - Short Ter,asset
+111003,ACC Principal UBS - Short Term,asset
+111004,ACC Interest UBS - Short Term,asset
+111005,NCCMT/Federal Seizure Funds,asset
+111006,NCCMT/State Seizure Funds,asset
+111007,Investment-Purchased Interest,asset
+111008,Premium/Discount on Investment,asset
+111009,Main Investments,asset
+111010,NCCMT - General Fund Cash,asset
+111011,NCCMT - Gen Fund Term,asset
+111012,NCCMT - 08 Lease Purchase,asset
+111016,Mark to Market,asset
+111017,Mark to Market (Contra),asset
+111018,Mark to Market - Investments,asset
+111022,Mark to Market - Cemetery,asset
+111050,Certificate of Deposits,asset
+111790,NC State Treasurer - STIF,asset
+111791,NC State Treasurer - LTIF,asset
+111792,US Equity Funds,asset
+111793,International Equity Funds,asset
+111799,OPEB Acct Cash,asset
+112000,COPS 97A Principal,asset
+112001,COPS 97A Interest,asset
+112002,COPS 97B Principal,asset
+112003,COPS 97B Interest,asset
+112004,COPS 97C Principal,asset
+112005,COPS 97C Interest,asset
+112006,Revenue 05 Principal,asset
+112007,Revenue 05 Interest,asset
+112008,Revenue 07 Principal,asset
+112009,Revenue 07 Interest,asset
+112010,Construction Funds,asset
+112011,GO 99 Refunding Reserve,asset
+112012,Revenue 05 Refunding,asset
+112013,Revenue 01 Proceeds,asset
+112014,GO 99 Refunding,asset
+112015,Transit Stabilization Account,asset
+121000,Prop Tax Rec - Undistribut Tax,asset
+121098,Prop Tax Receivable - 1998,asset
+121099,Prop Tax Receivable - 1999,asset
+121100,Prop Tax Receivable - 2000,asset
+121101,Prop Tax Receivable - 2001,asset
+121102,Prop Tax Receivable - 2002,asset
+121103,Prop Tax Receivable - 2003,asset
+121104,Prop Tax Receivable - 2004,asset
+121105,Prop Tax Receivable - 2005,asset
+121106,Prop Tax Receivable - 2006,asset
+121107,Prop Tax Receivable - 2007,asset
+121108,Prop Tax Receivable - 2008,asset
+121109,Prop Tax Receivable - 2009,asset
+121110,Prop Tax Receivable - 2010,asset
+121111,Prop Tax Receivable - 2011,asset
+121112,Prop Tax Receivable - 2012,asset
+121113,Prop Tax Receivable - 2013,asset
+122000,DMV Tax Rec - Undistribute Tax,asset
+122098,DMV Tax Receivable - 1998,asset
+122099,DMV Tax Receivable - 1999,asset
+122100,DMV Tax Receivable - 2000,asset
+122101,DMV Tax Receivable - 2001,asset
+122102,DMV Tax Receivable - 2002,asset
+122103,DMV Tax Receivable - 2003,asset
+122104,DMV Tax Receivable - 2004,asset
+122105,DMV Tax Receivable - 2005,asset
+122106,DMV Tax Receivable - 2006,asset
+122107,DMV Tax Receivable - 2007,asset
+122108,DMV Tax Receivable - 2008,asset
+122109,DMV Tax Receivable - 2009,asset
+122110,DMV Tax Receivable - 2010,asset
+122111,DMV Tax Receivable - 2011,asset
+122112,DMV Tax Receivable - 2012,asset
+122113,DMV Tax Receivable - 2013,asset
+122200,Tax Coll Adjustments,asset
+123000,Accts Rec,asset
+123001,Accts Rec - Auction,asset
+123002,Accts Rec - Accruals,asset
+123003,Accts Rec - Holiday Inn Airpor,asset
+123004,Accts Rec - Water,asset
+123005,Accts Rec - Sewer,asset
+123006,Accts Rec - Recycling,asset
+123007,Accts Rec - Service Station,asset
+123008,Accts Rec - Water Deposits,asset
+123009,Accts Rec - Container Charge,asset
+123010,Accts Rec - NSF,asset
+123011,Accts Rec - Event Settlement,asset
+123012,Accts Rec - Capital Impvmt Fee,asset
+123013,Accts Rec - Due from Curr Emp,asset
+123014,Accts Rec - Privilege License,asset
+123015,Accts Rec-Advance Deposit,asset
+123016,Accts Rec - Retiree,asset
+123017,Accts Rec - Due from Sep Emp,asset
+123018,Accts Rec - IRS Civil Penalty,asset
+123019,Accts Rec - Prepaid Sales Tax,asset
+123020,Accts Rec -MSD Treatment,asset
+123021,Accts Rec - MSD Maintenance,asset
+123022,Accts Rec-Water Customer Serv.,asset
+123023,Accts Rec - CiteZone,asset
+123024,Acct Rec - White Goods Pickup,asset
+123030,Accts Rec-Building Maintenance,asset
+123035,Accts Rec - Rents,asset
+123040,Accts Rec - Radios O/S Agencie,asset
+123041,Accts Rec - Tower Rentals,asset
+123042,Accts Rec - Rental Inc Tower,asset
+123043,Accts Rec - Rent Fiber Franchi,asset
+123044,Accts Rec - Misc IT,asset
+123045,Accts Rec - Snack Shop,asset
+123050,Accts Rec - Prop Ins Prem,asset
+123055,Accts Rec - Pack Place,asset
+123056,Accts Rec - Golf Course Mgmt,asset
+123060,Accts Rec - Fire Insp Fee,asset
+123061,Accts Rec - Fire InspManditory,asset
+123062,Accts Rec - Noise Ord Fine,asset
+123063,Accts Rec - Police Escort Serv,asset
+123064,Accts Rec - Police Hous Auth,asset
+123065,Accts Rec - Wrecker Fees,asset
+123066,Accts Rec - Cry Wolf,asset
+123070,Accts Rec - Recycling Charge,asset
+123071,Accts Rec - PSNC Patch,asset
+123072,Accts Rec - Manhole Billing,asset
+123080,Accts Rec - MSD Permits,asset
+123081,Accts Rec - Bldg Permit Insp,asset
+123082,Accts Rec - Fines/Fees Parking,asset
+123083,Accts Rec - Fines Peripheral,asset
+123084,Accts Rec - Bicycle Locker,asset
+123085,Acct Rec - Tree Removal,asset
+123086,Accts Rec - Fines/Fees PkngMtr,asset
+123090,Accts Rec - Street Cut,asset
+123091,Accts Rec - MSD,asset
+123092,Accts Rec - PSNC,asset
+123093,Accts Rec- Stormwater,asset
+123099,Rec. - Unbilled,asset
+123101,Interest Receivable,asset
+123102,Interest Rec - Grove Arcade,asset
+123103,Interest Rec. - Investments,asset
+123200,Other Recvbl - P Card Disputes,asset
+123330,Accts Rec - Pack Square Conser,asset
+124000,Allow for Doubtful Accts - Ad,asset
+124001,Allow for Doubtful Accts - DMV,asset
+124002,Allow for Doubtful Accounts,asset
+124003,Allow for Doubtful Accts - Wat,asset
+124006,Allow for Doubtful Accts-Recyc,asset
+124022,Allow for Doubt Accts-Fire&San,asset
+124330,Allow for Doubtful - Pack Sqr,asset
+124501,Allow. for Doubtful Loan Accts,asset
+125000,Loans Rec-Section 108 Loans,asset
+125001,Loans Rec-Affordable Housing,asset
+125002,HUD Notes Receivable,asset
+125011,Escrow Rec - Amerinational,asset
+125100,Not in use,asset
+125101,Notes Rec - Grove Arcade Princ,asset
+126000,Intergov Rec - Federal,asset
+126001,Intergov Rec - Federal Grants,asset
+126002,Intergov Rec - US Treasury,asset
+126100,Intergov Rec - State of NC,asset
+126101,Intergov Rec-NC 5.5% Sales Tax,asset
+126102,Intergov Rec - NCDOT,asset
+126103,Intergov Rec - Tax NC 4% BC 2%,asset
+126104,Intergov Rec - Dept. of Revenu,asset
+126200,Intergov Rec - Haywood County,asset
+126201,Intergov Rec - Henderson Count,asset
+126202,Intergov Rec - Madison County,asset
+126203,Intergov Rec - McDowell County,asset
+126204,Intergov Rec - Wake County,asset
+126205,Intergov Rec - Alamance County,asset
+126206,Intergov Rec - Mitchell County,asset
+126207,Intergov Rec - Brunswick Count,asset
+126208,Intergov Rec - Cabarrus County,asset
+126209,Intergov Rec - Mecklenburg Cou,asset
+126210,Intergov Rec - Orange County,asset
+126211,Intergov Rec - Durham County,asset
+126212,Intergov Rec - Catawba County,asset
+127100,Intergov Rec - BuncC Tax 2.25%,asset
+127101,Intergov Rec - Utilities,asset
+127102,Intergov Rec - Local Sales Tax,asset
+127103,Intergov Rec - BC Rental Tax,asset
+127104,Interg Rec-Skyland Bilt Ad Val,asset
+127105,Interg Rec - Haw Creek Ad Val,asset
+127106,Intergov Rec-BC Pack Place Prk,asset
+127107,Intergov- BC School Police,asset
+127200,NC CAT3 County Tax - Control,asset
+127201,NC State Sales Tax - Contracts,asset
+127202,NC County Sales Tax - Contract,asset
+127203,NC State Sales Tax - Control,asset
+127204,Sales Tax Receivable - Transit,asset
+127205,Intergov Rec - NC Sales Tax,asset
+127210,FTA Reimb,asset
+127298,IR - Cnty Sales Tx-NCDOR Audit,asset
+127299,IR - NC Sales Tax-NCDOR Audit,asset
+128000,Intergov Rec - Authorities,asset
+134000,Due From Other Funds,asset
+134001,Due From General Fund,asset
+134002,Due From Civic Cntr Agenc Fund,asset
+134610,Due from Street Cut Fund,asset
+141001,Inventory,asset
+141002,Inv - Central Stores - General,asset
+141003,Inv - Central Stores - Water M,asset
+141004,Inventory - Fleet Management,asset
+141005,Inventory - Gas and Oil,asset
+141006,Inventory - CNG Gas,asset
+141007,Inventory - Nature Center,asset
+141008,Inventory - Print Shop,asset
+141009,Inventory - Aston & Sktbrd Pks,asset
+150001,Prepaid Expenses,asset
+150002,Prepaid Expenses - Festivals,asset
+160001,Property Held for Resale,asset
+161000,Amount to be Provided - LT Deb,asset
+171000,Land,asset
+171001,Buildings,asset
+171002,Improvements,asset
+171003,Machinery & Equipment,asset
+171004,Water & Sewer System,asset
+171005,Construction in Progress,asset
+171006,Infrastructure - Bridges,asset
+171007,Infrastructure - Curb & Gutter,asset
+171008,Infrastructure - Sidewalks,asset
+171009,Infrastructure - Storm Water,asset
+171010,Infrastructure - Streets,asset
+171011,Intangible Assets- Non Depr,asset
+171012,Intangible Assets- Depreciable,asset
+171019,Other Capital Assets,asset
+171100,Land - Held for Resale,asset
+171102,Improv- Other than Buildings,asset
+181001,Accumulated Depreciation,asset
+181002,Accum Depr - Building,asset
+181003,Accum Depr - Improvements,asset
+181004,Accum Depr - Mach & Equip,asset
+181005,Accum Depr - W & S System,asset
+181006,Accum Depr - Infrastructure,asset
+190000,Deferred Outflows,asset
+191000,Rev Ref 05 - Debt Issue Costs,asset
+191001,GO Rev 99 - Debt Issue Costs,asset
+191002,Rev 07 - Debt Issue Costs,asset
+191003,GO Ref 99 - Debt Issue Costs,asset
+191004,LOB 2012- Debt Iss Cost,asset
+191100,Debt Issuance Costs,asset
+211000,General Accounts Payable,liability
+211001,Active Card Integration Payabl,liability
+211002,Accounts Payable - Accruals,liability
+211003,Checks Payable Control,liability
+211004,Accts Payable - Civic Cen Agen,liability
+211090,Accts Payable - Street Cut,liability
+211091,Accts Payable - Water,liability
+212000,Retainage Payable,liability
+212001,Retainage Payable - 51Biltmore,liability
+213000,Salaries & Wages Payable,liability
+213001,Payroll Payable - United Way,liability
+213002,Payroll Payable - 401k,liability
+213003,Payroll Payable - Garnishments,liability
+213004,Payroll Payable - Child Suppor,liability
+213005,Payroll Payable - Med Flex,liability
+213006,Payroll Payable - Chld Care Fl,liability
+213007,Payroll Payable - LGERS,liability
+213008,Payroll Payable - APD 401k,liability
+213009,Payroll Payable - Credit Union,liability
+213010,Payroll Payable - LT Care Ins,liability
+213011,Payroll Payable - College Svn,liability
+213012,Payroll Payable - 457 Def Comp,liability
+213020,Payroll Payable - Fed Tax W/H,liability
+213021,Payroll Payable - FICA Tax W/H,liability
+213022,Payroll Payable - MC Tax W/H,liability
+213023,Payroll Payable - NC Tax W/H,liability
+213024,Payroll Payable - Adv Er Inc C,liability
+213025,Payroll Payable - 401A,liability
+213026,Payroll Payable - Firemen Pens,liability
+213030,Salaries & Taxes Payable,liability
+214000,Vacation Pay Payable - Wages,liability
+214008,Vacation Pay Payable - Pension,liability
+214010,Vacation Pay Payable - 401K,liability
+214025,Vacation Pay Payable - FICA,liability
+214999,Vacation Pay Payable - Contra,liability
+215000,Vacation Pay Payable - Current,liability
+220000,Customer Deposits,liability
+220002,Customer Deposits - Parks&Rec,liability
+221000,Accr Interest Payable,liability
+221001,Accr Interest Payable - Bonds,liability
+225003,Accts Pay - APD Uncl./Confisc,liability
+225004,Accts Pay - APD Lost and Found,liability
+225005,Accts Pay - APD Evidence Room,liability
+225006,Acc Payable - NC Sales Tax,liability
+225007,Acc Payable - BC Sales Tax,liability
+225008,Acc Payable - A/R Overpmt,liability
+225009,Acc Payable - Disp Escrow,liability
+225010,Acc Payable - Util Overpmts,liability
+225011,Acc Payable - Water Liens,liability
+225012,Acc Payable - Deposit Refund,liability
+225013,Acc Payable - RecTrac Cr Bal,liability
+225014,Acc Payable - Cell Phone,liability
+225015,Acc Payable - OPEB Liability,liability
+225016,Sales Tax Payable,liability
+225017,Sales Tax Pay - CC Novelty Tax,liability
+225018,Sales Tax - Non Refundable,liability
+225019,Skate Park - Sales Tax Payable,liability
+225020,Aston Park - Sales Tax Payable,liability
+225021,Nature Center - Sales Tax Payb,liability
+225022,Festivals - Sales Tax Payable,liability
+225023,City Pools - Sales Tax Payable,liability
+226000,Sales and  Use Tax - Control,liability
+230000,Customer Deposits,liability
+230001,Customer Deposits -  Water,liability
+230002,Customer Deposits - Planning,liability
+230008,Customer Deposits - Climbmax,liability
+233005,Accts Payable - Med Flex,liability
+233006,Accts Payable - Chld Care Flex,liability
+235801,Accts Pay - Vision,liability
+235810,Accts Pay - Life,liability
+235811,Accts Pay - Retiree Life U 65,liability
+235812,Accts Pay - Universal Life,liability
+235813,Accts Pay - Cancer Insurance,liability
+235814,Accts Pay - Critical Illness,liability
+235821,Accts Pay - Retiree Life O 65,liability
+241000,Due to Other Funds,liability
+241001,Due to Othr Funds - Water Oper,liability
+241002,Due to Othr Funds - ATA to AVL,liability
+241003,Due To Insurance Fund,liability
+241004,Due To General Fund,liability
+241622,Due to the Water Fund,liability
+242000,Due to Othr Govt Units - MSD,liability
+242001,Due to Othr Govt - MSD Uncoll,liability
+242002,Due to Othr Govt Units-WNC Air,liability
+242003,Due to Other Govts - Bunc Coun,liability
+243000,Due to NC - Escheats,liability
+243001,Due to NC - NC Home Ownrs Rec,liability
+243002,Due to NC - NCDOT,liability
+243003,Due to NC - State 4% Tax - Ven,liability
+243004,Curr Due to NC - Water Loan,liability
+243005,Due To NC - Escheats-Payroll,liability
+243006,Due to NC - DPI,liability
+244000,Due to Federal Government,liability
+252000,Curr-Cap Prem-Bonds 1999 Refun,liability
+252001,Curr-Cap Prem-Bonds 2005 Refun,liability
+252002,Curr-Cap Prem-Bonds 2007 Wtr R,liability
+252015,Curr - LOBs 2012 Premiums,liability
+253000,Curr Gen Oblig Bonds - Water,liability
+253001,Curr 1999 G O Refunding Bond,liability
+253002,Curr - Install Purch Contracts,liability
+253003,Curr - Install PC Azalea-Wells,liability
+253004,Curr - Install PC Fire St 6&11,liability
+253005,Curr - Install PC Tr &Equip,liability
+253006,Curr - Install PC Series 2008,liability
+253007,Curr - Water Rev Bonds 2008,liability
+253008,Curr - Install PC COPS 97C,liability
+253009,Curr - MSD Agreement,liability
+253010,Curr - Section 108 Loan,liability
+253011,Curr - Install PC Fire Tr 2010,liability
+253012,Curr - Install PC Liv Str Ctr,liability
+253013,Curr - DENR2011 Stormwater Ln,liability
+253014,Curr - DENR2011 Water Loan,liability
+253015,Curr - Long Term  NCDOT,liability
+254000,Revenue Bonds ST - 2005 Refud,liability
+254001,Revenue Bonds ST - WtrRev2007,liability
+255001,Curr-Gen Oblig Bonds 1999 GOR,liability
+255003,Curr-Gen Oblig Bonds 2000 GOR,liability
+255004,Curr-Gen Oblig Bonds COPS 93-A,liability
+255005,Curr-Gen Oblig Bonds COPS 93-B,liability
+255007,Gen Oblig Bonds ST Water,liability
+256000,Curr-Install PC 2002 Pierce D,liability
+256001,Curr-COPS 97A,liability
+256003,Curr-COPS 97C-Grove Arc-Brdlnd,liability
+256015,Current - LOBs 2012,liability
+256016,Cur-Unamortized Refunding Loss,liability
+256017,Current - Install Loan 2013 A,liability
+256018,Current - Install Loan 2013 B,liability
+261000,Deferred Revenue,liability
+261001,Deferred Revenue - Collections,liability
+261002,Deferred Revenue - Ad Val-DMV,liability
+261003,Deferred Revenue - Rvrside Cem,liability
+261004,Deferred Revenue - DMV,liability
+261005,Deferred Revenue - Ad Valorem,liability
+261006,Def Rev - Prepaid Ad Valorem,liability
+261007,Def Rev - Prepaid DMV,liability
+261008,Def Rev - Prepaid MV fees,liability
+261014,Deferred Revenue - Section 108,liability
+261017,Deferred Revenue - Principal,liability
+261018,Deferred Revenue - Police,liability
+261020,Deferred Revenue - Civic Cente,liability
+261021,Deferred Rev - Private Donatio,liability
+261022,Def Rev-Deposit Line of Credit,liability
+261031,Deferred Revenue - NSF,liability
+261032,Def Rev - Prepaid Priv. Lic.,liability
+261033,Def Rev - Prepaid Gaming,liability
+261110,Deferred Revenue - Fire Inspec,liability
+261311,Deferred Revenue - Sanitation,liability
+261330,Deferred Rev - Pack Sqr Conser,liability
+261670,Def Rev - Golf Gift Certificat,liability
+261802,Deferred Revenue - Festivals,liability
+261805,Defer Rev- Azalea Soccer,liability
+261900,Unearned Revenue,liability
+261901,Unearned Rev - BC 911 Communic,liability
+261902,Unearned Rev - Bid Security,liability
+261903,Unearned Rev - Good Faith Dep,liability
+269900,Def Rev - Unallocated Inv Rev,liability
+271003,Cap Lease LT - Installmt Ln 99,liability
+271006,Cap Lease LT - TRSH CNS-99 PU,liability
+272000,Cap Premium-Bonds - 1999 Ref,liability
+272001,Cap Premium-Bonds - 2005 ref,liability
+272002,Cap Premium-Bonds - 2007 Wtr R,liability
+272015,LT - LOBs 2012 Premiums,liability
+273000,Due to NC -  Water Loan LT,liability
+273001,MSD Agreement - Long Term,liability
+273010,LT - Section 108 Loan,liability
+273013,LT - DENR2011 Stormwater Loan,liability
+273014,LT - DENR2011 Water Loan,liability
+274000,Revenue Bonds LT - 2005 Refud,liability
+274001,Revenue Bonds LT - Wtr Rev 200,liability
+275000,Gen Oblig Bonds - RA-Wtr Bond,liability
+275001,Gen Oblig Bonds - LT-1999 GOR,liability
+275003,Gen Oblig Bonds LT 2000 GOR,liability
+275004,Gen Oblig Bonds LT COPS 93-A,liability
+275005,Gen Oblig Bonds LT COPS 93-B,liability
+275006,Gen Oblig Bonds LT COPS 93-C,liability
+275007,Gen Oblig Bonds LT Water,liability
+276000,Install PC FY 02 Pierce D Fire,liability
+276001,COPS - 97A,liability
+276002,COPS - 97B,liability
+276003,COPS - 97C-Grove Arc-Brdlands,liability
+276004,Install PC FY 2006,liability
+276005,Install PC FY 03 Garb Trks-Can,liability
+276006,Install PC FY 04 Garb-Fire Trk,liability
+276007,Install PC FY 02 TrCan Trk Rad,liability
+276008,Install PC FY 2008,liability
+276009,Install PC FY 03 Pub Sfty Rdio,liability
+276010,Install PC Trucks & Radio Equi,liability
+276011,Install PC FY 10 Fire Trucks,liability
+276012,Install PC FY 11 Liv. St. Ctr,liability
+276014,51 Biltmore - LT - IFA,liability
+276015,LT - LOBs 2012,liability
+276016,LT-Unamortized Refunding Loss,liability
+276017,LT - Installment Loan 2013 A,liability
+276018,LT - Installment Loan 2013 B,liability
+277000,"Estimated Claims Pay-Hlth,Lf,D",liability
+277002,Estimated Claims Pay-Wrks Comp,liability
+277003,Estimated Claims Pay-P&L,liability
+277004,Other LT - Unfund Pension Obl,liability
+277005,Othr LT - Unfund Pens Obl FICA,liability
+281100,Eq In Pooled Cash - Gen Fund,liability
+281101,Eq in Pooled Cash - Invst Corr,liability
+282100,Eq in Pooled Cash - CaImp Fd,liability
+282200,Eq in Pooled Cash - Grant Fund,liability
+282230,Eq in Pooled Cash - Com Dev BG,liability
+282240,Eq in Pooled Cash - Section 10,liability
+282250,Eq in Pooled Cash - Home Inv T,liability
+282300,Eq in Pooled Cash - Aff Hs Tr,liability
+283100,Eq in Pooled Cash - Debt Svc,liability
+284100,Eq in Pooled Cash - Gen Cap Pr,liability
+285100,Eq in Pooled Cash - Nonexp Tr,liability
+286100,Eq in Pooled Cash - Water Svcs,liability
+286110,Eq in Pooled Cash - WtrBdCapPr,liability
+286200,Eq in Pooled Cash - Pking Svcs,liability
+286210,Eq in Pooled Cash - Prkg Cp Pr,liability
+286220,Eq in Pooled Cash-Street Cut U,liability
+286240,Eq in Pooled Cash - Stormwater,liability
+286250,Eq in Pooled Cash - StrmWtr Cp,liability
+286260,Eq in Pooled Cash - Civic Ctr,liability
+286270,Eq in Pooled Cash - Civ Ctr Cp,liability
+286500,Eq in Pooled Cash - Mass Tran,liability
+286510,Eq in Pooled Cash - Tran Cp Pr,liability
+286700,Eq in Pooled Cash - Golf Crse,liability
+286710,Eq in Pooled Cash - Golf Capit,liability
+286800,Eq in Pooled Cash - Festivals,liability
+287110,Eq In Pooled Cash - MSD Fund,liability
+287900,Eq In Pooled Cash - OPEB Fund,liability
+288100,Eq in Pooled Cash - Insurance,liability
+288110,Eq In Pooled Cash - HlthIns Fd,liability
+288120,Eq in Pooled Cash - Wrkrs Comp,liability
+288130,Eq in Pooled Cash - Prop/ Liab,liability
+290000,Deferred Inflows,liability
+290010,Deferred Inflows-Prepaid Taxes,liability
+290100,Deferred Inflows-Loan/Note Rec,liability
+300000,Reserved Accounts Vouchers-AP,equity
+304000,Estimated Revenues,equity
+305000,Appropriations,equity
+309800,Budgetary - Retained Earnings,equity
+309900,Budgetary - Fund Balance,equity
+319003,Equity - F/A Reclass for Trans,equity
+319004,Equity - F/A Reclassifications,equity
+319005,Equity- Investment in Fixed As,equity
+340000,Revenue Control,equity
+350000,Expenditure Control,equity
+360000,Encumbrances,equity
+360001,Reserve Pr Year Encumbs,equity
+370000,Reserve for Encumbrances,equity
+370001,Payroll History Conversion,equity
+389000,Contributed Cap - City of Ashe,equity
+389001,Other Contr Cap - Buncombe Cty,equity
+389002,Other Contributed Capital,equity
+398000,Retained Earnings,equity
+398001,Retained Earnings - Reserved R,equity
+399000,Fund Balance,equity
+399001,Appr Fund Bal - Reserved for E,equity
+411000,Current Year Prop Taxes Ad Val,revenue
+411001,Current Year Prop Taxes DMV,revenue
+412198,Prior Year Ad Valorem 1998,revenue
+412199,Prior Year Ad Valorem 1999,revenue
+412200,Prior Year Ad Valorem 2000,revenue
+412201,Prior Year Ad Valorem 2001,revenue
+412202,Prior Year Ad Valorem 2002,revenue
+412203,Prior Year Ad Valorem 2003,revenue
+412204,Prior Year Ad Valorem 2004,revenue
+412205,Prior Year Ad Valorem 2005,revenue
+412206,Prior Year Ad Valorem 2006,revenue
+412207,Prior Year Ad Valorem 2007,revenue
+412208,Prior Year Ad Valorum 2008,revenue
+412209,Prior Year Ad Valorem 2009,revenue
+412210,Prior Year Ad Valorem 2010,revenue
+412211,Prior Year Ad Valorem 2011,revenue
+412212,Prior Year Ad Valorem 2012,revenue
+413198,Prior Year DMV  Taxes 1998,revenue
+413199,Prior Year DMV  Taxes 1999,revenue
+413200,Prior Year DMV  Taxes 2000,revenue
+413201,Prior Year DMV  Taxes 2001,revenue
+413202,Prior Year DMV  Taxes 2002,revenue
+413203,Prior Year DMV  Taxes 2003,revenue
+413204,Prior Year DMV  Taxes 2004,revenue
+413205,Prior Year DMV  Taxes 2005,revenue
+413206,Prior Year DMV  Taxes 2006,revenue
+413207,Prior Year DMV  Taxes 2007,revenue
+413208,Prior Year DMV Taxes 2008,revenue
+413209,Prior Year DMV Taxes 2009,revenue
+413210,Prior Year DMV Taxes 2010,revenue
+413211,Prior Year DMV Taxes 2011,revenue
+413212,Prior Year DMV Taxes 2012,revenue
+414001,Ad Val Ashe Sub - Fire Prtctn,revenue
+414002,Ad Val Haw Creek - Fire Prtctn,revenue
+415012,NC Vehicle Tax 2012,revenue
+415013,NC Vehicle Tax 2013,revenue
+418000,Ad Val Interest,revenue
+418001,Ad Val Interest DMV,revenue
+418002,Ad Val Interest Loan Purch Pro,revenue
+423100,Loc Option Sales Tax One Cent,revenue
+423283,Loc Opt Sales Tx 1/2 Ct 1983,revenue
+423300,Loc Opt Tx 1/2 Ct Hold Hrmls,revenue
+423386,Loc Opt Sales Tx 1/2 Ct 1986,revenue
+423402,Loc Opt Sales Tx 1/2 Ct 2002,revenue
+423500,Loc Opt Sales Tx Fire District,revenue
+427200,Vehicle Rental Tax,revenue
+427201,Heavy Equipment Rental Tax,revenue
+431600,State Powell Bill Proceeds,revenue
+432100,Payments in Lieu of Taxes AHA,revenue
+432300,Payments in Lieu of Taxes Stat,revenue
+433000,State Beer & Wine Taxes,revenue
+433100,Sales Tax Refunds,revenue
+433200,State Util Franchise Tax,revenue
+433401,Local Util Fran Tax-CPL,revenue
+433402,Local Util Fran Fee-Gas,revenue
+433403,Local Util Fran Fee-Cable,revenue
+433404,Local Util Fran Fee-Cable,revenue
+435000,Restricted Intergov Fed Grants,revenue
+435001,FEMA 2010 Fed Storm Reimburse,revenue
+435002,Restr Intrgv Fed Grts - COC,revenue
+435003,temp,revenue
+435100,Rstrctd Intrgv Fed Grants Oper,revenue
+435500,Rstrtd Intrgv - FTA Cap Invest,revenue
+435505,Rstrd Intrgov-Fed prtn of MPO,revenue
+435507,Rstrtd Intrgv - FTA Formula,revenue
+435516,Rstrtd Intrgv - FTA JARC,revenue
+435521,Rstrtd Intrgv - FTA New Freedm,revenue
+435951,Restr Intrgv Fed FTA - PassThr,revenue
+435997,Fed Revenue Distribut - FEMA,revenue
+436000,Restrictd Intergv State Grants,revenue
+436001,FEMA 2010 State Storm Reimburs,revenue
+436002,DENR Principal Forgive Grant,revenue
+436100,Rstrctd IntrgvState Grnts Oper,revenue
+436101,NCDEM Equipment Reimbursement,revenue
+436102,NCDEM Training Reimbursement,revenue
+436103,NCDEM Response Reimbursement,revenue
+436505,Rstrd Intrgov-St prtn of MPO,revenue
+436997,State Revenue Distri - FEMA,revenue
+436998,State Powell Bill Distribution,revenue
+437000,Restrictd Intergv County Parti,revenue
+437100,Restrictd Intergv Otr Loc Part,revenue
+437101,Oth Loc Partic City Schools,revenue
+437102,Oth Loc Partic Sewer Annexat,revenue
+437103,Oth Loc Partic Fed Seizur Fds,revenue
+437104,Oth Loc Partic Traffic Calming,revenue
+437105,Oth Loc Partic St Seizure Fds,revenue
+437106,Oth Loc Partic Group Applicat,revenue
+437107,Bunc C Part - Historic Res Com,revenue
+437108,Oth Loc Partic Ashe Hsng Authr,revenue
+442600,General Business Priv Lic,revenue
+442601,License&Permits Street Vendors,revenue
+442602,License&Permits Taxi Owners,revenue
+442603,License&Permits Beer & Wine,revenue
+442604,License&Permits Chauffers,revenue
+442606,License&Permits Sign Permit,revenue
+442607,License&Permits Dogs,revenue
+442608,License&Permits Multi Animals,revenue
+442609,License&Permits Livestock,revenue
+442610,Lic & Permits Precious Metals,revenue
+442800,Motor Vehicles Licenses,revenue
+443100,Lic. & Permits - Permit Fees,revenue
+443101,Lic. & Prmts - Building Permit,revenue
+443102,Lic. & Prmts - Permit Fee Disc,revenue
+443110,Lic. & Prmts - Violation,revenue
+443120,Lic. & Prmt - Permit Violation,revenue
+443121,Lic.&Prmt-W/O Permit Violation,revenue
+443200,Lic. & Prmts - Inspection Fees,revenue
+443201,Lic. & Prmts-Reinspection Fees,revenue
+443300,Lic.& Prmts - Zoning Violation,revenue
+443501,Bldg Permits & Insp Water,revenue
+443502,Bldg Permits & Insp MSD,revenue
+443503,Bldg Permits & Insp Other,revenue
+443504,Bldg Permits & Insp Soil Erosn,revenue
+443505,Bldg Permits & Insp Stormwater,revenue
+443506,Bldg Permits & Insp Fire Insp,revenue
+443507,Bldg Permits & Insp Fees,revenue
+443508,Bldg Permits & Insp Driveways,revenue
+443509,Bldg Permits & Insp Mechanical,revenue
+443510,Bldg Permits & Insp Plumbing,revenue
+443511,Bldg Permits & Insp Electrical,revenue
+443512,Permit Housing Repair 1-2 unit,revenue
+443513,Permit Housing Repair 3+ unit,revenue
+443514,Permit Housing Repair Electric,revenue
+443515,Permit Housing Rep mechanical,revenue
+443516,Permit Housing Repair Plumbing,revenue
+443517,Bldg Permits & Insp Floodplain,revenue
+443518,Plan Review Fees,revenue
+443519,WNC Air Quality Fee 3%,revenue
+443520,Annualized Maintenance Fees,revenue
+443521,Developer Pump Station Fees,revenue
+443522,Bldg Permits & Insp Technology,revenue
+443523,Bldg Per - Addressing Fees,revenue
+443524,Water Technology Fee,revenue
+443601,Working With Out a Permit,revenue
+443602,Wking W/O a Permit-Mechanical,revenue
+443603,Wking W/O a Permit-Plumbing,revenue
+443604,Wking W/O a Permit- Elecrical,revenue
+443605,Temporary Occupancy Utilities,revenue
+443606,Housing Certificate 1-5 Years,revenue
+443607,ABC Inspection Fees,revenue
+443608,NC Homeowners Process Fees,revenue
+443609,Electrical Exams Renewal,revenue
+443610,Expedite Plan Review,revenue
+443611,Housing Cert Fee  5+ years,revenue
+443612,Re-inspection Fee - Buildng,revenue
+443613,Re-inspection Fee - Electrical,revenue
+443614,Re-inspection Fee - Mechanical,revenue
+443615,Re-inspection Fee - Plumbing,revenue
+443616,School Inspections,revenue
+443617,3rd Party Inspector Fees,revenue
+443618,Expedite Inspections,revenue
+443619,Fire Safety Inspections,revenue
+443620,Fire Inspection Fees,revenue
+443621,Mandatory Fire Inspection Fees,revenue
+443625,Fire Protection Asheville Sub,revenue
+450000,Sales and Services,revenue
+450001,Applications Fees,revenue
+450002,Sales & Serv - Street Patches,revenue
+450003,Sales & Serv - Cap Recov Fee,revenue
+450004,Sales & Services - Permit Fees,revenue
+450005,Entertainer Application Fees,revenue
+450006,Sales & Serv - Degredation Fee,revenue
+450007,Grave Sales,revenue
+450008,Sales & Serv - Overlay Fees,revenue
+450009,Sales & Serv - Patching Fees,revenue
+450010,Charges for Services,revenue
+450011,Charges for Services-8130,revenue
+450012,Delinquent & Interest Fee,revenue
+450013,Charges for Services-Haw Creek,revenue
+450014,Charges for Services-Skyland,revenue
+450018,GIS Data Request Fees,revenue
+450023,Radios-Outside Agencies,revenue
+450031,Police Escort Services,revenue
+450032,Wrecker Company Fees,revenue
+450033,Trap Rental Fees,revenue
+450034,Haz-Mat Protection Charges,revenue
+450035,Impoundment Fees,revenue
+450036,Fire Protection Biltmore Fst,revenue
+450037,Civic Center Advertising,revenue
+450038,Fire Protection Haw Creek,revenue
+450039,Propertyroom.com,revenue
+450040,Charges for Services-CDBG/HOME,revenue
+450100,Street Closing Fees,revenue
+450101,Sway Car Charges,revenue
+450102,Recycling Charges,revenue
+450103,External Vehicle Charge,revenue
+450104,External Vehicle Repair Charge,revenue
+450105,Street Light Removal,revenue
+450106,TIP fee surcharge,revenue
+450107,External CNG Sales,revenue
+450108,White Goods Pickup,revenue
+450109,Setout Services,revenue
+450110,Sanitation Container,revenue
+450111,Dead Animal Pickup,revenue
+450112,Utility Overlay Fee,revenue
+450122,Solid Waste Fees,revenue
+450201,Book Sales Commissions,revenue
+450202,Demolition Liens,revenue
+450203,HRC Maj Wks App Fee,revenue
+450204,Board of Adjustments,revenue
+450205,Zoning Neighborhood Letters,revenue
+450206,Dwntwn Commis Rvw Ntfcations,revenue
+450300,Rents - Rental Income,revenue
+450301,Rents - Holiday Inn Airport,revenue
+450302,Rents - Tower Rental,revenue
+450303,Rents - Facilities,revenue
+450304,Rents - Parks Shelters,revenue
+450305,Rents - McCormick Field,revenue
+450306,Rents - Equipment Rental,revenue
+450307,Rents - Buildings and Arena,revenue
+450308,Rents - Auditorium,revenue
+450309,Rents - Exhibit Space,revenue
+450310,Rents - Meeting Room,revenue
+450311,Rents - Vendor & Booths,revenue
+450312,Rents - Bicycle Locker Rental,revenue
+450313,Rents - Facility Fees,revenue
+450314,Rents - Skate Equip Rentals,revenue
+450315,Rents - Bee Tree,revenue
+450316,Rents - Mills River,revenue
+450317,Rents - Van Rental,revenue
+450318,Rents - Nontaxable Equipment,revenue
+450319,Rents - Fiber Franchise,revenue
+450320,Rent - Avl Symphony,revenue
+450321,Damage Fees,revenue
+450322,Rent - Indoor Farmers Market,revenue
+450350,Pool Admission - Lockers,revenue
+450351,Skate Admission,revenue
+450352,Admission Fees,revenue
+450353,Green Fees,revenue
+450354,Festival Tickets,revenue
+450355,Wrist Band Sales,revenue
+450356,Admission Fees,revenue
+450357,Class Participation Fees,revenue
+450358,Civic Center Ticket Office,revenue
+450359,Civic Ctr Ticket Office Hdlng,revenue
+450360,Non-Resident Fees,revenue
+450400,Child Care Fees,revenue
+450401,Membership Fees - Golf Course,revenue
+450402,Commissions,revenue
+450405,Commissions - Catering,revenue
+450451,Wellness,revenue
+450452,Wellness-Vending,revenue
+450500,Concessions,revenue
+450501,Concessions - Food & Bev,revenue
+450502,Vending Sales,revenue
+450503,Bottled Water Sales,revenue
+450504,Food Sales,revenue
+450505,Souvenirs,revenue
+450506,Pro Shop Sales,revenue
+450507,Concessions - Mixed Beverages,revenue
+450508,Concessions - Beer & Wine,revenue
+450510,Catering In - House,revenue
+450511,Novelty Sales,revenue
+450512,Staff Reimbursement,revenue
+450513,Concessions - Events,revenue
+450514,Concessions - Beverages,revenue
+450515,Concessions - Snack Bar,revenue
+450516,Concessions - Tobacco,revenue
+450518,Concessions - Pay Phone,revenue
+450519,ATM - Fee,revenue
+450600,Passenger Fares,revenue
+450601,Contract Repairs,revenue
+450602,Advertising Revenue,revenue
+450603,Bulk Fare Income,revenue
+450604,Bus Lease,revenue
+450700,Utility Charges,revenue
+450701,Account Setup Fees,revenue
+450702,Wtr Serv Connection Fees,revenue
+450704,Taps & Connections,revenue
+450705,Water Availability,revenue
+450706,Water Reservation Fees,revenue
+450707,Technology Fee,revenue
+450708,Reconnection Fees,revenue
+450709,Fire Line Charges,revenue
+450710,M & R City Water,revenue
+450711,Capital Improvement Fees,revenue
+450712,Water Meter Services,revenue
+450730,M & R City Water,revenue
+451000,Employee Cont Health Insurance,revenue
+451001,Employee Cont Life Insurance,revenue
+451002,Employee Cont Dental Insurance,revenue
+451003,Retiree Contribution Insurance,revenue
+451004,COBRA,revenue
+451005,Wellness Program,revenue
+451006,Retiree Cont Life Ins,revenue
+451020,Retiree U 65 Healthcare Contr,revenue
+451021,Retiree O 65 Healthcare Contr,revenue
+451050,Charges for Services,revenue
+451051,Charges for Services - Medical,revenue
+451052,Charges for Services - Dental,revenue
+451053,Charges for Services - Life,revenue
+451054,Charges for Services - Retiree,revenue
+451055,Charges for Serv. - Lt. Disab.,revenue
+451060,Employer Contributions - OPEB,revenue
+453001,NC Homeowners Process Fees,revenue
+453002,WNC Air Quality Fee 3%,revenue
+453100,Chrgs for Serv-Plan Review Fee,revenue
+453101,Chrgs for Serv - Address Fee,revenue
+453102,Charges for Services-Exam Fee,revenue
+453707,Chrgs for Serv-DSD Technology,revenue
+460000,Income from Investments,revenue
+460001,Mark to Market - Investments,revenue
+460002,OPEB-MTM-LTIF,revenue
+460003,Realized Gain/Loss on Invstmts,revenue
+460004,Inc from Inv - Powell Bill,revenue
+460998,Inc from Inv - Powell Bill,revenue
+461000,Inc from Invest - Lease Proc,revenue
+462000,Inc from Invest - Bond Proc,revenue
+470000,Capital Contributions,revenue
+471000,Capital Contributions - Cash,revenue
+476000,Capital Contributions - FA,revenue
+481401,Fines & Fees Prop Foreclosures,revenue
+481402,Fines & Fees Court Fees,revenue
+481405,Fines & Fees Non Resid Entry,revenue
+481406,Fines & Fees Encroachment Ag,revenue
+481454,Fines & Fees False Alarms,revenue
+481455,Fines & Fees Permit Penalties,revenue
+481472,Fines & Fees Zoning Citations,revenue
+481473,Fines & Fees Sign Citations,revenue
+481474,Fines & Fees Litter Control Ci,revenue
+481475,Fines & Fees Noise Ordinance,revenue
+481476,Fines & Fees Animal Control Vi,revenue
+481477,Fines & Fees Animal Control,revenue
+481479,Fines & Fees Tamper Chgs,revenue
+482400,Fines & Fees Prkng Lt Fee Mnth,revenue
+482401,Fines & Fees Civ Ctr Gar Pkng,revenue
+482402,Fines & Fees Wall St Pkng Gar,revenue
+482403,Fines & Fees After Hrs Parking,revenue
+482404,Fines & Fees Pkng Gar Monthly,revenue
+482405,Fines & Fees Pkng Gar Sp Evnts,revenue
+482406,Fines & Fees Pkng Gar Transnt,revenue
+482407,Fines & Fees Peripheral Parkng,revenue
+482408,Fines & Fees Lot 17,revenue
+482409,Fines & Fees Boot Fees,revenue
+482410,Fines & Fees Parking Meters,revenue
+482411,Fines & Fees Lot 18,revenue
+482412,Fines & Fees Passport parking,revenue
+482420,Fines & Fees In Lieu Of,revenue
+482450,Fines & Fees Adjustments,revenue
+482451,Fines & Fees Bad Debt Recov,revenue
+482456,Fines & Fees Pkng Cit Penalty,revenue
+482457,Fines & Fees Handicap Penalty,revenue
+482458,Fines & Fees Firelane,revenue
+482470,Fines & Fees Parking Cit Fee,revenue
+482471,Fines & Fees Handicap Pkg Fee,revenue
+482478,Fines & Fees Towing Ordinance,revenue
+482480,Fines & Fees Return Check Chg,revenue
+482482,Fines & Fees Interest - Late C,revenue
+483000,In-Kind External Participation,revenue
+483300,Private Donations,revenue
+483301,Private Donations - Nature Ctr,revenue
+483302,Friends of Nature Ctr Foundatn,revenue
+483303,Ashe Parks & Grnwy Foundat,revenue
+483304,Private Donations - Restricted,revenue
+483305,Sponsorships,revenue
+483307,Sponsorships - Fireworks,revenue
+483308,Sponsorships - Civic Center,revenue
+483330,Pack Sq Consrvncy Private Dona,revenue
+484218,Agency PI - MHO,revenue
+484400,Rents - Rental Income,revenue
+484401,Rents - Holiday Inn Airport,revenue
+484402,Rents - Tower Rental,revenue
+484403,Rents - Facilities,revenue
+484404,Rents - Park Shelters,revenue
+484405,Rents - McCormick Field,revenue
+484407,Rents - Equipment Rental,revenue
+484408,Rents - Buildings & Arena,revenue
+484409,Rents - Auditorium,revenue
+484410,Rents - Exhibit Space,revenue
+484411,Rents - Meeting Room,revenue
+484412,Rents - Vendors & Booths,revenue
+484413,Rents - Bicycle Locker Rental,revenue
+484415,Rents - Facility Fees,revenue
+484420,Rents - Skate Rental,revenue
+484430,Rents - Bee Tree,revenue
+484440,Rents - Mills River,revenue
+484441,Rents - Van Rental,revenue
+484500,Pool Admission - Lockers,revenue
+484501,Skate Admission,revenue
+484502,Admission Fees,revenue
+484503,Green Fees,revenue
+484510,Festivals Tickets,revenue
+484512,Admission Fees,revenue
+484516,Conference Meeting Revenue,revenue
+484520,Civic Center Ticket Office,revenue
+484521,Civic Ctr Ticket Office Hdlng,revenue
+485000,Insurance Recovery,revenue
+485001,Health Services Charges,revenue
+485002,Prescrips Rebates & Refunds,revenue
+485003,Subrogation Claims Refunds,revenue
+486000,Sale of Capital Assets,revenue
+486001,Sale of Capital Asset  -  Land,revenue
+486100,Gain/Loss on Disposal of CA,revenue
+488003,2% Capital Maint Fee,revenue
+488004,Revolving Loan,revenue
+488006,Sectn 108 Loan Repayment,revenue
+488010,Program Income,revenue
+488011,Program Income Interest,revenue
+488012,Reimbursement,revenue
+488013,Vanpooling Fuel Revenue,revenue
+488014,Energy Efficiency Rebate,revenue
+488020,Repayment,revenue
+488021,MSD Reimbursement,revenue
+488022,$3 Million  Grant,revenue
+489000,Other Miscellaneous Revenue,revenue
+489001,Other Misc In Lieu of Sidewalk,revenue
+489002,Other Misc In Lieu of Sidewalk,revenue
+489010,Cemetary Interment Fees,revenue
+489011,Repair Recov - Tamp Fees,revenue
+489014,Bunc County Shuttle Service,revenue
+489020,Destruction of Property,revenue
+489203,Contingency Revenue,revenue
+489900,ABC Revenue - Component Unit,revenue
+489905,Unclaimed Deposits,revenue
+489999,FY09 Project Revenues,revenue
+491001,Water Revenue Bond Sales 2001,revenue
+491002,Water Revenue Bond Sales 2008,revenue
+491003,Premium on Wtr Rev Bond 2008,revenue
+491010,Sale of Cert of Part 97-A,revenue
+491012,Sale of Cert of Part Prking Dk,revenue
+491013,Sale of Certificate of Part,revenue
+492000,Installment Purch Proceed,revenue
+492001,Installment Purch Premiums,revenue
+492002,Proceeds of Debt - refunding,revenue
+492003,Proceeds of Debt - Refund Prem,revenue
+493000,Debt Proceeds - DENR Funded,revenue
+497000,Intrafund Project Transfer In,revenue
+498000,Charges to Other Funds,revenue
+498001,Charges to Other Funds,revenue
+498002,Charges to Other Funds,revenue
+498003,Oper Transfers Other Funds,revenue
+498100,Oper Transfers from General Fd,revenue
+498101,Oper Transfers Gen Fd Subsidy,revenue
+498200,Oper Transfers Grant Fund,revenue
+498201,Oper Transfers CDBG Fund,revenue
+498202,Oper Transfers Cap Reserve Fd,revenue
+498203,Oper Transfers HOME,revenue
+498204,Oper Transfers Af Housing Trus,revenue
+498221,Transfers from CDBG-R Project,revenue
+498301,Tr From Water Fd - Street Cut,revenue
+498302,Tr From Stormw Fd - Street Cut,revenue
+498401,Oper Transfers Cap Project Fd,revenue
+498403,Oper Transfers Street SW CapPr,revenue
+498510,Oper Trans from Cemetery Fund,revenue
+498600,Transfer Wtr Rev Fund-Sullivan,revenue
+498601,Transfer Water Revenue Fund,revenue
+498602,Transfer From Water Oper 94/95,revenue
+498603,Transfer From Water Oper 98/99,revenue
+498604,Transfer From Water Oper 99/00,revenue
+498605,Transfer From Water Oper 00/01,revenue
+498606,Transfer From Water Oper 01/02,revenue
+498607,Transfer From Water Oper 02/03,revenue
+498608,Transfer From Water Oper 03/04,revenue
+498609,Transfer From Water Oper 04/05,revenue
+498610,Transfer From Water Oper 05/06,revenue
+498611,Transfer From Water Oper 06/07,revenue
+498612,Transfer From Water Oper 07/08,revenue
+498613,Transfer From Water Oper 08/09,revenue
+498614,Transfer From Water Oper 09/10,revenue
+498615,Transfer From Water Oper 10/11,revenue
+498616,Transfer From Water Oper 11/12,revenue
+498617,Transfer From Water Oper 12/13,revenue
+498618,Transfer from Water Oper 13/14,revenue
+498619,Transfer From Wtr Cap Proj Fd,revenue
+498620,Oper Transfer from Prkg Srvcs,revenue
+498621,Oper Trfrs from Prkg Srvcs CP,revenue
+498622,Oper Transfers from StreetCuts,revenue
+498624,Oper Transfers from Strm Wtr,revenue
+498626,Operating Transfer CivicCtr Op,revenue
+498630,Oper Transfers Civic Ctr Fund,revenue
+498631,Oper Transfers Civic Ctr Cap,revenue
+498632,Oper Transfers CivCt Cap Pr Fd,revenue
+498633,Oper Transfers Parking Service,revenue
+498634,Oper Transfers  Festivals,revenue
+498635,Oper Transfers Transit MtrVeh,revenue
+498636,Oper Transfers Transit Operat,revenue
+498637,Oper Trfrs from Strm Water Cap,revenue
+498638,Oper Transfers Transit Cap Pro,revenue
+498639,Oper Transfers from Strm Wtr,revenue
+498641,Oper Trans from Water Cap Fd,revenue
+498642,Oper Transfers Golf Course,revenue
+498643,Oper Tran from Parking Cap Pro,revenue
+498800,Oper Transfers Insurance Fd,revenue
+498999,Intrafund Project Transfers,revenue
+499000,In-Kind Internal Participation,revenue
+499100,Appropriated Fund Balance,revenue
+499101,Approp Fund Bal Res for Enc,revenue
+499102,Appropriated Fund Bal Loan,revenue
+499900,Other Financing Sources,revenue
+499910,Other Financing Sources- PPA,revenue
+499999,Other Financing Sources GASB54,revenue
+500000,Internal Service Fund Contra,expense
+510000,Payroll History Conversion,expense
+511000,In-Kind Expenditures,expense
+511001,Compensation - Full Time Reg,expense
+511002,Compensation - Part Time,expense
+511003,Compensation - Temp/Seasonal,expense
+511004,Compensation - Overtime,expense
+511005,Fire Dept Vacation Deferral,expense
+511006,Police Separation Allowance,expense
+511008,Compensation - Stand By Pay,expense
+511010,Quality of Serv Award,expense
+511997,Contra Salaries and Wages FEMA,expense
+511998,Contra Salaries and Wages-PB,expense
+511999,Contra Salaries and Wages,expense
+512001,FICA Tax Expense,expense
+512002,Employer - LGERS,expense
+512003,Employer - Police 401(K),expense
+512004,Police Separation Allowance,expense
+512005,Employer - 401(K),expense
+512006,Employer - 457,expense
+512007,Employer - 401(A),expense
+512008,Group Disability,expense
+512009,Supplemental Disability,expense
+512010,Workers Compensation,expense
+512011,Unemployment,expense
+512012,Vehicle Allowance,expense
+512013,Tuition Reimbursement,expense
+512014,Group Insurance Expense,expense
+512015,Other Fringe Benefits,expense
+512016,Expense Allowance,expense
+512017,Firefighter Pension,expense
+512018,Phone Allowance,expense
+512019,Retiree OPEB Expense,expense
+512020,Fringe Ben - Housing Allowance,expense
+512021,LGERS Settlement,expense
+512024,OPEB Pension Contributions,expense
+512106,Police Sep Allow FICA (GASB34),expense
+512999,Contra Fringe Benefits,expense
+521000,In-Kind Services - External,expense
+521001,Contracted Services,expense
+521002,Professional Services,expense
+521003,Legal Services,expense
+521004,Rental/Lease,expense
+521005,Rental/Lease - Computers,expense
+521006,Services - Janitorial,expense
+521007,Services - Outside Printing,expense
+521008,Services - Copying and Dupl,expense
+521009,Services - Advertising,expense
+521010,Services - Security,expense
+521011,Fire Rescue Auto Aid Ageements,expense
+521012,County 911 Dispatch,expense
+521013,Auction Expenses,expense
+521014,Transit Monthly Management Fee,expense
+521015,Transit Operations Charge,expense
+521016,Legal Serv - Annexation Contrt,expense
+521017,Services - Information Tech,expense
+521018,Pack Square Contract,expense
+521019,Cont Ser - Maint & Rep - Equip,expense
+521020,Cont Ser - Maint & Rep - Build,expense
+521021,Cont Ser - Maint & Rep - Lawn,expense
+521022,Legal Serv - Civil Service,expense
+521099,In-Kind Services - Internal,expense
+522001,Maintenance and Repairs,expense
+522002,Maint & Repair - Equipment,expense
+522003,Maint & Repair - Buildings,expense
+522004,Maint & Repair - Lawn,expense
+522005,Maint & Repairs - Urban Trail,expense
+522006,Vandalism Repair,expense
+522007,Demolition,expense
+522008,Main.&Repairs-Wayfinding Signs,expense
+522009,Maint. & Rep. - McCormick Fld,expense
+522997,Maint & Repairs - FEMA,expense
+523001,Training,expense
+523002,Dues & Subscriptions,expense
+524001,Supplies - Other,expense
+524002,Supplies - Chemical & Lab,expense
+524003,Supplies - Safety Equipment,expense
+524004,Supplies - Books/Audio Visual,expense
+524005,Supplies - Uniforms,expense
+524006,Supplies - Fleet Parts,expense
+524007,Supplies - Fleet Ext Agency Ch,expense
+524008,Supplies - ERT Ammunition,expense
+524009,Services - Postage,expense
+524010,Information Tech Purchases,expense
+524016,Supplies - Fleet Bench Stock,expense
+524101,Materials,expense
+524102,Materials - CNG,expense
+524103,Materials - Sidewalks,expense
+524104,Services - Laundry/Dry Clean,expense
+524105,Inventory Adjustment,expense
+524106,Materials - Water Meter Maint.,expense
+524107,Water Inventory Adjustment,expense
+524997,Contra Non-Labor - FEMA,expense
+524998,Contra Non-Labor - Powell Bill,expense
+524999,Contra Non-Labor,expense
+525000,Undefined Claims,expense
+525001,Insurance & Bonds,expense
+525002,Insurance - Claims,expense
+525003,Insurance - Property Claims,expense
+525004,Admin. Fees - Wellness Program,expense
+525005,Insurance - Premiums,expense
+525006,Claims - Medical Retiree U 65,expense
+525007,Claims - Medical Retiree O 65,expense
+525008,Claims - Medical Active,expense
+525009,Claims - Dental,expense
+525010,Admin Fees/Dental,expense
+525011,Claims - Prescriptions,expense
+525012,Claims - Vision,expense
+525013,Claims - Disease Management,expense
+525014,Admin Fees - Cancer,expense
+525015,Admin Fees - Tri-Care Supp,expense
+525016,Admin Fees - Reinsurance,expense
+525017,Admin Fees - Vision,expense
+525018,Admin Fees - Critical Illness,expense
+525106,Admin Fees -  Medical Ret U 65,expense
+525107,Admin Fees - Medical Ret O 65,expense
+525108,Admin Fees - Medical Active,expense
+525109,Admin Fees - Dental,expense
+525999,Prior Year HRA Claims,expense
+526201,Purchases for Resale,expense
+526202,Purchases for Resale - Beer,expense
+526203,Purch Resale - Mixed Beverage,expense
+526204,Purch for Resale - Concessions,expense
+526205,Purch Resale - Vending Machine,expense
+526206,Purch for Resale - Catering,expense
+527101,Awarded Grants,expense
+527102,Transit Pass Through Grant,expense
+527200,Awarded Loans,expense
+528001,Licenses Taxes & Fees,expense
+528002,Trustee Fees,expense
+528003,Mileage Reimbursement,expense
+528004,Fitness Exams,expense
+528005,Bank Fees,expense
+528006,CNG Bank Fees,expense
+528007,Sales Tax-Non Refundable,expense
+528008,Security Monitoring System,expense
+528009,City- Wide Activities,expense
+528010,Special  Events,expense
+528011,Awards & Commendations,expense
+528012,Overages & Shortages,expense
+528013,Contingencies,expense
+528014,Hurricane Ivan,expense
+528015,Hurrican Frances,expense
+528016,Show Settlement Expense,expense
+528017,Administration Fees,expense
+528018,Promotional Tickets,expense
+528019,Nuisance Court,expense
+528020,Escrow Fees - Amerinational,expense
+528101,Right of Ways,expense
+528102,Tipping Fees,expense
+528201,Recovery Collection Fees,expense
+528202,Bad Debts,expense
+528203,Refunds,expense
+528301,Emergency Notification System,expense
+528302,Criminal Justice Info System,expense
+528303,Community  Policing,expense
+528304,Police Special Purposes,expense
+528501,Street Lighting,expense
+528502,Telephone,expense
+528503,Long Distance,expense
+528504,Radio Charges,expense
+528505,Cellular Usage,expense
+528506,Pager Service,expense
+528507,Radio Lines,expense
+528508,Electricity,expense
+528509,Electricity CNG,expense
+528510,Natural Gas,expense
+528511,Heating Oil,expense
+528512,Water,expense
+528513,Propane,expense
+528514,Sewer,expense
+528515,Water Capital Improvement Fee,expense
+528516,YMI Utilities,expense
+528517,Stormwater,expense
+528518,Gas Excise Tax,expense
+528519,CNG Excise Tax,expense
+528520,Housing Rehabs,expense
+528521,Vehicle Fuel,expense
+528522,Water and Sewer,expense
+528523,Natural Gas - CNG,expense
+528998,Powell Bill Expenses,expense
+528999,Other Expense,expense
+571001,Fleet Maintenance Charges,expense
+571002,Fleet Fuel Charges,expense
+571003,Other Fleet Charges,expense
+571004,Motor Pool Charges,expense
+571999,Contra Fleet Charges,expense
+573001,Information Technology Charges,expense
+574001,Engineering Charges,expense
+574002,Accounting Charges,expense
+574003,Planning Services Charge,expense
+574004,Public Works Charges,expense
+574005,Street Cut Utility Charges,expense
+574006,Health Services Charges,expense
+574007,Cost Transfers,expense
+574008,Charges - Cost Allocations,expense
+574010,Motor Pool Charges,expense
+581091,Depreciation Expense,expense
+581092,Depreciation - Buildings,expense
+581093,Depreciation - Improvements,expense
+581094,Depreciation - Mach & Equip,expense
+581095,Depreciation - W & S System,expense
+581096,Depreciation - Infrastructure,expense
+594001,Public Art Allocation,expense
+594002,Community Relations Council,expense
+594003,Board of Tax Supervision,expense
+594004,Board of Elections,expense
+594005,Community Arts Council,expense
+594006,Crime Stoppers,expense
+594007,Police ID Bureau,expense
+594008,Sister Cities,expense
+594009,One Youth at a Time,expense
+594010,Economic Incentives,expense
+594011,Visitor's Center,expense
+594012,Economic Development Comm,expense
+594013,YWCA,expense
+594014,Kids Voting,expense
+594015,AHOPE,expense
+594016,URTV,expense
+594017,Education Coalition,expense
+594018,United Way 211,expense
+594019,Asheville Art Museum,expense
+594020,Children First,expense
+594021,Asheville Greenworks,expense
+594022,Meet The Geeks,expense
+594023,Youthful Hand,expense
+594024,Education Channel,expense
+594025,River Sculpture Festival,expense
+594026,Center for Diversity Education,expense
+594027,Child Abuse Prevent Srvcs,expense
+594028,Design Center,expense
+594029,Hall Fletcher PTO,expense
+594030,YMI Utilities,expense
+594031,Sports Commission,expense
+594032,Governor West Residence,expense
+594033,Green Opportunities,expense
+594034,Moogfest support,expense
+595001,Other Costs,expense
+599998,Budget Control Inactive Accnts,expense
+599999,FY09 Project Expenses,expense
+611101,Land,expense
+611102,Improv- Other than Buildings,expense
+612101,Buildings,expense
+613101,Improvements,expense
+614101,Mach & Equipment,expense
+615101,Infrastructure,expense
+615102,Infrastructure - Powell Bill2,expense
+615998,Infrastructure - Powell Bill,expense
+616101,Other Capital Outlay,expense
+616102,Construction,expense
+617101,Fixed Asset Transfers,expense
+618101,Intangible Assets- Depr,expense
+618102,Intangible Assets- Non Depr,expense
+619101,Other Captial Assets-Depr,expense
+619102,Other Captial Assets- Non Depr,expense
+619999,Capital Asset Contra (FY10),expense
+698000,Capital Outlay - Fixed Assets,expense
+699000,Captial Outlay - Fixed Assets,expense
+711101,Principal Payments,expense
+711102,Principal Payments - COPS 97C,expense
+711103,Principal Payments - COPS 97B,expense
+711104,Principal Payments - COPS 97A,expense
+711105,Principal Payments-RevBonds05,expense
+711107,Principal Payments-RevBonds07,expense
+711108,Principal Payments-DENR Loans,expense
+711150,Payment to Defease Debt,expense
+711998,Principal Payments-Powell Bill,expense
+712101,Interest Expense,expense
+712102,Interest Expense - COPS 97C,expense
+712103,Interest Expense - COPS 97B,expense
+712104,Interest Expense - COPS 97A,expense
+712105,Interest Payments-Rev Bonds 05,expense
+712107,Interest Payments-Rev Bonds 07,expense
+712201,Debt Issuance Cost,expense
+712202,Cost of Loan Servicing,expense
+712203,Original Issue Discount,expense
+712204,Cost of Issue,expense
+712205,Debt Insurance Expense,expense
+712210,Amortization of Debt Iss Costs,expense
+712211,Amortization of Refunding Loss,expense
+712220,Amortization of Prem/Discount,expense
+712302,Capitalized Int. - Buildings,expense
+712303,Capitalized Int. - Equipment,expense
+712304,Capitalized Int. - Infrastruct,expense
+712305,Cap. Int.- Improv other Build,expense
+712998,Interest Expense-Powell Bill,expense
+800110,Transfer to General Fund,unknown
+800210,Transfer to Capital Reserve,unknown
+800220,Transfer to Grant Fund,unknown
+800223,Transfer to Comm Develop Fund,unknown
+800230,Transfer to Housing Partnershp,unknown
+800310,Transfer to Debt Service Fund,unknown
+800410,Transfer to Gen Cap Proj Fund,unknown
+800610,Transfer to Water Services,unknown
+800611,Transfer to Water Cap Prj Fund,unknown
+800620,Transfer to Parking Serv Fund,unknown
+800621,Transfer to Parking Cap Fund,unknown
+800622,Transfer to Street Cut Utility,unknown
+800624,Transfer to Stormwater Fund,unknown
+800625,Transfer to Stormwater Cap Fnd,unknown
+800626,Transfer to Civic Center Fund,unknown
+800627,Transfer to Civic Center Cap,unknown
+800650,Transfer to Transit Fund,unknown
+800651,Transfer to Transit Capital Fu,unknown
+800670,Transfer to Golf Course,unknown
+800671,Transfer to the Golf Captial F,unknown
+800680,Transfer to Festivals Fund,unknown
+800810,Transfer to Insurance Fund,unknown
+800900,Other Financing Uses,unknown
+800910,Other Financing Uses- PPA,unknown
+800999,Other Financing Uses GASB54,unknown
+810001,Loss on Sale of Capital Assets,unknown
+897000,Project Transfers Within Fund,unknown

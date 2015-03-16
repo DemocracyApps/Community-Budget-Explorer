@@ -1,15 +1,22 @@
 <?php
+/**
+ *
+ * This file is part of the Government Budget Explorer (GBE).
+ *
+ *  The GBE is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GBE is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with the GBE.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
-/*
-|--------------------------------------------------------------------------
-| Application Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register all of the routes for an application.
-| It's a breeze. Simply tell Laravel the URIs it should respond to
-| and give it the controller to call when that URI is requested.
-|
-*/
 
 //Log::info("Top of routes with URI " . \Request::server('REQUEST_URI') .
 //          " and method " .\Request::server('REQUEST_METHOD'));
@@ -38,9 +45,3 @@ Route::group(['prefix' => 'system', 'middleware' => 'cnp.system'], function ()
 Route::group(['prefix' => 'api/v1'], function () {
     require __DIR__.'/Routes/apiv1.php';
 });
-
-//
-//Route::controllers([
-//    'auth' => 'Auth\AuthController',
-//    'password' => 'Auth\PasswordController',
-//]);

@@ -1,0 +1,11 @@
+{
+  "header":"Account Code,Actual,Fund,Department,Division,Function,Cost Center",
+  "commands": [
+    {
+      "name":"select",
+      "specification":
+        "/((\\d{4})-(\\d{2})-(\\d{2})-([\\d\\w]{3})-(\\d{4})-(\\d{5})-(\\d{5})-(\\d{3})-(\\d{6}))-(.*)/",
+      "run": true
+    }
+  ]
+}

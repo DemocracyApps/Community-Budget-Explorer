@@ -1,0 +1,45 @@
+{
+  "header":"Account Code,Actual,Fund,Department,Division,Function,Cost Center",
+  "commands": [
+    {
+      "name":"select",
+      "specification":
+      "/((\\d{4})-(\\d{2})-(\\d{2})-([\\d\\w]{3})-(\\d{4})-(\\d{5})-(\\d{5})-(\\d{3})-(\\d{6}))-([^,]*)(.*)/",
+      "run": true
+    },
+    {
+      "name":"transform",
+      "specification": {
+        "pattern": "/((\\d{4})-(\\d{2})-(\\d{2})-([\\d\\w]{3})-(\\d{4})-(\\d{5})-(\\d{5})-(\\d{3})-(\\d{6}))-([^,]*),(.*)/",
+        "replacement": "$10,$2,$4,$5,$3,$6,$12"
+      },
+      "run": true
+    },
+    {
+      "name":"pluckColumns",
+      "specification":[
+        1,8,2,3,4,5,6
+      ],
+      "run":true
+    }
+    /*
+      0: Full pattern (the entire line)
+      1: full account code
+      2: Fund
+      3: Function
+      4: Department
+      5: Division
+      6: Cost center
+      7: Grant code
+      8: Not used
+      9: Not used
+      10: Object code (account)
+      11: Account description
+      12: Numbers, preceded by a comma OR
+
+      12: Orig approp
+      13: Transfers & Adjustments
+      14:
+    */
+  ]
+}
