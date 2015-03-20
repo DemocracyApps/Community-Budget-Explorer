@@ -60,7 +60,7 @@ class AshevilleSeeder extends Seeder {
         // And finally, let's load up the datasets
 
         \Log::info("Process 2014 Budget");
-        $ds = $this->createDataset("2014 Budget", "actual", Dataset::ANNUAL, 2014, null, null,
+        $ds = $this->createDataset("2014 Budget", "budget", Dataset::ANNUAL, 2014, null, null,
             $org->id, $chart->id, $order);
         $ds->loadCSVData("../sample_data/AVL2014/canonical/2014AdoptedBudget_processed.csv", "all");
 

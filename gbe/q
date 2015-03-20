@@ -1,0 +1,39 @@
+                       List of relations
+ Schema |              Name              |   Type   |  Owner   
+--------+--------------------------------+----------+----------
+ public | account_categories             | table    | vagrant
+ public | account_categories_id_seq      | sequence | vagrant
+ public | account_category_values        | table    | vagrant
+ public | account_category_values_id_seq | sequence | vagrant
+ public | account_charts                 | table    | vagrant
+ public | account_charts_id_seq          | sequence | vagrant
+ public | accounts                       | table    | vagrant
+ public | accounts_id_seq                | sequence | vagrant
+ public | data_items                     | table    | vagrant
+ public | data_items_id_seq              | sequence | vagrant
+ public | datasets                       | table    | vagrant
+ public | datasets_id_seq                | sequence | vagrant
+ public | failed_jobs                    | table    | vagrant
+ public | failed_jobs_id_seq             | sequence | vagrant
+ public | geography_columns              | view     | postgres
+ public | geometry_columns               | view     | postgres
+ public | migrations                     | table    | vagrant
+ public | notifications                  | table    | vagrant
+ public | notifications_id_seq           | sequence | vagrant
+ public | organization_users             | table    | vagrant
+ public | organization_users_id_seq      | sequence | vagrant
+ public | organizations                  | table    | vagrant
+ public | organizations_id_seq           | sequence | vagrant
+ public | password_resets                | table    | vagrant
+ public | raster_columns                 | view     | postgres
+ public | raster_overviews               | view     | postgres
+ public | sessions                       | table    | vagrant
+ public | socials                        | table    | vagrant
+ public | socials_id_seq                 | sequence | vagrant
+ public | spatial_ref_sys                | table    | postgres
+ public | user_confirmations             | table    | vagrant
+ public | user_confirmations_id_seq      | sequence | vagrant
+ public | users                          | table    | vagrant
+ public | users_id_seq                   | sequence | vagrant
+(34 rows)
+

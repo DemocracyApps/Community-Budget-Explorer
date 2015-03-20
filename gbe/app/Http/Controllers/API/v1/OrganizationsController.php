@@ -16,14 +16,22 @@
  *  You should have received a copy of the GNU General Public License
  *  along with the GBE.  If not, see <http://www.gnu.org/licenses/>.
  */
-use DemocracyApps\GB\Accounts\Account;
+
+use DemocracyApps\GB\ApiTransformers\OrganizationTransformer;
 use DemocracyApps\GB\Http\Controllers\API\APIController;
 use DemocracyApps\GB\Http\Requests;
 use DemocracyApps\GB\Http\Controllers\Controller;
 
+use DemocracyApps\GB\Organization;
 use Illuminate\Http\Request;
 
-class AccountsApiController extends APIController {
+class OrganizationsController extends APIController {
+    private $transformer;
+
+    public function __construct(OrganizationTransformer $at)
+    {
+        $this->transformer = $at;
+    }
 
 	/**
 	 * Display a listing of the resource.
@@ -32,8 +40,8 @@ class AccountsApiController extends APIController {
 	 */
 	public function index()
 	{
-		$accounts = Account::all();
-        return $this->respondIndex('List of accounts', $accounts);
+        $organizations = Organization::all();
+        return $this->respondIndex('List of organizations', $organizations, $this->transformer);
 	}
 
 	/**
@@ -43,7 +51,7 @@ class AccountsApiController extends APIController {
 	 */
 	public function create()
 	{
-		//
+        //
 	}
 
 	/**
@@ -63,9 +71,15 @@ class AccountsApiController extends APIController {
 	 * @return Response
 	 */
 	public function show($id)
-	{
-		//
-	}
+    {
+        $organization = Organization::find($id);
+
+        if ($organization != null) {
+            return $this->respondItem('Organization', $organization, $this->transformer);
+        }
+        else
+            return $this->respondNotFound('No such organization');
+    }
 
 	/**
 	 * Show the form for editing the specified resource.

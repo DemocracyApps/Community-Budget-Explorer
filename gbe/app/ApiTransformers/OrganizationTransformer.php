@@ -1,4 +1,5 @@
-<?php
+<?php namespace DemocracyApps\GB\ApiTransformers;
+
 /**
  *
  * This file is part of the Government Budget Explorer (GBE).
@@ -16,7 +17,20 @@
  *  You should have received a copy of the GNU General Public License
  *  along with the GBE.  If not, see <http://www.gnu.org/licenses/>.
  */
-Route::resource('accounts',      'API\v1\AccountsController', ['only'=>['index','show']]);
-Route::resource('organizations', 'API\v1\OrganizationsController', ['only'=>['index','show']]);
-Route::resource('organizations/{orgId}/datasets', 'API\v1\DatasetsController', ['only'=>['index','show']]);
 
+class OrganizationTransformer extends ApiTransformer {
+
+    /**
+     * @param $organization
+     * @param array $parameters
+     * @return array
+     */
+    public function transform($organization, array $parameters)
+    {
+        return [
+            'id' => $organization->id,
+            'name'=>$organization->name,
+            'description' => $organization->description
+        ];
+    }
+}

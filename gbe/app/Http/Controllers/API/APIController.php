@@ -56,10 +56,13 @@ class APIController extends Controller {
     public function respondWithError($message)
     {
         return $this->respond([
+            'message' 		=> $message,
+            'status_code'	=> $this->getStatusCode(),
             'error' => [
                 'message' 		=> $message,
                 'status_code'	=> $this->getStatusCode()
-            ]
+            ],
+            'data' => null
         ]);
     }
 
@@ -101,8 +104,28 @@ class APIController extends Controller {
         ]);
     }
 
-    public function respondIndex($message = 'Success', $data)
+    public function respondIndex($message = 'Success', $data, $transform = null, $params = null)
     {
+        if ($transform != null) {
+            if ($params == null) $params = array();
+            $ndata = array();
+            foreach ($data as $item) {
+                $ndata[] = call_user_func_array([$transform,'transform'], [$item, $params]);
+            }
+            $data = $ndata;
+        }
+        return $this->setStatusCode(Response::HTTP_OK)->respond([
+            'message' => $message,
+            'status_code'	=> $this->getStatusCode(),
+            'data' => $data
+        ]);
+    }
+    public function respondItem($message = 'Success', $data, $transform = null, $params = null)
+    {
+        if ($transform != null) {
+            if ($params == null) $params = array();
+            $data = call_user_func_array([$transform,'transform'], [$data, $params]);
+        }
         return $this->setStatusCode(Response::HTTP_OK)->respond([
             'message' => $message,
             'status_code'	=> $this->getStatusCode(),
