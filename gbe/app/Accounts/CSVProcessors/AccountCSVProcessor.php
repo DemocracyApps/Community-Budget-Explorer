@@ -22,8 +22,15 @@ use DemocracyApps\GB\Utility\Notification;
 class AccountCSVProcessor
 {
 
+    public function handle($queueJob, $data)
+    {
+
+        \Log::info("I am in handle");
+    }
     public function fire($queueJob, $data)
     {
+
+        \Log::info("I am in fire");
         $userId = $data['userId'];
         $user = \DemocracyApps\GB\Users\User::findOrFail($userId);
         \Auth::login($user);

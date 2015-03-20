@@ -78,27 +78,60 @@ class Account extends EloquentPropertiedObject
         $myFile = fopen($filePath,"r") or die ("Unable to open file");
         $badLines = 0;
         $line = fgetcsv($myFile);
+        $lnum = 1;
+        $records = array();
+        $created_at = date('Y-m-d H:i:s');
+        $updated_at = date('Y-m-d H:i:s');
+        $records[] = [
+            'code'=>'-1',
+            'name'=>"Unknown Account",
+            'type'=>Account::UNKNOWN,
+            'chart'=>$chart,
+            'created_at' => $created_at,
+            'updated_at' => $updated_at
+        ];
         while (! feof($myFile)) {
             $columns = fgetcsv($myFile);
+            ++$lnum;
             if (sizeof($columns) == 3) {
                 $code = strip_tags(trim($columns[0]));
                 // See if there's already an account
                 $account = Account::where('chart', '=', $chart)
                     ->where('code', '=',$code)->first();
                 if ($account == null) {
-                    $account = new Account();
+                    if (true) {
+                        $records[] = [
+                            'code'=>$code,
+                            'name'=>strip_tags(trim($columns[1])),
+                            'type'=>Account::typeCode(trim($columns[2])),
+                            'chart'=>$chart,
+                            'created_at' => $created_at,
+                            'updated_at' => $updated_at
+                        ];
+                        if (sizeof($records) >= 999) {
+                            \DB::table('accounts')->insert($records);
+                            $records = array();
+                        }
+                    }
+                    else {
+                        $account = new Account();
+                        $account->code = $code;
+                        $account->name = strip_tags(trim($columns[1]));
+                        $account->type = Account::typeCode(trim($columns[2]));
+                        $account->chart = $chart;
+                        $account->save();
+                    }
                 }
-                $account->code = $code;
-                $account->name = strip_tags(trim($columns[1]));
-                $account->type = Account::typeCode(trim($columns[2]));
-                $account->chart = $chart;
-                $account->save();
             }
             else {
-                \Log::info("Invalid line: " . json_decode($columns));
-                ++$badLines;
+                $val = trim($columns[0]);
+                if (($val != null && strlen($val) > 0) || sizeof($columns) > 1) {
+                    \Log::info("Invalid line $lnum: " . json_decode($columns));
+                    ++$badLines;
+                }
             }
         }
-        return "Processed accounts file - total bad lines = " . $badLines;
+        if (sizeof($records)> 0) \DB::table('accounts')->insert($records);
+        return $badLines>0?"Processed accounts file with $lnum lines - total bad lines = " . $badLines:null;
     }
 }

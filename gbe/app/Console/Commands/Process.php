@@ -86,7 +86,6 @@ class Process extends Command {
 	{
 		return [
 			['instructions', null, InputOption::VALUE_REQUIRED, 'File with processing instructions.', null],
-			['org', null, InputOption::VALUE_REQUIRED, 'Organization to associate data with', null],
 		];
 	}
 

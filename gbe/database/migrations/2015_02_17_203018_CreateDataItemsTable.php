@@ -15,6 +15,7 @@ class CreateDataItemsTable extends Migration {
 		Schema::create('data_items', function(Blueprint $table)
 		{
 			$table->increments('id');
+            $table->string('group');
             $table->decimal('amount', 12, 2);
             $table->integer('account');
             $table->integer('category1')->nullable();

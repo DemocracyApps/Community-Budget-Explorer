@@ -16,13 +16,17 @@ class CreateDatasetsTable extends Migration {
 		{
 			$table->increments('id');
             $table->string('name')->nullable();
+            $table->string('type')->nullable();
+            $table->tinyInteger('granularity');
             $table->integer('year');
-            $table->string('type');
+            $table->tinyInteger('month')->nullable();
+            $table->tinyInteger('day')->nullable();
             $table->integer('organization');
             $table->foreign('organization')->references('id')->on('organizations');
             $table->integer('chart');
             $table->foreign('chart')->references('id')->on('account_charts');
             $table->text('description')->nullable();
+            $table->string('category_order')->nullable();
             $table->text('properties')->nullable();
 			$table->timestamps();
 		});

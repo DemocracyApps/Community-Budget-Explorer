@@ -149,7 +149,12 @@ return [
         'Illuminate\Html\HtmlServiceProvider',
         'Laravel\Socialite\SocialiteServiceProvider',
 
-	],
+        'Intervention\Image\ImageServiceProvider',
+        'DemocracyApps\MemberOrg\MemberOrganizationServiceProvider',
+        'DemocracyApps\DomainContext\DomainContextServiceProvider',
+
+
+    ],
 
 	/*
 	|--------------------------------------------------------------------------
@@ -200,6 +205,7 @@ return [
         'Form'      => 'Illuminate\Html\FormFacade',
         'Html'      => 'Illuminate\Html\HtmlFacade',
         'Socialize' => 'Laravel\Socialite\Facades\Socialite',
+        'Image'     => 'Intervention\Image\Facades\Image',
 
     ],
 

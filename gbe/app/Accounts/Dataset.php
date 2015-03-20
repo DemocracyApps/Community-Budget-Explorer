@@ -21,6 +21,141 @@ use DemocracyApps\GB\Utility\EloquentPropertiedObject;
 class Dataset extends EloquentPropertiedObject {
     protected  $table = 'datasets';
 
+    const ANNUAL = 1;
+    const MONTHLY = 2;
+    const DAILY = 3;
+
+    public function loadCSVData($filePath, $group)
+    {
+
+        // Blow away any previous load of this group
+        DataItem::where('dataset','=',$this->id)
+            ->where('group','=',$group)->delete();
+
+        ini_set("auto_detect_line_endings", true); // Deal with Mac line endings
+        if ( !file_exists($filePath)) {
+            \Log::info("Dataset.processCSVInput: The file " . $filePath . " does not exist");
+        }
+        $myFile = fopen($filePath,"r") or die ("Unable to open file");
+
+
+        /*
+         * Let's load the accounts and categories and setup maps by code
+         */
+        $accounts = Account::where('chart', '=', $this->chart)->get();
+        $accountMap = array();
+        foreach ($accounts as $account) {
+            $accountMap[$account->code] = $account->id;
+        }
+
+        // Categories should be in the CSV file in this order
+        $categories = array();
+        $order = json_decode($this->category_order);
+        foreach ($order as $catId) {
+            $categories[] = AccountCategory::find($catId);
+        }
+
+        $categoryMaps = array();
+        for ($i=0; $i<sizeof($categories); ++$i) {
+            $cvs = AccountCategoryValue::where('category', '=', $categories[$i]->id)->get();
+            $map = array();
+            foreach ($cvs as $cv) {
+                $map[$cv->code] = $cv->id;
+            }
+            $categoryMaps[] = $map;
+        }
+
+        $badLines = 0;
+        $records = array();
+        $created_at = date('Y-m-d H:i:s');
+        $updated_at = date('Y-m-d H:i:s');
+        $line = fgetcsv($myFile); // Skip the header
+        $lnum = 1;
+        while (! feof($myFile)) {
+            $columns = fgetcsv($myFile);
+            ++$lnum;
+
+            if (sizeof($columns) > 1) { // Must at least have data item and account code
+                $accountCode = strip_tags(trim($columns[0]));
+                $amount = strip_tags(trim($columns[1]));
+
+                // Look up the account
+                if (array_key_exists($accountCode, $accountMap)) {
+                    $account = $accountMap[$accountCode];
+                }
+                else {
+                    $account = $accountMap['-1'];
+                }
+
+                $ncat = sizeof($columns) - 2;
+                if ($ncat > 0) {
+                    $categories = array();
+                    for ($i = 0; $i < $ncat; ++$i) {
+                        $code = trim($columns[$i + 2]);
+                        $map = $categoryMaps[$i];
+                        if (array_key_exists($code, $map)) {
+                            $categories[] = $map[$code];
+                        }
+                        else {
+                            $categories[] = null;
+                        }
+                    }
+                }
+                $category1 = null;
+                $category2 = null;
+                $category3 = null;
+                $categoryN = null;
+
+                $size = sizeof($categories);
+                if ($size>0) $category1 = $categories[0];
+                if ($size>1) $category2 = $categories[1];
+                if ($size>2) $category3 = $categories[2];
+                if ($size>3) {
+                    $spill = array();
+                    for ($i=0; $i<$size-3; ++$i) {
+                        $spill[] = $categories[3+$i];
+                    }
+                    $categoryN = json_encode($spill);
+                }
+
+                $records[] = [
+                    'group'=>$group,
+                    'account'=>$account,
+                    'amount'=>$amount,
+                    'dataset'=>$this->id,
+                    'category1'=> $category1,
+                    'category2'=> $category2,
+                    'category3'=> $category3,
+                    'categoryN'=> $categoryN,
+                    'created_at' => $created_at,
+                    'updated_at' => $updated_at
+                ];
+                if (sizeof($records) >= 999) {
+                    \DB::table('data_items')->insert($records);
+                    $records = array();
+                }
+
+//                $ditem = new DataItem();
+//                $ditem->group = $group;
+//                $ditem->account = $account;
+//                $ditem->amount = $amount;
+//                $ditem->dataset = $this->id;
+//                $ditem->addCategories($categories);
+//
+//                $ditem->save();
+            }
+            else if (sizeof($columns) > 0) { // We ignore blank lines
+                $val = trim($columns[0]);
+                if (($val != null && strlen($val) > 0) || sizeof($columns) > 1) {
+                    \Log::info("Invalid line $lnum: " . json_encode($columns));
+                    ++$badLines;
+                }
+            }
+        }
+        if (sizeof($records)> 0) \DB::table('data_items')->insert($records);
+        return "Processed data items file - total bad lines = " . $badLines . ' of ' . $lnum;
+    }
+
     static public function processCSVInput($filePath, $dataset)
     {
         ini_set("auto_detect_line_endings", true); // Deal with Mac line endings

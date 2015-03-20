@@ -33,7 +33,6 @@
         <h3>Categories</h3>
         <table class="table">
             <tr>
-                <th>Order</th>
                 <th>ID</th>
                 <th>Name</th>
                 <th>Move Up</th>
@@ -42,7 +41,6 @@
             <?php $i = 0; $last = sizeof($categories)-1; ?>
             @foreach ($categories as $category)
                 <tr>
-                    <td> {!! $category->order !!} </td>
                     <td>{!! $category->id !!}</td>
                     <td><a href="/system/accountcategories/{!! $category->id !!}"> {!! $category->name !!} </a></td>
                     @if ($i > 0)

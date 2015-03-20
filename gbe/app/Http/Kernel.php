@@ -32,6 +32,7 @@ class Kernel extends HttpKernel {
 		'Illuminate\Session\Middleware\StartSession',
 		'Illuminate\View\Middleware\ShareErrorsFromSession',
 		'DemocracyApps\GB\Http\Middleware\VerifyCsrfToken',
+        'DemocracyApps\GB\Http\Middleware\LoadContext',
 	];
 
 	/**

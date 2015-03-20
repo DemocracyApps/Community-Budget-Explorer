@@ -32,28 +32,50 @@ class AccountCategory extends EloquentPropertiedObject
         }
         $myFile = fopen($filePath,"r") or die ("Unable to open file");
         $badLines = 0;
+        $records = array();
+        $created_at = date('Y-m-d H:i:s');
+        $updated_at = date('Y-m-d H:i:s');
         $line = fgetcsv($myFile);
+        $lnum = 1;
         while (! feof($myFile)) {
             $columns = fgetcsv($myFile);
+            ++$lnum;
             if (sizeof($columns) == 2) {
                 $code = strip_tags(trim($columns[0]));
                 // See if there's already an account
                 $categoryValue = AccountCategoryValue::where('category', '=', $category)
                     ->where('code', '=',$code)->first();
                 if ($categoryValue == null) {
+                    $records[] = [
+                        'code'=>$code,
+                        'name'=>strip_tags(trim($columns[1])),
+                        'category'=>$category,
+                        'created_at' => $created_at,
+                        'updated_at' => $updated_at
+                    ];
+                    if (sizeof($records) >= 999) {
+                        \DB::table('account_category_values')->insert($records);
+                        $records = array();
+                    }
+
                     $categoryValue = new AccountCategoryValue();
+
+                    $categoryValue->code = $code;
+                    $categoryValue->name = strip_tags(trim($columns[1]));
+                    $categoryValue->category = $category;
+                    $categoryValue->save();
                 }
-                $categoryValue->code = $code;
-                $categoryValue->name = strip_tags(trim($columns[1]));
-                $categoryValue->category = $category;
-                $categoryValue->save();
             }
             else {
-                \Log::info("Invalid line: " . json_decode($columns));
-                ++$badLines;
+                $val = trim($columns[0]);
+                if (($val != null && strlen($val) > 0) || sizeof($columns) > 1) {
+                    \Log::info("Invalid line $lnum: " . json_decode($columns));
+                    ++$badLines;
+                }
             }
         }
-        return "Processed account categories file - total bad lines = " . $badLines;
+        if (sizeof($records)> 0) \DB::table('account_category_values')->insert($records);
+        return $badLines>0?"Processed account categories file with $lnum lines - total bad lines = " . $badLines:null;
     }
 
 }

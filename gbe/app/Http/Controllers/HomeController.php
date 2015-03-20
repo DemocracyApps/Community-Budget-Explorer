@@ -49,5 +49,15 @@ class HomeController extends Controller {
         $projects = array();
 		return view('home', array('projects' => $projects));
 	}
+    /**
+     * Show the application dashboard to the user.
+     *
+     * @return Response
+     */
+    public function index1()
+    {
+
+        return "Yupper";
+    }
 
 }

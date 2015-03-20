@@ -48,9 +48,6 @@ class Select extends DPCommand {
                 ++ $counts[$size];
             }
         }
-        foreach ($counts as $count=>$instances) {
-            echo "Count " . $count . ": " . $instances . PHP_EOL;
-        }
 
         return $output;
     }

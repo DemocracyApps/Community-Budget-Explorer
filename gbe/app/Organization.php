@@ -18,7 +18,10 @@
  */
 
 use DemocracyApps\GB\Utility\EloquentPropertiedObject;
+use DemocracyApps\MemberOrg\EloquentMemberOrganization;
+use DemocracyApps\MemberOrg\MemberOrganization;
 
-class Organization extends EloquentPropertiedObject {
+class Organization extends EloquentPropertiedObject implements MemberOrganization {
 
+    use EloquentMemberOrganization;
 }
