@@ -77,20 +77,31 @@ class DatasetsController extends APIController {
      * @return Response
      */
     // http://gbe.dev/api/v1/organizations/1/datasets/1?noMapping=true
-	public function show($orgId, $id, Request $request)
+	public function show($orgId, $dsId, Request $request)
 	{
         $organization = Organization::find($orgId);
 
         if ($organization == null) return $this->respondNotFound('No such organization');
 
-        $dataset = Dataset::find($id);
-        if ($dataset == null) return $this->respondNotFound('No such dataset ' . $id);
-
         $params = array();
         if ($request->has('noMapping') && strtolower($request->get('noMapping') == 'true')) {
             $params['noMapping'] = true;
         }
-        return $this->respondItem('Dataset of ' . $organization->name, $dataset, $this->transformer, $params);
+        if ($request->has('type')) {
+            $params['type'] = $request->get('type');
+        }
+
+        $idList = explode(',', $dsId);
+
+        $datasetList = array();
+        foreach ($idList as $id) {
+            $dataset = Dataset::find($id);
+            if ($dataset == null) return $this->respondNotFound('No such dataset ' . $id);
+            $dataset = $this->transformer->transform($dataset, $params);
+            $datasetList[] = $dataset;
+        }
+
+        return $this->respondItem('Dataset of ' . $organization->name, $datasetList);
 
     }
 

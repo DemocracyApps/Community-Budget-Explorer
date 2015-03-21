@@ -1,4 +1,5 @@
 <?php namespace DemocracyApps\GB\ApiTransformers;
+use DemocracyApps\GB\Accounts\Account;
 
 /**
  *
@@ -27,10 +28,18 @@ class AccountTransformer extends ApiTransformer {
      */
     public function transform($account, array $parameters)
     {
+        try {
+            \Log::info("The type of account is " . $account->type);
+        }
+        catch (\Exception $e) {
+            dd($account);
+            throw new \Exception ("Can't find type on account $account->id, $account->name");
+        }
         return [
             'id' => $account->id,
             'name'=>$account->name,
             'code' => $account->code,
+            'type'=> Account::typeName($account->type),
             'chart' => $account->chart
         ];
     }

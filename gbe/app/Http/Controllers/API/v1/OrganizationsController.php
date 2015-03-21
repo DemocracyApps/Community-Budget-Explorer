@@ -75,7 +75,7 @@ class OrganizationsController extends APIController {
         $organization = Organization::find($id);
 
         if ($organization != null) {
-            return $this->respondItem('Organization', $organization, $this->transformer);
+            return $this->respondItem('Organization ' . $organization->name, $organization, $this->transformer);
         }
         else
             return $this->respondNotFound('No such organization');

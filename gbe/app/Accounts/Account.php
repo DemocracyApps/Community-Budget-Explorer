@@ -73,7 +73,7 @@ class Account extends EloquentPropertiedObject
         $items = \DB::table('accounts')
             ->join('account_charts', 'accounts.chart', '=', 'account_charts.id')
             ->where('account_charts.organization','=',$orgId)
-            ->select('accounts.id', 'accounts.code', 'accounts.name', 'accounts.chart')
+            ->select('accounts.id', 'accounts.code', 'accounts.name', 'accounts.chart', 'accounts.type')
             ->get();
         return $items;
     }

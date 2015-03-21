@@ -90,6 +90,10 @@ class DatasetTransformer extends ApiTransformer {
                     $this->createMaps($dataset);
                 }
             }
+            $type = null;
+            if (array_key_exists('type', $parameters)) {
+                $type = Account::typeCode($parameters['type']);
+            }
             $categoryOrder = null;
             $allCategories = array();
             if ($dataset->category_order != null) {
@@ -104,7 +108,19 @@ class DatasetTransformer extends ApiTransformer {
                 }
             }
 
-            $dataItems = DataItem::where('dataset','=',$dataset->id)->get();
+            if ($type == null) {
+                $dataItems = DataItem::where('dataset', '=', $dataset->id)->get();
+            }
+            else {
+                $dataItems = \DB::table('data_items')
+                    ->join('accounts','data_items.account', '=', 'accounts.id')
+                    ->where('data_items.dataset','=',$dataset->id)
+                    ->where('accounts.type','=',$type)
+                    ->select('data_items.id', 'data_items.amount', 'data_items.account',
+                             'data_items.category1', 'data_items.category2', 'data_items.category3',
+                             'data_items.categoryN')
+                    ->get();
+            }
 
             $data = array();
             foreach ($dataItems as $item) {
