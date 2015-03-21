@@ -23,6 +23,16 @@ class AccountCategory extends EloquentPropertiedObject
 {
     protected  $table = 'account_categories';
 
+    static public function allOrganizationCategories ($orgId) {
+        $items = \DB::table('account_categories')
+            ->join('account_charts', 'account_categories.chart', '=', 'account_charts.id')
+            ->where('account_charts.organization','=',$orgId)
+            ->select('account_categories.id', 'account_categories.name',
+                    'account_categories.chart', 'account_categories.description')
+            ->get();
+        return $items;
+    }
+
 
     static public function processCSVInput($filePath, $category)
     {

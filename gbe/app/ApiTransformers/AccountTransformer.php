@@ -21,16 +21,17 @@
 class AccountTransformer extends ApiTransformer {
 
     /**
-     * @param $organization
+     * @param $category
      * @param array $parameters
      * @return array
      */
-    public function transform($organization, array $parameters)
+    public function transform($account, array $parameters)
     {
         return [
-            'id' => $organization->id,
-            'name'=>$organization->name,
-            'code' => $organization->code
+            'id' => $account->id,
+            'name'=>$account->name,
+            'code' => $account->code,
+            'chart' => $account->chart
         ];
     }
 }

@@ -22,6 +22,7 @@ use DemocracyApps\GB\Http\Controllers\API\APIController;
 use DemocracyApps\GB\Http\Requests;
 use DemocracyApps\GB\Http\Controllers\Controller;
 
+use DemocracyApps\GB\Organization;
 use Illuminate\Http\Request;
 
 class AccountsController extends APIController {
@@ -37,10 +38,11 @@ class AccountsController extends APIController {
 	 *
 	 * @return Response
 	 */
-	public function index()
+	public function index($orgId)
 	{
-		$accounts = Account::all();
-        return $this->respondIndex('List of accounts', $accounts, $this->transformer);
+        $organization = Organization::find($orgId);
+		$accounts = Account::allOrganizationAccounts($orgId);
+        return $this->respondIndex('List of accounts for ' . $organization->name, $accounts, $this->transformer);
 	}
 
 	/**
@@ -69,12 +71,13 @@ class AccountsController extends APIController {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function show($id)
+	public function show($orgId, $id)
 	{
+        $organization = Organization::find($orgId);
 		$account = Account::find($id);
 
         if ($account != null) {
-            return $this->respondItem('Account', $account, $this->transformer);
+            return $this->respondItem($organization->name . ' Account', $account, $this->transformer);
         }
         else
             return $this->respondNotFound('No such account');

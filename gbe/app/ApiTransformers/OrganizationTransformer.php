@@ -21,7 +21,7 @@
 class OrganizationTransformer extends ApiTransformer {
 
     /**
-     * @param $organization
+     * @param $category
      * @param array $parameters
      * @return array
      */

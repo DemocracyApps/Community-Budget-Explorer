@@ -16,7 +16,9 @@
  *  You should have received a copy of the GNU General Public License
  *  along with the GBE.  If not, see <http://www.gnu.org/licenses/>.
  */
-Route::resource('accounts',      'API\v1\AccountsController', ['only'=>['index','show']]);
-Route::resource('organizations', 'API\v1\OrganizationsController', ['only'=>['index','show']]);
-Route::resource('organizations/{orgId}/datasets', 'API\v1\DatasetsController', ['only'=>['index','show']]);
+
+Route::resource('organizations',                    'API\v1\OrganizationsController', ['only'=>['index','show']]);
+Route::resource('organizations/{orgId}/accounts',   'API\v1\AccountsController',    ['only'=>['index','show']]);
+Route::resource('organizations/{orgId}/datasets',   'API\v1\DatasetsController',    ['only'=>['index','show']]);
+Route::resource('organizations/{orgId}/categories', 'API\v1\CategoriesController',  ['only'=>['index','show']]);
 

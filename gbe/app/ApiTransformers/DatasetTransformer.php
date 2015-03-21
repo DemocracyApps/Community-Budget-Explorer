@@ -169,7 +169,7 @@ class DatasetTransformer extends ApiTransformer {
                 'day' => $dataset->day,
                 'description' => $dataset->description,
                 'categoryIdentifiers' => $allCategories,
-                'data' => $data
+                'items' => $data
             ];
         }
     }

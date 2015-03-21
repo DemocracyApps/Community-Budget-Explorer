@@ -17,8 +17,8 @@
  *  along with the GBE.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use DemocracyApps\GB\Accounts\Dataset;
-use DemocracyApps\GB\ApiTransformers\DatasetTransformer;
+use DemocracyApps\GB\Accounts\AccountCategory;
+use DemocracyApps\GB\ApiTransformers\AccountCategoryTransformer;
 use DemocracyApps\GB\Http\Controllers\API\APIController;
 use DemocracyApps\GB\Http\Requests;
 use DemocracyApps\GB\Http\Controllers\Controller;
@@ -26,25 +26,24 @@ use DemocracyApps\GB\Http\Controllers\Controller;
 use DemocracyApps\GB\Organization;
 use Illuminate\Http\Request;
 
-class DatasetsController extends APIController {
+class CategoriesController extends APIController {
     private $transformer;
 
-    public function __construct(DatasetTransformer $t)
+    public function __construct(AccountCategoryTransformer $t)
     {
         $this->transformer = $t;
     }
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @param $orgId
-     * @return Response
-     */
+	/**
+	 * Display a listing of the resource.
+	 *
+	 * @return Response
+	 */
 	public function index($orgId)
 	{
         $organization = Organization::find($orgId);
-        $datasets = Dataset::where('organization','=',$orgId)->get();
-        return $this->respondIndex('List of datasets for ' . $organization->name, $datasets,
+        $categories = AccountCategory::allOrganizationCategories($orgId);
+        return $this->respondIndex('List of account categories for ' . $organization->name, $categories,
             $this->transformer, ['includeData'=>false]);
 	}
 
@@ -76,21 +75,16 @@ class DatasetsController extends APIController {
      * @param Request $request
      * @return Response
      */
-    // http://gbe.dev/api/v1/organizations/1/datasets/1?noMapping=true
-	public function show($orgId, $id, Request $request)
-	{
+    public function show($orgId, $id, Request $request)
+    {
         $organization = Organization::find($orgId);
 
         if ($organization == null) return $this->respondNotFound('No such organization');
 
-        $dataset = Dataset::find($id);
-        if ($dataset == null) return $this->respondNotFound('No such dataset ' . $id);
+        $category = AccountCategory::find($id);
+        if ($category == null) return $this->respondNotFound('No such category ' . $id);
 
-        $params = array();
-        if ($request->has('noMapping') && strtolower($request->get('noMapping') == 'true')) {
-            $params['noMapping'] = true;
-        }
-        return $this->respondItem('Dataset of ' . $organization->name, $dataset, $this->transformer, $params);
+        return $this->respondItem($category->name.' category - '.$organization->name, $category, $this->transformer);
 
     }
 

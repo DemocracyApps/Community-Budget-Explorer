@@ -69,6 +69,15 @@ class Account extends EloquentPropertiedObject
         return $id;
     }
 
+    static public function allOrganizationAccounts ($orgId) {
+        $items = \DB::table('accounts')
+            ->join('account_charts', 'accounts.chart', '=', 'account_charts.id')
+            ->where('account_charts.organization','=',$orgId)
+            ->select('accounts.id', 'accounts.code', 'accounts.name', 'accounts.chart')
+            ->get();
+        return $items;
+    }
+
     static public function processCSVInput($filePath, $chart)
     {
         ini_set("auto_detect_line_endings", true); // Deal with Mac line endings
