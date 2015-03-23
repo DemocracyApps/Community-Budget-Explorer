@@ -14,10 +14,11 @@ If you are using Vagrant, the following commands will install and start an insta
     cd /var/www/
     sudo ./setup/setup.sh
     cd gbe
+    composer update
     ./artisan migrate --seed
     
 The server will be at 192.168.33.27, but that can of course be changed in the Vagrantfile.
-You will probably need to put in your Github credentials while running setup.sh since you'll 
+You will probably need to put in your Github credentials while running 'composer update' since you'll 
 exceed their anonymous rate limits.
 
 
