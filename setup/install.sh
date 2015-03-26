@@ -47,8 +47,8 @@ sudo mv composer.phar /usr/local/bin/composer
 sudo add-apt-repository -y ppa:ubuntugis/ubuntugis-unstable
 sudo apt-get update
 
-sudo rm -rf /vagrant/html
-sudo chmod -R 777 /vagrant/gbe/storage
+sudo rm -rf /var/www/html
+sudo chmod -R 777 /var/www/gbe/storage
 
 # Change both APACHE_RUN_USER and APACHE_RUN_GROUP to vagrant from www-data to avoid getting frequent permission-denied
 # problems with the Laravel storage subdirectory
@@ -65,7 +65,7 @@ if [ ! -e "/etc/apache2/sites-available/gbe.conf" ];
     then
 
     # PRC Revise Host Here
-    sudo cp /vagrant/setup/gbe.conf /etc/apache2/sites-available
+    sudo cp /var/www/setup/gbe.conf /etc/apache2/sites-available
     sudo a2ensite gbe
     sudo service apache2 reload
 fi
@@ -89,7 +89,7 @@ echo 'Setting up database and GIS extensions'
 #sudo su postgres -c 'psql -c "create user vagrant with CREATEDB PASSWORD vagrant;"'
 # sudo su postgres -c 'createuser -d -R -S vagrant'
 # sudo su postgres -c 'psql -c "ALTER USER vagrant WITH PASSWORD vagrant;"'
-sudo su postgres -c '/vagrant/setup/create_postgres_users.sh'
+sudo su postgres -c '/var/www/setup/create_postgres_users.sh'
 sudo su postgres -c 'createdb gbe'
 sudo su postgres -c 'psql -d gbe -c "CREATE EXTENSION postgis;"'
 sudo su postgres -c 'psql -d gbe -c "CREATE EXTENSION postgis_topology;"'
