@@ -14,6 +14,7 @@ If you are using Vagrant, the following commands will install and start an insta
     cd /var/www/
     sudo ./setup/setup.sh
     cd gbe
+    cp .env.example .env
     composer update
     ./artisan migrate --seed
     
