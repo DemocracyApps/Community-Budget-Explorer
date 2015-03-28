@@ -11,6 +11,13 @@ else
     git clone $json_repo $json_dir
 fi
 
+if [ ! -e "/var/www/gbe/.env" ];
+    then
+  cp /var/www/gbe/.env.example /var/www/gbe/.env
+fi
+
+
+
 # Install and configure queueing system and supervisor
 echo 'Configure and start the queueing system'
 sudo sed -i "s/#START=yes/START=yes/" /etc/default/beanstalkd
