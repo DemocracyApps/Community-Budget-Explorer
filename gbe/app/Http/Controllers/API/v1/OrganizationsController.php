@@ -22,7 +22,7 @@ use DemocracyApps\GB\Http\Controllers\API\APIController;
 use DemocracyApps\GB\Http\Requests;
 use DemocracyApps\GB\Http\Controllers\Controller;
 
-use DemocracyApps\GB\Organization;
+use DemocracyApps\GB\GovernmentOrganization;
 use Illuminate\Http\Request;
 
 class OrganizationsController extends APIController {
@@ -40,7 +40,7 @@ class OrganizationsController extends APIController {
 	 */
 	public function index()
 	{
-        $organizations = Organization::all();
+        $organizations = GovernmentOrganization::all();
         return $this->respondIndex('List of organizations', $organizations, $this->transformer);
 	}
 
@@ -72,7 +72,7 @@ class OrganizationsController extends APIController {
 	 */
 	public function show($id)
     {
-        $organization = Organization::find($id);
+        $organization = GovernmentOrganization::find($id);
 
         if ($organization != null) {
             return $this->respondItem('Organization ' . $organization->name, $organization, $this->transformer);

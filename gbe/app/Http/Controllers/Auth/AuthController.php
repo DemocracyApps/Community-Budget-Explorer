@@ -189,12 +189,18 @@ class AuthController extends Controller
 	 */
 	private function loadOrCreateUser ($email, $password, $socialId, $userName, $socialName, $socialNetwork, $accessToken)
 	{
+        $email = strtolower($email); // Just to be sure
 		$this->userCreated = false;
 
-		if ($socialId != null) {
+        // Do this first in case they're associating a social profile with an existing account
+        $user = User::where('email', $email)->first();
+
+        if ($socialId != null) {
 			$socialProfile = Social::where('socialid', '=', $socialId)->first();
-			if (empty($socialProfile)) { // We must create a new user
-				$user = $this->createUser($userName, $email, $password);
+			if (empty($socialProfile)) {
+			    if ($user == null) { // We must create a new user
+                    $user = $this->createUser($userName, $email, $password);
+                }
 				$socialProfile = new Social();
 				$socialProfile->socialid = $socialId;
 				$socialProfile->type = $socialNetwork;

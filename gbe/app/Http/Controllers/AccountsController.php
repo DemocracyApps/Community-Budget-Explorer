@@ -17,7 +17,7 @@
  *  along with the GBE.  If not, see <http://www.gnu.org/licenses/>.
  */
 use DemocracyApps\GB\Accounts\AccountCategory;
-use DemocracyApps\GB\Organization;
+use DemocracyApps\GB\GovernmentOrganization;
 use DemocracyApps\GB\Accounts\Account;
 use DemocracyApps\GB\Accounts\AccountChart;
 use DemocracyApps\GB\Http\Controllers\Controller;
@@ -35,7 +35,7 @@ class AccountsController extends Controller {
 	{
 		$chart = $request->get('chart');
         $chart = AccountChart::find($chart);
-        $organization = Organization::find($chart->organization);
+        $organization = GovernmentOrganization::find($chart->organization);
         $accounts = Account::where('chart', '=', $chart->id)->get();
         $categories= AccountCategory::where('chart', '=', $chart->id)->get();
         return view ('system.account.index', array('chart' => $chart, 'organization'=>$organization,

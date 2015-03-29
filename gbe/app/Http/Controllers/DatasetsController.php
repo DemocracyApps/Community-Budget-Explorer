@@ -21,7 +21,7 @@ use DemocracyApps\GB\Http\Controllers\Controller;
 
 use Illuminate\Http\Request;
 
-use DemocracyApps\GB\Organization;
+use DemocracyApps\GB\Organizations\Organization;
 use DemocracyApps\GB\Accounts\AccountChart;
 
 class DatasetsController extends Controller {

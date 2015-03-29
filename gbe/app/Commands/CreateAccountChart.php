@@ -18,7 +18,7 @@
  */
 
 use DemocracyApps\GB\Accounts\AccountChart;
-use DemocracyApps\GB\Organization;
+use DemocracyApps\GB\GovernmentOrganization;
 use DemocracyApps\GB\User;
 use Illuminate\Contracts\Bus\SelfHandling;
 

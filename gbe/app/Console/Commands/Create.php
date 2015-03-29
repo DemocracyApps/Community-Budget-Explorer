@@ -17,7 +17,7 @@
  *  along with the GBE.  If not, see <http://www.gnu.org/licenses/>.
  */
 use DemocracyApps\GB\Commands\CreateUser;
-use DemocracyApps\GB\Organization;
+use DemocracyApps\GB\GovernmentOrganization;
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
@@ -83,13 +83,13 @@ class Create extends Command {
 		}
 		else if ($objectType == 'organization') {
 			$name = $this->ask('Enter the organization name: ');
-			$org = new Organization();
+			$org = new GovernmentOrganization();
 			$org->name = $name;
 			$org->setProperty('abc', 'One world');
 			$org->save();
 		}
 		else if ($objectType == 'test') {
-			$thing = Organization::find(1);
+			$thing = GovernmentOrganization::find(1);
 			$value = $thing->getProperty('def');
 			dd($value);
 		}

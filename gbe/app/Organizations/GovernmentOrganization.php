@@ -1,4 +1,5 @@
-<?php namespace DemocracyApps\GB;
+<?php
+namespace DemocracyApps\GB\Organizations;
 /**
  *
  * This file is part of the Government Budget Explorer (GBE).
@@ -21,7 +22,7 @@ use DemocracyApps\GB\Utility\EloquentPropertiedObject;
 use DemocracyApps\MemberOrg\EloquentMemberOrganization;
 use DemocracyApps\MemberOrg\MemberOrganization;
 
-class Organization extends EloquentPropertiedObject implements MemberOrganization {
+class GovernmentOrganization extends EloquentPropertiedObject implements MemberOrganization {
 
     use EloquentMemberOrganization;
 }

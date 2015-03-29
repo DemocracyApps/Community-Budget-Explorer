@@ -23,7 +23,7 @@ use DemocracyApps\GB\Http\Controllers\API\APIController;
 use DemocracyApps\GB\Http\Requests;
 use DemocracyApps\GB\Http\Controllers\Controller;
 
-use DemocracyApps\GB\Organization;
+use DemocracyApps\GB\GovernmentOrganization;
 use Illuminate\Http\Request;
 
 class CategoriesController extends APIController {
@@ -41,7 +41,7 @@ class CategoriesController extends APIController {
 	 */
 	public function index($orgId)
 	{
-        $organization = Organization::find($orgId);
+        $organization = GovernmentOrganization::find($orgId);
         $categories = AccountCategory::allOrganizationCategories($orgId);
         return $this->respondIndex('List of account categories for ' . $organization->name, $categories,
             $this->transformer, ['includeData'=>false]);
@@ -77,7 +77,7 @@ class CategoriesController extends APIController {
      */
     public function show($orgId, $id, Request $request)
     {
-        $organization = Organization::find($orgId);
+        $organization = GovernmentOrganization::find($orgId);
 
         if ($organization == null) return $this->respondNotFound('No such organization');
 

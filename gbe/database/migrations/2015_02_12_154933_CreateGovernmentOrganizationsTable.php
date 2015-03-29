@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateOrganizationsTable extends Migration {
+class CreateGovernmentOrganizationsTable extends Migration {
 
 	/**
 	 * Run the migrations.

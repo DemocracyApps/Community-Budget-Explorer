@@ -23,7 +23,7 @@ use DemocracyApps\GB\Http\Controllers\API\APIController;
 use DemocracyApps\GB\Http\Requests;
 use DemocracyApps\GB\Http\Controllers\Controller;
 
-use DemocracyApps\GB\Organization;
+use DemocracyApps\GB\GovernmentOrganization;
 use Illuminate\Http\Request;
 
 class DatasetsController extends APIController {
@@ -42,7 +42,7 @@ class DatasetsController extends APIController {
      */
 	public function index($orgId)
 	{
-        $organization = Organization::find($orgId);
+        $organization = GovernmentOrganization::find($orgId);
         $datasets = Dataset::where('organization','=',$orgId)->get();
         return $this->respondIndex('List of datasets for ' . $organization->name, $datasets,
             $this->transformer, ['includeData'=>false]);
@@ -79,7 +79,7 @@ class DatasetsController extends APIController {
     // http://gbe.dev/api/v1/organizations/1/datasets/1?noMapping=true
 	public function show($orgId, $dsId, Request $request)
 	{
-        $organization = Organization::find($orgId);
+        $organization = GovernmentOrganization::find($orgId);
 
         if ($organization == null) return $this->respondNotFound('No such organization');
 

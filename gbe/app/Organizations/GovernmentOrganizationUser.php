@@ -1,4 +1,4 @@
-<?php namespace DemocracyApps\GB;
+<?php namespace DemocracyApps\GB\Organizations;
 
 /**
  *
@@ -22,7 +22,7 @@ use DemocracyApps\GB\Utility\EloquentPropertiedObject;
 use DemocracyApps\MemberOrg\EloquentOrganizationMember;
 use DemocracyApps\MemberOrg\OrganizationMember;
 
-class OrganizationUser extends EloquentPropertiedObject implements OrganizationMember {
+class GovernmentOrganizationUser extends EloquentPropertiedObject implements OrganizationMember {
 
     use EloquentOrganizationMember;
 }

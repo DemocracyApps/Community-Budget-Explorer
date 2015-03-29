@@ -19,7 +19,7 @@
 
 Route::get('settings', 'SystemController@settings');
 Route::get('users', 'SystemController@users');
-Route::resource('organizations', 'OrganizationsController');
+Route::resource('organizations', 'Organizations\GovernmentOrganizationsController');
 Route::any('accounts/upload', 'AccountsController@upload');
 Route::resource('accounts', 'AccountsController');
 Route::any('accountcategories/up', 'AccountCategoriesController@up');

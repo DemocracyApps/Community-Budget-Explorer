@@ -2,7 +2,7 @@
 
 use DemocracyApps\GB\Accounts\AccountChart;
 use DemocracyApps\GB\Accounts\Dataset;
-use DemocracyApps\GB\Organization;
+use DemocracyApps\GB\Organizations\GovernmentOrganization;
 use DemocracyApps\GB\Users\User;
 use Illuminate\Database\Seeder;
 
@@ -13,7 +13,7 @@ class AshevilleSeeder extends Seeder {
     {
         // Create the organization and first user
         $user = User::where('email','=','eric@deepweave.com')->first();
-        $org = new Organization();
+        $org = new GovernmentOrganization();
         $org->name = "Asheville City Government";
         $org->slug = "asheville";
         $org->save();
@@ -23,7 +23,7 @@ class AshevilleSeeder extends Seeder {
         // Create the chart of accounts
         $chart = new AccountChart();
         $chart->name = "Default";
-        $chart->organization = $org->id;
+        $chart->government_organization = $org->id;
         $chart->save();
 
         \Log::info("Process accounts");
@@ -120,7 +120,7 @@ class AshevilleSeeder extends Seeder {
         $d->year = $year;
         $d->month = $month;
         $d->day = $day;
-        $d->organization = $orgId;
+        $d->government_organization = $orgId;
         $d->chart = $chartId;
         $d->category_order = json_encode($order);
         $d->save();

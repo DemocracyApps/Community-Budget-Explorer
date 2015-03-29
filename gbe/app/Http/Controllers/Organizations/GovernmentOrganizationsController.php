@@ -1,4 +1,4 @@
-<?php namespace DemocracyApps\GB\Http\Controllers;
+<?php namespace DemocracyApps\GB\Http\Controllers\Organizations;
 /**
  *
  * This file is part of the Government Budget Explorer (GBE).
@@ -20,15 +20,15 @@ use DemocracyApps\GB\Accounts\Account;
 use DemocracyApps\GB\Accounts\AccountChart;
 use DemocracyApps\GB\Accounts\Dataset;
 use DemocracyApps\GB\Http\Controllers\Controller;
-use DemocracyApps\GB\Organization;
+use DemocracyApps\GB\Organizations\GovernmentOrganization;
 
 use Illuminate\Http\Request;
 
-class OrganizationsController extends Controller {
+class GovernmentOrganizationsController extends Controller {
 
     protected $organization = null;
 
-    function __construct (Organization $org)
+    function __construct (GovernmentOrganization $org)
     {
         $this->organization = $org;
     }
@@ -39,7 +39,7 @@ class OrganizationsController extends Controller {
 	 */
 	public function index()
 	{
-        $organizations = Organization::orderBy('id')->get();
+        $organizations = GovernmentOrganization::orderBy('id')->get();
         return view('system.organization.index', array('organizations' => $organizations));
     }
 
@@ -82,10 +82,10 @@ class OrganizationsController extends Controller {
 	 */
 	public function show($id)
 	{
-        $org = Organization::find($id);
+        $org = GovernmentOrganization::find($id);
         if ($org == null) return redirect('/system/organizations');
-        $charts = AccountChart::where('organization', '=', $org->id)->get();
-        $datasets = Dataset::where('organization', '=', $org->id)->get();
+        $charts = AccountChart::where('government_organization', '=', $org->id)->get();
+        $datasets = Dataset::where('government_organization', '=', $org->id)->get();
         return view("system.organization.show", array('organization' => $org, 'charts' => $charts, 'datasets'=>$datasets));
 	}
 
@@ -97,7 +97,7 @@ class OrganizationsController extends Controller {
 	 */
 	public function edit($id, Request $request)
 	{
-        $org = Organization::find($id);
+        $org = GovernmentOrganization::find($id);
         if ($org == null) return redirect('/system/organizations');
         return view('system.organization.edit', array('organization' => $org));
 	}
@@ -113,7 +113,7 @@ class OrganizationsController extends Controller {
         $rules = ['name' => 'required'];
         $this->validate($request, $rules);
 
-        $this->organization = Organization::find($id);
+        $this->organization = GovernmentOrganization::find($id);
         $this->organization->name = $request->get('name');
         $this->organization->save();
 
@@ -128,7 +128,7 @@ class OrganizationsController extends Controller {
 	 */
 	public function destroy($id)
 	{
-        $org = Organization::find($id);
+        $org = GovernmentOrganization::find($id);
         if ($org != null) {
             $org->delete();
         }
