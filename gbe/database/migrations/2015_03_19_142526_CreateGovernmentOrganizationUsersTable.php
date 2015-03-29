@@ -12,13 +12,13 @@ class CreateOrganizationUsersTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('organization_users', function(Blueprint $table)
+		Schema::create('government_organization_users', function(Blueprint $table)
 		{
 			$table->increments('id');
             $table->integer('user_id');
             $table->foreign('user_id')->references('id')->on('users');
-            $table->integer('organization_id');
-            $table->foreign('organization_id')->references('id')->on('organizations');
+            $table->integer('government_organization_id');
+            $table->foreign('government_organization_id')->references('id')->on('government_organizations');
             $table->integer('access');
             $table->text('properties')->nullable();
 			$table->timestamps();
@@ -32,7 +32,7 @@ class CreateOrganizationUsersTable extends Migration {
 	 */
 	public function down()
 	{
-		Schema::drop('organization_users');
+		Schema::drop('government_organization_users');
 	}
 
 }

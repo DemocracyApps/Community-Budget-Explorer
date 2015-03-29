@@ -21,8 +21,8 @@ class CreateDatasetsTable extends Migration {
             $table->integer('year');
             $table->tinyInteger('month')->nullable();
             $table->tinyInteger('day')->nullable();
-            $table->integer('organization');
-            $table->foreign('organization')->references('id')->on('organizations');
+            $table->integer('government_organization');
+            $table->foreign('government_organization')->references('id')->on('government_organizations');
             $table->integer('chart');
             $table->foreign('chart')->references('id')->on('account_charts');
             $table->text('description')->nullable();
