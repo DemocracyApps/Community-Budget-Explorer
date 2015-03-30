@@ -16,6 +16,8 @@
  *  You should have received a copy of the GNU General Public License
  *  along with the GBE.  If not, see <http://www.gnu.org/licenses/>.
  */
+use DemocracyApps\GB\Organizations\GovernmentOrganization;
+use DemocracyApps\GB\Organizations\GovernmentOrganizationUser;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Auth\Passwords\CanResetPassword;
@@ -58,6 +60,14 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         $user = self::find($userId);
         if ($user != null && $user->verified == true) $verified = true;
         return $verified;
+    }
+
+    public function getGovernmentId()
+    {
+        $id = null;
+        $govt = GovernmentOrganizationUser::where('user_id', '=', $this->id)->first();
+        if ($govt != null && $govt->access > 0) $id = $govt->government_organization_id;
+        return $id;
     }
 
 }
