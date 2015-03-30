@@ -60,6 +60,9 @@ class MediaOrganizationsController extends Controller {
         $this->validate($request, $rules);
 
         $this->organization->name = $request->get('name');
+        if ($request->has('description')) {
+            $this->organization->description = $request->get('description');
+        }
         $this->organization->save();
         \Log::info("Now go to /media/$this->organization->id");
         return redirect('/media/'.$this->organization->id);
@@ -104,6 +107,9 @@ class MediaOrganizationsController extends Controller {
 
         $this->organization = MediaOrganization::find($id);
         $this->organization->name = $request->get('name');
+        if ($request->has('description')) {
+            $this->organization->description = $request->get('description');
+        }
         $this->organization->save();
 
         return redirect('/media/'.$this->organization->id);

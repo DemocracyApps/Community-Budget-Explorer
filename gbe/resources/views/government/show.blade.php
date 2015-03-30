@@ -10,6 +10,9 @@
         <button style="float:right; position:relative; right:50px; bottom:-20px;" class="btn btn-success btn-sm" onclick="window.location.href='/governments/{!! $organization->id !!}/edit'">Edit</button>
     </div>
 </div>
+<div class="row">
+    <p>{!! $organization->description !!} </p>
+</div>
 
 <div class="row">
     <h3>Charts of Accounts</h3>

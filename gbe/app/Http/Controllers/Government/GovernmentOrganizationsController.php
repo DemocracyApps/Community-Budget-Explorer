@@ -63,6 +63,9 @@ class GovernmentOrganizationsController extends Controller {
         $this->validate($request, $rules);
 
         $this->organization->name = $request->get('name');
+        if ($request->has('description')) {
+            $this->organization->description = $request->get('description');
+        }
         $this->organization->save();
 
         // Now create the default chart of accounts
@@ -114,6 +117,9 @@ class GovernmentOrganizationsController extends Controller {
 
         $this->organization = GovernmentOrganization::find($id);
         $this->organization->name = $request->get('name');
+        if ($request->has('description')) {
+            $this->organization->description = $request->get('description');
+        }
         $this->organization->save();
 
         return redirect('/governments/'.$this->organization->id);

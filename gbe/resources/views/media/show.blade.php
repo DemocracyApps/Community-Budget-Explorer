@@ -11,4 +11,8 @@
         </div>
     </div>
 
+    <div class="row">
+        <p>{!! $organization->description !!} </p>
+    </div>
+
 @stop
