@@ -17,14 +17,10 @@
  *  along with the GBE.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-Route::get('settings', 'SystemController@settings');
-Route::get('users', 'SystemController@users');
-Route::get('governments', 'SystemController@governments');
-Route::get('governments/create', 'SystemController@createGovernment');
-Route::post('governments', 'SystemController@storeGovernment');
+namespace DemocracyApps\GB\Budget;
 
 
+class AccountUtilities {
 
 
-//Route::resource('organizations', 'Government\GovernmentOrganizationsController');
-//Route::get('projects', 'SystemController@projects');
+}

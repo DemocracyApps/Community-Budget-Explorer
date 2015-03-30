@@ -17,7 +17,7 @@
  *  along with the GBE.  If not, see <http://www.gnu.org/licenses/>.
  */
 use DemocracyApps\GB\Commands\CreateUser;
-use DemocracyApps\GB\GovernmentOrganization;
+use DemocracyApps\GB\Organizations\GovernmentOrganization;
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;

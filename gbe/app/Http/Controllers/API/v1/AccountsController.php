@@ -16,13 +16,13 @@
  *  You should have received a copy of the GNU General Public License
  *  along with the GBE.  If not, see <http://www.gnu.org/licenses/>.
  */
-use DemocracyApps\GB\Accounts\Account;
+use DemocracyApps\GB\Budget\Account;
 use DemocracyApps\GB\ApiTransformers\AccountTransformer;
 use DemocracyApps\GB\Http\Controllers\API\APIController;
 use DemocracyApps\GB\Http\Requests;
 use DemocracyApps\GB\Http\Controllers\Controller;
 
-use DemocracyApps\GB\GovernmentOrganization;
+use DemocracyApps\GB\Organizations\GovernmentOrganization;
 use Illuminate\Http\Request;
 
 class AccountsController extends APIController {

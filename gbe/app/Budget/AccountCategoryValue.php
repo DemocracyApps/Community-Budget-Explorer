@@ -1,4 +1,5 @@
-<?php
+<?php namespace DemocracyApps\GB\Budget;
+
 /**
  *
  * This file is part of the Government Budget Explorer (GBE).
@@ -16,15 +17,10 @@
  *  You should have received a copy of the GNU General Public License
  *  along with the GBE.  If not, see <http://www.gnu.org/licenses/>.
  */
+use DemocracyApps\GB\Utility\EloquentPropertiedObject;
 
-Route::get('settings', 'SystemController@settings');
-Route::get('users', 'SystemController@users');
-Route::get('governments', 'SystemController@governments');
-Route::get('governments/create', 'SystemController@createGovernment');
-Route::post('governments', 'SystemController@storeGovernment');
+class AccountCategoryValue extends EloquentPropertiedObject
+{
+    protected  $table = 'account_category_values';
 
-
-
-
-//Route::resource('organizations', 'Government\GovernmentOrganizationsController');
-//Route::get('projects', 'SystemController@projects');
+}

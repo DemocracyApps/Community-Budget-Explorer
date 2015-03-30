@@ -17,7 +17,7 @@
  *  along with the GBE.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use DemocracyApps\GB\GovernmentOrganization;
+use DemocracyApps\GB\Organizations\GovernmentOrganization;
 use DemocracyApps\GB\User;
 use Illuminate\Contracts\Bus\SelfHandling;
 
@@ -30,6 +30,7 @@ class CreateOrganization extends Command implements SelfHandling {
 
     /**
      * @param string $name
+     * @param $slug
      * @param string $description
      * @param User $admin
      */

@@ -1,4 +1,4 @@
-<?php namespace DemocracyApps\GB\Http\Controllers\API\v1;
+<?php namespace DemocracyApps\GB\Http\Controllers\Government;
 /**
  *
  * This file is part of the Government Budget Explorer (GBE).
@@ -16,32 +16,21 @@
  *  You should have received a copy of the GNU General Public License
  *  along with the GBE.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-use DemocracyApps\GB\ApiTransformers\OrganizationTransformer;
-use DemocracyApps\GB\Http\Controllers\API\APIController;
 use DemocracyApps\GB\Http\Requests;
 use DemocracyApps\GB\Http\Controllers\Controller;
 
-use DemocracyApps\GB\Organizations\GovernmentOrganization;
 use Illuminate\Http\Request;
 
-class OrganizationsController extends APIController {
-    private $transformer;
-
-    public function __construct(OrganizationTransformer $at)
-    {
-        $this->transformer = $at;
-    }
+class AccountCategoryValuesController extends Controller {
 
 	/**
 	 * Display a listing of the resource.
 	 *
 	 * @return Response
 	 */
-	public function index()
+	public function index($govId)
 	{
-        $organizations = GovernmentOrganization::all();
-        return $this->respondIndex('List of organizations', $organizations, $this->transformer);
+		//
 	}
 
 	/**
@@ -49,9 +38,9 @@ class OrganizationsController extends APIController {
 	 *
 	 * @return Response
 	 */
-	public function create()
+	public function create($govId)
 	{
-        //
+		//
 	}
 
 	/**
@@ -59,7 +48,7 @@ class OrganizationsController extends APIController {
 	 *
 	 * @return Response
 	 */
-	public function store()
+	public function store($govId)
 	{
 		//
 	}
@@ -70,16 +59,10 @@ class OrganizationsController extends APIController {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function show($id)
-    {
-        $organization = GovernmentOrganization::find($id);
-
-        if ($organization != null) {
-            return $this->respondItem('Organization ' . $organization->name, $organization, $this->transformer);
-        }
-        else
-            return $this->respondNotFound('No such organization');
-    }
+	public function show($govId, $id)
+	{
+		//
+	}
 
 	/**
 	 * Show the form for editing the specified resource.
@@ -87,7 +70,7 @@ class OrganizationsController extends APIController {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function edit($id)
+	public function edit($govId, $id)
 	{
 		//
 	}
@@ -98,7 +81,7 @@ class OrganizationsController extends APIController {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function update($id)
+	public function update($govId, $id)
 	{
 		//
 	}
@@ -109,7 +92,7 @@ class OrganizationsController extends APIController {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function destroy($id)
+	public function destroy($govId, $id)
 	{
 		//
 	}

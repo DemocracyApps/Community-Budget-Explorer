@@ -18,8 +18,8 @@
  */
 
 
-//Log::info("Top of routes with URI " . \Request::server('REQUEST_URI') .
-//          " and method " .\Request::server('REQUEST_METHOD'));
+Log::info("Top of routes with URI " . \Request::server('REQUEST_URI') .
+          " and method " .\Request::server('REQUEST_METHOD'));
 
 
 Route::group(['domain'=>'gbetest.dev'], function() {
@@ -39,12 +39,22 @@ require app_path().'/Http/Routes/auth.php';
 
 /*************************************************
  *************************************************
- * Administrative pages for platform admins
+ * PLATFORM admin pages
  *************************************************
  *************************************************/
 Route::group(['prefix' => 'system', 'middleware' => 'cnp.system'], function ()
 {
     require __DIR__.'/Routes/system.php';
+});
+
+/*************************************************
+ *************************************************
+ * GOVERNMENT admin pages
+ *************************************************
+ *************************************************/
+Route::group(['middleware' => 'gb.government'], function ()
+{
+    require __DIR__.'/Routes/government.php';
 });
 
 Route::group(['prefix' => 'api/v1'], function () {

@@ -1,7 +1,7 @@
 <?php
 
-use DemocracyApps\GB\Accounts\AccountChart;
-use DemocracyApps\GB\Accounts\Dataset;
+use DemocracyApps\GB\Budget\AccountChart;
+use DemocracyApps\GB\Budget\Dataset;
 use DemocracyApps\GB\Organizations\GovernmentOrganization;
 use DemocracyApps\GB\Users\User;
 use Illuminate\Database\Seeder;
@@ -127,7 +127,7 @@ class AshevilleSeeder extends Seeder {
         return $d;
     }
     private function createCategory($name, $chartId, $filePath) {
-        $category = new \DemocracyApps\GB\Accounts\AccountCategory();
+        $category = new \DemocracyApps\GB\Budget\AccountCategory();
         $category->name = $name;
         $category->chart = $chartId;
         $category->save();

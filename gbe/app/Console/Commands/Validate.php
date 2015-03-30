@@ -16,7 +16,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with the GBE.  If not, see <http://www.gnu.org/licenses/>.
  */
-use DemocracyApps\GB\Accounts\Dataset;
+use DemocracyApps\GB\Budget\Dataset;
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;

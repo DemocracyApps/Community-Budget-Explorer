@@ -17,14 +17,13 @@
  *  along with the GBE.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-Route::get('settings', 'SystemController@settings');
-Route::get('users', 'SystemController@users');
-Route::get('governments', 'SystemController@governments');
-Route::get('governments/create', 'SystemController@createGovernment');
-Route::post('governments', 'SystemController@storeGovernment');
+Route::resource('governments', 'Government\GovernmentOrganizationsController');
 
+Route::any('governments/{govId}/accounts/upload', 'Government\AccountsController@upload');
+Route::resource('governments/{govId}/accounts', 'Government\AccountsController');
 
+Route::any('governments/{govId}/accountcategories/upload', 'Government\AccountCategoriesController@upload');
+Route::resource('governments/{govId}/accountcategories', 'Government\AccountCategoriesController');
 
-
-//Route::resource('organizations', 'Government\GovernmentOrganizationsController');
-//Route::get('projects', 'SystemController@projects');
+Route::resource('governments/{govId}/accountcategoryvalues', 'Government\AccountCategoryValuesController');
+Route::resource('governments/{govId}/datasets', 'Government\DatasetsController');

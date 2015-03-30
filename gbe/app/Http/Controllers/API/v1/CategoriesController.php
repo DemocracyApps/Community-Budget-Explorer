@@ -17,13 +17,13 @@
  *  along with the GBE.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use DemocracyApps\GB\Accounts\AccountCategory;
+use DemocracyApps\GB\Budget\AccountCategory;
 use DemocracyApps\GB\ApiTransformers\AccountCategoryTransformer;
 use DemocracyApps\GB\Http\Controllers\API\APIController;
 use DemocracyApps\GB\Http\Requests;
 use DemocracyApps\GB\Http\Controllers\Controller;
 
-use DemocracyApps\GB\GovernmentOrganization;
+use DemocracyApps\GB\Organizations\GovernmentOrganization;
 use Illuminate\Http\Request;
 
 class CategoriesController extends APIController {

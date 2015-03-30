@@ -1,5 +1,5 @@
 <?php namespace DemocracyApps\GB\ApiTransformers;
-use DemocracyApps\GB\Accounts\Account;
+use DemocracyApps\GB\Budget\Account;
 
 /**
  *

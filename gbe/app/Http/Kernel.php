@@ -48,6 +48,7 @@ class Kernel extends HttpKernel {
         'cnp.admin' => 'DemocracyApps\GB\Http\Middleware\VerifyAdminAccess',
         'cnp.project' => 'DemocracyApps\GB\Http\Middleware\VerifyProjectAccess',
         'cnp.system' => 'DemocracyApps\GB\Http\Middleware\VerifySystemAccess',
+        'gb.government' => 'DemocracyApps\GB\Http\Middleware\VerifyGovernmentAccess',
 	];
 
 }

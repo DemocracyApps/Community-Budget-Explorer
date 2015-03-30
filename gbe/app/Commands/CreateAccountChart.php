@@ -17,8 +17,8 @@
  *  along with the GBE.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use DemocracyApps\GB\Accounts\AccountChart;
-use DemocracyApps\GB\GovernmentOrganization;
+use DemocracyApps\GB\Budget\AccountChart;
+use DemocracyApps\GB\Organizations\GovernmentOrganization;
 use DemocracyApps\GB\User;
 use Illuminate\Contracts\Bus\SelfHandling;
 
@@ -29,10 +29,11 @@ class CreateAccountChart extends Command implements SelfHandling {
 
     /**
      * @param string $name
-     * @param string $description
-     * @param User $admin
+     * @param $organization
+     * @internal param string $description
+     * @internal param User $admin
      */
-    public function __construct($name, $organization)
+    public function __construct($name, GovernmentOrganization $organization)
     {
         $this->name = $name;
         $this->description = $organization;
@@ -47,7 +48,7 @@ class CreateAccountChart extends Command implements SelfHandling {
     {
         $chart = new AccountChart();
         $chart->name = $this->name;
-        $chart->organization = $this->organization->id;
+        $chart->government_organization = $this->organization->id;
         $chart->save();
     }
 

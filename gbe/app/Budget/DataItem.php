@@ -1,4 +1,4 @@
-<?php
+<?php namespace DemocracyApps\GB\Budget;
 /**
  *
  * This file is part of the Government Budget Explorer (GBE).
@@ -16,15 +16,26 @@
  *  You should have received a copy of the GNU General Public License
  *  along with the GBE.  If not, see <http://www.gnu.org/licenses/>.
  */
+use DemocracyApps\GB\Utility\EloquentPropertiedObject;
 
-Route::get('settings', 'SystemController@settings');
-Route::get('users', 'SystemController@users');
-Route::get('governments', 'SystemController@governments');
-Route::get('governments/create', 'SystemController@createGovernment');
-Route::post('governments', 'SystemController@storeGovernment');
+class DataItem extends EloquentPropertiedObject
+{
+    protected $table = 'data_items';
+
+    public function addCategories ($categories) {
+        $size = sizeof($categories);
+        if ($size>0) $this->category1 = $categories[0];
+        if ($size>1) $this->category2 = $categories[1];
+        if ($size>2) $this->category3 = $categories[2];
+        if ($size>3) {
+            $spill = array();
+            for ($i=0; $i<$size-3; ++$i) {
+                $spill[] = $categories[3+$i];
+            }
+            $this->categoryN = json_encode($spill);
+        }
+    }
 
 
 
-
-//Route::resource('organizations', 'Government\GovernmentOrganizationsController');
-//Route::get('projects', 'SystemController@projects');
+}

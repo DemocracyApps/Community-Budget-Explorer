@@ -1,6 +1,6 @@
 <?php namespace DemocracyApps\GB\Commands\DataImport;
 
-use DemocracyApps\GB\Accounts\AccountCategory;
+use DemocracyApps\GB\Budget\AccountCategory;
 use DemocracyApps\GB\Commands\Command;
 
 use Illuminate\Contracts\Bus\SelfHandling;

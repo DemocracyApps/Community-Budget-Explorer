@@ -1,9 +1,9 @@
 <?php namespace DemocracyApps\GB\ApiTransformers;
-use DemocracyApps\GB\Accounts\Account;
-use DemocracyApps\GB\Accounts\AccountCategory;
-use DemocracyApps\GB\Accounts\AccountCategoryValue;
-use DemocracyApps\GB\Accounts\DataItem;
-use DemocracyApps\GB\Accounts\Dataset;
+use DemocracyApps\GB\Budget\Account;
+use DemocracyApps\GB\Budget\AccountCategory;
+use DemocracyApps\GB\Budget\AccountCategoryValue;
+use DemocracyApps\GB\Budget\DataItem;
+use DemocracyApps\GB\Budget\Dataset;
 
 /**
  *
