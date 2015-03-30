@@ -27,7 +27,15 @@ class UserMailer extends Mailer {
         $confirmation = new UserConfirmation();
         $confirmation->initialize($user, 'em', 24);
         $data = array ('url' => url('auth/confirm'), 'code' => $confirmation->getCode());
-        $this->sendTo($user, "Confirm your email at Community Narratives Platform", 'emails.confirmEmail', $data);
+        $this->sendTo($user, "Confirm your email at the Government Budget Explorer", 'emails.confirmEmail', $data);
+    }
+
+    public function inviteEmail (User $user, $organization) {
+
+        $confirmation = new UserConfirmation();
+        $confirmation->initialize($user, 'em', 24);
+        $data = array ('url' => url('auth/confirm'), 'code' => $confirmation->getCode(), 'organization' => $organization->name);
+        $this->sendTo($user, "Confirm your email at the Government Budget Explorer", 'emails.inviteEmail', $data);
     }
 
 }

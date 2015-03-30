@@ -18,6 +18,7 @@
  */
 
 Route::resource('governments', 'Government\GovernmentOrganizationsController');
+Route::resource('governments/{govId}/users', 'Government\GovernmentUsersController');
 
 Route::any('governments/{govId}/accounts/upload', 'Government\AccountsController@upload');
 Route::resource('governments/{govId}/accounts', 'Government\AccountsController');

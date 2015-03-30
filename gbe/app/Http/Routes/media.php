@@ -18,3 +18,4 @@
  */
 
 Route::resource('media', 'Media\MediaOrganizationsController');
+Route::resource('media/{media_id}/users', 'Media\MediaUsersController');
