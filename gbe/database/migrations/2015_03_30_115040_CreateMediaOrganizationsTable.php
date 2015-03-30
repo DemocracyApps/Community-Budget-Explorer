@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateGovernmentOrganizationsTable extends Migration {
+class CreateMediaOrganizationsTable extends Migration {
 
 	/**
 	 * Run the migrations.
@@ -12,12 +12,12 @@ class CreateGovernmentOrganizationsTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('government_organizations', function(Blueprint $table)
+		Schema::create('media_organizations', function(Blueprint $table)
 		{
 			$table->increments('id');
             $table->string('name');
             $table->text('description')->nullable();
-			$table->text('properties')->nullable();
+            $table->text('properties')->nullable();
 			$table->timestamps();
 		});
 	}
@@ -29,7 +29,7 @@ class CreateGovernmentOrganizationsTable extends Migration {
 	 */
 	public function down()
 	{
-		Schema::drop('government_organizations');
+		Schema::drop('media_organizations');
 	}
 
 }

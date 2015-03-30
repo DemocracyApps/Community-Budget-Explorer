@@ -19,6 +19,7 @@
 use DemocracyApps\GB\Budget\AccountChart;
 use DemocracyApps\GB\Http\Controllers\Controller;
 use DemocracyApps\GB\Organizations\GovernmentOrganization;
+use DemocracyApps\GB\Organizations\MediaOrganization;
 use DemocracyApps\GB\Users\User;
 use Illuminate\Http\Request;
 
@@ -81,5 +82,39 @@ class SystemController extends Controller
         $chart->save();
         return redirect('/system/governments');
     }
+
+    public function media (Request $request)
+    {
+        $organizations = MediaOrganization::orderBy('id')->get();
+        return view('system.media', array('organizations' => $organizations));
+    }
+
+    /**
+     * Show the form for creating a new government.
+     *
+     * @return Response
+     */
+    public function createMedia (Request $request)
+    {
+        return view('system.media.create');
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @return Response
+     */
+    public function storeMedia(Request $request)
+    {
+        $rules = ['name' => 'required'];
+        $this->validate($request, $rules);
+
+        $organization = new MediaOrganization();
+        $organization->name = $request->get('name');
+        $organization->save();
+
+        return redirect("/media/$organization->id");
+    }
+
 
 }

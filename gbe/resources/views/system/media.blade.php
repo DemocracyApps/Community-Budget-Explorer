@@ -4,8 +4,8 @@
     <ul class="nav nav-tabs">
         <li role="presentation"><a href="/system/settings">Settings</a></li>
         <li role="presentation"><a href="/system/users">Users</a></li>
-        <li role="presentation" class="active"><a href="/system/governments">Governments</a></li>
-        <li role="presentation"><a href="/system/media">Media</a></li>
+        <li role="presentation"><a href="/system/governments">Governments</a></li>
+        <li role="presentation" class="active"><a href="/system/media">Media</a></li>
     </ul>
 
     <div class="row">
@@ -13,7 +13,7 @@
             <h1>Governments</h1>
         </div>
         <div class="col-xs-6">
-            <button style="float:right; position:relative; right:50px; bottom:-20px;" class="btn btn-success btn-sm" onclick="window.location.href='/governments/create'">New</button>
+            <button style="float:right; position:relative; right:50px; bottom:-20px;" class="btn btn-success btn-sm" onclick="window.location.href='/media/create'">New</button>
         </div>
     </div>
 
@@ -27,13 +27,13 @@
         @foreach ($organizations as $organization)
             <tr>
                 <td> {!!  $organization->id !!} </td>
-                <td> <a href="/governments/{!! $organization->id !!}">{!!  $organization->name  !!} </a> </td>
-                <td> <form method="GET" action="/governments/{!! $organization->id !!}/edit" accept-charset="UTF-8" style="display:inline-block">
+                <td> <a href="/media/{!! $organization->id !!}">{!!  $organization->name  !!} </a> </td>
+                <td> <form method="GET" action="/media/{!! $organization->id !!}/edit" accept-charset="UTF-8" style="display:inline-block">
                         <input type="hidden" name="_token" value="{!! csrf_token() !!}">
                         <button style="display:inline-block;" type="submit" class="btn btn-warning btn-sm"><b>Edit</b></button>
                     </form>
                 </td>
-                <td> <form method="POST" action="/governments/{!! $organization->id !!}" accept-charset="UTF-8" style="display:inline-block">
+                <td> <form method="POST" action="/media/{!! $organization->id !!}" accept-charset="UTF-8" style="display:inline-block">
                         <input name="_method" type="hidden" value="DELETE">
                         <input type="hidden" name="_token" value="{!! csrf_token() !!}">
                         <button style="display:inline-block;" type="submit" class="btn btn-danger btn-sm"><b>Delete</b></button>

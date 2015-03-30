@@ -71,11 +71,15 @@
                           <ul class="dropdown-menu" role="menu">
                               <li role="presentation" ><a href="/user/profile">My Stuff</a></li>
                               <?php
-                                  $user = Auth::user();
-                                $governmentId = $user->getGovernmentId();
+                                    $user = Auth::user();
+                              $governmentOrg = $user->getGovernmentOrg();
+                              $mediaOrg = $user->getMediaOrg();
                               ?>
-                              @if ($governmentId != null)
-                                  <li role="presentation"><a href="/governments/{!!$governmentId!!}">Government Administration</a></li>
+                              @if ($governmentOrg != null)
+                                  <li role="presentation"><a href="/governments/{!!$governmentOrg->id!!}">{!!$governmentOrg->name!!}</a></li>
+                              @endif
+                              @if ($mediaOrg != null)
+                                  <li role="presentation"><a href="/media/{!!$mediaOrg->id!!}">{!! $mediaOrg->name !!}</a></li>
                               @endif
                               @if ($user->projectcreator)
                                   <li role="presentation" ><a href="/admin/projects">Projects</a></li>

@@ -5,6 +5,7 @@
   <li role="presentation" class="active"><a href="/system/settings">Settings</a></li>
   <li role="presentation"><a href="/system/users">Users</a></li>
   <li role="presentation"><a href="/system/governments">Governments</a></li>
+    <li role="presentation"><a href="/system/media">Media</a></li>
 </ul>
   <h1>System-Wide Settings</h1>
 

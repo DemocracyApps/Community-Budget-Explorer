@@ -15,7 +15,6 @@ class AshevilleSeeder extends Seeder {
         $user = User::where('email','=','eric@deepweave.com')->first();
         $org = new GovernmentOrganization();
         $org->name = "Asheville City Government";
-        $org->slug = "asheville";
         $org->save();
         $org->addMember($user, 9);
 
@@ -27,6 +26,7 @@ class AshevilleSeeder extends Seeder {
         $chart->save();
 
         \Log::info("Process accounts");
+        echo "Process accounts\n";
         $filePath = "../sample_data/AVL2014/canonical/accounts.csv";
         if (file_exists($filePath)) {
             \Bus::dispatch(new \DemocracyApps\GB\Commands\DataImport\LoadAccounts($filePath, $chart->id, false));
@@ -36,22 +36,27 @@ class AshevilleSeeder extends Seeder {
         // Now create the categories
         $order = array();
         \Log::info("Process funds");
+        echo "Process funds\n";
         // Fund
         $cat = $this->createCategory("Fund", $chart->id, "../sample_data/AVL2014/canonical/cat_fund.csv");
         $order[] = $cat->id;
         \Log::info("Process departments");
+        echo "Process departments\n";
         // Department
         $cat = $this->createCategory("Department", $chart->id, "../sample_data/AVL2014/canonical/cat_department.csv");
         $order[] = $cat->id;
         \Log::info("Process divisions");
+        echo "Process divisions\n";
         // Division
         $cat = $this->createCategory("Division", $chart->id, "../sample_data/AVL2014/canonical/cat_division.csv");
         $order[] = $cat->id;
         \Log::info("Process functions");
+        echo "Process functions\n";
         // Function
         $cat = $this->createCategory("Function", $chart->id, "../sample_data/AVL2014/canonical/cat_function.csv");
         $order[] = $cat->id;
         \Log::info("Process cost centers");
+        echo "Process cost centers\n";
         // Cost Center
         $cat = $this->createCategory("Cost Center", $chart->id, "../sample_data/AVL2014/canonical/cat_costcenter.csv");
         $order[] = $cat->id;
@@ -60,11 +65,13 @@ class AshevilleSeeder extends Seeder {
         // And finally, let's load up the datasets
 
         \Log::info("Process 2014 Budget");
+        echo "Process 2014 Budget\n";
         $ds = $this->createDataset("2014 Budget", "budget", Dataset::ANNUAL, 2014, null, null,
             $org->id, $chart->id, $order);
         $ds->loadCSVData("../sample_data/AVL2014/canonical/2014AdoptedBudget_processed.csv", "all");
 
         \Log::info("Process 2013 Actuals");
+        echo "Process 2013 Actuals\n";
         $ds = $this->createDataset("2013 Actuals", "actual", Dataset::ANNUAL, 2013, null, null,
                                    $org->id, $chart->id, $order);
         $ds->loadCSVData("../sample_data/AVL2014/canonical/general_fund_2013_processed.csv", "general");
@@ -76,6 +83,7 @@ class AshevilleSeeder extends Seeder {
         $ds->loadCSVData("../sample_data/AVL2014/canonical/water_fund_2013_processed.csv", "water");
 
         \Log::info("Process 2012 Actuals");
+        echo "Process 2012 Actuals\n";
         $ds = $this->createDataset("2012 Actuals", "actual", Dataset::ANNUAL, 2012, null, null,
             $org->id, $chart->id, $order);
         $ds->loadCSVData("../sample_data/AVL2014/canonical/general_fund_2012_processed.csv", "general");
@@ -87,6 +95,7 @@ class AshevilleSeeder extends Seeder {
         $ds->loadCSVData("../sample_data/AVL2014/canonical/water_fund_2012_processed.csv", "water");
 
         \Log::info("Process 2011 Actuals");
+        echo "Process 2011 Actuals\n";
         $ds = $this->createDataset("2011 Actuals", "actual", Dataset::ANNUAL, 2011, null, null,
             $org->id, $chart->id, $order);
         $ds->loadCSVData("../sample_data/AVL2014/canonical/general_fund_2011_processed.csv", "general");
@@ -98,6 +107,7 @@ class AshevilleSeeder extends Seeder {
         $ds->loadCSVData("../sample_data/AVL2014/canonical/water_fund_2011_processed.csv", "water");
 
         \Log::info("Process 2010 Actuals");
+        echo "Process 2010 Actuals\n";
         $ds = $this->createDataset("2010 Actuals", "actual", Dataset::ANNUAL, 2010, null, null,
             $org->id, $chart->id, $order);
         $ds->loadCSVData("../sample_data/AVL2014/canonical/general_fund_2010_processed.csv", "general");

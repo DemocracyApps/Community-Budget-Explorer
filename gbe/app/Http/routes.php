@@ -42,7 +42,7 @@ require app_path().'/Http/Routes/auth.php';
  * PLATFORM admin pages
  *************************************************
  *************************************************/
-Route::group(['prefix' => 'system', 'middleware' => 'cnp.system'], function ()
+Route::group(['prefix' => 'system', 'middleware' => 'gb.system'], function ()
 {
     require __DIR__.'/Routes/system.php';
 });
@@ -55,6 +55,16 @@ Route::group(['prefix' => 'system', 'middleware' => 'cnp.system'], function ()
 Route::group(['middleware' => 'gb.government'], function ()
 {
     require __DIR__.'/Routes/government.php';
+});
+
+/*************************************************
+ *************************************************
+ * MEDIA admin pages
+ *************************************************
+ *************************************************/
+Route::group(['middleware' => 'gb.media'], function ()
+{
+    require __DIR__.'/Routes/media.php';
 });
 
 Route::group(['prefix' => 'api/v1'], function () {

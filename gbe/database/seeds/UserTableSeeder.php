@@ -12,10 +12,10 @@ class UserTableSeeder extends Seeder {
         DB::table('users')->delete();
 
         $user = User::create(['email' => 'admin@democracyapps.us', 'name'=>'DemocracyApps Administrator',
-            'password' => \Hash::make('democracy01'), 'superuser'=>true,
+            'password' => \Hash::make('democracy01'), 'superuser'=>true, 'projectcreator'=>true,
             'verified' => true]);
         $user = User::create(['email' => 'eric@deepweave.com', 'name'=>'Eric Jackson',
-            'password' => \Hash::make('democracy01'), 'superuser'=>true,
+            'password' => \Hash::make('democracy01'), 'superuser'=>true, 'projectcreator'=>true,
             'verified' => true]);
 
 

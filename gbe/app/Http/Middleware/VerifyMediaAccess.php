@@ -1,9 +1,9 @@
 <?php namespace DemocracyApps\GB\Http\Middleware;
 
 use Closure;
-use DemocracyApps\GB\Organizations\GovernmentOrganization;
+use DemocracyApps\GB\Organizations\MediaOrganization;
 
-class VerifyGovernmentAccess {
+class VerifyMediaAccess {
 
     /**
      * Handle an incoming request.
@@ -16,21 +16,21 @@ class VerifyGovernmentAccess {
     {
         if (\Auth::guest()) return redirect()->guest('/auth/login');
 
-        $government = null;
+        $mediaOrg = null;
 
         $id = $request->segment(2);
         if (is_integer($id)) {
-            $government = GovernmentOrganization::find($id);
+            $mediaOrg = MediaOrganization::find($id);
         }
 
-        if ($government != null) {
+        if ($mediaOrg != null) {
 
-            if (!$government->userHasAccess(\Auth::user(), 9)) {
+            if (!$mediaOrg->userHasAccess(\Auth::user(), 9)) {
                 return redirect('/');
             }
         }
         else {
-            // A superuser may be creating a new government, so let it pass
+            // A superuser may be creating a new media company, so let it pass
             if (!\Auth::user()->superuser) {
                 return redirect ('/');
             }

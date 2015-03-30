@@ -18,6 +18,8 @@
  */
 use DemocracyApps\GB\Organizations\GovernmentOrganization;
 use DemocracyApps\GB\Organizations\GovernmentOrganizationUser;
+use DemocracyApps\GB\Organizations\MediaOrganization;
+use DemocracyApps\GB\Organizations\MediaOrganizationUser;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Auth\Passwords\CanResetPassword;
@@ -68,6 +70,34 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         $govt = GovernmentOrganizationUser::where('user_id', '=', $this->id)->first();
         if ($govt != null && $govt->access > 0) $id = $govt->government_organization_id;
         return $id;
+    }
+
+    public function getGovernmentOrg()
+    {
+        $org = null;
+        $govtuser = GovernmentOrganizationUser::where('user_id', '=', $this->id)->first();
+        if ($govtuser != null && $govtuser->access > 0) {
+            $org = GovernmentOrganization::find($govtuser->government_organization_id);
+        }
+        return $org;
+    }
+
+    public function getMediaId()
+    {
+        $id = null;
+        $mediauser = MediaOrganizationUser::where('user_id', '=', $this->id)->first();
+        if ($mediauser != null && $mediauser->access > 0) $id = $mediauser->media_organization_id;
+        return $id;
+    }
+
+    public function getMediaOrg()
+    {
+        $org = null;
+        $mediauser = MediaOrganizationUser::where('user_id', '=', $this->id)->first();
+        if ($mediauser != null && $mediauser->access > 0) {
+            $org = MediaOrganization::find($mediauser->media_organization_id);
+        }
+        return $org;
     }
 
 }

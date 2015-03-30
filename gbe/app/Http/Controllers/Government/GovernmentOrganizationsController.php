@@ -97,7 +97,7 @@ class GovernmentOrganizationsController extends Controller {
 	public function edit($id, Request $request)
 	{
         $org = GovernmentOrganization::find($id);
-        if ($org == null) return redirect('/system/organizations');
+        if ($org == null) return redirect('/system/governments');
         return view('government.edit', array('organization' => $org));
 	}
 

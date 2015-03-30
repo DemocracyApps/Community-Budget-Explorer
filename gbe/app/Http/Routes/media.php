@@ -17,19 +17,4 @@
  *  along with the GBE.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-Route::get('settings', 'System\SystemController@settings');
-Route::get('users', 'System\SystemController@users');
-
-Route::get('governments', 'System\SystemController@governments');
-Route::get('governments/create', 'System\SystemController@createGovernment');
-Route::post('governments', 'System\SystemController@storeGovernment');
-
-Route::get('media', 'System\SystemController@media');
-Route::get('media/create', 'System\SystemController@createMedia');
-Route::post('media', 'System\SystemController@storeMedia');
-
-
-
-
-//Route::resource('organizations', 'Government\GovernmentOrganizationsController');
-//Route::get('projects', 'SystemController@projects');
+Route::resource('media', 'Media\MediaOrganizationsController');

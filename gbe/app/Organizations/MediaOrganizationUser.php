@@ -1,4 +1,5 @@
-<?php
+<?php namespace DemocracyApps\GB\Organizations;
+
 /**
  *
  * This file is part of the Government Budget Explorer (GBE).
@@ -17,19 +18,11 @@
  *  along with the GBE.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-Route::get('settings', 'System\SystemController@settings');
-Route::get('users', 'System\SystemController@users');
+use DemocracyApps\GB\Utility\EloquentPropertiedObject;
+use DemocracyApps\MemberOrg\EloquentOrganizationMember;
+use DemocracyApps\MemberOrg\OrganizationMember;
 
-Route::get('governments', 'System\SystemController@governments');
-Route::get('governments/create', 'System\SystemController@createGovernment');
-Route::post('governments', 'System\SystemController@storeGovernment');
+class MediaOrganizationUser extends EloquentPropertiedObject implements OrganizationMember {
 
-Route::get('media', 'System\SystemController@media');
-Route::get('media/create', 'System\SystemController@createMedia');
-Route::post('media', 'System\SystemController@storeMedia');
-
-
-
-
-//Route::resource('organizations', 'Government\GovernmentOrganizationsController');
-//Route::get('projects', 'SystemController@projects');
+    use EloquentOrganizationMember;
+}
