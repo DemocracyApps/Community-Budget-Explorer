@@ -17,11 +17,11 @@
  *  along with the GBE.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-Route::get('settings', 'SystemController@settings');
-Route::get('users', 'SystemController@users');
-Route::get('governments', 'SystemController@governments');
-Route::get('governments/create', 'SystemController@createGovernment');
-Route::post('governments', 'SystemController@storeGovernment');
+Route::get('settings', 'System\SystemController@settings');
+Route::get('users', 'System\SystemController@users');
+Route::get('governments', 'System\SystemController@governments');
+Route::get('governments/create', 'System\SystemController@createGovernment');
+Route::post('governments', 'System\SystemController@storeGovernment');
 
 
 

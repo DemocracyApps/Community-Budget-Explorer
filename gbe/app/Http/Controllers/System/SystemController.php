@@ -1,4 +1,4 @@
-<?php namespace DemocracyApps\GB\Http\Controllers;
+<?php namespace DemocracyApps\GB\Http\Controllers\System;
 /**
  *
  * This file is part of the Government Budget Explorer (GBE).
@@ -17,6 +17,7 @@
  *  along with the GBE.  If not, see <http://www.gnu.org/licenses/>.
  */
 use DemocracyApps\GB\Budget\AccountChart;
+use DemocracyApps\GB\Http\Controllers\Controller;
 use DemocracyApps\GB\Organizations\GovernmentOrganization;
 use DemocracyApps\GB\Users\User;
 use Illuminate\Http\Request;
