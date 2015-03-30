@@ -1,4 +1,4 @@
-<?php
+<?php namespace DemocracyApps\GB\Sites;
 /**
  *
  * This file is part of the Government Budget Explorer (GBE).
@@ -17,9 +17,17 @@
  *  along with the GBE.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-Route::resource('media', 'Media\MediaOrganizationsController');
-Route::resource('media/{media_id}/users', 'Media\MediaUsersController');
+use DemocracyApps\GB\Utility\EloquentPropertiedObject;
 
-Route::get('media/{media_org_id}/sites', 'Media\MediaSitesController@index');
-Route::get('media/{media_org_id}/sites/create', 'Media\MediaSitesController@createSite');
-Route::post('media/{media_org_id}/sites', 'Media\MediaSitesController@storeSite');
+class Site extends EloquentPropertiedObject {
+
+    protected $table = 'sites';
+    const UNKNOWN = 0;
+    const GOVERNMENT = 1;
+    const MEDIA = 2;
+    const INDIVIDUAL = 3;
+
+    protected static $ownerTypeNames = ['Unknown', 'Government', 'Media', 'Individual'];
+
+
+}

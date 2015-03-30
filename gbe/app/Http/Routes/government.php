@@ -20,6 +20,10 @@
 Route::resource('governments', 'Government\GovernmentOrganizationsController');
 Route::resource('governments/{govId}/users', 'Government\GovernmentUsersController');
 
+Route::get('governments/{govId}/sites', 'Government\GovernmentSitesController@index');
+Route::get('governments/{govId}/sites/create', 'Government\GovernmentSitesController@createSite');
+Route::post('governments/{govId}/sites', 'Government\GovernmentSitesController@storeSite');
+
 Route::any('governments/{govId}/accounts/upload', 'Government\AccountsController@upload');
 Route::resource('governments/{govId}/accounts', 'Government\AccountsController');
 

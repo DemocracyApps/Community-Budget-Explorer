@@ -24,7 +24,8 @@
 	},
 	"autoload": {
 		"classmap": [
-			"database"
+			"database",
+            "helpers"
 		],
 		"psr-4": {
 			"DemocracyApps\\GB\\": "app/"

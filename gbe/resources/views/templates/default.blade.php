@@ -115,6 +115,12 @@
     </div>
 
     <div class="container app-container">
+        <div class="row">
+            <div class="col-md-6">
+                <span id="flash" class="error text-danger bg-danger">{!! Session::get('gbe_error') !!} </span>
+            </div>
+        </div>
+
         @yield('content')
     </div>
     <br>

@@ -1,4 +1,4 @@
-<?php
+<?php namespace DemocracyApps\GB\Http\Controllers;
 /**
  *
  * This file is part of the Government Budget Explorer (GBE).
@@ -17,9 +17,22 @@
  *  along with the GBE.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-Route::resource('media', 'Media\MediaOrganizationsController');
-Route::resource('media/{media_id}/users', 'Media\MediaUsersController');
+use DemocracyApps\GB\Http\Controllers\API\APIController;
+use DemocracyApps\GB\Http\Requests;
 
-Route::get('media/{media_org_id}/sites', 'Media\MediaSitesController@index');
-Route::get('media/{media_org_id}/sites/create', 'Media\MediaSitesController@createSite');
-Route::post('media/{media_org_id}/sites', 'Media\MediaSitesController@storeSite');
+use Illuminate\Http\Request;
+
+class AjaxController extends APIController {
+
+
+    public function main($section, $page, $func, Request $request)
+    {
+        \Log::info("In ajax controller with section " . $section);
+        $className = "\\DemocracyApps\\GB\\Ajax\\" . ucfirst($section) . "\\" . ucfirst($page). "Handler";
+
+        $reflectionMethod = new \ReflectionMethod($className, 'handle');
+        $response = $reflectionMethod->invokeArgs(null, array($func, $request));
+        return $this->setStatusAndRespond($response);
+    }
+
+}
