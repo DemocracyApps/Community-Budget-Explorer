@@ -17,6 +17,9 @@
  *  along with the GBE.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+use DemocracyApps\GB\Organizations\GovernmentOrganization;
+use DemocracyApps\GB\Organizations\MediaOrganization;
+use DemocracyApps\GB\Users\User;
 use DemocracyApps\GB\Utility\EloquentPropertiedObject;
 
 class Site extends EloquentPropertiedObject {
@@ -30,4 +33,19 @@ class Site extends EloquentPropertiedObject {
     protected static $ownerTypeNames = ['Unknown', 'Government', 'Media', 'Individual'];
 
 
+    public function userHasAccess(User $user, $requiredLevel)
+    {
+        $hasAccess = false;
+        $owner = null;
+        if ($this->owner_type == self::GOVERNMENT) {
+            $owner = GovernmentOrganization::find($this->owner);
+        }
+        else if ($this->owner_type == self::MEDIA) {
+            $owner = MediaOrganization::find($this->owner);
+        }
+        if ($owner != null) {
+            if ($owner->userHasAccess($user, $requiredLevel)) $hasAccess = true;
+        }
+        return $hasAccess;
+    }
 }

@@ -22,7 +22,7 @@
             @foreach ($sites as $site)
                 <tr>
                     <td>{!! $site->slug !!}</td>
-                    <td>{!! $site->name !!}</td>
+                    <td><a href="/build/{!! $site->slug !!}">{!! $site->name !!}</a></td>
                     @if ($site->published)
                         <td><input id="site_{!!$site->id!!}" type="checkbox" checked onchange="publish('{!! $site->id !!}')"></td>
                     @else

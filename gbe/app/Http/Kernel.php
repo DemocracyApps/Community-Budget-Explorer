@@ -50,6 +50,7 @@ class Kernel extends HttpKernel {
         'gb.system' => 'DemocracyApps\GB\Http\Middleware\VerifySystemAccess',
         'gb.government' => 'DemocracyApps\GB\Http\Middleware\VerifyGovernmentAccess',
         'gb.media' => 'DemocracyApps\GB\Http\Middleware\VerifyMediaAccess',
+        'gb.siteadmin' => 'DemocracyApps\GB\Http\Middleware\VerifySiteAdminAccess',
 	];
 
 }
