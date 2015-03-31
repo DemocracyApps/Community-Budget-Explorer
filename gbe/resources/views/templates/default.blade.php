@@ -41,6 +41,7 @@
           font-size: 110%;
         }
       </style>
+      @yield('head')
       <!-- END STYLES TO MAKE IT NICER LOOKING -->
   </head>
   <?php

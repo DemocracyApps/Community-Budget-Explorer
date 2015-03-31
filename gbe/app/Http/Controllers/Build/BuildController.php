@@ -19,6 +19,8 @@
 use DemocracyApps\GB\Http\Requests;
 use DemocracyApps\GB\Http\Controllers\Controller;
 
+use DemocracyApps\GB\Sites\Card;
+use DemocracyApps\GB\Sites\CardSet;
 use DemocracyApps\GB\Sites\Site;
 use Illuminate\Http\Request;
 
@@ -36,9 +38,28 @@ class BuildController extends Controller {
         return view('build.pages', array('site'=>$site));
     }
 
-    public function cards($slug)
+    public function cards($slug, Request $request)
     {
         $site = Site::where('slug','=', $slug)->first();
-        return view('build.cards', array('site'=>$site));
+        $list = CardSet::where('site','=',$site->id)->orderBy('id')->get();
+        $cards = Card::where('site','=',$site->id)->orderBy('id')->get();
+        $cardsets = array();
+        foreach ($list as $item) {
+            $cardset = new \stdClass();
+            $cardset->id = $item->id;
+            $cardset->name = $item->name;
+            $cardset->cards = array();
+            $cardset->cardsById = array();
+            $cardsets[$cardset->id] = $cardset;
+        }
+        foreach($cards as $card) {
+            $cardsets[$card->card_set]->cards[] = $card;
+        }
+        $selectedSet = ($list != null)?$list[0]->id:-1;
+        if ($request->has('selectedSet')) {
+            $selectedSet = $request->get('selectedSet');
+        }
+        return view('build.cards', array('site'=>$site, 'cardsets'=>$cardsets, 'cards'=>$cards,
+            'selectedSet'=>$selectedSet));
     }
 }
