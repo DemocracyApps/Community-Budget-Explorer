@@ -1,4 +1,4 @@
-<?php
+<?php namespace DemocracyApps\GB\Sites;
 /**
  *
  * This file is part of the Government Budget Explorer (GBE).
@@ -17,9 +17,10 @@
  *  along with the GBE.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-Route::get('/', 'Build\BuildController@settings');
-Route::get('/pages', 'Build\BuildController@pages');
-Route::get('/content', 'Build\BuildController@cards');
-Route::resource('/cardsets', 'Build\CardSetsController');
-Route::resource('/cards', 'Build\CardsController');
-Route::resource('/pages', 'Build\PagesController');
+use DemocracyApps\GB\Utility\EloquentPropertiedObject;
+
+
+class Page extends EloquentPropertiedObject {
+    protected $table = 'pages';
+
+}

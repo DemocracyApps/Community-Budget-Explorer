@@ -19,10 +19,10 @@
  */
 
 use DemocracyApps\GB\Ajax\BaseAjaxHandler;
-use DemocracyApps\GB\Sites\Card;
+use DemocracyApps\GB\Sites\Page;
 use Illuminate\Http\Request;
 
-class CardsOrderHandler extends BaseAjaxHandler
+class PagesHandler extends BaseAjaxHandler
 {
 
     /**
@@ -32,9 +32,13 @@ class CardsOrderHandler extends BaseAjaxHandler
      */
     static function handle($func, Request $request)
     {
-        if ($func == "setOrdinals") {
+        if ($func == "show_in_menu") {
+            return self::show_in_menu($request);
+        }
+        elseif ($fun = "setOrdinals") {
             return self::setOrdinals($request);
-        } else {
+        }
+        else {
             return self::notFoundResponse("Ajax function " . $func . " not found in MediaAdmin.SitesHandler");
         }
 
@@ -53,13 +57,15 @@ class CardsOrderHandler extends BaseAjaxHandler
         $successes = 0;
         try {
             foreach ($changes as $change) {
-                $card = Card::find($change->id);
-                if ($card == null)
+                $page = Page::find($change->id);
+                if ($page == null)
                     $fails++;
                 else {
-                    $card->ordinal = $change->ord;
-                    $card->save();
-                    $successes++;
+                    if ($page->ordinal != $change->ord) {
+                        $page->ordinal = $change->ord;
+                        $page->save();
+                        $successes++;
+                    }
                 }
             }
             $resp = "Successfully saved order changes.";
@@ -72,6 +78,28 @@ class CardsOrderHandler extends BaseAjaxHandler
             $resp = "There were errors attempting to save order changes.";
             return self::formatErrorResponse($resp);
         }
+
+        return self::oKResponse($resp, null);
+
+    }
+    private static function show_in_menu(Request $request)
+    {
+        if (!$request->has('page')) return self::formatErrorResponse('No page specified');
+
+        if (!$request->has('show')) return self::formatErrorResponse('No specification of show state');
+        $page = Page::find($request->get('page'));
+        if (!$page) return self::notFoundResponse('Page not found (ID = '.$request->get('page').')');
+        $val = $request->get('show');
+        $resp = "";
+        if (strtolower($val) == 'true') {
+            $page->show_in_menu = true;
+            $resp = $page->title . " will show in menu.";
+        }
+        else {
+            $page->show_in_menu = false;
+            $resp = $page->title . " will not show in menu.";
+        }
+        $page->save();
 
         return self::oKResponse($resp, null);
 
