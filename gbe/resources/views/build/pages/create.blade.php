@@ -24,6 +24,14 @@
     </div>
 
     <div class="form-group">
+        {!!  Form::label('description', 'Short Name (for menus): ')  !!}
+        {!!  Form::textarea('description', null, ['class' => 'form-control'])  !!}
+        <br>
+        <span class="error">{!!  $errors->first('description')  !!}</span>
+        <br>
+    </div>
+
+    <div class="form-group">
         {!!  Form::submit('Save', ['class' => 'btn btn-primary'])  !!}
     </div>
 

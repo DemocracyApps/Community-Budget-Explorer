@@ -1,12 +1,7 @@
 @extends('templates.default')
 
 @section('content')
-    <ul class="nav nav-tabs">
-        <li role="presentation"><a href="/system/settings">Settings</a></li>
-        <li role="presentation"><a href="/system/users">Users</a></li>
-        <li role="presentation" class="active"><a href="/system/governments">Governments</a></li>
-        <li role="presentation"><a href="/system/media">Media</a></li>
-    </ul>
+    @include('system.tabs', ['page'=>'governments'])
 
     <div class="row">
         <div class="col-xs-6">

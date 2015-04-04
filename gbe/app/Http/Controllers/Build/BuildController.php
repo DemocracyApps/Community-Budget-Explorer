@@ -55,7 +55,7 @@ class BuildController extends Controller {
         foreach($cards as $card) {
             $cardsets[$card->card_set]->cards[] = $card;
         }
-        $selectedSet = ($list != null)?$list[0]->id:-1;
+        $selectedSet = ($list != null && sizeof($list) > 0)?$list[0]->id:-1;
         if ($request->has('selectedSet')) {
             $selectedSet = $request->get('selectedSet');
         }

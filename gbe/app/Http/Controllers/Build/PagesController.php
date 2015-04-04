@@ -4,6 +4,7 @@ use DemocracyApps\GB\Http\Requests;
 use DemocracyApps\GB\Http\Controllers\Controller;
 
 use DemocracyApps\GB\Sites\Page;
+use DemocracyApps\GB\Sites\Row;
 use DemocracyApps\GB\Sites\Site;
 use Illuminate\Http\Request;
 
@@ -51,11 +52,11 @@ class PagesController extends Controller {
         $site = Site::where('slug','=',$slug)->first();
         $this->page->title = $request->get('title');
         $this->page->short_name = $request->get('short_name');
+        if ($request->has('description')) $this->page->description = $request->get('description');
         $this->page->site = $site->id;
         $this->page->save();
         $this->page->ordinal = $this->page->id;
         $this->page->save();
-        $id = $this->page->id;
         return redirect("/build/$slug/pages");
     }
 
@@ -65,10 +66,13 @@ class PagesController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function show($id)
+	public function show($slug, $id)
 	{
-		//
-	}
+        $site = Site::where('slug','=',$slug)->first();
+        $this->page = Page::find($id);
+        $rows = Row::where('page_id','=',$id)->orderBy('id')->get();
+        return view('build.pages.show', array('site'=>$site, 'page'=> $this->page, 'rows'=>$rows));
+    }
 
 	/**
 	 * Show the form for editing the specified resource.
@@ -76,9 +80,11 @@ class PagesController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function edit($id)
+	public function edit($slug, $id)
 	{
-		//
+        $site = Site::where('slug','=',$slug)->first();
+        $this->page = Page::find($id);
+        return view('build.pages.edit', ['site'=>$site, 'page'=>$this->page]);
 	}
 
 	/**
@@ -87,10 +93,20 @@ class PagesController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function update($id)
+	public function update($slug, $id, Request $request)
 	{
-		//
-	}
+        $rules = ['title'=>'required', 'short_name'=>'required'];
+        $this->validate($request, $rules);
+
+        $site = Site::where('slug','=',$slug)->first();
+        $this->page = Page::find($id);
+        $this->page->title = $request->get('title');
+        $this->page->short_name = $request->get('short_name');
+        if ($request->has('description')) $this->page->description = $request->get('description');
+        $this->page->site = $site->id;
+        $this->page->save();
+        return redirect("/build/$slug/pages/" . $this->page->id);
+    }
 
 	/**
 	 * Remove the specified resource from storage.

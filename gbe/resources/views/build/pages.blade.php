@@ -16,7 +16,7 @@
         <table id="sort" class="grid table" title="All Pages">
             <thead>
                 <tr>
-                    <th>Show In Menu?</th><th>Page Title</th><th>Edit</th>
+                    <th>Show In Menu?</th><th>Page Title</th><th>Page ShortName</th><th>Page Description</th>
                 </tr>
             </thead>
             <tbody>
@@ -27,8 +27,9 @@
                     @else
                         <td><input id="page_{!!$page->id!!}" type="checkbox" onchange="show_in_menu('{!! $page->id !!}')"></td>
                     @endif
-
-                    <td>{!! $page->title !!}</td><td><a href="#" class="btn btn-sm btn-primary">Edit</a></td>
+                    <td><a href="/build/{!! $site->slug !!}/pages/{!!$page->id!!}" >{!! $page->title !!}</a></td>
+                    <td>{!! $page->short_name !!}</td>
+                    <td>{!! $page->description !!}</td>
                 </tr>
             @endforeach
             </tbody>
