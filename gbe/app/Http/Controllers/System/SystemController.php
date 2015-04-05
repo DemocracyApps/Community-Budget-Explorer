@@ -20,6 +20,8 @@ use DemocracyApps\GB\Budget\AccountChart;
 use DemocracyApps\GB\Http\Controllers\Controller;
 use DemocracyApps\GB\Organizations\GovernmentOrganization;
 use DemocracyApps\GB\Organizations\MediaOrganization;
+use DemocracyApps\GB\Services\JsonProcessor;
+use DemocracyApps\GB\Sites\Layout;
 use DemocracyApps\GB\Users\User;
 use Illuminate\Http\Request;
 
@@ -116,5 +118,80 @@ class SystemController extends Controller
         return redirect("/media/$organization->id");
     }
 
+    public function layouts ()
+    {
+        $layouts = Layout::orderBy('id')->get();
+        return view('system.layouts', array('layouts' => $layouts));
+    }
 
+    public function createLayout()
+    {
+        return view('system.layouts.create');
+    }
+
+    public function storeLayout(Request $request)
+    {
+        $rules=['name'=>'required'];
+        $this->validate($request, $rules);
+
+        $layout = new Layout();
+        $layout->name = $request->get('name');
+        if ($request->has('description')) $layout->description = $request->get('description');
+
+        $layout->public = true;
+        $layout->owner = \Auth::user()->id;
+        // Now load in the file
+        if ($request->hasFile('specification')) {
+            $specification = $this->loadLayout($request->file('specification'));
+            if ($specification == null) {
+                return \Redirect::back()->withInput()->withErrors(array('fileerror' => 'JSON not well-formed'));
+            }
+            $layout->specification = $specification;
+        }
+
+        $layout->save();
+        return redirect('/system/layouts');
+    }
+
+    public function editLayout($id)
+    {
+        $layout = Layout::find($id);
+        return view('system.layouts.edit', array('layout'=>$layout));
+    }
+
+    public function updateLayout ($id, Request $request)
+    {
+        $rules=['name'=>'required'];
+        $this->validate($request, $rules);
+
+        $layout = Layout::find($id);
+        $layout->name = $request->get('name');
+        if ($request->has('description')) $layout->description = $request->get('description');
+
+        // Now load in the file
+        if ($request->hasFile('specification')) {
+            $specification = $this->loadLayout($request->file('specification'));
+            if ($specification == null) {
+                return \Redirect::back()->withInput()->withErrors(array('fileerror' => 'JSON not well-formed'));
+            }
+            $layout->specification = $specification;
+        }
+
+        $layout->save();
+        return redirect('/system/layouts');
+    }
+
+    private function loadLayout($file)
+    {
+        $jp = new JsonProcessor();
+
+        $specification = \File::get($file->getRealPath());
+
+        $str = $jp->minifyJson($specification);
+        $cfig = $jp->decodeJson($str, true);
+        if ( ! $cfig) {
+            return null;
+        }
+        return $specification;
+    }
 }

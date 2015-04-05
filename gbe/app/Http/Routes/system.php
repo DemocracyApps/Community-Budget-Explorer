@@ -28,8 +28,8 @@ Route::get('media', 'System\SystemController@media');
 Route::get('media/create', 'System\SystemController@createMedia');
 Route::post('media', 'System\SystemController@storeMedia');
 
-
-
-
-//Route::resource('organizations', 'Government\GovernmentOrganizationsController');
-//Route::get('projects', 'SystemController@projects');
+Route::get('layouts', 'System\SystemController@layouts');
+Route::get('layouts/create', 'System\SystemController@createLayout');
+Route::post('layouts', 'System\SystemController@storeLayout');
+Route::get('layouts/{layoutId}/edit', 'System\SystemController@editLayout');
+Route::put('layouts/{layoutId}', 'System\SystemController@updateLayout');
