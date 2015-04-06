@@ -5,7 +5,7 @@
       "divs": [
         {
           "id":"Left",
-          "class":"col-xs-4"
+          "class":"col-xs-4 error text-danger bg-danger"
         },
         {
           "id":"Middle",
