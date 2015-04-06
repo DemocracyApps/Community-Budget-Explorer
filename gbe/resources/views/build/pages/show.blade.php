@@ -54,7 +54,7 @@
                 </tr>
             @endforeach
         </table>
-        <a class="btn btn-primary" href="/build{!! $site->slug !!}/pages/{!! $page->id !!}/components/create">New Component</a>
+        <a class="btn btn-primary" href="/build/{!! $site->slug !!}/pages/{!! $page->id !!}/components/create">New Component</a>
     </div>
     <div class="row">
 
@@ -127,7 +127,7 @@
                 }
                 if (pc.target != null) {
                     var block = $("#block_" + pc.target);
-                    block.append("<p>" + GBEVars.components[pc.id].name + " </p>");
+                    block.append("<p>" + GBEVars.components[pc.component].name + " </p>");
                 }
             }
         }

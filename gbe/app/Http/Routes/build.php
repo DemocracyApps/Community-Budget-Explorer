@@ -23,4 +23,4 @@ Route::get('/content', 'Build\BuildController@cards');
 Route::resource('/cardsets', 'Build\CardSetsController');
 Route::resource('/cards', 'Build\CardsController');
 Route::resource('/pages', 'Build\PagesController');
-Route::resource('/pages/{pageId}/rows', 'Build\RowsController');
+Route::resource('/pages/{pageId}/components', 'Build\ComponentsController');

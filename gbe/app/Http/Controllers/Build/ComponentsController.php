@@ -4,17 +4,18 @@ use DemocracyApps\GB\Http\Requests;
 use DemocracyApps\GB\Http\Controllers\Controller;
 
 use DemocracyApps\GB\Sites\Page;
+use DemocracyApps\GB\Sites\PageComponent;
 use DemocracyApps\GB\Sites\Site;
 use DemocracyApps\GB\Sites\Component;
 use Illuminate\Http\Request;
 
-class RowsController extends Controller {
+class ComponentsController extends Controller {
 
-    protected $row;
+    protected $pageComponent;
 
-    public function __construct(Component $row)
+    public function __construct(PageComponent $pageComponent)
     {
-        $this->row = $row;
+        $this->pageComponent = $pageComponent;
     }
     /**
      * Display a listing of the resource.
@@ -35,7 +36,8 @@ class RowsController extends Controller {
     {
         $site = Site::where('slug','=',$slug)->first();
         $page = Page::find($pageId);
-        return view('build.pages.rows.create', ['site'=>$site, 'page'=>$page]);
+        $components = Component::all();
+        return view('build.pages.components.create', ['site'=>$site, 'page'=>$page, 'components'=>$components]);
     }
 
     /**
@@ -45,13 +47,10 @@ class RowsController extends Controller {
      */
     public function store($slug, $pageId, Request $request)
     {
-        $rules = ['title'=>'required'];
-        $this->validate($request, $rules);
-
         $site = Site::where('slug','=',$slug)->first();
-        $this->row->title = $request->get('title');
-        $this->row->page_id = $pageId;
-        $this->row->save();
+        $this->pageComponent->component = $request->get('component');
+        $this->pageComponent->page = $pageId;
+        $this->pageComponent->save();
         return redirect("/build/$slug/pages/$pageId");
     }
 
