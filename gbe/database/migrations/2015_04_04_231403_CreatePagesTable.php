@@ -22,6 +22,8 @@ class CreatePagesTable extends Migration {
             $table->string('description')->nullable();
             $table->integer('ordinal')->nullable();
             $table->boolean('show_in_menu')->default(true);
+            $table->integer('layout')->nullable();
+            $table->foreign('layout')->references('id')->on("layouts");
             $table->text('properties')->nullable();
 			$table->timestamps();
 		});

@@ -16,7 +16,7 @@
         <table id="sort" class="grid table" title="All Pages">
             <thead>
                 <tr>
-                    <th>Show In Menu?</th><th>Page Title</th><th>Page ShortName</th><th>Page Description</th>
+                    <th>Show In Menu?</th><th>Page Title</th><th>Page ShortName</th><th>Layout</th><th>Page Description</th>
                 </tr>
             </thead>
             <tbody>
@@ -29,6 +29,7 @@
                     @endif
                     <td><a href="/build/{!! $site->slug !!}/pages/{!!$page->id!!}" >{!! $page->title !!}</a></td>
                     <td>{!! $page->short_name !!}</td>
+                    <td> {!! $page->layout ==null?'--Default--':$layouts[$page->layout]->name!!} </td>
                     <td>{!! $page->description !!}</td>
                 </tr>
             @endforeach

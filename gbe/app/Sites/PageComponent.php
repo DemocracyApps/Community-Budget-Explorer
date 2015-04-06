@@ -20,11 +20,7 @@
 use DemocracyApps\GB\Utility\EloquentPropertiedObject;
 
 
-class Layout extends EloquentPropertiedObject {
-    protected $table = 'layouts';
-
-    const BOOTSTRAP = 1;
-
-    const OTHER = 9;
+class PageComponent extends EloquentPropertiedObject {
+    protected $table = 'page_components';
 
 }

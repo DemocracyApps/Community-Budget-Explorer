@@ -5,14 +5,14 @@ use DemocracyApps\GB\Http\Controllers\Controller;
 
 use DemocracyApps\GB\Sites\Page;
 use DemocracyApps\GB\Sites\Site;
-use DemocracyApps\GB\Sites\Row;
+use DemocracyApps\GB\Sites\Component;
 use Illuminate\Http\Request;
 
 class RowsController extends Controller {
 
     protected $row;
 
-    public function __construct(Row $row)
+    public function __construct(Component $row)
     {
         $this->row = $row;
     }

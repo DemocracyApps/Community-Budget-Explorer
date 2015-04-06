@@ -1,0 +1,13 @@
+{
+  "name":"One-Column",
+  "rows": [
+    {
+      "divs": [
+        {
+          "id":"main",
+          "class":"col-xs-12"
+        }
+      ]
+    }
+  ]
+}

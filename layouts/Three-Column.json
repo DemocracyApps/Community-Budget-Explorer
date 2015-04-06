@@ -1,0 +1,21 @@
+{
+  "name":"Three-Column",
+  "rows": [
+    {
+      "divs": [
+        {
+          "id":"Left",
+          "class":"col-xs-4"
+        },
+        {
+          "id":"Middle",
+          "class":"col-xs-4"
+        },
+        {
+          "id":"Right",
+          "class":"col-xs-4"
+        }
+      ]
+    }
+  ]
+}

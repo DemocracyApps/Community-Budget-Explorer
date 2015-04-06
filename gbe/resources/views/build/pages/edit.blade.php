@@ -25,7 +25,18 @@
         </div>
 
         <div class="form-group">
-            {!!  Form::label('description', 'Short Name (for menus): ')  !!}
+            <label for="layout">Layout:</label>
+            <select name="layout" >
+                <option value="0" {!! $page->layout==null?'selected':' '!!}>--Default--</option>
+                @foreach ($layouts as $layout)
+                    <option value="{!! $layout->id !!}" {!! $page->layout==$layout->id?'selected':' '!!}>{!! $layout->name !!}</option>
+                @endforeach
+            </select>
+            <br>
+        </div>
+
+        <div class="form-group">
+            {!!  Form::label('description', 'Description: ')  !!}
             {!!  Form::textarea('description', $page->description, ['class' => 'form-control'])  !!}
             <br>
             <span class="error">{!!  $errors->first('description')  !!}</span>

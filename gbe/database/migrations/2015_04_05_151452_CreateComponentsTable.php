@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateLayoutsTable extends Migration {
+class CreateComponentsTable extends Migration {
 
 	/**
 	 * Run the migrations.
@@ -12,16 +12,14 @@ class CreateLayoutsTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('layouts', function(Blueprint $table)
+		Schema::create('components', function(Blueprint $table)
 		{
 			$table->increments('id');
-            $table->integer('type');
             $table->string('name');
             $table->text('description')->nullable();
-            $table->text('specification')->nullable();
-            $table->integer('owner');
+            $table->integer('type');
+            $table->integer('owner')->default(1);
             $table->foreign('owner')->references('id')->on('users');
-            $table->boolean('public')->default(true);
             $table->text('properties')->nullable();
 			$table->timestamps();
 		});
@@ -34,7 +32,7 @@ class CreateLayoutsTable extends Migration {
 	 */
 	public function down()
 	{
-		Schema::drop('layouts');
+		Schema::drop('components');
 	}
 
 }

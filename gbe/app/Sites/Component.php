@@ -20,7 +20,11 @@
 use DemocracyApps\GB\Utility\EloquentPropertiedObject;
 
 
-class Row extends EloquentPropertiedObject {
-    protected $table = 'rows';
+class Component extends EloquentPropertiedObject {
+    protected $table = 'components';
+
+    const SYSTEM = 1;
+    const CORE = 2;
+    const CONTRIBUTED = 3;
 
 }

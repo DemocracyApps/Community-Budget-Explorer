@@ -3,6 +3,7 @@
 use DemocracyApps\GB\Sites\Card;
 use DemocracyApps\GB\Sites\CardSet;
 use DemocracyApps\GB\Sites\Page;
+use DemocracyApps\GB\Sites\PageComponent;
 use DemocracyApps\GB\Sites\Site;
 use Illuminate\Database\Seeder;
 
@@ -56,7 +57,17 @@ class AshevilleSiteSeeder extends Seeder
         $page->ordinal = 1;
         $page->show_in_menu = true;
         $page->description = "The first page of the site.";
+        $page->layout = 2;
         $page->save();
+
+        $c = new PageComponent();
+        $c->component = 1;
+        $c->page = $page->id;
+        $c->save();
+        $c = new PageComponent();
+        $c->component = 2;
+        $c->page = $page->id;
+        $c->save();
 
         $page = new Page();
         $page->site = $site->id;
@@ -65,6 +76,7 @@ class AshevilleSiteSeeder extends Seeder
         $page->ordinal = 2;
         $page->show_in_menu = true;
         $page->description = "The second page of the site.";
+        $page->layout = 1;
         $page->save();
 
         $page = new Page();
@@ -74,6 +86,7 @@ class AshevilleSiteSeeder extends Seeder
         $page->ordinal = 3;
         $page->show_in_menu = true;
         $page->description = "The third page of the site.";
+        $page->layout = 1;
         $page->save();
 
     }

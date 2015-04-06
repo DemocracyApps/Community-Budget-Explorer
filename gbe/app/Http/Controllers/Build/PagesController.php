@@ -3,8 +3,11 @@
 use DemocracyApps\GB\Http\Requests;
 use DemocracyApps\GB\Http\Controllers\Controller;
 
+use DemocracyApps\GB\Services\JsonProcessor;
+use DemocracyApps\GB\Sites\Component;
+use DemocracyApps\GB\Sites\Layout;
 use DemocracyApps\GB\Sites\Page;
-use DemocracyApps\GB\Sites\Row;
+use DemocracyApps\GB\Sites\PageComponent;
 use DemocracyApps\GB\Sites\Site;
 use Illuminate\Http\Request;
 
@@ -25,7 +28,12 @@ class PagesController extends Controller {
     {
         $site = Site::where('slug','=',$slug)->first();
         $pages = Page::where('site','=',$site->id)->orderBy('ordinal')->get();
-        return view('build.pages', array('site'=>$site, 'pages'=>$pages));
+        $list=Layout::all();
+        $layouts = array();
+        foreach ($list as $item) {
+            $layouts[$item->id] = $item;
+        }
+        return view('build.pages', array('site'=>$site, 'pages'=>$pages, 'layouts'=>$layouts));
     }
 
     /**
@@ -36,7 +44,8 @@ class PagesController extends Controller {
     public function create($slug)
     {
         $site = Site::where('slug','=',$slug)->first();
-        return view('build.pages.create', ['site'=>$site]);
+        $layouts = Layout::where('public','=',true)->orderBy('id')->get();
+        return view('build.pages.create', ['site'=>$site, 'layouts'=>$layouts]);
     }
 
     /**
@@ -52,6 +61,10 @@ class PagesController extends Controller {
         $site = Site::where('slug','=',$slug)->first();
         $this->page->title = $request->get('title');
         $this->page->short_name = $request->get('short_name');
+        if ($request->has('layout')) {
+            $layout = $request->layout;
+            if ($layout > 0) $this->page->layout = $layout;
+        }
         if ($request->has('description')) $this->page->description = $request->get('description');
         $this->page->site = $site->id;
         $this->page->save();
@@ -70,8 +83,33 @@ class PagesController extends Controller {
 	{
         $site = Site::where('slug','=',$slug)->first();
         $this->page = Page::find($id);
-        $rows = Row::where('page_id','=',$id)->orderBy('id')->get();
-        return view('build.pages.show', array('site'=>$site, 'page'=> $this->page, 'rows'=>$rows));
+        $list=Layout::all();
+        $lId = 1;
+        if ($this->page->layout != null) $lId = $this->page->layout;
+        $layout = Layout::find($lId);
+        $jp = new JsonProcessor();
+
+        $str = $jp->minifyJson($layout->specification);
+        $cfig = $jp->decodeJson($str, true);
+        if ( ! $cfig) {
+            throw new \Exception("Unable to part layout specification " . $layout->name);
+        }
+        $layout->specification = $cfig;
+
+        $targets = array();
+        foreach($layout->specification['rows'] as $row) {
+            foreach($row['divs'] as $div) {
+                $targets[] = $div['id'];
+            }
+        }
+        $pageComponents = PageComponent::where('page','=',$id)->get();
+        $list = Component::all();
+        $components = array();
+        foreach ($list as $item) {
+            $components[$item->id] = $item;
+        }
+        return view('build.pages.show', array('site'=>$site, 'page'=> $this->page, 'targets'=>$targets,
+                    'layout'=>$layout, 'pageComponents'=>$pageComponents, 'components'=>$components));
     }
 
 	/**
@@ -84,7 +122,8 @@ class PagesController extends Controller {
 	{
         $site = Site::where('slug','=',$slug)->first();
         $this->page = Page::find($id);
-        return view('build.pages.edit', ['site'=>$site, 'page'=>$this->page]);
+        $layouts = Layout::where('public','=',true)->orderBy('id')->get();
+        return view('build.pages.edit', ['site'=>$site, 'page'=>$this->page,'layouts'=>$layouts]);
 	}
 
 	/**
@@ -102,6 +141,13 @@ class PagesController extends Controller {
         $this->page = Page::find($id);
         $this->page->title = $request->get('title');
         $this->page->short_name = $request->get('short_name');
+        if ($request->has('layout')) {
+            $layout = $request->layout;
+            if ($layout > 0) $this->page->layout = $layout;
+        }
+        else {
+            $this->page->layout = null;
+        }
         if ($request->has('description')) $this->page->description = $request->get('description');
         $this->page->site = $site->id;
         $this->page->save();

@@ -20,6 +20,7 @@
 
 use DemocracyApps\GB\Ajax\BaseAjaxHandler;
 use DemocracyApps\GB\Sites\Page;
+use DemocracyApps\GB\Sites\PageComponent;
 use Illuminate\Http\Request;
 
 class PagesHandler extends BaseAjaxHandler
@@ -32,19 +33,48 @@ class PagesHandler extends BaseAjaxHandler
      */
     static function handle($func, Request $request)
     {
+        \Log::info("In PagesHandler with function " . $func);
         if ($func == "show_in_menu") {
             return self::show_in_menu($request);
-        }
-        elseif ($fun = "setOrdinals") {
+        } elseif ($func == "setOrdinals") {
             return self::setOrdinals($request);
-        }
-        else {
+        } elseif ($func == "changeComponentTarget") {
+            return self::changeComponentTarget($request);
+        } else {
             return self::notFoundResponse("Ajax function " . $func . " not found in MediaAdmin.SitesHandler");
         }
 
         return null;
     }
 
+    private static function changeComponentTarget(Request $request)
+    {
+
+        if (!$request->has('pc')) return self::formatErrorResponse("No page component ID specified");
+        if (!$request->has('target')) return self::formatErrorResponse("No target specified");
+
+        try {
+            $pc = PageComponent::find($request->get('pc'));
+            \Log::info("The page components is " . $pc);
+            if ($pc == null) {
+                return self::notFoundResponse('Page component not found (ID = ' . $request->get('pc') . ')');
+            }
+            $target = $request->get('target');
+            if ($target == '--') {
+                $pc->target = null;
+            } else {
+                $pc->target = $target;
+            }
+            \Log::info("Now it is " . $pc);
+            $pc->save();
+            $resp = "Saved target change";
+        }
+        catch (\Exception $ex) {
+            $resp = "There were errors attempting to save target change.";
+            return self::formatErrorResponse($resp);
+        }
+        return self::oKResponse($resp, null);
+    }
 
     private static function setOrdinals(Request $request)
     {
