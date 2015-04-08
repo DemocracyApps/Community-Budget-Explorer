@@ -114,6 +114,8 @@ sudo apt-get -y autoremove
 sudo apt-add-repository -y ppa:chris-lea/node.js
 sudo apt-get -y update
 sudo apt-get -y install nodejs
+sudo npm install -g gulp
+sudo npm install -g bower
 sudo npm install -g react
 
 
