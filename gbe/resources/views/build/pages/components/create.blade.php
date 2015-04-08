@@ -17,7 +17,7 @@
             <br>
         </div>
         <hr>
-        <p>This area will contain configuration stuff for the component</p>
+        <p>You can configure this component from the next screen.</p>
         <div class="form-group">
             {!!  Form::submit('Save', ['class' => 'btn btn-primary'])  !!}
         </div>

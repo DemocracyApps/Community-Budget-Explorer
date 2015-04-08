@@ -2,7 +2,7 @@
   "name":"Three-Column",
   "rows": [
     {
-      "divs": [
+      "columns": [
         {
           "id":"Left",
           "class":"col-xs-4 error text-danger bg-danger"

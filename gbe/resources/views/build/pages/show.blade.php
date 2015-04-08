@@ -50,7 +50,7 @@
                             @endforeach
                         </select>
                     </td>
-                    <td><a href="/build{!! $site->slug !!}/pages/{!! $page->id !!}/components/{!! $pc->id !!}/edit">Configure</a></td>
+                    <td><a href="/build/{!! $site->slug !!}/pages/{!! $page->id !!}/components/{!! $pc->id !!}/edit">Configure</a></td>
                 </tr>
             @endforeach
         </table>
@@ -66,10 +66,10 @@
         <div class="col-md-6">
             @foreach ($layout->specification['rows'] as $row)
                 <div class="row">
-                    @foreach ($row['divs'] as $div)
-                        <div style="min-height:200px; border: 1px solid black;" class="{!! $div['class'] !!}">
-                            <b>{!! $div['id'] !!}</b><br><br>
-                            <div id="block_{!! $div['id'] !!}" style="padding-bottom: 1000px;margin-bottom: -1000px">
+                    @foreach ($row['columns'] as $column)
+                        <div style="min-height:200px; border: 1px solid black;" class="{!! $column['class'] !!}">
+                            <b>{!! $column['id'] !!}</b><br><br>
+                            <div id="block_{!! $column['id'] !!}" style="padding-bottom: 1000px;margin-bottom: -1000px">
                                 <p>Placeholder</p>
                             </div>
                         </div>
@@ -137,7 +137,7 @@
         function setupLayoutComponents ()
         {
             GBEVars.layout.specification.rows.map(function (current, index) {
-                current.divs.map(function(current, index) {
+                current.columns.map(function(current, index) {
                     blocks.push(current.id);
                 });
             });

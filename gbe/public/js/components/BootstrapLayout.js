@@ -2,46 +2,49 @@ var BootstrapLayout = React.createClass({
 
     getInitialState: function() {
         return {
-            items: [
-                'Item 1', 'Item 2'
-            ],
-            layout:null,
-            counter:0,
-            task:''
+            components:{}
         };
     },
 
-    onChange: function(e) {
-        this.setState({task: e.target.value});
+    renderComponent: function (component, index) {
+        var comp = this.props.componentsMap[component.componentName];
+        return React.createElement(comp, {key:index});
     },
 
-    buildDiv: function (div) {
-        return (<div id={div.id} key={div.id} className={div.class}> {div.id}</div>);
+    buildColumn: function (column, index) {
+        var clist = [];
+        if (column.id in this.props.components) {
+            clist = this.props.components[column.id];
+        }
+        return (
+                <div id={column.id} key={column.id} className={column.class}> {column.id}
+                    {clist.map(this.renderComponent)}
+                </div>
+        );
     },
 
-    buildRow: function (row) {
-        var cnt = this.state.counter++;
-        alert("The count is " + cnt);
-      return (
-          <div key={"row_" + cnt} className="row">
-              { row.divs.map(this.buildDiv) }
+    buildRow: function (row, index) {
+        return (
+          <div key={"row_" + index} className="row">
+              { row.columns.map(this.buildColumn) }
           </div>
       );
     },
 
     render: function() {
-        console.log("The layout is " + JSON.stringify(this.state.layout));
-        if (this.state.layout == null) {
-            return <div>Placeholder</div>
+        if (this.props.layout == null) {
+            return <div key="bootstrapLayout" >Nothing</div>
         }
-        return (
-            <div>
-                <h1> Page Title </h1>
+        else {
+            return (
+                <div key="bootstrapLayout">
+                    <h1> Page Title </h1>
 
-                {this.state.layout.specification.rows.map(this.buildRow)}
+                    {this.props.layout.rows.map(this.buildRow)}
 
-            </div>
-        );
+                </div>
+            );
+        }
     }
 });
 

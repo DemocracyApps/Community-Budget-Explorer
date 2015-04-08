@@ -24,6 +24,8 @@ use DemocracyApps\GB\Http\Controllers\Controller;
 use DemocracyApps\GB\Services\JsonProcessor;
 use DemocracyApps\GB\Sites\Layout;
 use DemocracyApps\GB\Sites\Page;
+use DemocracyApps\GB\Sites\PageComponent;
+use DemocracyApps\GB\Sites\Component;
 use DemocracyApps\GB\Sites\Site;
 use Illuminate\Http\Request;
 
@@ -48,7 +50,23 @@ class SitesController extends Controller {
         $layout->specification = $cfig;
 
         $pages = Page::where('site','=',$site->id)->where('show_in_menu','=',true)->orderBy('ordinal')->get();
-        return view('sites.page', array('site'=>$site, 'pages'=>$pages, 'page'=>$page, 'layout'=>$layout));
+
+        // Get the page components
+        $pComponents = PageComponent::where('page','=',$page->id)->get();
+        $components = array();
+        foreach ($pComponents as $pc) {
+            if ($pc->target != null) {
+                if (! array_key_exists($pc->target, $components)) $components[$pc->target] = array();
+                $c = array();
+                $componentDefinition = Component::find($pc->component);
+                $c['componentName'] = $componentDefinition->name;
+                $c['componentType'] = $componentDefinition->type;
+                $c['componentProps'] = $pc->properties;
+                $components[$pc->target][] = $c;
+            }
+        }
+        return view('sites.page', array('site'=>$site, 'pages'=>$pages, 'page'=>$page, 'layout'=>$layout,
+                                        'components'=>$components));
     }
 
 }

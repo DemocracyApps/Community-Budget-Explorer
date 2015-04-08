@@ -6,7 +6,7 @@
         <input type="hidden" name="_token" value="{!! csrf_token() !!}">
         <input type="hidden" name="_method" value="PUT">
 
-        <h1>New Page</h1>
+        <h1>Edit Page</h1>
 
         <br>
         <div class="form-group">

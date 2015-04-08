@@ -2,7 +2,7 @@
   "name":"One-Column",
   "rows": [
     {
-      "divs": [
+      "columns": [
         {
           "id":"main",
           "class":"col-xs-12"

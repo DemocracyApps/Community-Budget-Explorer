@@ -1,4 +1,4 @@
-var BootstrapLayout = React.createClass({
+var SimpleCard = React.createClass({
 
     getInitialState: function() {
         return {
@@ -7,11 +7,12 @@ var BootstrapLayout = React.createClass({
     },
 
     render: function() {
-        if (this.state.card == null) {
-            return <div>Placeholder</div>
-        }
+        console.log("Simplecard is rendering!");
+
+        return <div key={this.props.key}> I am SimpleCard!</div>
+
         return (
-            <div>
+            <div key={this.props.key}>
                 <h1> {this.state.card.title} </h1>
 
                 <p> {this.state.card.body} </p>

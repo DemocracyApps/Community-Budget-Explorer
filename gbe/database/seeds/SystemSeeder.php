@@ -12,13 +12,13 @@ class SystemSeeder extends Seeder
     public function run()
     {
 
-        // Read the layouts directory
-        $path = base_path()."/../layouts";
-        $lFiles = scandir($path);
         $jp = new JsonProcessor();
 
+        // Read the layouts directory
+        $path = base_path()."/resources/definitions/layouts";
+        $lFiles = scandir($path);
         foreach ($lFiles as $file) {
-            \Log::info("The file is " . $file);
+            \Log::info("Importing layout from " . $file);
             if (ends_with ($file, '.json')) {
                 $s = file_get_contents("$path/$file");
 
@@ -44,20 +44,38 @@ class SystemSeeder extends Seeder
                 $layout->save();
             }
         }
-        // Create the base components
-        $c = new Component();
-        $c->name = "SimpleCard";
-        $c->owner = 1;
-        $c->description="Just a simple display of a single card";
-        $c->type = Component::SYSTEM;
-        $c->save();
 
-        $c = new Component();
-        $c->name = "SlideShow";
-        $c->owner = 1;
-        $c->description="Carousel slideshow of pictures with title, text and link";
-        $c->type = Component::SYSTEM;
-        $c->save();
+        // Read the components directory
+        $path = base_path()."/resources/definitions/components";
+        $lFiles = scandir($path);
+        foreach ($lFiles as $file) {
+            \Log::info("Importing component from " . $file);
+            if (ends_with ($file, '.json')) {
+                $s = file_get_contents("$path/$file");
+
+                $str = $jp->minifyJson($s);
+                $cfig = $jp->decodeJson($str, true);
+                if ( ! $cfig) {
+                    throw new \Exception("Error reading layout file " . $file);
+                }
+                $c = new Component();
+
+                if (array_key_exists('name', $cfig)) {
+                    $c->name = $cfig['name'];
+                }
+                else {
+                    $c->name = $file;
+                }
+                if (array_key_exists('description', $cfig)) {
+                    $c->description = $cfig['description'];
+                }
+                $c->owner = 1;
+                $c->type = Component::SYSTEM;
+
+                $c->setProperty('data', $cfig['data']);
+                $c->save();
+            }
+        }
     }
 
 }

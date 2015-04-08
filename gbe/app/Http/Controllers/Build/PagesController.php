@@ -98,8 +98,8 @@ class PagesController extends Controller {
 
         $targets = array();
         foreach($layout->specification['rows'] as $row) {
-            foreach($row['divs'] as $div) {
-                $targets[] = $div['id'];
+            foreach($row['columns'] as $column) {
+                $targets[] = $column['id'];
             }
         }
         $pageComponents = PageComponent::where('page','=',$id)->get();

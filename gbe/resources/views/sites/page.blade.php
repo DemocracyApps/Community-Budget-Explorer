@@ -4,9 +4,6 @@
     <div id="app">
 
     </div>
-    <div     id="test">
-        Yuppie.
-    </div>
 
 
 @stop
@@ -17,23 +14,26 @@
     <script src="/js/react-0.13.1/build/JSXTransformer.js"></script>
     <?php
     JavaScript::put([
-            'ajaxPath' => Util::ajaxPath('sites', 'page'),
-            'site' => $site,
-            'pages'=> $pages,
-            'page' => $page,
-            'layout'=>$layout
+        'ajaxPath' => Util::ajaxPath('sites', 'page'),
+        'site' => $site,
+        'pages'=> $pages,
+        'page' => $page,
+        'layout'=>$layout,
+        'components'=>$components
     ]);
     ?>
 
     <script type="text/jsx;harmony=true" src="/js/components/TaskList.js"></script>
     <script type="text/jsx;harmony=true" src="/js/components/TaskApp.js"></script>
+    <script type="text/jsx;harmony=true" src="/js/components/SimpleCard.js"></script>
     <script type="text/jsx;harmony=true" src="/js/components/BootstrapLayout.js"></script>
 
+
     <script type="text/jsx;harmony=true">
-        var layout = React.render(<BootstrapLayout />, document.getElementById('app'));
-        layout.setState({
-            layout: GBEVars.layout
-        });
-        React.render(<TaskApp />, document.getElementById('test'));
+        var componentsMap = {};
+        componentsMap['SimpleCard'] = SimpleCard;
+        componentsMap['Other'] = TaskApp;
+        var props = {layout:GBEVars.layout.specification, components:GBEVars.components, componentsMap:componentsMap}
+        var layout = React.render(<BootstrapLayout {...props}/>, document.getElementById('app'));
     </script>
 @stop

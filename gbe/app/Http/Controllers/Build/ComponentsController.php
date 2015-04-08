@@ -60,9 +60,8 @@ class ComponentsController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function show($slug, $id)
+	public function show($slug, $pageId, $id)
 	{
-        //
     }
 
 	/**
@@ -71,9 +70,16 @@ class ComponentsController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function edit($slug, $id)
-	{
-        //
+	public function edit($slug, $pageId, $id)
+    {
+        $site = Site::where('slug','=',$slug)->first();
+        $page = Page::find($pageId);
+        $this->pageComponent = PageComponent::find($id);
+        $component = Component::find($this->pageComponent->component);
+        $cardSets = $site->getCardsByCardSet();
+        return view('build.pages.components.edit', ['site'=>$site, 'page'=>$page, 'component'=>$component,
+            'pageComponent'=>$this->pageComponent, 'dataDefs'=>$component->getProperty('data'),
+            'cardSets' => $cardSets]);
 	}
 
 	/**
@@ -82,9 +88,38 @@ class ComponentsController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function update($slug, $id, Request $request)
+	public function update($slug, $pageId, $id, Request $request)
 	{
-        //
+        $site = Site::where('slug','=',$slug)->first();
+        $this->pageComponent = PageComponent::find($id);
+        $component = Component::find($this->pageComponent->component);
+        $dataDefs = $component->getProperty('data');
+
+        $dataBundle = array();
+        foreach ($dataDefs as $def) {
+            $type = $def['type'];
+            $tag = $def['tag'];
+            $data = [];
+            $data['type'] = $type;
+            $data['items'] = [];
+            if ($type == 'card') {
+                if ($request->has('selectedCard_'.$tag)) {
+                    $data['items'][] = $request->get('selectedCard_'.$tag);
+                }
+            }
+            elseif ($type == 'cardset') {
+                if ($request->has('selectedSet_'.$tag)) {
+                    $data['items'][] = $request->get('selectedSet_'.$tag);
+                }
+            }
+            elseif ($type == 'dataset' || $type == 'dataset_list') {
+
+            }
+            $dataBundle[$tag] = $data;
+        }
+        $this->pageComponent->setProperty('data', $dataBundle);
+        $this->pageComponent->save();
+        return redirect ("/build/$slug/pages/$pageId");
     }
 
 	/**

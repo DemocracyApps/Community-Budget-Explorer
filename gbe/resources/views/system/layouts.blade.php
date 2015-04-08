@@ -8,7 +8,7 @@
             <h1>Layouts</h1>
         </div>
         <div class="col-xs-6">
-            <button style="float:right; position:relative; right:50px; bottom:-20px;" class="btn btn-success btn-sm" onclick="window.location.href='/system/layouts/create'">New</button>
+            <button style="float:right; position:relative; right:50px; bottom:-20px;" class="btn btn-success btn-sm" onclick="window.location.href='/gbe/resources/definitions/layouts/create'">New</button>
         </div>
     </div>
 
@@ -23,7 +23,7 @@
         @foreach ($layouts as $layout)
             <tr>
                 <td> {!!  $layout->id !!} </td>
-                <td> <a href="/layouts/{!! $layout->id !!}">{!!  $layout->name  !!} </a> </td>
+                <td> <a href="/gbe/resources/definitions/layouts/{!! $layout->id !!}">{!!  $layout->name  !!} </a> </td>
                 <td> {!! $layout->description !!}</td>
                 <td> {!! $layout->public?'Yes':'No'!!}</td>
                 <td> <form method="GET" action="/system/layouts/{!! $layout->id !!}/edit" accept-charset="UTF-8" style="display:inline-block">

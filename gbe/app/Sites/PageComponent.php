@@ -18,7 +18,7 @@
  */
 
 use DemocracyApps\GB\Utility\EloquentPropertiedObject;
-
+use DemocracyApps\GB\Sites\CardSet;
 
 class PageComponent extends EloquentPropertiedObject {
     protected $table = 'page_components';

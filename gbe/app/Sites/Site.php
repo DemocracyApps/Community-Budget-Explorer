@@ -48,4 +48,22 @@ class Site extends EloquentPropertiedObject {
         }
         return $hasAccess;
     }
+    public function getCardSets ()
+    {
+        return CardSet::where('site','=',$this->id)->orderBy('id')->get();
+    }
+
+    public function getCardsByCardSet() {
+        $setList = CardSet::where('site','=',$this->id)->orderBy('id')->get();
+
+        $cardSets = [];
+        foreach ($setList as $set) {
+            $cardSets[$set->id] = new \stdClass();
+            $cardSets[$set->id]->name = $set->name;
+            $cardSets[$set->id]->id = $set->id;
+            $cardSets[$set->id]->cards =  Card::where('card_set','=',$set->id)->orderBy('ordinal')->get();
+        }
+        return $cardSets;
+    }
+
 }
