@@ -66,3 +66,21 @@
             font-size:14px;
             background:white;
         }
+
+        /* STYLES TO MAKE IT NICER LOOKING */
+
+        h1, h2, h3, h4, h5, h6{
+            font-family: 'Titillium Web' !important;
+        }
+        h1, h2, h3{
+            font-weight: 300;
+        }
+        a{
+            color: #EB7722;
+        }
+        ul, p, li, th, td, input, a {
+            font-size: 110%;
+        }
+        div.presentation {
+            font-size: 110%;
+        }

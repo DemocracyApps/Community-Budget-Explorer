@@ -16,6 +16,17 @@ var paths = {
 }
 
 elixir(function(mix) {
-    mix.sass('app.scss', 'public/css/', {includePaths: [paths.bootstrap + 'stylesheets/']});
+    mix.sass('app.scss', 'public/css', {includePaths: [paths.bootstrap + 'stylesheets/']})
+        .styles([
+            'public/css/app.css',
+            'resources/css/local.css'
+        ], './public/css/all.css', './')
+        .scripts([
+            './vendor/bower_components/jquery/dist/jquery.min.js',
+            './vendor/bower_components/jquery-ui/jquery-ui.js',
+            './vendor/bower_components/bootstrap-sass-official/assets/javascripts/bootstrap.js',
+            './vendor/bower_components/jquery-cookie/jquery.cookie.js'
+        ], './public/js/all.js', './')
+    ;
 });
 

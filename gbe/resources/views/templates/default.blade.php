@@ -21,7 +21,7 @@
     <meta charset="utf-8">
     <title>Government Budget Explorer</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="/css/app.css">
+    <link rel="stylesheet" type="text/css" href="/css/all.css">
     {{--<link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">--}}
     {{--<link rel="stylesheet" type="text/css" href="/css/local.css">--}}
     @yield('head')
@@ -121,10 +121,7 @@
     </div>
 </footer>
 <br>
-<script src="/js/jquery-2.1.1.min.js"></script>
-<script src="/js/jquery-ui-1.11.1/jquery-ui.min.js"></script>
-<script src="/js/bootstrap.min.js"></script>
-<script src="/js/jquery.cookie.js"></script>
+<script src="/js/all.js"></script>
 
 @yield('scripts')
 </body>
