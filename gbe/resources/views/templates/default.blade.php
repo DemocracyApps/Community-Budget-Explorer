@@ -22,10 +22,7 @@
     <title>Government Budget Explorer</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="/css/all.css">
-    {{--<link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">--}}
-    {{--<link rel="stylesheet" type="text/css" href="/css/local.css">--}}
     @yield('head')
-    <!-- END STYLES TO MAKE IT NICER LOOKING -->
 </head>
   <?php
           use DemocracyApps\GB\Helpers as Helpers;
