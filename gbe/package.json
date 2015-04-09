@@ -3,7 +3,12 @@
     "type": "git",
     "url": "git://github.com/DemocracyApps/GBE.git"
   },
-  "description":"Government Budget Explorer",
+  "description": "Government Budget Explorer",
+  "dependencies": {
+    "node-sass": "^2.1.1",
+    "source-map": "^0.4.2",
+    "gulp-sourcemaps": "^1.5.1"
+  },
   "devDependencies": {
     "gulp": "^3.8.8",
     "laravel-elixir": "*"

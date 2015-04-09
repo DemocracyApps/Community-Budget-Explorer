@@ -1,3 +1,4 @@
+#!/bin/bash
 echo "Starting Provision"
 
 # PRC Start
@@ -106,16 +107,23 @@ sudo service apache2 restart  # Needed to load pgsql driver.
 
 sudo apt-get install -y default-jdk
 
-# Now let's get Node & React and such
-
-sudo apt-get -y purge nodejs npm
-sudo apt-get -y install python-software-properties
-sudo apt-get -y autoremove
-sudo apt-add-repository -y ppa:chris-lea/node.js
-sudo apt-get -y update
-sudo apt-get -y install nodejs
-sudo npm install -g gulp
+# Now let's get Node
+cd /var/www
+curl -sL https://deb.nodesource.com/setup | sudo bash -
+sudo apt-get install -y nodejs
+sudo npm install -g npm@next
 sudo npm install -g bower
-sudo npm install -g react
+sudo npm install -g gulp
+
+
+#sudo apt-get -y purge nodejs npm
+#sudo apt-get -y install python-software-properties
+#sudo apt-get -y autoremove
+#sudo apt-add-repository -y ppa:chris-lea/node.js
+#sudo apt-get -y update
+#sudo apt-get -y install nodejs
+#sudo npm install -g gulp
+#sudo npm install -g bower
+#sudo npm install -g react
 
 
