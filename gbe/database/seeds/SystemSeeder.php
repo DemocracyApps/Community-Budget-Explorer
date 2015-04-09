@@ -20,6 +20,8 @@ class SystemSeeder extends Seeder
         foreach ($lFiles as $file) {
             \Log::info("Importing layout from " . $file);
             if (ends_with ($file, '.json')) {
+                echo "Importing layout from " . $file . PHP_EOL;
+
                 $s = file_get_contents("$path/$file");
 
                 $str = $jp->minifyJson($s);
@@ -51,12 +53,13 @@ class SystemSeeder extends Seeder
         foreach ($lFiles as $file) {
             \Log::info("Importing component from " . $file);
             if (ends_with ($file, '.json')) {
+                echo "Importing component from " . $file . PHP_EOL;
                 $s = file_get_contents("$path/$file");
 
                 $str = $jp->minifyJson($s);
                 $cfig = $jp->decodeJson($str, true);
                 if ( ! $cfig) {
-                    throw new \Exception("Error reading layout file " . $file);
+                    throw new \Exception("Error reading component file " . $file);
                 }
                 $c = new Component();
 
