@@ -108,12 +108,14 @@ sudo service apache2 restart  # Needed to load pgsql driver.
 sudo apt-get install -y default-jdk
 
 # Now let's get Node
+sudo apt-get install -y libnotify-bin
 cd /var/www
 curl -sL https://deb.nodesource.com/setup | sudo bash -
 sudo apt-get install -y nodejs
 sudo npm install -g npm@next
 sudo npm install -g bower
 sudo npm install -g gulp
+
 
 
 #sudo apt-get -y purge nodejs npm
