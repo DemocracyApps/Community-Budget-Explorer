@@ -16,6 +16,8 @@ If you are using Vagrant, the following commands will install and start an insta
     cd gbe
     cp .env.example .env
     composer update
+    npm install
+    bower install
     ./artisan migrate --seed
     
 The server will be at 192.168.33.27, but that can of course be changed in the Vagrantfile.

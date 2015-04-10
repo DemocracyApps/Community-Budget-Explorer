@@ -6,7 +6,7 @@
       "tag":"mycard",
       "name":"Your Card",
       "description": "Pick a card, any card",
-      "type":"card",
+      "type":"card"
     }
   ]
 }

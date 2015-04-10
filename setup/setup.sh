@@ -4,6 +4,13 @@ echo -e "\nSetting up GBE environment\n"
 
 json_repo="https://github.com/DemocracyApps/JSON.minify.git"
 json_dir="JSON.minify"
+
+if cd /var/www/gbe/vendor; then
+    echo "Vendor directory exists"
+else
+    mkdir /var/www/gbe/vendor
+fi
+
 cd /var/www/gbe/vendor
 if cd $json_dir; then
     git pull

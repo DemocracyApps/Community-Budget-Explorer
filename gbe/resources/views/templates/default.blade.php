@@ -21,28 +21,8 @@
     <meta charset="utf-8">
     <title>Government Budget Explorer</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="/css/local.css">
-    <!-- STYLES TO MAKE IT NICER LOOKING -->
-    <style>
-        h1, h2, h3, h4, h5, h6{
-            font-family: 'Titillium Web' !important;
-        }
-        h1, h2, h3{
-            font-weight: 300;
-        }
-        a{
-            color: #EB7722;
-        }
-        ul, p, li, th, td, input, a {
-            font-size: 110%;
-        }
-        div.presentation {
-            font-size: 110%;
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="/css/all.css">
     @yield('head')
-    <!-- END STYLES TO MAKE IT NICER LOOKING -->
 </head>
   <?php
           use DemocracyApps\GB\Helpers as Helpers;
@@ -138,10 +118,7 @@
     </div>
 </footer>
 <br>
-<script src="/js/jquery-2.1.1.min.js"></script>
-<script src="/js/jquery-ui-1.11.1/jquery-ui.min.js"></script>
-<script src="/js/bootstrap.min.js"></script>
-<script src="/js/jquery.cookie.js"></script>
+<script src="/js/all.js"></script>
 
 @yield('scripts')
 </body>
