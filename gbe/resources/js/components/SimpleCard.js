@@ -1,3 +1,5 @@
+import React from 'react';
+
 var SimpleCard = React.createClass({
 
     getInitialState: function() {

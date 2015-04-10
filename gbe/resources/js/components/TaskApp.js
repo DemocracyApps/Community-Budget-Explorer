@@ -1,3 +1,6 @@
+import React from 'react';
+import TaskList from './TaskList';
+
 var TaskApp = React.createClass({
 
     getInitialState: function() {

@@ -18,6 +18,9 @@
                     href="/build/{!! $site->slug !!}/pages/{!! $page->id !!}/edit">
                 Edit</a>
         </div>
+        <div class="col-xs-6">
+            <a href="/sites/{!!$site->slug!!}/{!!$page->short_name!!}">Link to Public Page</a>
+        </div>
     </div>
 
     <div class="row">

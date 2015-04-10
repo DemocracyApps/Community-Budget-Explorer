@@ -1,9 +1,11 @@
+import React from 'react';
+
 var TaskList = React.createClass({
 
    render: function() {
 
-       var displayTask = function(task) {
-           return <li>{task}</li>
+       var displayTask = function(task, index) {
+           return <li key={index} >{task}</li>
        }
 
        return (

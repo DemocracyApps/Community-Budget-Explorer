@@ -21,6 +21,7 @@ elixir(function(mix) {
             'public/css/app.css',
             'resources/css/local.css'
         ], './public/css/all.css', './')
+        .browserify('app.js')
         .scripts([
             './vendor/bower_components/jquery/dist/jquery.min.js',
             './vendor/bower_components/jquery-ui/jquery-ui.js',

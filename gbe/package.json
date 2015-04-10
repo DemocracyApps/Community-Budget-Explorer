@@ -11,7 +11,10 @@
     "source-map": "^0.4.2"
   },
   "devDependencies": {
+    "babelify": "^6.0.2",
+    "browserify": "^9.0.8",
     "gulp": "^3.8.8",
-    "laravel-elixir": "*"
+    "laravel-elixir": "*",
+    "vinyl-source-stream": "^1.1.0"
   }
 }
