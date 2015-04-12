@@ -20652,7 +20652,6 @@ var SimpleCard = _React2['default'].createClass({
     updateData: function updateData() {
         for (var i = 0; i < this.state.datasets.length; ++i) {
             var data = datasetStore.getDataIfUpdated(this.state.datasets[i].storeId, this.state.datasets[i].version);
-            console.log('MYear - check out dataset ' + this.state.datasets[i].storeId + ': data = ' + data);
             if (data != null) {
                 console.log('MultiYearTable is updating the data');
                 var datasets = this.state.datasets;
@@ -20930,7 +20929,6 @@ var MainDatasetStore = assign({}, EventEmitter.prototype, {
 
     dataHasUpdated: function dataHasUpdated(id, version) {
         if (id >= 0 && id < this.dataObjects.length) {
-            console.log('Test ' + id + ' versions: ' + version + ' versus ' + this.dataObjects[id].version);
             return this.dataObjects[id].version > version;
         }
         return false;
@@ -20957,7 +20955,6 @@ var MainDatasetStore = assign({}, EventEmitter.prototype, {
                 data = object.data;
             } else if (object.status == STATE_NEW) {
                 var source = GBEVars.apiPath + '/datasets/' + object.datasetId;
-                console.log('Download dataset ' + object.datasetId + ' from: ' + source);
                 $.get(source, function (r) {}).done(this.receiveData).fail(this.receiveError);
 
                 object.status = STATE_REQUESTED;
@@ -20995,7 +20992,6 @@ var MainDatasetStore = assign({}, EventEmitter.prototype, {
 MainDatasetStore.dispatchToken = dispatcher.register(function (action) {
     switch (action.actionType) {
         case ActionTypes.DATASET_RECEIVED:
-            console.log('I got a dataset - name is ' + action.payload.name);
             var dsId = action.payload.id;
             for (var j = 0; j < MainDatasetStore.dataObjects.length; ++j) {
                 if (MainDatasetStore.dataObjects[j].datasetId == dsId) {

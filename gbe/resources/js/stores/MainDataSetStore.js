@@ -33,7 +33,6 @@ var MainDatasetStore = assign({}, EventEmitter.prototype, {
 
     dataHasUpdated: function (id, version) {
         if (id >= 0 && id < this.dataObjects.length) {
-            console.log("Test " + id + " versions: " + version + " versus " + this.dataObjects[id].version);
             return (this.dataObjects[id].version > version);
         }
         return false;
@@ -61,7 +60,6 @@ var MainDatasetStore = assign({}, EventEmitter.prototype, {
             }
             else if (object.status == STATE_NEW) {
                 var source =GBEVars.apiPath + "/datasets/" + object.datasetId;
-                console.log("Download dataset " + object.datasetId + " from: " + source);
                 $.get( source, function( r ) {
                 }).done(this.receiveData).fail(this.receiveError);
 
@@ -101,7 +99,6 @@ MainDatasetStore.dispatchToken = dispatcher.register(function (action) {
     switch (action.actionType)
     {
         case ActionTypes.DATASET_RECEIVED:
-            console.log("I got a dataset - name is " + action.payload.name);
             var dsId = action.payload.id;
             for (var j=0; j<MainDatasetStore.dataObjects.length; ++j) {
                 if (MainDatasetStore.dataObjects[j].datasetId == dsId) {

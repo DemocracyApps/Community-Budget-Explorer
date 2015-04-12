@@ -45,7 +45,6 @@ var SimpleCard = React.createClass({
     updateData: function () {
         for (var i=0; i<this.state.datasets.length; ++i) {
             var data = datasetStore.getDataIfUpdated(this.state.datasets[i].storeId, this.state.datasets[i].version);
-            console.log("MYear - check out dataset " + this.state.datasets[i].storeId + ": data = " + data);
             if (data != null) {
                 console.log("MultiYearTable is updating the data");
                 var datasets = this.state.datasets;
