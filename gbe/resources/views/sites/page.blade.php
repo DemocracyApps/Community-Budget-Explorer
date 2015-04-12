@@ -14,7 +14,7 @@
 
     <?php
     JavaScript::put([
-        'ajaxPath' => Util::ajaxPath('sites', 'page'),
+        'apiPath' => Util::apiPath() . "/organizations/" . $government->id,
         'site' => $site,
         'pages'=> $pages,
         'page' => $page,
@@ -24,4 +24,5 @@
     ?>
 
     <script src="/js/bundle.js"></script>
+
 @stop

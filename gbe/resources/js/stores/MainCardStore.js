@@ -24,7 +24,6 @@ var MainCardStore = assign({}, EventEmitter.prototype, {
     },
 
     importCard: function (data) {
-        console.log("CardStore is importing " + JSON.stringify(data));
         var item = {};
         item.data = data;
         item.version = this.versionCounter++;
@@ -76,7 +75,6 @@ dispatcher.register(function (action) {
     switch (action.actionType)
     {
         case ActionTypes.INIT_CARD_STORE:
-            console.log("Got case 1");
             MainCardStore.emitChange()
             break;
 

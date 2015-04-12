@@ -20652,8 +20652,9 @@ var SimpleCard = _React2['default'].createClass({
     updateData: function updateData() {
         for (var i = 0; i < this.state.datasets.length; ++i) {
             var data = datasetStore.getDataIfUpdated(this.state.datasets[i].storeId, this.state.datasets[i].version);
+            console.log('MYear - check out dataset ' + this.state.datasets[i].storeId + ': data = ' + data);
             if (data != null) {
-                console.log('SimpleCard is updating the data');
+                console.log('MultiYearTable is updating the data');
                 var datasets = this.state.datasets;
                 datasets[i].data = data;
                 this.setState({ datasets: datasets });
@@ -20831,7 +20832,6 @@ var MainCardStore = assign({}, EventEmitter.prototype, {
     },
 
     importCard: function importCard(data) {
-        console.log('CardStore is importing ' + JSON.stringify(data));
         var item = {};
         item.data = data;
         item.version = this.versionCounter++;
@@ -20882,7 +20882,6 @@ var MainCardStore = assign({}, EventEmitter.prototype, {
 dispatcher.register(function (action) {
     switch (action.actionType) {
         case ActionTypes.INIT_CARD_STORE:
-            console.log('Got case 1');
             MainCardStore.emitChange();
             break;
 
@@ -20911,7 +20910,7 @@ var STATE_NEW = 1;
 var STATE_REQUESTED = 2;
 var STATE_READY = 3;
 
-var MainCardStore = assign({}, EventEmitter.prototype, {
+var MainDatasetStore = assign({}, EventEmitter.prototype, {
 
     idCounter: 0,
 
@@ -20931,9 +20930,23 @@ var MainCardStore = assign({}, EventEmitter.prototype, {
 
     dataHasUpdated: function dataHasUpdated(id, version) {
         if (id >= 0 && id < this.dataObjects.length) {
+            console.log('Test ' + id + ' versions: ' + version + ' versus ' + this.dataObjects[id].version);
             return this.dataObjects[id].version > version;
         }
         return false;
+    },
+
+    receiveData: function receiveData(r) {
+        for (var i = 0; i < r.data.length; ++i) {
+            dispatcher.dispatch({
+                actionType: ActionTypes.DATASET_RECEIVED,
+                payload: r.data[i]
+            });
+        }
+    },
+
+    receiveError: function receiveError(r) {
+        console.log('ERROR - failed to get the data: ' + JSON.stringify(r));
     },
 
     getData: function getData(id) {
@@ -20943,7 +20956,10 @@ var MainCardStore = assign({}, EventEmitter.prototype, {
             if (object.status == STATE_READY) {
                 data = object.data;
             } else if (object.status == STATE_NEW) {
-                console.log('Holy holidays, I\'m going to download dataset ' + object.datasetId);
+                var source = GBEVars.apiPath + '/datasets/' + object.datasetId;
+                console.log('Download dataset ' + object.datasetId + ' from: ' + source);
+                $.get(source, function (r) {}).done(this.receiveData).fail(this.receiveError);
+
                 object.status = STATE_REQUESTED;
             }
         }
@@ -20976,17 +20992,27 @@ var MainCardStore = assign({}, EventEmitter.prototype, {
     }
 });
 
-dispatcher.register(function (action) {
+MainDatasetStore.dispatchToken = dispatcher.register(function (action) {
     switch (action.actionType) {
-        case ActionTypes.INIT_CARD_STORE:
-            MainCardStore.emitChange();
+        case ActionTypes.DATASET_RECEIVED:
+            console.log('I got a dataset - name is ' + action.payload.name);
+            var dsId = action.payload.id;
+            for (var j = 0; j < MainDatasetStore.dataObjects.length; ++j) {
+                if (MainDatasetStore.dataObjects[j].datasetId == dsId) {
+                    MainDatasetStore.dataObjects[j].data = action.payload;
+                    MainDatasetStore.dataObjects[j].version = MainDatasetStore.versionCounter++;
+                    MainDatasetStore.dataObjects[j].status = STATE_READY;
+                }
+            }
+            MainDatasetStore.emitChange();
             break;
 
         default:
-        // no op
+            // Nothing
+            break;
     }
 });
 
-module.exports = MainCardStore;
+module.exports = MainDatasetStore;
 
 },{"../constants/BudgetAppConstants":167,"../dispatcher/BudgetAppDispatcher":168,"events":6,"object-assign":8}]},{},[1]);

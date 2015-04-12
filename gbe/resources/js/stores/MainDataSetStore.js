@@ -13,7 +13,7 @@ var STATE_NEW = 1;
 var STATE_REQUESTED = 2;
 var STATE_READY = 3;
 
-var MainCardStore = assign({}, EventEmitter.prototype, {
+var MainDatasetStore = assign({}, EventEmitter.prototype, {
 
     idCounter: 0,
 
@@ -33,9 +33,23 @@ var MainCardStore = assign({}, EventEmitter.prototype, {
 
     dataHasUpdated: function (id, version) {
         if (id >= 0 && id < this.dataObjects.length) {
+            console.log("Test " + id + " versions: " + version + " versus " + this.dataObjects[id].version);
             return (this.dataObjects[id].version > version);
         }
         return false;
+    },
+
+    receiveData: function (r) {
+        for (var i=0; i<r.data.length; ++i) {
+            dispatcher.dispatch({
+                actionType: ActionTypes.DATASET_RECEIVED,
+                payload: r.data[i]
+            });
+        }
+    },
+
+    receiveError: function(r) {
+        console.log("ERROR - failed to get the data: " + JSON.stringify(r));
     },
 
     getData: function (id) {
@@ -46,7 +60,11 @@ var MainCardStore = assign({}, EventEmitter.prototype, {
                 data = object.data;
             }
             else if (object.status == STATE_NEW) {
-                console.log("Holy holidays, I'm going to download dataset " + object.datasetId);
+                var source =GBEVars.apiPath + "/datasets/" + object.datasetId;
+                console.log("Download dataset " + object.datasetId + " from: " + source);
+                $.get( source, function( r ) {
+                }).done(this.receiveData).fail(this.receiveError);
+
                 object.status = STATE_REQUESTED;
             }
         }
@@ -79,16 +97,26 @@ var MainCardStore = assign({}, EventEmitter.prototype, {
     }
 });
 
-dispatcher.register(function (action) {
+MainDatasetStore.dispatchToken = dispatcher.register(function (action) {
     switch (action.actionType)
     {
-        case ActionTypes.INIT_CARD_STORE:
-            MainCardStore.emitChange()
+        case ActionTypes.DATASET_RECEIVED:
+            console.log("I got a dataset - name is " + action.payload.name);
+            var dsId = action.payload.id;
+            for (var j=0; j<MainDatasetStore.dataObjects.length; ++j) {
+                if (MainDatasetStore.dataObjects[j].datasetId == dsId) {
+                    MainDatasetStore.dataObjects[j].data = action.payload;
+                    MainDatasetStore.dataObjects[j].version = MainDatasetStore.versionCounter++;
+                    MainDatasetStore.dataObjects[j].status = STATE_READY;
+                }
+            }
+            MainDatasetStore.emitChange()
             break;
 
         default:
-        // no op
+            // Nothing
+            break;
     }
 });
 
-module.exports = MainCardStore;
+module.exports = MainDatasetStore;

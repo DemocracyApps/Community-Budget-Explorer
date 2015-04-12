@@ -21,6 +21,7 @@
 use DemocracyApps\GB\Http\Requests;
 use DemocracyApps\GB\Http\Controllers\Controller;
 
+use DemocracyApps\GB\Organizations\GovernmentOrganization;
 use DemocracyApps\GB\Services\JsonProcessor;
 use DemocracyApps\GB\Sites\Card;
 use DemocracyApps\GB\Sites\Layout;
@@ -38,6 +39,7 @@ class SitesController extends Controller {
 
         $page = Page::where('short_name','=',$pageName)->where('site','=',$site->id)->first();
 
+        $government = GovernmentOrganization::where('id','=',$site->government)->first();
 
         $layout = ($page->layout == null)?null:Layout::find($page->layout);
 
@@ -101,7 +103,7 @@ class SitesController extends Controller {
             }
         }
 //dd($components);
-        return view('sites.page', array('site'=>$site, 'pages'=>$pages, 'page'=>$page, 'layout'=>$layout,
+        return view('sites.page', array('site'=>$site, 'government'=>$government, 'pages'=>$pages, 'page'=>$page, 'layout'=>$layout,
                                         'components'=>$components));
     }
 

@@ -41,4 +41,9 @@ class Util {
         return $path;
     }
 
+    public static function apiPath() {
+        $path = url('api/v1');
+        return $path;
+    }
+
 }
