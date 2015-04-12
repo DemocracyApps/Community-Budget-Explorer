@@ -17,12 +17,14 @@
  *  along with the GBE.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+use DemocracyApps\GB\Budget\Dataset;
 use DemocracyApps\GB\Organizations\GovernmentOrganization;
 use DemocracyApps\GB\Organizations\MediaOrganization;
 use DemocracyApps\GB\Users\User;
 use DemocracyApps\GB\Utility\EloquentPropertiedObject;
 
-class Site extends EloquentPropertiedObject {
+class Site extends EloquentPropertiedObject
+{
 
     protected $table = 'sites';
     const UNKNOWN = 0;
@@ -39,8 +41,7 @@ class Site extends EloquentPropertiedObject {
         $owner = null;
         if ($this->owner_type == self::GOVERNMENT) {
             $owner = GovernmentOrganization::find($this->owner);
-        }
-        else if ($this->owner_type == self::MEDIA) {
+        } else if ($this->owner_type == self::MEDIA) {
             $owner = MediaOrganization::find($this->owner);
         }
         if ($owner != null) {
@@ -48,22 +49,28 @@ class Site extends EloquentPropertiedObject {
         }
         return $hasAccess;
     }
-    public function getCardSets ()
+
+    public function getCardSets()
     {
-        return CardSet::where('site','=',$this->id)->orderBy('id')->get();
+        return CardSet::where('site', '=', $this->id)->orderBy('id')->get();
     }
 
-    public function getCardsByCardSet() {
-        $setList = CardSet::where('site','=',$this->id)->orderBy('id')->get();
+    public function getCardsByCardSet()
+    {
+        $setList = CardSet::where('site', '=', $this->id)->orderBy('id')->get();
 
         $cardSets = [];
         foreach ($setList as $set) {
             $cardSets[$set->id] = new \stdClass();
             $cardSets[$set->id]->name = $set->name;
             $cardSets[$set->id]->id = $set->id;
-            $cardSets[$set->id]->cards =  Card::where('card_set','=',$set->id)->orderBy('ordinal')->get();
+            $cardSets[$set->id]->cards = Card::where('card_set', '=', $set->id)->orderBy('ordinal')->get();
         }
         return $cardSets;
     }
 
+    public function getDatasets()
+    {
+        return Dataset::where('government_organization', '=', $this->government)->orderBy('year')->get();
+    }
 }

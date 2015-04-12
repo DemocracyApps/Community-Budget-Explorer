@@ -5,9 +5,13 @@
   },
   "description": "Government Budget Explorer",
   "dependencies": {
+    "flux": "^2.0.1",
     "gulp-sourcemaps": "^1.5.1",
+    "keymirror": "^0.1.1",
     "node-sass": "^2.1.1",
+    "object-assign": "^2.0.0",
     "react": "^0.13.1",
+    "react-classset": "0.0.2",
     "source-map": "^0.4.2"
   },
   "devDependencies": {

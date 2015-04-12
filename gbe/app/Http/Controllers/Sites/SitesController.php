@@ -22,6 +22,7 @@ use DemocracyApps\GB\Http\Requests;
 use DemocracyApps\GB\Http\Controllers\Controller;
 
 use DemocracyApps\GB\Services\JsonProcessor;
+use DemocracyApps\GB\Sites\Card;
 use DemocracyApps\GB\Sites\Layout;
 use DemocracyApps\GB\Sites\Page;
 use DemocracyApps\GB\Sites\PageComponent;
@@ -45,7 +46,7 @@ class SitesController extends Controller {
         $str = $jp->minifyJson($layout->specification);
         $cfig = $jp->decodeJson($str, true);
         if ( ! $cfig) {
-            throw new \Exception("Unable to part layout specification " . $layout->name);
+            throw new \Exception("Unable to parse layout specification " . $layout->name);
         }
         $layout->specification = $cfig;
 
@@ -57,14 +58,49 @@ class SitesController extends Controller {
         foreach ($pComponents as $pc) {
             if ($pc->target != null) {
                 if (! array_key_exists($pc->target, $components)) $components[$pc->target] = array();
-                $c = array();
+                $c = new \stdClass();
                 $componentDefinition = Component::find($pc->component);
-                $c['componentName'] = $componentDefinition->name;
-                $c['componentType'] = $componentDefinition->type;
-                $c['componentProps'] = $pc->properties;
+                $c->componentName = $componentDefinition->name;
+                $c->componentType = $componentDefinition->type;
+                $c->data = null;
+                if ($pc->properties != null) {
+                    $c->data = array();
+                    $props = $jp->decodeJson($pc->properties, true);
+                    if (array_key_exists('data', $props)) {
+                        foreach ($props['data'] as $key => $dataItem) {
+                            if ($dataItem['type'] == 'card') {
+                                $storedCard = Card::find($dataItem['items'][0]);
+                                $card = new \stdClass();
+                                $card->dataType = 'card';
+                                $card->id = $storedCard->id;
+                                $card->title = $storedCard->title;
+                                $card->body = $storedCard->body;
+                                $card->image = $storedCard->image;
+                                $card->link = $storedCard->link;
+                                $c->data[$key] = $card;
+                            }
+                            else if ($dataItem['type'] == 'cardset') {
+                            }
+                            else if ($dataItem['type'] == 'dataset') {
+                                dd("Yuck");
+                            }
+                            else if ($dataItem['type'] == 'dataset_list') {
+                                $datasetList = new \stdClass();
+                                $datasetList->dataType = 'dataset_list';
+                                $datasetList->idList = array();
+                                foreach ($dataItem['items'] as $dsetId) {
+                                    $datasetList->idList[] = $dsetId;
+                                }
+
+                                $c->data[$key] = $datasetList;
+                            }
+                        }
+                    }
+                }
                 $components[$pc->target][] = $c;
             }
         }
+//dd($components);
         return view('sites.page', array('site'=>$site, 'pages'=>$pages, 'page'=>$page, 'layout'=>$layout,
                                         'components'=>$components));
     }

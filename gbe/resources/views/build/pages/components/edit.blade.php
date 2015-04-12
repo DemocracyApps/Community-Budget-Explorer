@@ -54,7 +54,23 @@
                         </div>
                     @endif
                 @elseif ($dType == 'dataset' || $dType == 'dataset_list')
-
+                    <div class="col-xs-6">
+                        <div class="form-group">
+                            <label for="selectedDataset_{!! $dTag !!}">CardSet:</label>
+                            <select id="selectedDataset_{!! $dTag !!}" class="form-control"
+                                    name="selectedDataset_{!! $dTag !!}[]"
+                                    @if ($dType == 'dataset_list')
+                                        multiple size={!! sizeof($dataSets) !!}
+                                    @endif
+                            >
+                                @foreach ($dataSets as $set)
+                                    <option value="{!! $set->id !!}">
+                                        {!! $set->name !!}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
                 @else
                     <br>
                     <p class="error text-danger bg-danger">Unknown data type</p>

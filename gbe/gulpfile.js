@@ -24,8 +24,8 @@ elixir(function(mix) {
         .browserify('app.js')
         .scripts([
             './vendor/bower_components/jquery/dist/jquery.min.js',
-            './vendor/bower_components/jquery-ui/jquery-ui.js',
-            './vendor/bower_components/bootstrap-sass-official/assets/javascripts/bootstrap.js',
+            './vendor/bower_components/jquery-ui/jquery-ui.min.js',
+            './vendor/bower_components/bootstrap-sass-official/assets/javascripts/bootstrap.min.js',
             './vendor/bower_components/jquery-cookie/jquery.cookie.js'
         ], './public/js/all.js', './')
     ;

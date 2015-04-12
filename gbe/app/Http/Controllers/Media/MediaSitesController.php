@@ -3,6 +3,7 @@
 use DemocracyApps\GB\Http\Requests;
 use DemocracyApps\GB\Http\Controllers\Controller;
 
+use DemocracyApps\GB\Organizations\GovernmentOrganization;
 use DemocracyApps\GB\Organizations\MediaOrganization;
 use DemocracyApps\GB\Sites\Site;
 use Illuminate\Http\Request;
@@ -30,7 +31,8 @@ class MediaSitesController extends Controller {
 	public function createSite($media_org_id)
 	{
         $organization = MediaOrganization::find($media_org_id);
-        return view('media.sites.create', array('organization'=>$organization));
+        $governments = GovernmentOrganization::orderBy('id')->get();
+        return view('media.sites.create', array('organization'=>$organization, 'governments'=>$governments));
     }
 
 	/**
@@ -48,6 +50,7 @@ class MediaSitesController extends Controller {
         $site->name = $request->get('name');
         $site->owner_type = Site::MEDIA;
         $site->owner = $media_org_id;
+        $site->government = $request->get('government');
         $site->save();
 
         return redirect('/media/'.$media_org_id.'/sites');

@@ -25,6 +25,15 @@
         </div>
 
         <div class="form-group">
+            {!! Form::label('government', 'Government') !!}
+            <select name="government">
+                @foreach($governments as $government)
+                    <option value="{!! $government->id !!}">{!! $government->name !!}</option>
+                @endforeach
+            </select>
+        </div>
+
+        <div class="form-group">
             {!!  Form::submit('Save', ['class' => 'btn btn-primary'])  !!}
         </div>
 

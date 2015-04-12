@@ -48,6 +48,7 @@ class GovernmentSitesController extends Controller {
         $site->name = $request->get('name');
         $site->owner_type = Site::GOVERNMENT;
         $site->owner = $govt_org_id;
+        $site->government = $govt_org_id;
         $site->save();
 
         return redirect('/governments/'.$govt_org_id.'/sites');

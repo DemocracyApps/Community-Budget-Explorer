@@ -17,6 +17,7 @@ class AshevilleSiteSeeder extends Seeder
         $site->name = "The City of Asheville Budget Site";
         $site->owner_type = Site::GOVERNMENT;
         $site->owner = 1; // Asheville government;
+        $site->government = 1; // Ditto
         $site->slug = 'asheville';
         $site->published = true;
         $site->save();

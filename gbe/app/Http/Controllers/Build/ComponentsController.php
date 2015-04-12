@@ -77,9 +77,10 @@ class ComponentsController extends Controller {
         $this->pageComponent = PageComponent::find($id);
         $component = Component::find($this->pageComponent->component);
         $cardSets = $site->getCardsByCardSet();
+        $dataSets = $site->getDatasets();
         return view('build.pages.components.edit', ['site'=>$site, 'page'=>$page, 'component'=>$component,
             'pageComponent'=>$this->pageComponent, 'dataDefs'=>$component->getProperty('data'),
-            'cardSets' => $cardSets]);
+            'cardSets' => $cardSets, 'dataSets'=>$dataSets]);
 	}
 
 	/**
@@ -113,7 +114,17 @@ class ComponentsController extends Controller {
                 }
             }
             elseif ($type == 'dataset' || $type == 'dataset_list') {
-
+                if ($request->has('selectedDataset_'.$tag)) {
+                    if ($type == 'dataset') {
+                        $data['items'][] = $request->get('selectedDataset_' . $tag);
+                    }
+                    else {
+                        $list = $request->get('selectedDataset_' . $tag);
+                        foreach ($list as $item) {
+                            $data['items'][] = $item;
+                        }
+                    }
+                }
             }
             $dataBundle[$tag] = $data;
         }

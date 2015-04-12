@@ -9,8 +9,8 @@ var BootstrapLayout = React.createClass({
     },
 
     renderComponent: function (component, index) {
-        var comp = this.props.componentsMap[component.componentName];
-        return React.createElement(comp, {key:index});
+        var comp = this.props.reactComponents[component.componentName];
+        return React.createElement(comp, {key:index, data:component.data});
     },
 
     buildColumn: function (column, index) {
@@ -19,7 +19,8 @@ var BootstrapLayout = React.createClass({
             clist = this.props.components[column.id];
         }
         return (
-                <div id={column.id} key={column.id} className={column.class}> {column.id}
+                <div id={column.id} key={column.id} className={column.class}>
+                    <b>Layout cell: {column.id}</b>
                     {clist.map(this.renderComponent)}
                 </div>
         );

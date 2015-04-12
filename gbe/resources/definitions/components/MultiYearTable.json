@@ -1,0 +1,12 @@
+{
+  "name":"MultiYearTable",
+  "description": "A table of budget items over multiple years.",
+  "data": [
+    {
+      "tag":"alldata",
+      "name":"Datasets for the MultiYearTable Show Card Set",
+      "description":"Add datasets in any order - sequencing is handled by the front-end component.",
+      "type":"dataset_list"
+    }
+  ]
+}
