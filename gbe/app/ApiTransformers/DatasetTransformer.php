@@ -26,6 +26,7 @@ use DemocracyApps\GB\Budget\Dataset;
 class DatasetTransformer extends ApiTransformer {
     private $granularities;
     private $accountMap;
+    private $accountTypes;
     private $categoriesMap;
 
     public function __construct ()
@@ -38,15 +39,19 @@ class DatasetTransformer extends ApiTransformer {
 
     private function createMaps($dataset) {
         if ($this->accountMap == null) $this->accountMap = array();
+        if ($this->accountTypes == null) $this->accountTypes = array();
         if ($this->categoriesMap == null) $this->categoriesMap = array();
 
         $accounts = Account::where('chart','=',$dataset->chart)->get();
         $map = array();
+        $tmap = array();
 
         foreach($accounts as $account) {
             $map[$account->id] = $account->name;
+            $tmap[$account->id] = $account->type;
         }
         $this->accountMap[$dataset->chart] = $map;
+        $this->accountTypes[$dataset->chart] = $tmap;
 
         $categoryTypes = AccountCategory::where('chart', '=', $dataset->chart)->get();
         foreach ($categoryTypes as $type) {
@@ -85,11 +90,10 @@ class DatasetTransformer extends ApiTransformer {
             if (array_key_exists('noMapping',$parameters)) {
                 $mapping = !$parameters['noMapping'];
             }
-            if ($mapping) {
-                if ($this->accountMap == null) {
-                    $this->createMaps($dataset);
-                }
+            if ($this->accountMap == null) {
+                $this->createMaps($dataset);
             }
+
             $type = null;
             if (array_key_exists('type', $parameters)) {
                 $type = Account::typeCode($parameters['type']);
@@ -125,6 +129,7 @@ class DatasetTransformer extends ApiTransformer {
             $data = array();
             foreach ($dataItems as $item) {
                 $account = $item->account;
+                $type = $this->accountTypes[$dataset->chart][$item->account];
                 $categories = array();
                 if ($mapping) {
                     $account = $this->accountMap[$dataset->chart][$item->account];
@@ -170,6 +175,7 @@ class DatasetTransformer extends ApiTransformer {
                 }
                 $val = [
                     'account'=>$account,
+                    'type' => $type,
                     'categories'=>$categories,
                     'amount' => $item->amount
                 ];

@@ -84,8 +84,10 @@ $.each(GBEVars.components, function (key, pageComponentsArray) {
                         for (var i = 0; i < pageComponent.data[key].idList.length; ++i) {
                             idList.push(datasetStore.registerDataset(pageComponent.data[key].idList[i]));
                         }
+                        // Need to create a composite set and get the id to that
                         pageComponent.data[key] = {
                             type: 'dataset_list',
+                            id: null, // ID of the composite set
                             idList: idList
                         };
                     }
@@ -108,7 +110,7 @@ $.each(GBEVars.components, function (key, pageComponentsArray) {
 var props = { layout: GBEVars.layout.specification, components: GBEVars.components, reactComponents: reactComponents };
 var layout = _React2['default'].render(_React2['default'].createElement(_BootstrapLayout2['default'], props), document.getElementById('app'));
 
-},{"./components/BootstrapLayout":164,"./components/MultiYearTable":165,"./components/SimpleCard":166,"./components/SlideShow":167,"./stores/MainCardStore":170,"./stores/MainDataSetStore":171,"react":163}],2:[function(require,module,exports){
+},{"./components/BootstrapLayout":164,"./components/MultiYearTable":165,"./components/SimpleCard":166,"./components/SlideShow":167,"./stores/MainCardStore":171,"./stores/MainDataSetStore":172,"react":163}],2:[function(require,module,exports){
 /**
  * Copyright (c) 2014, Facebook, Inc.
  * All rights reserved.
@@ -20667,7 +20669,6 @@ var SimpleCard = _React2['default'].createClass({
         for (var i = 0; i < this.state.datasets.length; ++i) {
             var data = datasetStore.getDataIfUpdated(this.state.datasets[i].storeId, this.state.datasets[i].version);
             if (data != null) {
-                console.log('MultiYearTable is updating the data');
                 var datasets = this.state.datasets;
                 datasets[i].data = data;
                 this.setState({ datasets: datasets });
@@ -20680,7 +20681,6 @@ var SimpleCard = _React2['default'].createClass({
     },
 
     render: function render() {
-        console.log('MultiYearTable is rendering with ready = ' + this.allDataReady());
         if (this.allDataReady()) {
             return _React2['default'].createElement(
                 'div',
@@ -20691,7 +20691,7 @@ var SimpleCard = _React2['default'].createClass({
             return _React2['default'].createElement(
                 'div',
                 { key: this.props.key },
-                ' I am a Multi-Year Table!'
+                ' Multiyear table loading ...'
             );
         }
     }
@@ -20700,7 +20700,7 @@ var SimpleCard = _React2['default'].createClass({
 exports['default'] = SimpleCard;
 module.exports = exports['default'];
 
-},{"../stores/MainDataSetStore":171,"react":163}],166:[function(require,module,exports){
+},{"../stores/MainDataSetStore":172,"react":163}],166:[function(require,module,exports){
 'use strict';
 
 var _interopRequireWildcard = function (obj) { return obj && obj.__esModule ? obj : { 'default': obj }; };
@@ -20738,9 +20738,8 @@ var SimpleCard = _React2['default'].createClass({
     },
 
     updateData: function updateData() {
-        var data = mainCardStore.getDataIfUpdated(this.props.data.mycard.storeId, this.state.cardVersion);
+        var data = mainCardStore.getCardIfUpdated(this.props.data.mycard.storeId, this.state.cardVersion);
         if (data != null) {
-            console.log('SimpleCard is updating the data');
             this.setState({
                 cardVersion: data.version,
                 title: data.data.title,
@@ -20756,12 +20755,11 @@ var SimpleCard = _React2['default'].createClass({
     },
 
     render: function render() {
-        console.log('Simplecard is rendering with cardVersion ' + this.state.cardVersion);
         if (this.state.cardVersion == 0) {
             return _React2['default'].createElement(
                 'div',
                 { key: this.props.key },
-                ' I am SimpleCard!'
+                'SimpleCard loading ...'
             );
         } else {
             return _React2['default'].createElement(
@@ -20789,7 +20787,7 @@ var SimpleCard = _React2['default'].createClass({
 exports['default'] = SimpleCard;
 module.exports = exports['default'];
 
-},{"../stores/MainCardStore":170,"react":163}],167:[function(require,module,exports){
+},{"../stores/MainCardStore":171,"react":163}],167:[function(require,module,exports){
 'use strict';
 
 var _interopRequireWildcard = function (obj) { return obj && obj.__esModule ? obj : { 'default': obj }; };
@@ -20824,14 +20822,12 @@ var SlideShow = _React2['default'].createClass({
     },
 
     updateData: function updateData() {
-        var data = mainCardStore.getDataIfUpdated(this.props.data.mycardset.storeId, this.state.version);
+        var data = mainCardStore.getCardSetIfUpdated(this.props.data.mycardset.storeId, this.state.version);
         if (data != null) {
-            console.log('SlideShow is updating the data');
             this.setState({
                 version: data.version,
                 cards: data.data.cards
             });
-            console.log('Here are the cards: ' + JSON.stringify(this.state.cards));
         }
     },
 
@@ -20840,12 +20836,11 @@ var SlideShow = _React2['default'].createClass({
     },
 
     render: function render() {
-        console.log('SlideShow is rendering with version ' + this.state.version);
         if (this.state.version == 0) {
             return _React2['default'].createElement(
                 'div',
                 { key: this.props.key },
-                ' I am a SlideShow!'
+                'SlideShow loading ...'
             );
         } else {
             return _React2['default'].createElement(
@@ -20872,7 +20867,7 @@ var SlideShow = _React2['default'].createClass({
 exports['default'] = SlideShow;
 module.exports = exports['default'];
 
-},{"../stores/MainCardStore":170,"react":163}],168:[function(require,module,exports){
+},{"../stores/MainCardStore":171,"react":163}],168:[function(require,module,exports){
 'use strict';
 
 var keyMirror = require('keymirror');
@@ -20895,11 +20890,25 @@ module.exports = {
 },{"keymirror":5}],169:[function(require,module,exports){
 'use strict';
 
+var keyMirror = require('keymirror');
+
+module.exports = {
+
+    DataForms: keyMirror({
+        OBJECT: null,
+        ARRAYS: null,
+        RAW: null })
+
+};
+
+},{"keymirror":5}],170:[function(require,module,exports){
+'use strict';
+
 var Dispatcher = require('flux').Dispatcher;
 
 module.exports = new Dispatcher();
 
-},{"flux":2}],170:[function(require,module,exports){
+},{"flux":2}],171:[function(require,module,exports){
 'use strict';
 
 var dispatcher = require('../dispatcher/BudgetAppDispatcher');
@@ -20920,12 +20929,6 @@ var MainCardStore = assign({}, EventEmitter.prototype, {
     versionCounter: 1, // Let's components optimize whether they need to redraw
 
     dataObjects: [],
-
-    // Various local things.
-
-    sayHi: function sayHi() {
-        console.log('Hi!');
-    },
 
     storeItem: function storeItem(data) {
         var item = {};
@@ -20955,6 +20958,14 @@ var MainCardStore = assign({}, EventEmitter.prototype, {
             return this.getData(id);
         }
         return null;
+    },
+
+    getCardIfUpdated: function getCardIfUpdated(id, version) {
+        return this.getDataIfUpdated(id, version);
+    },
+
+    getCardSetIfUpdated: function getCardSetIfUpdated(id, version) {
+        return this.getDataIfUpdated(id, version);
     },
 
     emitChange: function emitChange() {
@@ -20988,7 +20999,7 @@ dispatcher.register(function (action) {
 
 module.exports = MainCardStore;
 
-},{"../constants/BudgetAppConstants":168,"../dispatcher/BudgetAppDispatcher":169,"events":6,"object-assign":8}],171:[function(require,module,exports){
+},{"../constants/BudgetAppConstants":168,"../dispatcher/BudgetAppDispatcher":170,"events":6,"object-assign":8}],172:[function(require,module,exports){
 'use strict';
 
 var dispatcher = require('../dispatcher/BudgetAppDispatcher');
@@ -20998,6 +21009,9 @@ var assign = require('object-assign');
 
 var BudgetAppConstants = require('../constants/BudgetAppConstants');
 var ActionTypes = BudgetAppConstants.ActionTypes;
+
+var DataFormConstants = require('../constants/DataFormConstants');
+var DataForms = DataFormConstants.DataForms;
 
 var DS_CHANGE_EVENT = 'ds_change';
 var _cards = {};
@@ -21022,6 +21036,15 @@ var MainDatasetStore = assign({}, EventEmitter.prototype, {
         item.data = null;
         this.dataObjects[this.idCounter] = item;
         return this.idCounter++;
+    },
+
+    getDatasetIfUpdated: function getDatasetIfUpdated(id, version) {
+        var dataform = arguments[2] === undefined ? null : arguments[2];
+
+        if (dataform == null || dataform == Dataforms.RAW) {
+            return this.getDataIfUpdated(id, version);
+        } else {}
+        return null;
     },
 
     dataHasUpdated: function dataHasUpdated(id, version) {
@@ -21108,4 +21131,4 @@ MainDatasetStore.dispatchToken = dispatcher.register(function (action) {
 
 module.exports = MainDatasetStore;
 
-},{"../constants/BudgetAppConstants":168,"../dispatcher/BudgetAppDispatcher":169,"events":6,"object-assign":8}]},{},[1]);
+},{"../constants/BudgetAppConstants":168,"../constants/DataFormConstants":169,"../dispatcher/BudgetAppDispatcher":170,"events":6,"object-assign":8}]},{},[1]);

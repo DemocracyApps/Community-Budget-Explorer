@@ -6,6 +6,9 @@ var assign = require('object-assign');
 var BudgetAppConstants = require('../constants/BudgetAppConstants');
 var ActionTypes = BudgetAppConstants.ActionTypes;
 
+var DataFormConstants = require('../constants/DataFormConstants');
+var DataForms = DataFormConstants.DataForms;
+
 var DS_CHANGE_EVENT = 'ds_change';
 var _cards = {};
 
@@ -29,6 +32,17 @@ var MainDatasetStore = assign({}, EventEmitter.prototype, {
         item.data = null;
         this.dataObjects[this.idCounter] = item;
         return this.idCounter++;
+    },
+
+    getDatasetIfUpdated: function (id, version, dataform=null)
+    {
+        if (dataform == null || dataform == Dataforms.RAW) {
+            return this.getDataIfUpdated(id, version);
+        }
+        else {
+
+        }
+        return null;
     },
 
     dataHasUpdated: function (id, version) {
