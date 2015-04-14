@@ -24,4 +24,19 @@ class CardSet extends EloquentPropertiedObject
 
     protected $table = 'card_sets';
 
+    public function asSimpleObject($props = null)
+    {
+        $cardset = new \stdClass();
+
+        $cardset->id = $this->id;
+        $cardset->name = $this->name;
+        if ($props != null) {
+            foreach ($props as $key => $value) {
+                $cardset->{$key} = $value;
+            }
+        }
+        return $cardset;
+
+    }
+
 }

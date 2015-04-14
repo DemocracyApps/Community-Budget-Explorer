@@ -24,6 +24,7 @@ use DemocracyApps\GB\Http\Controllers\Controller;
 use DemocracyApps\GB\Organizations\GovernmentOrganization;
 use DemocracyApps\GB\Services\JsonProcessor;
 use DemocracyApps\GB\Sites\Card;
+use DemocracyApps\GB\Sites\CardSet;
 use DemocracyApps\GB\Sites\Layout;
 use DemocracyApps\GB\Sites\Page;
 use DemocracyApps\GB\Sites\PageComponent;
@@ -72,19 +73,25 @@ class SitesController extends Controller {
                         foreach ($props['data'] as $key => $dataItem) {
                             if ($dataItem['type'] == 'card') {
                                 $storedCard = Card::find($dataItem['items'][0]);
-                                $card = new \stdClass();
-                                $card->dataType = 'card';
-                                $card->id = $storedCard->id;
-                                $card->title = $storedCard->title;
-                                $card->body = $storedCard->body;
-                                $card->image = $storedCard->image;
-                                $card->link = $storedCard->link;
+                                $card = $storedCard->asSimpleObject(['dataType'=> 'card']);
                                 $c->data[$key] = $card;
                             }
                             else if ($dataItem['type'] == 'cardset') {
+                                $tmp = Cardset::find($dataItem['items'][0]);
+
+                                $cardset = $tmp->asSimpleObject(['dataType'=>'cardset']);
+                                $cardset->cards = array();
+                                $cardObjects = Card::where('card_set', '=', $cardset->id)->orderBy('ordinal')->get();
+                                foreach($cardObjects as $obj) {
+                                    $cardset->cards[] = $obj->asSimpleObject();
+                                }
+                                $c->data[$key] = $cardset;
                             }
                             else if ($dataItem['type'] == 'dataset') {
-                                dd("Yuck");
+                                $ds = new \stdClass();
+                                $ds->dataType = 'dataset';
+                                $ds->id = [$dataItem['items'][0]];
+                                $c->data[$key] = $ds;
                             }
                             else if ($dataItem['type'] == 'dataset_list') {
                                 $datasetList = new \stdClass();
@@ -105,6 +112,18 @@ class SitesController extends Controller {
 //dd($components);
         return view('sites.page', array('site'=>$site, 'government'=>$government, 'pages'=>$pages, 'page'=>$page, 'layout'=>$layout,
                                         'components'=>$components));
+    }
+
+    private function buildCardObject(Card $storedCard)
+    {
+        $card = new \stdClass();
+        $card->dataType = 'card';
+        $card->id = $storedCard->id;
+        $card->title = $storedCard->title;
+        $card->body = $storedCard->body;
+        $card->image = $storedCard->image;
+        $card->link = $storedCard->link;
+        return $card;
     }
 
 }

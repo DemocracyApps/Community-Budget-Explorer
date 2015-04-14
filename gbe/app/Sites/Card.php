@@ -21,7 +21,23 @@ use DemocracyApps\GB\Utility\EloquentPropertiedObject;
 
 class Card extends EloquentPropertiedObject
 {
-
     protected $table = 'cards';
 
+    public function asSimpleObject($props = null)
+    {
+        $card = new \stdClass();
+
+        $card->id = $this->id;
+        $card->cardSet = $this->card_set;
+        $card->title = $this->title;
+        $card->body = $this->body;
+        $card->image = $this->image;
+        $card->link = $this->link;
+        if ($props != null) {
+            foreach ($props as $key => $value) {
+                $card->{$key} = $value;
+            }
+        }
+        return $card;
+    }
 }

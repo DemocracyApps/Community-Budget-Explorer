@@ -13,10 +13,11 @@ import BootstrapLayout from './components/BootstrapLayout';
  */
 import SimpleCard from './components/SimpleCard';
 import MultiYearTable from './components/MultiYearTable';
+import SlideShow from './components/SlideShow';
 
 var reactComponents = {};
 reactComponents['SimpleCard'] = SimpleCard;
-reactComponents['SlideShow'] = null;
+reactComponents['SlideShow'] = SlideShow;
 reactComponents['MultiYearTable'] = MultiYearTable;
 
 /*
@@ -47,8 +48,20 @@ $.each(GBEVars.components, function (key, pageComponentsArray) {
                     if (pageComponent.data[key].dataType == 'card') {
                         pageComponent.data[key] = {
                             type: 'card',
-                            storeId: cardStore.importCard(pageComponent.data[key])
+                            storeId: cardStore.storeItem(pageComponent.data[key])
                         };
+                    }
+                    else if (pageComponent.data[key].dataType == 'cardset') {
+                        pageComponent.data[key] = {
+                            type: 'cardset',
+                            storeId: cardStore.storeItem(pageComponent.data[key])
+                        }
+                    }
+                    else if (pageComponent.data[key].dataType == 'dataset') {
+                        pageComponent.data[key] = {
+                            type: 'dataset',
+                            id: datasetStore.registerDataset(pageComponent.data[key].id)
+                        }
                     }
                     else if (pageComponent.data[key].dataType == 'dataset_list') {
                         var idList = [];

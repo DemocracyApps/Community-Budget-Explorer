@@ -23,7 +23,7 @@ var MainCardStore = assign({}, EventEmitter.prototype, {
         console.log("Hi!");
     },
 
-    importCard: function (data) {
+    storeItem: function (data) {
         var item = {};
         item.data = data;
         item.version = this.versionCounter++;

@@ -27,12 +27,16 @@ var _MultiYearTable = require('./components/MultiYearTable');
 
 var _MultiYearTable2 = _interopRequireWildcard(_MultiYearTable);
 
+var _SlideShow = require('./components/SlideShow');
+
+var _SlideShow2 = _interopRequireWildcard(_SlideShow);
+
 var cardStore = require('./stores/MainCardStore');
 var datasetStore = require('./stores/MainDataSetStore');
 
 var reactComponents = {};
 reactComponents.SimpleCard = _SimpleCard2['default'];
-reactComponents.SlideShow = null;
+reactComponents.SlideShow = _SlideShow2['default'];
 reactComponents.MultiYearTable = _MultiYearTable2['default'];
 
 /*
@@ -63,7 +67,17 @@ $.each(GBEVars.components, function (key, pageComponentsArray) {
                     if (pageComponent.data[key].dataType == 'card') {
                         pageComponent.data[key] = {
                             type: 'card',
-                            storeId: cardStore.importCard(pageComponent.data[key])
+                            storeId: cardStore.storeItem(pageComponent.data[key])
+                        };
+                    } else if (pageComponent.data[key].dataType == 'cardset') {
+                        pageComponent.data[key] = {
+                            type: 'cardset',
+                            storeId: cardStore.storeItem(pageComponent.data[key])
+                        };
+                    } else if (pageComponent.data[key].dataType == 'dataset') {
+                        pageComponent.data[key] = {
+                            type: 'dataset',
+                            id: datasetStore.registerDataset(pageComponent.data[key].id)
                         };
                     } else if (pageComponent.data[key].dataType == 'dataset_list') {
                         var idList = [];
@@ -94,7 +108,7 @@ $.each(GBEVars.components, function (key, pageComponentsArray) {
 var props = { layout: GBEVars.layout.specification, components: GBEVars.components, reactComponents: reactComponents };
 var layout = _React2['default'].render(_React2['default'].createElement(_BootstrapLayout2['default'], props), document.getElementById('app'));
 
-},{"./components/BootstrapLayout":164,"./components/MultiYearTable":165,"./components/SimpleCard":166,"./stores/MainCardStore":169,"./stores/MainDataSetStore":170,"react":163}],2:[function(require,module,exports){
+},{"./components/BootstrapLayout":164,"./components/MultiYearTable":165,"./components/SimpleCard":166,"./components/SlideShow":167,"./stores/MainCardStore":170,"./stores/MainDataSetStore":171,"react":163}],2:[function(require,module,exports){
 /**
  * Copyright (c) 2014, Facebook, Inc.
  * All rights reserved.
@@ -20686,7 +20700,7 @@ var SimpleCard = _React2['default'].createClass({
 exports['default'] = SimpleCard;
 module.exports = exports['default'];
 
-},{"../stores/MainDataSetStore":170,"react":163}],166:[function(require,module,exports){
+},{"../stores/MainDataSetStore":171,"react":163}],166:[function(require,module,exports){
 'use strict';
 
 var _interopRequireWildcard = function (obj) { return obj && obj.__esModule ? obj : { 'default': obj }; };
@@ -20775,7 +20789,90 @@ var SimpleCard = _React2['default'].createClass({
 exports['default'] = SimpleCard;
 module.exports = exports['default'];
 
-},{"../stores/MainCardStore":169,"react":163}],167:[function(require,module,exports){
+},{"../stores/MainCardStore":170,"react":163}],167:[function(require,module,exports){
+'use strict';
+
+var _interopRequireWildcard = function (obj) { return obj && obj.__esModule ? obj : { 'default': obj }; };
+
+Object.defineProperty(exports, '__esModule', {
+    value: true
+});
+
+var _React = require('react');
+
+var _React2 = _interopRequireWildcard(_React);
+
+var mainCardStore = require('../stores/MainCardStore');
+
+var SlideShow = _React2['default'].createClass({
+    displayName: 'SlideShow',
+
+    getInitialState: function getInitialState() {
+        return {
+            version: 0,
+            cards: []
+        };
+    },
+
+    componentDidMount: function componentDidMount() {
+        this.updateData();
+        mainCardStore.addChangeListener(this._onChange);
+    },
+
+    componentWillUnmount: function componentWillUnmount() {
+        mainCardStore.removeChangeListener(this._onChange);
+    },
+
+    updateData: function updateData() {
+        var data = mainCardStore.getDataIfUpdated(this.props.data.mycardset.storeId, this.state.version);
+        if (data != null) {
+            console.log('SlideShow is updating the data');
+            this.setState({
+                version: data.version,
+                cards: data.data.cards
+            });
+            console.log('Here are the cards: ' + JSON.stringify(this.state.cards));
+        }
+    },
+
+    _onChange: function _onChange() {
+        this.updateData();
+    },
+
+    render: function render() {
+        console.log('SlideShow is rendering with version ' + this.state.version);
+        if (this.state.version == 0) {
+            return _React2['default'].createElement(
+                'div',
+                { key: this.props.key },
+                ' I am a SlideShow!'
+            );
+        } else {
+            return _React2['default'].createElement(
+                'div',
+                { key: this.props.key },
+                _React2['default'].createElement(
+                    'ul',
+                    null,
+                    this.state.cards.map(function (item, index) {
+                        return _React2['default'].createElement(
+                            'li',
+                            { key: index },
+                            ' ',
+                            item.title,
+                            ' '
+                        );
+                    })
+                )
+            );
+        }
+    }
+});
+
+exports['default'] = SlideShow;
+module.exports = exports['default'];
+
+},{"../stores/MainCardStore":170,"react":163}],168:[function(require,module,exports){
 'use strict';
 
 var keyMirror = require('keymirror');
@@ -20795,14 +20892,14 @@ module.exports = {
 
 };
 
-},{"keymirror":5}],168:[function(require,module,exports){
+},{"keymirror":5}],169:[function(require,module,exports){
 'use strict';
 
 var Dispatcher = require('flux').Dispatcher;
 
 module.exports = new Dispatcher();
 
-},{"flux":2}],169:[function(require,module,exports){
+},{"flux":2}],170:[function(require,module,exports){
 'use strict';
 
 var dispatcher = require('../dispatcher/BudgetAppDispatcher');
@@ -20830,7 +20927,7 @@ var MainCardStore = assign({}, EventEmitter.prototype, {
         console.log('Hi!');
     },
 
-    importCard: function importCard(data) {
+    storeItem: function storeItem(data) {
         var item = {};
         item.data = data;
         item.version = this.versionCounter++;
@@ -20891,7 +20988,7 @@ dispatcher.register(function (action) {
 
 module.exports = MainCardStore;
 
-},{"../constants/BudgetAppConstants":167,"../dispatcher/BudgetAppDispatcher":168,"events":6,"object-assign":8}],170:[function(require,module,exports){
+},{"../constants/BudgetAppConstants":168,"../dispatcher/BudgetAppDispatcher":169,"events":6,"object-assign":8}],171:[function(require,module,exports){
 'use strict';
 
 var dispatcher = require('../dispatcher/BudgetAppDispatcher');
@@ -21011,4 +21108,4 @@ MainDatasetStore.dispatchToken = dispatcher.register(function (action) {
 
 module.exports = MainDatasetStore;
 
-},{"../constants/BudgetAppConstants":167,"../dispatcher/BudgetAppDispatcher":168,"events":6,"object-assign":8}]},{},[1]);
+},{"../constants/BudgetAppConstants":168,"../dispatcher/BudgetAppDispatcher":169,"events":6,"object-assign":8}]},{},[1]);
