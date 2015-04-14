@@ -112,7 +112,7 @@ class ComponentsController extends Controller {
                     $data['items'][] = $request->get('selectedSet_'.$tag);
                 }
             }
-            elseif ($type == 'dataset' || $type == 'dataset_list') {
+            elseif ($type == 'dataset' || $type == 'multidataset') {
                 if ($request->has('selectedDataset_'.$tag)) {
                     if ($type == 'dataset') {
                         $data['items'][] = $request->get('selectedDataset_' . $tag);

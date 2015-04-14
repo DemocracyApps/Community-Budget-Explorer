@@ -4,9 +4,13 @@ var mainCardStore = require('../stores/MainCardStore');
 
 var SimpleCard = React.createClass({
 
+    propTypes: {
+        data: React.PropTypes.object.isRequired,
+    },
+
     getInitialState: function() {
         return {
-            cardVersion: 0,
+            version: 0,
             title: null,
             body: null,
             image: null,
@@ -24,14 +28,15 @@ var SimpleCard = React.createClass({
     },
 
     updateData: function () {
-        var data = mainCardStore.getCardIfUpdated(this.props.data["mycard"].storeId, this.state.cardVersion);
-        if (data != null) {
+        var card = mainCardStore.getCardIfUpdated(this.props.data['mycard'].id, this.state.version);
+        console.log("In SimpleCard updateData: version = " + card.getVersion());
+        if (card != null) {
             this.setState({
-                cardVersion: data.version,
-                title: data.data.title,
-                body: data.data.body,
-                image: data.data.image,
-                link: data.data.link
+                version: card.getVersion(),
+                title: card.title,
+                body: card.body,
+                image: card.image,
+                link: card.link
             });
         }
     },
@@ -41,7 +46,7 @@ var SimpleCard = React.createClass({
     },
 
     render: function() {
-        if (this.state.cardVersion == 0) {
+        if (this.state.version == 0) {
             return <div key={this.props.key}>SimpleCard loading ...</div>
         }
         else {

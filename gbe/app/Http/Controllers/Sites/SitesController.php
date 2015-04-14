@@ -93,9 +93,9 @@ class SitesController extends Controller {
                                 $ds->id = [$dataItem['items'][0]];
                                 $c->data[$key] = $ds;
                             }
-                            else if ($dataItem['type'] == 'dataset_list') {
+                            else if ($dataItem['type'] == 'multidataset') {
                                 $datasetList = new \stdClass();
-                                $datasetList->dataType = 'dataset_list';
+                                $datasetList->dataType = 'multidataset';
                                 $datasetList->idList = array();
                                 foreach ($dataItem['items'] as $dsetId) {
                                     $datasetList->idList[] = $dsetId;

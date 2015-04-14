@@ -60,26 +60,25 @@ console.log('Process the components for data');
 $.each(GBEVars.components, function (key, pageComponentsArray) {
     for (var i = 0; i < pageComponentsArray.length; ++i) {
         var pageComponent = pageComponentsArray[i];
-        console.log('Dealing with a component ' + pageComponent.componentName);
         if (pageComponent.data != null) {
             for (var key in pageComponent.data) {
                 if (pageComponent.data.hasOwnProperty(key)) {
                     if (pageComponent.data[key].dataType == 'card') {
                         pageComponent.data[key] = {
                             type: 'card',
-                            storeId: cardStore.storeItem(pageComponent.data[key])
+                            id: cardStore.storeCard(pageComponent.data[key])
                         };
                     } else if (pageComponent.data[key].dataType == 'cardset') {
                         pageComponent.data[key] = {
                             type: 'cardset',
-                            storeId: cardStore.storeItem(pageComponent.data[key])
+                            id: cardStore.storeCardSet(pageComponent.data[key])
                         };
                     } else if (pageComponent.data[key].dataType == 'dataset') {
                         pageComponent.data[key] = {
                             type: 'dataset',
                             id: datasetStore.registerDataset(pageComponent.data[key].id)
                         };
-                    } else if (pageComponent.data[key].dataType == 'dataset_list') {
+                    } else if (pageComponent.data[key].dataType == 'multidataset') {
                         var idList = [];
                         for (var i = 0; i < pageComponent.data[key].idList.length; ++i) {
                             idList.push(datasetStore.registerDataset(pageComponent.data[key].idList[i]));
@@ -107,10 +106,11 @@ $.each(GBEVars.components, function (key, pageComponentsArray) {
  * The layout specific gives the grid. The components property has the component specifications by grid cell ID,
  * and reactComponents has the actual React components keyed by component name.
  */
+console.log('Now do the layout');
 var props = { layout: GBEVars.layout.specification, components: GBEVars.components, reactComponents: reactComponents };
 var layout = _React2['default'].render(_React2['default'].createElement(_BootstrapLayout2['default'], props), document.getElementById('app'));
 
-},{"./components/BootstrapLayout":164,"./components/MultiYearTable":165,"./components/SimpleCard":166,"./components/SlideShow":167,"./stores/MainCardStore":171,"./stores/MainDataSetStore":172,"react":163}],2:[function(require,module,exports){
+},{"./components/BootstrapLayout":164,"./components/MultiYearTable":165,"./components/SimpleCard":166,"./components/SlideShow":167,"./stores/MainCardStore":175,"./stores/MainDataSetStore":176,"react":163}],2:[function(require,module,exports){
 /**
  * Copyright (c) 2014, Facebook, Inc.
  * All rights reserved.
@@ -20628,6 +20628,9 @@ var datasetStore = require('../stores/MainDataSetStore');
 var SimpleCard = _React2['default'].createClass({
     displayName: 'SimpleCard',
 
+    propTypes: {
+        data: _React2['default'].PropTypes.object.isRequired },
+
     getInitialState: function getInitialState() {
         return {
             datasets: [] };
@@ -20700,7 +20703,7 @@ var SimpleCard = _React2['default'].createClass({
 exports['default'] = SimpleCard;
 module.exports = exports['default'];
 
-},{"../stores/MainDataSetStore":172,"react":163}],166:[function(require,module,exports){
+},{"../stores/MainDataSetStore":176,"react":163}],166:[function(require,module,exports){
 'use strict';
 
 var _interopRequireWildcard = function (obj) { return obj && obj.__esModule ? obj : { 'default': obj }; };
@@ -20718,9 +20721,12 @@ var mainCardStore = require('../stores/MainCardStore');
 var SimpleCard = _React2['default'].createClass({
     displayName: 'SimpleCard',
 
+    propTypes: {
+        data: _React2['default'].PropTypes.object.isRequired },
+
     getInitialState: function getInitialState() {
         return {
-            cardVersion: 0,
+            version: 0,
             title: null,
             body: null,
             image: null,
@@ -20738,14 +20744,15 @@ var SimpleCard = _React2['default'].createClass({
     },
 
     updateData: function updateData() {
-        var data = mainCardStore.getCardIfUpdated(this.props.data.mycard.storeId, this.state.cardVersion);
-        if (data != null) {
+        var card = mainCardStore.getCardIfUpdated(this.props.data.mycard.id, this.state.version);
+        console.log('In SimpleCard updateData: version = ' + card.getVersion());
+        if (card != null) {
             this.setState({
-                cardVersion: data.version,
-                title: data.data.title,
-                body: data.data.body,
-                image: data.data.image,
-                link: data.data.link
+                version: card.getVersion(),
+                title: card.title,
+                body: card.body,
+                image: card.image,
+                link: card.link
             });
         }
     },
@@ -20755,7 +20762,7 @@ var SimpleCard = _React2['default'].createClass({
     },
 
     render: function render() {
-        if (this.state.cardVersion == 0) {
+        if (this.state.version == 0) {
             return _React2['default'].createElement(
                 'div',
                 { key: this.props.key },
@@ -20787,7 +20794,7 @@ var SimpleCard = _React2['default'].createClass({
 exports['default'] = SimpleCard;
 module.exports = exports['default'];
 
-},{"../stores/MainCardStore":171,"react":163}],167:[function(require,module,exports){
+},{"../stores/MainCardStore":175,"react":163}],167:[function(require,module,exports){
 'use strict';
 
 var _interopRequireWildcard = function (obj) { return obj && obj.__esModule ? obj : { 'default': obj }; };
@@ -20804,6 +20811,9 @@ var mainCardStore = require('../stores/MainCardStore');
 
 var SlideShow = _React2['default'].createClass({
     displayName: 'SlideShow',
+
+    propTypes: {
+        data: _React2['default'].PropTypes.object.isRequired },
 
     getInitialState: function getInitialState() {
         return {
@@ -20822,11 +20832,11 @@ var SlideShow = _React2['default'].createClass({
     },
 
     updateData: function updateData() {
-        var data = mainCardStore.getCardSetIfUpdated(this.props.data.mycardset.storeId, this.state.version);
-        if (data != null) {
+        var cardset = mainCardStore.getCardSetIfUpdated(this.props.data.mycardset.id, this.state.version);
+        if (cardset != null) {
             this.setState({
-                version: data.version,
-                cards: data.data.cards
+                version: cardset.getVersion(),
+                cards: cardset.cards
             });
         }
     },
@@ -20867,7 +20877,7 @@ var SlideShow = _React2['default'].createClass({
 exports['default'] = SlideShow;
 module.exports = exports['default'];
 
-},{"../stores/MainCardStore":171,"react":163}],168:[function(require,module,exports){
+},{"../stores/MainCardStore":175,"react":163}],168:[function(require,module,exports){
 'use strict';
 
 var keyMirror = require('keymirror');
@@ -20904,11 +20914,106 @@ module.exports = {
 },{"keymirror":5}],170:[function(require,module,exports){
 'use strict';
 
+var keyMirror = require('keymirror');
+
+module.exports = {
+
+    DatasetStatus: keyMirror({
+        DS_STATE_NEW: null,
+        DS_STATE_REQUESTED: null,
+        DS_STATE_READY: null
+    })
+
+};
+
+},{"keymirror":5}],171:[function(require,module,exports){
+'use strict';
+
+function Card(version, title, body, image, link) {
+    this['class'] = 'Card';
+    if (version == null) version = -1;
+    this.version = version;
+    this.title = title;
+    this.body = body;
+    this.image = image;
+    this.link = link;
+
+    this.getVersion = function () {
+        return this.version;
+    };
+};
+
+module.exports = Card;
+
+},{}],172:[function(require,module,exports){
+'use strict';
+
+var Card = require('../data/Card');
+
+function CardSet(version, name, cards) {
+    this['class'] = 'CardSet';
+    this.version = version;
+    this.name = name;
+    this.cards = [];
+    for (var i = 0; i < cards.length; ++i) {
+        var card = new Card(null, cards[i].title, cards[i].body, cards[i].image, cards[i].link);
+        this.cards.push(card);
+    }
+    this.getVersion = function () {
+        return this.version;
+    };
+};
+
+module.exports = CardSet;
+
+},{"../data/Card":171}],173:[function(require,module,exports){
+'use strict';
+
+var DatasetStatusConstants = require('../constants/DatasetStatusConstants');
+var DatasetStatus = DatasetStatusConstants.DatasetStatus;
+
+function DataSet(version, datasetId) {
+    this['class'] = 'DataSet';
+    this.version = version;
+    this.datasetId = datasetId;
+    this.status = DatasetStatus.DS_STATE_NEW;
+    this.data = null;
+
+    this.getStatus = function () {
+        return this.status;
+    };
+
+    this.isReady = function () {
+        return this.status == DatasetStatus.DS_STATE_READY;
+    };
+
+    this.setReady = function () {
+        this.status = DatasetStatus.DS_STATE_READY;
+    };
+
+    this.isRequested = function () {
+        return this.status == DatasetStatus.DS_STATE_REQUESTED;
+    };
+
+    this.setRequested = function () {
+        this.status = DatasetStatus.DS_STATE_REQUESTED;
+    };
+
+    this.getVersion = function () {
+        return this.version;
+    };
+};
+
+module.exports = DataSet;
+
+},{"../constants/DatasetStatusConstants":170}],174:[function(require,module,exports){
+'use strict';
+
 var Dispatcher = require('flux').Dispatcher;
 
 module.exports = new Dispatcher();
 
-},{"flux":2}],171:[function(require,module,exports){
+},{"flux":2}],175:[function(require,module,exports){
 'use strict';
 
 var dispatcher = require('../dispatcher/BudgetAppDispatcher');
@@ -20919,8 +21024,10 @@ var assign = require('object-assign');
 var BudgetAppConstants = require('../constants/BudgetAppConstants');
 var ActionTypes = BudgetAppConstants.ActionTypes;
 
+var Card = require('../data/Card');
+var CardSet = require('../data/CardSet');
+
 var CHANGE_EVENT = 'change';
-var _cards = {};
 
 var MainCardStore = assign({}, EventEmitter.prototype, {
 
@@ -20928,27 +21035,36 @@ var MainCardStore = assign({}, EventEmitter.prototype, {
 
     versionCounter: 1, // Let's components optimize whether they need to redraw
 
-    dataObjects: [],
+    _cards: [],
 
-    storeItem: function storeItem(data) {
-        var item = {};
-        item.data = data;
-        item.version = this.versionCounter++;
-        this.dataObjects[this.idCounter] = item;
+    storeCard: function storeCard(data) {
+        var card = new Card(this.versionCounter++, data.title, data.body, data.link, data.image);
+        card.id = data.id;
+        card.cardSet = data.cardSet;
+
+        this._cards[this.idCounter] = card;
+        this.emit(CHANGE_EVENT);
+        return this.idCounter++;
+    },
+
+    storeCardSet: function storeCardSet(data) {
+        var cardset = new CardSet(this.versionCounter++, data.name, data.cards);
+        cardset.id = data.id;
+        this._cards[this.idCounter] = cardset;
         this.emit(CHANGE_EVENT);
         return this.idCounter++;
     },
 
     dataHasUpdated: function dataHasUpdated(id, version) {
-        if (id >= 0 && id < this.dataObjects.length) {
-            return this.dataObjects[id].version > version;
+        if (id >= 0 && id < this._cards.length) {
+            return this._cards[id].version > version;
         }
         return false;
     },
 
     getData: function getData(id) {
-        if (id >= 0 && id < this.dataObjects.length) {
-            return this.dataObjects[id];
+        if (id >= 0 && id < this._cards.length) {
+            return this._cards[id];
         }
         return null;
     },
@@ -20999,7 +21115,7 @@ dispatcher.register(function (action) {
 
 module.exports = MainCardStore;
 
-},{"../constants/BudgetAppConstants":168,"../dispatcher/BudgetAppDispatcher":170,"events":6,"object-assign":8}],172:[function(require,module,exports){
+},{"../constants/BudgetAppConstants":168,"../data/Card":171,"../data/CardSet":172,"../dispatcher/BudgetAppDispatcher":174,"events":6,"object-assign":8}],176:[function(require,module,exports){
 'use strict';
 
 var dispatcher = require('../dispatcher/BudgetAppDispatcher');
@@ -21013,12 +21129,13 @@ var ActionTypes = BudgetAppConstants.ActionTypes;
 var DataFormConstants = require('../constants/DataFormConstants');
 var DataForms = DataFormConstants.DataForms;
 
+var DatasetStatusConstants = require('../constants/DatasetStatusConstants');
+var DatasetStatus = DatasetStatusConstants.DatasetStatus;
+
+var DataSet = require('../data/DataSet');
+
 var DS_CHANGE_EVENT = 'ds_change';
 var _cards = {};
-
-var STATE_NEW = 1;
-var STATE_REQUESTED = 2;
-var STATE_READY = 3;
 
 var MainDatasetStore = assign({}, EventEmitter.prototype, {
 
@@ -21029,12 +21146,8 @@ var MainDatasetStore = assign({}, EventEmitter.prototype, {
     dataObjects: [],
 
     registerDataset: function registerDataset(datasetId) {
-        var item = {};
-        item.datasetId = datasetId;
-        item.version = this.versionCounter++;
-        item.status = STATE_NEW;
-        item.data = null;
-        this.dataObjects[this.idCounter] = item;
+        var ds = new DataSet(this.versionCounter++, datasetId);
+        this.dataObjects[this.idCounter] = ds;
         return this.idCounter++;
     },
 
@@ -21071,13 +21184,13 @@ var MainDatasetStore = assign({}, EventEmitter.prototype, {
         var data = null;
         if (id >= 0 && id < this.dataObjects.length) {
             var object = this.dataObjects[id];
-            if (object.status == STATE_READY) {
+            if (object.isReady()) {
                 data = object.data;
-            } else if (object.status == STATE_NEW) {
+            } else if (!object.isRequested()) {
                 var source = GBEVars.apiPath + '/datasets/' + object.datasetId;
                 $.get(source, function (r) {}).done(this.receiveData).fail(this.receiveError);
 
-                object.status = STATE_REQUESTED;
+                object.setRequested();
             }
         }
         return data;
@@ -21113,11 +21226,12 @@ MainDatasetStore.dispatchToken = dispatcher.register(function (action) {
     switch (action.actionType) {
         case ActionTypes.DATASET_RECEIVED:
             var dsId = action.payload.id;
+            console.log('DATASET_RECEIVED - ID = ' + dsId);
             for (var j = 0; j < MainDatasetStore.dataObjects.length; ++j) {
                 if (MainDatasetStore.dataObjects[j].datasetId == dsId) {
                     MainDatasetStore.dataObjects[j].data = action.payload;
                     MainDatasetStore.dataObjects[j].version = MainDatasetStore.versionCounter++;
-                    MainDatasetStore.dataObjects[j].status = STATE_READY;
+                    MainDatasetStore.dataObjects[j].setReady();
                 }
             }
             MainDatasetStore.emitChange();
@@ -21131,4 +21245,4 @@ MainDatasetStore.dispatchToken = dispatcher.register(function (action) {
 
 module.exports = MainDatasetStore;
 
-},{"../constants/BudgetAppConstants":168,"../constants/DataFormConstants":169,"../dispatcher/BudgetAppDispatcher":170,"events":6,"object-assign":8}]},{},[1]);
+},{"../constants/BudgetAppConstants":168,"../constants/DataFormConstants":169,"../constants/DatasetStatusConstants":170,"../data/DataSet":173,"../dispatcher/BudgetAppDispatcher":174,"events":6,"object-assign":8}]},{},[1]);

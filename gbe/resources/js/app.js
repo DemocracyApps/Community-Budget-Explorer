@@ -41,20 +41,19 @@ console.log("Process the components for data");
 $.each(GBEVars.components, function (key, pageComponentsArray) {
     for (var i=0; i<pageComponentsArray.length; ++i) {
         var pageComponent = pageComponentsArray[i];
-        console.log("Dealing with a component " + pageComponent.componentName);
         if (pageComponent.data != null) {
             for (var key in pageComponent.data) {
                 if (pageComponent.data.hasOwnProperty(key)) {
                     if (pageComponent.data[key].dataType == 'card') {
                         pageComponent.data[key] = {
                             type: 'card',
-                            storeId: cardStore.storeItem(pageComponent.data[key])
+                            id: cardStore.storeCard(pageComponent.data[key])
                         };
                     }
                     else if (pageComponent.data[key].dataType == 'cardset') {
                         pageComponent.data[key] = {
                             type: 'cardset',
-                            storeId: cardStore.storeItem(pageComponent.data[key])
+                            id: cardStore.storeCardSet(pageComponent.data[key])
                         }
                     }
                     else if (pageComponent.data[key].dataType == 'dataset') {
@@ -63,7 +62,7 @@ $.each(GBEVars.components, function (key, pageComponentsArray) {
                             id: datasetStore.registerDataset(pageComponent.data[key].id)
                         }
                     }
-                    else if (pageComponent.data[key].dataType == 'dataset_list') {
+                    else if (pageComponent.data[key].dataType == 'multidataset') {
                         var idList = [];
                         for (var i = 0; i < pageComponent.data[key].idList.length; ++i) {
                             idList.push(datasetStore.registerDataset(pageComponent.data[key].idList[i]));
@@ -91,6 +90,7 @@ $.each(GBEVars.components, function (key, pageComponentsArray) {
  * The layout specific gives the grid. The components property has the component specifications by grid cell ID,
  * and reactComponents has the actual React components keyed by component name.
  */
+console.log("Now do the layout");
 var props = {layout:GBEVars.layout.specification, components:GBEVars.components, reactComponents:reactComponents}
 var layout = React.render(<BootstrapLayout {...props}/>, document.getElementById('app'));
 

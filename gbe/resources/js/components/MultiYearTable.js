@@ -4,6 +4,10 @@ var datasetStore = require('../stores/MainDataSetStore');
 
 var SimpleCard = React.createClass({
 
+    propTypes: {
+        data: React.PropTypes.object.isRequired,
+    },
+
     getInitialState: function() {
         return {
             datasets: [],

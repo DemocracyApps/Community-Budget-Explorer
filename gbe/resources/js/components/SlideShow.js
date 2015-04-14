@@ -4,6 +4,10 @@ var mainCardStore = require('../stores/MainCardStore');
 
 var SlideShow = React.createClass({
 
+    propTypes: {
+        data: React.PropTypes.object.isRequired,
+    },
+
     getInitialState: function() {
         return {
             version: 0,
@@ -21,11 +25,11 @@ var SlideShow = React.createClass({
     },
 
     updateData: function () {
-        var data = mainCardStore.getCardSetIfUpdated(this.props.data["mycardset"].storeId, this.state.version);
-        if (data != null) {
+        var cardset = mainCardStore.getCardSetIfUpdated(this.props.data["mycardset"].id, this.state.version);
+        if (cardset != null) {
             this.setState({
-                version: data.version,
-                cards: data.data.cards
+                version: cardset.getVersion(),
+                cards: cardset.cards
             });
         }
     },

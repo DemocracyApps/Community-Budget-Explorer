@@ -9,12 +9,15 @@ var ActionTypes = BudgetAppConstants.ActionTypes;
 var DataFormConstants = require('../constants/DataFormConstants');
 var DataForms = DataFormConstants.DataForms;
 
+var DatasetStatusConstants = require('../constants/DatasetStatusConstants');
+var DatasetStatus = DatasetStatusConstants.DatasetStatus;
+
+var DataSet = require('../data/DataSet');
+
 var DS_CHANGE_EVENT = 'ds_change';
 var _cards = {};
 
-var STATE_NEW = 1;
-var STATE_REQUESTED = 2;
-var STATE_READY = 3;
+
 
 var MainDatasetStore = assign({}, EventEmitter.prototype, {
 
@@ -25,12 +28,8 @@ var MainDatasetStore = assign({}, EventEmitter.prototype, {
     dataObjects: [],
 
     registerDataset: function (datasetId) {
-        var item = {};
-        item.datasetId = datasetId;
-        item.version = this.versionCounter++;
-        item.status = STATE_NEW;
-        item.data = null;
-        this.dataObjects[this.idCounter] = item;
+        var ds = new DataSet(this.versionCounter++, datasetId);
+        this.dataObjects[this.idCounter] = ds;
         return this.idCounter++;
     },
 
@@ -69,15 +68,15 @@ var MainDatasetStore = assign({}, EventEmitter.prototype, {
         var data = null;
         if (id >= 0 && id < this.dataObjects.length) {
             var object = this.dataObjects[id];
-            if (object.status == STATE_READY) {
+            if (object.isReady()) {
                 data = object.data;
             }
-            else if (object.status == STATE_NEW) {
+            else if (! object.isRequested()) {
                 var source =GBEVars.apiPath + "/datasets/" + object.datasetId;
                 $.get( source, function( r ) {
                 }).done(this.receiveData).fail(this.receiveError);
 
-                object.status = STATE_REQUESTED;
+                object.setRequested();
             }
         }
         return data;
@@ -114,11 +113,12 @@ MainDatasetStore.dispatchToken = dispatcher.register(function (action) {
     {
         case ActionTypes.DATASET_RECEIVED:
             var dsId = action.payload.id;
+            console.log("DATASET_RECEIVED - ID = " + dsId);
             for (var j=0; j<MainDatasetStore.dataObjects.length; ++j) {
                 if (MainDatasetStore.dataObjects[j].datasetId == dsId) {
                     MainDatasetStore.dataObjects[j].data = action.payload;
                     MainDatasetStore.dataObjects[j].version = MainDatasetStore.versionCounter++;
-                    MainDatasetStore.dataObjects[j].status = STATE_READY;
+                    MainDatasetStore.dataObjects[j].setReady();
                 }
             }
             MainDatasetStore.emitChange()

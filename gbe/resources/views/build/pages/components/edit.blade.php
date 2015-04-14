@@ -53,13 +53,13 @@
                             </div>
                         </div>
                     @endif
-                @elseif ($dType == 'dataset' || $dType == 'dataset_list')
+                @elseif ($dType == 'dataset' || $dType == 'multidataset')
                     <div class="col-xs-6">
                         <div class="form-group">
                             <label for="selectedDataset_{!! $dTag !!}">CardSet:</label>
                             <select id="selectedDataset_{!! $dTag !!}" class="form-control"
                                     name="selectedDataset_{!! $dTag !!}[]"
-                                    @if ($dType == 'dataset_list')
+                                    @if ($dType == 'multidataset')
                                         multiple size={!! sizeof($dataSets) !!}
                                     @endif
                             >
