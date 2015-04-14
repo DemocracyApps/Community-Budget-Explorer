@@ -46,7 +46,6 @@ var SimpleCard = React.createClass({
         for (var i=0; i<this.state.datasets.length; ++i) {
             var data = datasetStore.getDataIfUpdated(this.state.datasets[i].storeId, this.state.datasets[i].version);
             if (data != null) {
-                console.log("MultiYearTable is updating the data");
                 var datasets = this.state.datasets;
                 datasets[i].data = data;
                 this.setState({datasets: datasets});
@@ -59,7 +58,6 @@ var SimpleCard = React.createClass({
     },
 
     render: function() {
-        console.log("MultiYearTable is rendering with ready = " + this.allDataReady());
         if (this.allDataReady()) {
             return (
                 <div key={this.props.key}>
@@ -68,7 +66,7 @@ var SimpleCard = React.createClass({
             );
         }
         else {
-            return <div key={this.props.key}> I am a Multi-Year Table!</div>
+            return <div key={this.props.key}> Multiyear table loading ...</div>
         }
     }
 });

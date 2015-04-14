@@ -21,14 +21,12 @@ var SlideShow = React.createClass({
     },
 
     updateData: function () {
-        var data = mainCardStore.getDataIfUpdated(this.props.data["mycardset"].storeId, this.state.version);
+        var data = mainCardStore.getCardSetIfUpdated(this.props.data["mycardset"].storeId, this.state.version);
         if (data != null) {
-            console.log("SlideShow is updating the data");
             this.setState({
                 version: data.version,
                 cards: data.data.cards
             });
-            console.log("Here are the cards: " + JSON.stringify(this.state.cards));
         }
     },
 
@@ -37,9 +35,8 @@ var SlideShow = React.createClass({
     },
 
     render: function() {
-        console.log("SlideShow is rendering with version " + this.state.version);
         if (this.state.version == 0) {
-            return <div key={this.props.key}> I am a SlideShow!</div>
+            return <div key={this.props.key}>SlideShow loading ...</div>
         }
         else {
             return (

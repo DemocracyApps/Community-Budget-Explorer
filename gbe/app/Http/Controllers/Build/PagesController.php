@@ -92,7 +92,7 @@ class PagesController extends Controller {
         $str = $jp->minifyJson($layout->specification);
         $cfig = $jp->decodeJson($str, true);
         if ( ! $cfig) {
-            throw new \Exception("Unable to part layout specification " . $layout->name);
+            throw new \Exception("Unable to parse layout specification " . $layout->name);
         }
         $layout->specification = $cfig;
 

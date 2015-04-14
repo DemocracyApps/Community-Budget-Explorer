@@ -25,7 +25,7 @@
     @yield('head')
 </head>
   <?php
-          use DemocracyApps\GB\Helpers as Helpers;
+          use DemocracyApps\GB\Helpers as Helpers;use DemocracyApps\GB\Sites\Site;
   ?>
 
 <body>
@@ -52,9 +52,24 @@
                             <ul class="dropdown-menu" role="menu">
                                 <li role="presentation" ><a href="/user/profile">My Stuff</a></li>
                                 <?php
-                                $user = Auth::user();
-                                $governmentOrg = $user->getGovernmentOrg();
-                                $mediaOrg = $user->getMediaOrg();
+                                    $user = Auth::user();
+                                    $governmentOrg = $user->getGovernmentOrg();
+                                    $mediaOrg = $user->getMediaOrg();
+                                    $sites = [];
+                                    if ($governmentOrg != null) {
+                                        $gSites = Site::where('owner_type','=',Site::GOVERNMENT)
+                                                ->where('owner', '=', $governmentOrg->id)->get();
+                                        foreach ($gSites as $site) {
+                                            $sites[] = $site;
+                                        }
+                                    }
+                                    if ($mediaOrg != null) {
+                                        $mSites = Site::where('owner_type','=',Site::MEDIA)
+                                                ->where('owner', '=', $mediaOrg->id)->get();
+                                        foreach ($mSites as $site) {
+                                            $sites[] = $site;
+                                        }
+                                    }
                                 ?>
                                 @if ($governmentOrg != null)
                                     <li role="presentation"><a href="/governments/{!!$governmentOrg->id!!}">{!!$governmentOrg->name!!}</a></li>
@@ -62,15 +77,21 @@
                                 @if ($mediaOrg != null)
                                     <li role="presentation"><a href="/media/{!!$mediaOrg->id!!}">{!! $mediaOrg->name !!}</a></li>
                                 @endif
-                                @if ($user->projectcreator)
-                                    <li role="presentation" ><a href="/admin/projects">Projects</a></li>
-                                @endif
                                 @if ($user->superuser)
                                     <li role="presentation" ><a href="/system/settings">System</a></li>
                                 @endif
-                                <li role="presentation" ><a href="/auth/logout">Log Out</a></li>
+                                <li class="divider"></li>
+                                @if (sizeof($sites) > 0)
+                                    <li role="presentation"><a href="#"><strong>Sites</strong></a></li>
+                                    @foreach($sites as $site)
+                                        <li role="presentation">
+                                            <a href="/build/{!! $site->slug !!}"> {!! $site->name !!}</a>
+                                        </li>
+                                    @endforeach
+                                @endif
+                                <li class="divider"></li>
 
-                                <li role="presentation" class="disabled" style="display:none;"><a href="#">Disabled link</a></li>
+                                <li role="presentation" ><a href="/auth/logout">Log Out</a></li>
                             </ul>
                         </li>
                     @endif

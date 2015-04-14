@@ -95,7 +95,6 @@ class ComponentsController extends Controller {
         $this->pageComponent = PageComponent::find($id);
         $component = Component::find($this->pageComponent->component);
         $dataDefs = $component->getProperty('data');
-
         $dataBundle = array();
         foreach ($dataDefs as $def) {
             $type = $def['type'];

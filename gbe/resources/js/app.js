@@ -68,8 +68,10 @@ $.each(GBEVars.components, function (key, pageComponentsArray) {
                         for (var i = 0; i < pageComponent.data[key].idList.length; ++i) {
                             idList.push(datasetStore.registerDataset(pageComponent.data[key].idList[i]));
                         }
+                        // Need to create a composite set and get the id to that
                         pageComponent.data[key] = {
                             type: 'dataset_list',
+                            id: null, // ID of the composite set
                             idList: idList
                         }
                     }

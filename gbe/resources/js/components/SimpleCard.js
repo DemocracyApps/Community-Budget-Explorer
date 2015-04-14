@@ -24,9 +24,8 @@ var SimpleCard = React.createClass({
     },
 
     updateData: function () {
-        var data = mainCardStore.getDataIfUpdated(this.props.data["mycard"].storeId, this.state.cardVersion);
+        var data = mainCardStore.getCardIfUpdated(this.props.data["mycard"].storeId, this.state.cardVersion);
         if (data != null) {
-            console.log("SimpleCard is updating the data");
             this.setState({
                 cardVersion: data.version,
                 title: data.data.title,
@@ -42,9 +41,8 @@ var SimpleCard = React.createClass({
     },
 
     render: function() {
-        console.log("Simplecard is rendering with cardVersion " + this.state.cardVersion);
         if (this.state.cardVersion == 0) {
-            return <div key={this.props.key}> I am SimpleCard!</div>
+            return <div key={this.props.key}>SimpleCard loading ...</div>
         }
         else {
             return (

@@ -17,11 +17,6 @@ var MainCardStore = assign({}, EventEmitter.prototype, {
 
     dataObjects: [],
 
-    // Various local things.
-
-    sayHi: function() {
-        console.log("Hi!");
-    },
 
     storeItem: function (data) {
         var item = {};
@@ -51,6 +46,14 @@ var MainCardStore = assign({}, EventEmitter.prototype, {
             return this.getData(id);
         }
         return null;
+    },
+
+    getCardIfUpdated: function (id, version) {
+        return this.getDataIfUpdated(id, version);
+    },
+
+    getCardSetIfUpdated: function (id, version) {
+        return this.getDataIfUpdated(id, version);
     },
 
     emitChange: function() {
