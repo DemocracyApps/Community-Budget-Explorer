@@ -6,88 +6,72 @@ var assign = require('object-assign');
 var BudgetAppConstants = require('../constants/BudgetAppConstants');
 var ActionTypes = BudgetAppConstants.ActionTypes;
 
-var DataFormConstants = require('../constants/DataFormConstants');
-var DataForms = DataFormConstants.DataForms;
-
 var DatasetStatusConstants = require('../constants/DatasetStatusConstants');
 var DatasetStatus = DatasetStatusConstants.DatasetStatus;
 
-var DataSet = require('../data/DataSet');
+var Dataset = require('../data/Dataset');
+var DataProvider = require('../data/DataProvider');
 
 var DS_CHANGE_EVENT = 'ds_change';
-var _cards = {};
-
-
 
 var MainDatasetStore = assign({}, EventEmitter.prototype, {
 
-    idCounter: 0,
-
     versionCounter: 1, // Let's components optimize whether they need to redraw
 
-    dataObjects: [],
+    datasetIdCounter: 0,
 
-    registerDataset: function (datasetId) {
-        var ds = new DataSet(this.versionCounter++, datasetId);
-        this.dataObjects[this.idCounter] = ds;
-        return this.idCounter++;
-    },
+    datasets: [], // These are the datasets as received from the server
 
-    getDatasetIfUpdated: function (id, version, dataform=null)
-    {
-        if (dataform == null || dataform == Dataforms.RAW) {
-            return this.getDataIfUpdated(id, version);
+    dataProviderIdCounter: 0,
+
+    dataProviders: [], // These are the objects that components will actually operate with.
+
+    serverIdMap: {},
+
+    dependencyMap: {},
+
+    /*
+     * The serverId is the ID of the dataset on the server. This is unique as
+     * long as we are only dealing with one server, so why the localId? This is
+     * to prepare to allow aggregation of datasets from multiple sources, when
+     * the serverId may no longer be unique. We can deal with the additional
+     * complexity here without anything changing outside the store.
+     */
+    registerDataset: function (serverId, name = "Unnamed") {
+        console.log("Registering dataset " + name);
+        var ds = null;
+        if (serverId in this.serverIdMap) {
+            ds = this.datasets[this.serverIdMap[serverId]];
         }
         else {
-
+            ds = new Dataset(this.versionCounter++, this.datasetIdCounter++, serverId);
+            this.serverIdMap[serverId] = ds.localId;
+            this.datasets[ds.localId] = ds;
         }
-        return null;
+        var dp = new DataProvider(this.dataProviderIdCounter++, [ds], name);
+        this.dataProviders[dp.id] = dp;
+        this.addDependency(ds.localId, dp.id);
+        return dp.id;
     },
 
-    dataHasUpdated: function (id, version) {
-        if (id >= 0 && id < this.dataObjects.length) {
-            return (this.dataObjects[id].version > version);
-        }
-        return false;
+    addDependency: function (dsId, providerId) {
+        if (! (dsId in this.dependencyMap) ) this.dependencyMap[dsId] = [];
+        this.dependencyMap[dsId].push(providerId);
     },
 
-    receiveData: function (r) {
-        for (var i=0; i<r.data.length; ++i) {
-            dispatcher.dispatch({
-                actionType: ActionTypes.DATASET_RECEIVED,
-                payload: r.data[i]
-            });
-        }
+    registerDatasetCollection: function (localIds, name = "Unnamed") {
+        var dsArray = [];
+        for (var i=0; i<localIds.length; ++i) dsArray.push(this.datasets[localIds[i]]);
+
+        var dp = new DataProvider(this.dataProviderIdCounter++, dsArray, name);
+        this.dataProviders[dp.id] = dp;
+
+        for (var i=0; i<localIds.length; ++i) this.addDependency(localIds[i], dp.id);
+        return dp.id;
     },
 
-    receiveError: function(r) {
-        console.log("ERROR - failed to get the data: " + JSON.stringify(r));
-    },
-
-    getData: function (id) {
-        var data = null;
-        if (id >= 0 && id < this.dataObjects.length) {
-            var object = this.dataObjects[id];
-            if (object.isReady()) {
-                data = object.data;
-            }
-            else if (! object.isRequested()) {
-                var source =GBEVars.apiPath + "/datasets/" + object.datasetId;
-                $.get( source, function( r ) {
-                }).done(this.receiveData).fail(this.receiveError);
-
-                object.setRequested();
-            }
-        }
-        return data;
-    },
-
-    getDataIfUpdated: function (id, version) {
-        if (this.dataHasUpdated(id,version)) {
-            return this.getData(id);
-        }
-        console.log(" ... and return");
-        return null;
+    getDataProvider: function(id) {
+        return this.dataProviders[id];
     },
 
     emitChange: function() {
@@ -112,13 +96,17 @@ MainDatasetStore.dispatchToken = dispatcher.register(function (action) {
     switch (action.actionType)
     {
         case ActionTypes.DATASET_RECEIVED:
-            var dsId = action.payload.id;
-            console.log("DATASET_RECEIVED - ID = " + dsId);
-            for (var j=0; j<MainDatasetStore.dataObjects.length; ++j) {
-                if (MainDatasetStore.dataObjects[j].datasetId == dsId) {
-                    MainDatasetStore.dataObjects[j].data = action.payload;
-                    MainDatasetStore.dataObjects[j].version = MainDatasetStore.versionCounter++;
-                    MainDatasetStore.dataObjects[j].setReady();
+            var dsId = MainDatasetStore.serverIdMap[action.payload.id];
+
+            console.log("DATASET_RECEIVED - ID = " + dsId + " corresponding to server ID = " + action.payload.id);
+
+            var ds = MainDatasetStore.datasets[dsId];
+            ds.receiveDataset(action.payload, MainDatasetStore.versionCounter++);
+            if (dsId in MainDatasetStore.dependencyMap) {
+                for (var i=0; i<MainDatasetStore.dependencyMap[dsId].length; ++i) {
+                    var id = MainDatasetStore.dependencyMap[dsId][i];
+                    var dp = MainDatasetStore.dataProviders[id];
+                    dp.updatedData(dsId);
                 }
             }
             MainDatasetStore.emitChange()

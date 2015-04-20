@@ -32,7 +32,7 @@ var _SlideShow = require('./components/SlideShow');
 var _SlideShow2 = _interopRequireWildcard(_SlideShow);
 
 var cardStore = require('./stores/MainCardStore');
-var datasetStore = require('./stores/MainDataSetStore');
+var datasetStore = require('./stores/MainDatasetStore');
 
 var reactComponents = {};
 reactComponents.SimpleCard = _SimpleCard2['default'];
@@ -76,17 +76,18 @@ $.each(GBEVars.components, function (key, pageComponentsArray) {
                     } else if (pageComponent.data[key].dataType == 'dataset') {
                         pageComponent.data[key] = {
                             type: 'dataset',
-                            id: datasetStore.registerDataset(pageComponent.data[key].id)
+                            id: datasetStore.registerDataset(pageComponent.data[key].id, key)
                         };
                     } else if (pageComponent.data[key].dataType == 'multidataset') {
                         var idList = [];
                         for (var i = 0; i < pageComponent.data[key].idList.length; ++i) {
-                            idList.push(datasetStore.registerDataset(pageComponent.data[key].idList[i]));
+                            idList.push(datasetStore.registerDataset(pageComponent.data[key].idList[i], key));
                         }
                         // Need to create a composite set and get the id to that
+                        var compositeId = datasetStore.registerDatasetCollection(idList, key);
                         pageComponent.data[key] = {
-                            type: 'dataset_list',
-                            id: null, // ID of the composite set
+                            type: 'multidataset',
+                            id: compositeId, // ID of the composite set
                             idList: idList
                         };
                     }
@@ -110,7 +111,7 @@ console.log('Now do the layout');
 var props = { layout: GBEVars.layout.specification, components: GBEVars.components, reactComponents: reactComponents };
 var layout = _React2['default'].render(_React2['default'].createElement(_BootstrapLayout2['default'], props), document.getElementById('app'));
 
-},{"./components/BootstrapLayout":164,"./components/MultiYearTable":165,"./components/SimpleCard":166,"./components/SlideShow":167,"./stores/MainCardStore":175,"./stores/MainDataSetStore":176,"react":163}],2:[function(require,module,exports){
+},{"./components/BootstrapLayout":164,"./components/MultiYearTable":165,"./components/SimpleCard":166,"./components/SlideShow":167,"./stores/MainCardStore":176,"./stores/MainDatasetStore":177,"react":163}],2:[function(require,module,exports){
 /**
  * Copyright (c) 2014, Facebook, Inc.
  * All rights reserved.
@@ -20623,87 +20624,118 @@ var _React = require('react');
 
 var _React2 = _interopRequireWildcard(_React);
 
-var datasetStore = require('../stores/MainDataSetStore');
+var datasetStore = require('../stores/MainDatasetStore');
+var AccountTypeConstants = require('../constants/AccountTypeConstants');
+var AccountTypes = AccountTypeConstants.AccountTypes;
 
-var SimpleCard = _React2['default'].createClass({
-    displayName: 'SimpleCard',
+var MultiYearTable = _React2['default'].createClass({
+    displayName: 'MultiYearTable',
 
     propTypes: {
-        data: _React2['default'].PropTypes.object.isRequired },
+        data: _React2['default'].PropTypes.object.isRequired
+    },
+
+    getDefaultProps: function getDefaultProps() {
+        return {
+            accountTypes: [{ name: 'Expense', value: AccountTypes.EXPENSE }, { name: 'Revenue', value: AccountTypes.REVENUE }],
+            dataInitialization: {
+                hierarchy: ['Fund', 'Department', 'Division'],
+                accountTypes: [AccountTypes.EXPENSE, AccountTypes.REVENUE],
+                amountThreshold: 0.01
+            },
+            dataPrepCommands: [{
+                command: 'selectAccountTypes',
+                values: [AccountTypes.EXPENSE, AccountTypes.REVENUE]
+            }, {
+                command: 'setAmountThreshold',
+                value: 0.01,
+                abs: true
+            }, {
+                command: 'setHierarchy', // Primary immediate effect is to aggregate up all other hierarchy levels
+                fields: ['Fund', 'Department', 'Division']
+            }]
+        };
+    },
 
     getInitialState: function getInitialState() {
         return {
-            datasets: [] };
-    },
-
-    allDataReady: function allDataReady() {
-        var ready = this.state.datasets.length > 0 ? true : false;
-        for (var i = 0; i < this.state.datasets.length && ready; ++i) {
-            if (this.state.datasets[i].data == null) ready = false;
-        }
-        return ready;
+            selectedItem: AccountTypes.EXPENSE,
+            version: -1,
+            dataProvider: null
+        };
     },
 
     componentWillMount: function componentWillMount() {
-        /*
-         * Let's request the data now.
-         */
-        var setList = this.props.data.alldata.idList;
-        for (var i = 0; i < setList.length; ++i) {
-            var dataset = {};
-            dataset.storeId = setList[i];
-            dataset.version = 0;
-            dataset.data = null;
-            datasetStore.getDataIfUpdated(setList[i], 0);
-            this.state.datasets.push(dataset);
-        }
+        this.state.dataProvider = datasetStore.getDataProvider(this.props.data.alldata.id);
+        this.state.dataProvider.setInitializer(this.props.dataInitialization);
+        this.state.dataProvider.prepareData();
+        this.setState({ version: this.state.dataProvider.getVersion() });
     },
 
     componentDidMount: function componentDidMount() {
-        this.updateData();
-        datasetStore.addChangeListener(this._onChange);
-    },
-
-    componentWillUnmount: function componentWillUnmount() {
-        datasetStore.removeChangeListener(this._onChange);
-    },
-
-    updateData: function updateData() {
-        for (var i = 0; i < this.state.datasets.length; ++i) {
-            var data = datasetStore.getDataIfUpdated(this.state.datasets[i].storeId, this.state.datasets[i].version);
-            if (data != null) {
-                var datasets = this.state.datasets;
-                datasets[i].data = data;
-                this.setState({ datasets: datasets });
-            }
+        datasetStore.addChangeListener(this._onDataChange);
+        if (this.state.version != this.state.dataProvider.getVersion()) {
+            this.setState({ version: this.state.dataProvider.getVersion() });
         }
     },
 
-    _onChange: function _onChange() {
-        this.updateData();
+    componentWillUnmount: function componentWillUnmount() {
+        datasetStore.removeChangeListener(this._onDataChange);
+    },
+
+    _onDataChange: function _onDataChange() {
+        if (this.state.version != this.state.dataProvider.getVersion()) {
+            this.setState({ version: this.state.dataProvider.getVersion() });
+        }
+    },
+
+    onChange: function onChange(e) {
+        this.setState({ selectedItem: e.value });
     },
 
     render: function render() {
-        if (this.allDataReady()) {
-            return _React2['default'].createElement(
-                'div',
-                { key: this.props.key },
-                'Got me some doggone data!'
-            );
-        } else {
+        var rows = this.state.dataProvider.getData([{
+            command: 'selectAccountTypes',
+            values: [this.state.selectedItem]
+        }, {
+            command: 'toArray'
+        }]);
+        console.log('Table Rendering with rows = ' + JSON.stringify(rows));
+
+        if (rows == null) {
             return _React2['default'].createElement(
                 'div',
                 { key: this.props.key },
                 ' Multiyear table loading ...'
             );
+        } else {
+            return _React2['default'].createElement(
+                'div',
+                { key: this.props.key },
+                _React2['default'].createElement(
+                    'select',
+                    { onChange: this.onChange, value: this.state.selectedItem },
+                    this.props.accountTypes.map(function (type, index) {
+                        return _React2['default'].createElement(
+                            'option',
+                            { key: index, value: type.value },
+                            ' ',
+                            type.name,
+                            ' '
+                        );
+                    })
+                ),
+                _React2['default'].createElement('br', null),
+                'Got me some doggone data!'
+            );
         }
     }
 });
 
-exports['default'] = SimpleCard;
+exports['default'] = MultiYearTable;
 module.exports = exports['default'];
 
-},{"../stores/MainDataSetStore":176,"react":163}],166:[function(require,module,exports){
+},{"../constants/AccountTypeConstants":168,"../stores/MainDatasetStore":177,"react":163}],166:[function(require,module,exports){
 'use strict';
 
 var _interopRequireWildcard = function (obj) { return obj && obj.__esModule ? obj : { 'default': obj }; };
@@ -20794,7 +20826,7 @@ var SimpleCard = _React2['default'].createClass({
 exports['default'] = SimpleCard;
 module.exports = exports['default'];
 
-},{"../stores/MainCardStore":175,"react":163}],167:[function(require,module,exports){
+},{"../stores/MainCardStore":176,"react":163}],167:[function(require,module,exports){
 'use strict';
 
 var _interopRequireWildcard = function (obj) { return obj && obj.__esModule ? obj : { 'default': obj }; };
@@ -20877,7 +20909,22 @@ var SlideShow = _React2['default'].createClass({
 exports['default'] = SlideShow;
 module.exports = exports['default'];
 
-},{"../stores/MainCardStore":175,"react":163}],168:[function(require,module,exports){
+},{"../stores/MainCardStore":176,"react":163}],168:[function(require,module,exports){
+"use strict";
+
+module.exports = {
+    AccountTypes: {
+        UNKNOWN: 0,
+        REVENUE: 1,
+        EXPENSE: 2,
+        ASSET: 3,
+        LIABILITY: 4,
+        EQUITY: 5,
+        CONTRA: 6
+    }
+};
+
+},{}],169:[function(require,module,exports){
 'use strict';
 
 var keyMirror = require('keymirror');
@@ -20897,20 +20944,6 @@ module.exports = {
 
 };
 
-},{"keymirror":5}],169:[function(require,module,exports){
-'use strict';
-
-var keyMirror = require('keymirror');
-
-module.exports = {
-
-    DataForms: keyMirror({
-        OBJECT: null,
-        ARRAYS: null,
-        RAW: null })
-
-};
-
 },{"keymirror":5}],170:[function(require,module,exports){
 'use strict';
 
@@ -20921,6 +20954,7 @@ module.exports = {
     DatasetStatus: keyMirror({
         DS_STATE_NEW: null,
         DS_STATE_REQUESTED: null,
+        DS_STATE_PENDING: null,
         DS_STATE_READY: null
     })
 
@@ -20971,13 +21005,212 @@ module.exports = CardSet;
 
 var DatasetStatusConstants = require('../constants/DatasetStatusConstants');
 var DatasetStatus = DatasetStatusConstants.DatasetStatus;
+var BudgetAppConstants = require('../constants/BudgetAppConstants');
+var ActionTypes = BudgetAppConstants.ActionTypes;
+var dispatcher = require('../dispatcher/BudgetAppDispatcher');
 
-function DataSet(version, datasetId) {
-    this['class'] = 'DataSet';
+function DataProvider(id, datasets, name) {
+    this.id = id;
+    this.name = name;
+    this.version = -1;
+    this.raw = []; // array of datasets
+    this.initializationParameters = null;
+    this.consumerReady = false;
+    this.categories = null;
+
+    this.data = null;
+
+    this.status = DatasetStatus.DS_STATE_READY;
+    for (var i = 0; i < datasets.length; ++i) {
+        this.raw.push(datasets[i]);
+        if (!datasets[i].isReady()) this.status = DatasetStatus.DS_STATE_PENDING;
+        if (datasets[i].version > this.version) this.version = datasets[i].version;
+    }
+
+    this.setInitializer = function () {
+        var initialCommands = arguments[0] === undefined ? null : arguments[0];
+
+        if (initialCommands != null) this.initializationParameters = initialCommands;
+    };
+
+    this.getVersion = function () {
+        return this.version;
+    };
+
+    this.prepareData = function () {
+        for (var i = 0; i < this.raw.length; ++i) {
+            var ds = this.raw[i];
+            if (!ds.isReady() && !ds.isRequested()) {
+                var source = GBEVars.apiPath + '/datasets/' + ds.serverId;
+                $.get(source, function (r) {}).done(this.receiveData).fail(this.receiveError);
+                ds.setRequested();
+            }
+        }
+        this.consumerReady = true;
+    };
+
+    this.receiveData = function (r) {
+        for (var i = 0; i < r.data.length; ++i) {
+            dispatcher.dispatch({
+                actionType: ActionTypes.DATASET_RECEIVED,
+                payload: r.data[i]
+            });
+        }
+    };
+
+    this.receiveError = function (r) {
+        console.log('ERROR - failed to get the data: ' + JSON.stringify(r));
+    };
+
+    this.updatedData = function () {
+        this.status = DatasetStatus.DS_STATE_READY;
+        for (var i = 0; i < datasets.length; ++i) {
+            if (!datasets[i].isReady()) this.status = DatasetStatus.DS_STATE_PENDING;
+            if (datasets[i].version > this.version) this.version = datasets[i].version;
+        }
+        if (this.consumerReady && this.isReady()) {
+            this.categories = this.raw[0].data.categoryIdentifiers;
+            this.initialize();
+        }
+    };
+
+    this.datasetCompare = function (ds1, ds2) {
+        var result = ds1.data.year - ds2.data.year;
+        if (result == 0) {
+            result = ds1.data.month - ds2.data.month;
+            if (result == 0) {
+                result = ds1.data.day - ds2.data.day;
+            }
+        }
+        return result;
+    };
+
+    this.initialize = function () {
+        console.log('Initializing provider ' + this.name);
+        var hierarchy = this.initializationParameters.hierarchy;
+        var nCategories = hierarchy.length;
+        var nPeriods = this.raw.length;
+        var accountTypes = this.initializationParameters.accountTypes;
+        var amountThreshold = 0;
+
+        if ('amountThreshold' in this.initializationParameters) {
+            amountThreshold = +this.initializationParameters.amountThreshold;
+        }
+        if (this.raw.length > 1) this.raw.sort(this.datasetCompare);
+        /*
+         * We need to do a pass to:
+         *  - Merge datasets from multiple periods
+         *  - Aggregate over categories that are not explicitly included in the hierarchy
+         * We'll do the merge/aggregation using a tree.
+         */
+        this.count = 0;
+        var tree = {};
+        for (var iPeriod = 0; iPeriod < this.raw.length; ++iPeriod) {
+            var data = this.raw[iPeriod].data;
+            console.log('Processing period ' + iPeriod + ': ' + data.name);
+            // First we need to map the requested categories to those in the dataset
+            var catMap = new Array(nCategories);
+            for (var iCat = 0; iCat < nCategories; ++iCat) {
+                catMap[iCat] = data.categoryIdentifiers.indexOf(hierarchy[iCat]);
+                if (catMap[iCat] < 0) {
+                    throw 'Unable to map category ' + hierarchy[iCat] + ' in dataset ' + data.name;
+                }
+            }
+
+            for (var j = 0; j < data.items.length; ++j) {
+                var item = data.items[j];
+                if (accountTypes.indexOf(item.type) < 0) continue;
+                var current = tree;
+                for (var level = 0; level < nCategories; ++level) {
+                    if (!(item.categories[catMap[level]] in current)) current[item.categories[catMap[level]]] = {};
+                    current = current[item.categories[catMap[level]]];
+                }
+                if (!(item.account in current)) {
+                    current[item.account] = {
+                        account: item.account,
+                        accountType: item.type,
+                        categories: item.categories,
+                        amount: new Array(nPeriods)
+                    };
+                    for (var k = 0; k < nPeriods; ++k) current[item.account].amount[k] = 0;
+                    this.count++;
+                }
+                current[item.account].amount[iPeriod] += +item.amount;
+            }
+        }
+        console.log('Pre-threshold count: ' + this.count);
+
+        // Now collapse the tree back out
+        this.data = this.collapseTree(tree, 0, nCategories, amountThreshold);
+        console.log('Final count: ' + this.data.length);
+    };
+
+    this.collapseTree = function (node, currentLevel, nLevels, threshold) {
+        var data = [];
+        if (currentLevel == nLevels) {
+            for (var acct in node) {
+                if (node.hasOwnProperty(acct)) {
+                    var keep = false;
+
+                    for (var i = 0; !keep && i < node[acct].amount.length; ++i) {
+                        var amt = node[acct].amount[i];
+
+                        if (Math.abs(amt) >= threshold) keep = true;
+                    }
+                    if (keep) data.push(node[acct]);
+                }
+            }
+        } else {
+            for (var prop in node) {
+                if (node.hasOwnProperty(prop)) {
+                    data = data.concat(this.collapseTree(node[prop], currentLevel + 1, nLevels, threshold));
+                }
+            }
+        }
+        return data;
+    };
+
+    this.isReady = function () {
+        return this.status == DatasetStatus.DS_STATE_READY;
+    };
+
+    this.getData = function (commands) {
+        if (this.status == DatasetStatus.DS_STATE_READY) {
+            return {
+                getArray: function getArray() {
+                    return [];
+                }
+            };
+        } else {
+            return {
+                getArray: function getArray() {
+                    return null;
+                }
+            };
+        }
+    };
+}
+
+module.exports = DataProvider;
+
+},{"../constants/BudgetAppConstants":169,"../constants/DatasetStatusConstants":170,"../dispatcher/BudgetAppDispatcher":175}],174:[function(require,module,exports){
+'use strict';
+
+var DatasetStatusConstants = require('../constants/DatasetStatusConstants');
+var DatasetStatus = DatasetStatusConstants.DatasetStatus;
+
+function Dataset(version, localId, serverId) {
     this.version = version;
-    this.datasetId = datasetId;
+    this.localId = localId;
+    this.serverId = serverId;
     this.status = DatasetStatus.DS_STATE_NEW;
     this.data = null;
+
+    this.receiveDataset = function (data, newVersion) {
+        this.version = newVersion;
+        this.status = DatasetStatus.DS_STATE_READY;
+        this.data = data;
+    };
 
     this.getStatus = function () {
         return this.status;
@@ -21002,18 +21235,22 @@ function DataSet(version, datasetId) {
     this.getVersion = function () {
         return this.version;
     };
+
+    this.registerCollection = function (id) {
+        this.registeredCollections.push(id);
+    };
 };
 
-module.exports = DataSet;
+module.exports = Dataset;
 
-},{"../constants/DatasetStatusConstants":170}],174:[function(require,module,exports){
+},{"../constants/DatasetStatusConstants":170}],175:[function(require,module,exports){
 'use strict';
 
 var Dispatcher = require('flux').Dispatcher;
 
 module.exports = new Dispatcher();
 
-},{"flux":2}],175:[function(require,module,exports){
+},{"flux":2}],176:[function(require,module,exports){
 'use strict';
 
 var dispatcher = require('../dispatcher/BudgetAppDispatcher');
@@ -21115,7 +21352,7 @@ dispatcher.register(function (action) {
 
 module.exports = MainCardStore;
 
-},{"../constants/BudgetAppConstants":168,"../data/Card":171,"../data/CardSet":172,"../dispatcher/BudgetAppDispatcher":174,"events":6,"object-assign":8}],176:[function(require,module,exports){
+},{"../constants/BudgetAppConstants":169,"../data/Card":171,"../data/CardSet":172,"../dispatcher/BudgetAppDispatcher":175,"events":6,"object-assign":8}],177:[function(require,module,exports){
 'use strict';
 
 var dispatcher = require('../dispatcher/BudgetAppDispatcher');
@@ -21126,82 +21363,75 @@ var assign = require('object-assign');
 var BudgetAppConstants = require('../constants/BudgetAppConstants');
 var ActionTypes = BudgetAppConstants.ActionTypes;
 
-var DataFormConstants = require('../constants/DataFormConstants');
-var DataForms = DataFormConstants.DataForms;
-
 var DatasetStatusConstants = require('../constants/DatasetStatusConstants');
 var DatasetStatus = DatasetStatusConstants.DatasetStatus;
 
-var DataSet = require('../data/DataSet');
+var Dataset = require('../data/Dataset');
+var DataProvider = require('../data/DataProvider');
 
 var DS_CHANGE_EVENT = 'ds_change';
-var _cards = {};
 
 var MainDatasetStore = assign({}, EventEmitter.prototype, {
 
-    idCounter: 0,
-
     versionCounter: 1, // Let's components optimize whether they need to redraw
 
-    dataObjects: [],
+    datasetIdCounter: 0,
 
-    registerDataset: function registerDataset(datasetId) {
-        var ds = new DataSet(this.versionCounter++, datasetId);
-        this.dataObjects[this.idCounter] = ds;
-        return this.idCounter++;
-    },
+    datasets: [], // These are the datasets as received from the server
 
-    getDatasetIfUpdated: function getDatasetIfUpdated(id, version) {
-        var dataform = arguments[2] === undefined ? null : arguments[2];
+    dataProviderIdCounter: 0,
 
-        if (dataform == null || dataform == Dataforms.RAW) {
-            return this.getDataIfUpdated(id, version);
-        } else {}
-        return null;
-    },
+    dataProviders: [], // These are the objects that components will actually operate with.
 
-    dataHasUpdated: function dataHasUpdated(id, version) {
-        if (id >= 0 && id < this.dataObjects.length) {
-            return this.dataObjects[id].version > version;
+    serverIdMap: {},
+
+    dependencyMap: {},
+
+    /*
+     * The serverId is the ID of the dataset on the server. This is unique as
+     * long as we are only dealing with one server, so why the localId? This is
+     * to prepare to allow aggregation of datasets from multiple sources, when
+     * the serverId may no longer be unique. We can deal with the additional
+     * complexity here without anything changing outside the store.
+     */
+    registerDataset: function registerDataset(serverId) {
+        var name = arguments[1] === undefined ? 'Unnamed' : arguments[1];
+
+        console.log('Registering dataset ' + name);
+        var ds = null;
+        if (serverId in this.serverIdMap) {
+            ds = this.datasets[this.serverIdMap[serverId]];
+        } else {
+            ds = new Dataset(this.versionCounter++, this.datasetIdCounter++, serverId);
+            this.serverIdMap[serverId] = ds.localId;
+            this.datasets[ds.localId] = ds;
         }
-        return false;
+        var dp = new DataProvider(this.dataProviderIdCounter++, [ds], name);
+        this.dataProviders[dp.id] = dp;
+        this.addDependency(ds.localId, dp.id);
+        return dp.id;
     },
 
-    receiveData: function receiveData(r) {
-        for (var i = 0; i < r.data.length; ++i) {
-            dispatcher.dispatch({
-                actionType: ActionTypes.DATASET_RECEIVED,
-                payload: r.data[i]
-            });
-        }
+    addDependency: function addDependency(dsId, providerId) {
+        if (!(dsId in this.dependencyMap)) this.dependencyMap[dsId] = [];
+        this.dependencyMap[dsId].push(providerId);
     },
 
-    receiveError: function receiveError(r) {
-        console.log('ERROR - failed to get the data: ' + JSON.stringify(r));
+    registerDatasetCollection: function registerDatasetCollection(localIds) {
+        var name = arguments[1] === undefined ? 'Unnamed' : arguments[1];
+
+        var dsArray = [];
+        for (var i = 0; i < localIds.length; ++i) dsArray.push(this.datasets[localIds[i]]);
+
+        var dp = new DataProvider(this.dataProviderIdCounter++, dsArray, name);
+        this.dataProviders[dp.id] = dp;
+
+        for (var i = 0; i < localIds.length; ++i) this.addDependency(localIds[i], dp.id);
+        return dp.id;
     },
 
-    getData: function getData(id) {
-        var data = null;
-        if (id >= 0 && id < this.dataObjects.length) {
-            var object = this.dataObjects[id];
-            if (object.isReady()) {
-                data = object.data;
-            } else if (!object.isRequested()) {
-                var source = GBEVars.apiPath + '/datasets/' + object.datasetId;
-                $.get(source, function (r) {}).done(this.receiveData).fail(this.receiveError);
-
-                object.setRequested();
-            }
-        }
-        return data;
-    },
-
-    getDataIfUpdated: function getDataIfUpdated(id, version) {
-        if (this.dataHasUpdated(id, version)) {
-            return this.getData(id);
-        }
-        console.log(' ... and return');
-        return null;
+    getDataProvider: function getDataProvider(id) {
+        return this.dataProviders[id];
     },
 
     emitChange: function emitChange() {
@@ -21225,13 +21455,17 @@ var MainDatasetStore = assign({}, EventEmitter.prototype, {
 MainDatasetStore.dispatchToken = dispatcher.register(function (action) {
     switch (action.actionType) {
         case ActionTypes.DATASET_RECEIVED:
-            var dsId = action.payload.id;
-            console.log('DATASET_RECEIVED - ID = ' + dsId);
-            for (var j = 0; j < MainDatasetStore.dataObjects.length; ++j) {
-                if (MainDatasetStore.dataObjects[j].datasetId == dsId) {
-                    MainDatasetStore.dataObjects[j].data = action.payload;
-                    MainDatasetStore.dataObjects[j].version = MainDatasetStore.versionCounter++;
-                    MainDatasetStore.dataObjects[j].setReady();
+            var dsId = MainDatasetStore.serverIdMap[action.payload.id];
+
+            console.log('DATASET_RECEIVED - ID = ' + dsId + ' corresponding to server ID = ' + action.payload.id);
+
+            var ds = MainDatasetStore.datasets[dsId];
+            ds.receiveDataset(action.payload, MainDatasetStore.versionCounter++);
+            if (dsId in MainDatasetStore.dependencyMap) {
+                for (var i = 0; i < MainDatasetStore.dependencyMap[dsId].length; ++i) {
+                    var id = MainDatasetStore.dependencyMap[dsId][i];
+                    var dp = MainDatasetStore.dataProviders[id];
+                    dp.updatedData(dsId);
                 }
             }
             MainDatasetStore.emitChange();
@@ -21245,4 +21479,4 @@ MainDatasetStore.dispatchToken = dispatcher.register(function (action) {
 
 module.exports = MainDatasetStore;
 
-},{"../constants/BudgetAppConstants":168,"../constants/DataFormConstants":169,"../constants/DatasetStatusConstants":170,"../data/DataSet":173,"../dispatcher/BudgetAppDispatcher":174,"events":6,"object-assign":8}]},{},[1]);
+},{"../constants/BudgetAppConstants":169,"../constants/DatasetStatusConstants":170,"../data/DataProvider":173,"../data/Dataset":174,"../dispatcher/BudgetAppDispatcher":175,"events":6,"object-assign":8}]},{},[1]);

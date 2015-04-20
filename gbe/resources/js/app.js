@@ -1,7 +1,7 @@
 import React from 'react';
 
 var cardStore = require('./stores/MainCardStore');
-var datasetStore = require('./stores/MainDataSetStore');
+var datasetStore = require('./stores/MainDatasetStore');
 
 // This is the layout manager for the page
 import BootstrapLayout from './components/BootstrapLayout';
@@ -59,20 +59,22 @@ $.each(GBEVars.components, function (key, pageComponentsArray) {
                     else if (pageComponent.data[key].dataType == 'dataset') {
                         pageComponent.data[key] = {
                             type: 'dataset',
-                            id: datasetStore.registerDataset(pageComponent.data[key].id)
+                            id: datasetStore.registerDataset(pageComponent.data[key].id, key)
                         }
                     }
                     else if (pageComponent.data[key].dataType == 'multidataset') {
                         var idList = [];
                         for (var i = 0; i < pageComponent.data[key].idList.length; ++i) {
-                            idList.push(datasetStore.registerDataset(pageComponent.data[key].idList[i]));
+                            idList.push(datasetStore.registerDataset(pageComponent.data[key].idList[i], key));
                         }
                         // Need to create a composite set and get the id to that
+                        var compositeId =  datasetStore.registerDatasetCollection(idList, key);
                         pageComponent.data[key] = {
-                            type: 'dataset_list',
-                            id: null, // ID of the composite set
+                            type: 'multidataset',
+                            id: compositeId, // ID of the composite set
                             idList: idList
                         }
+
                     }
                 }
             }

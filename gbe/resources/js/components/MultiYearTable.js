@@ -1,78 +1,112 @@
 import React from 'react';
 
-var datasetStore = require('../stores/MainDataSetStore');
+var datasetStore = require('../stores/MainDatasetStore');
+var AccountTypeConstants = require('../constants/AccountTypeConstants');
+var AccountTypes = AccountTypeConstants.AccountTypes;
 
-var SimpleCard = React.createClass({
+var MultiYearTable = React.createClass({
+
 
     propTypes: {
-        data: React.PropTypes.object.isRequired,
+        data: React.PropTypes.object.isRequired
+    },
+
+    getDefaultProps: function() {
+        return {
+            accountTypes: [
+                { name: "Expense", value: AccountTypes.EXPENSE},
+                { name: "Revenue", value: AccountTypes.REVENUE}
+            ],
+            dataInitialization: {
+                hierarchy: ['Fund', 'Department', 'Division'],
+                accountTypes: [AccountTypes.EXPENSE, AccountTypes.REVENUE],
+                amountThreshold: 0.01
+            },
+            dataPrepCommands: [
+                {
+                    command: 'selectAccountTypes',
+                    values: [AccountTypes.EXPENSE, AccountTypes.REVENUE]
+                },
+                {
+                    command: 'setAmountThreshold',
+                    value: 0.01,
+                    abs: true
+                },
+                {
+                    command: 'setHierarchy', // Primary immediate effect is to aggregate up all other hierarchy levels
+                    fields: ['Fund', 'Department', 'Division']
+                }
+            ]
+        };
     },
 
     getInitialState: function() {
         return {
-            datasets: [],
+            selectedItem: AccountTypes.EXPENSE,
+            version: -1,
+            dataProvider: null
         };
     },
 
-    allDataReady: function() {
-        var ready = this.state.datasets.length > 0?true:false;
-        for (var i=0; i<this.state.datasets.length && ready; ++i) {
-            if (this.state.datasets[i].data == null) ready = false;
-        }
-        return ready;
-    },
-
     componentWillMount: function () {
-        /*
-         * Let's request the data now.
-         */
-        var setList = this.props.data['alldata'].idList;
-        for (var i=0; i<setList.length; ++i) {
-            var dataset = {};
-            dataset.storeId = setList[i];
-            dataset.version = 0;
-            dataset.data = null;
-            datasetStore.getDataIfUpdated(setList[i], 0);
-            this.state.datasets.push(dataset);
-        }
+        this.state.dataProvider = datasetStore.getDataProvider(this.props.data['alldata'].id);
+        this.state.dataProvider.setInitializer(this.props.dataInitialization);
+        this.state.dataProvider.prepareData();
+        this.setState({version: this.state.dataProvider.getVersion()})
     },
 
     componentDidMount: function () {
-        this.updateData();
-        datasetStore.addChangeListener(this._onChange);
-    },
-
-    componentWillUnmount: function () {
-        datasetStore.removeChangeListener(this._onChange);
-    },
-
-    updateData: function () {
-        for (var i=0; i<this.state.datasets.length; ++i) {
-            var data = datasetStore.getDataIfUpdated(this.state.datasets[i].storeId, this.state.datasets[i].version);
-            if (data != null) {
-                var datasets = this.state.datasets;
-                datasets[i].data = data;
-                this.setState({datasets: datasets});
-            }
+        datasetStore.addChangeListener(this._onDataChange);
+        if (this.state.version != this.state.dataProvider.getVersion()) {
+            this.setState({version: this.state.dataProvider.getVersion()});
         }
     },
 
-    _onChange: function () {
-        this.updateData();
+    componentWillUnmount: function () {
+        datasetStore.removeChangeListener(this._onDataChange);
+    },
+
+    _onDataChange: function () {
+        if (this.state.version != this.state.dataProvider.getVersion()) {
+            this.setState({version: this.state.dataProvider.getVersion()});
+        }
+
+    },
+
+    onChange: function(e) {
+        this.setState({selectedItem: e.value});
     },
 
     render: function() {
-        if (this.allDataReady()) {
+        var rows = this.state.dataProvider.getData([
+            {
+                command: 'selectAccountTypes',
+                values:[this.state.selectedItem]
+            },
+            {
+                command: 'toArray'
+            }
+        ]);
+        console.log("Table Rendering with rows = " + JSON.stringify(rows));
+
+        if (rows == null) {
+            return <div key={this.props.key}> Multiyear table loading ...</div>
+        }
+        else {
             return (
                 <div key={this.props.key}>
+                    <select onChange={this.onChange} value={this.state.selectedItem}>
+                        {this.props.accountTypes.map(function (type, index)
+                        {
+                           return <option key={index} value={type.value} > {type.name} </option>
+                        })}
+                    </select>
+                    <br/>
                     Got me some doggone data!
                 </div>
             );
         }
-        else {
-            return <div key={this.props.key}> Multiyear table loading ...</div>
-        }
     }
 });
 
-export default SimpleCard;
+export default MultiYearTable;

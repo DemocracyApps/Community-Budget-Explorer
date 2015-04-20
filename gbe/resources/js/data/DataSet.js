@@ -1,12 +1,18 @@
 var DatasetStatusConstants = require('../constants/DatasetStatusConstants');
 var DatasetStatus = DatasetStatusConstants.DatasetStatus;
 
-function DataSet(version, datasetId) {
-    this.class = 'DataSet';
+function Dataset(version, localId, serverId) {
     this.version = version;
-    this.datasetId = datasetId;
+    this.localId = localId;
+    this.serverId = serverId;
     this.status = DatasetStatus.DS_STATE_NEW;
     this.data = null;
+
+    this.receiveDataset = function (data, newVersion) {
+        this.version = newVersion;
+        this.status = DatasetStatus.DS_STATE_READY;
+        this.data = data;
+    };
 
     this.getStatus = function() {
         return this.status;
@@ -30,7 +36,11 @@ function DataSet(version, datasetId) {
 
     this.getVersion = function() {
         return this.version;
+    };
+
+    this.registerCollection = function(id) {
+        this.registeredCollections.push(id);
     }
 };
 
-module.exports = DataSet;
+module.exports = Dataset;
