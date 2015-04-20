@@ -16,6 +16,14 @@
           "class":"col-xs-4"
         }
       ]
+    },
+    {
+      "columns": [
+        {
+          "id":"Bottom",
+          "class":"col-xs-12"
+        }
+      ]
     }
   ]
 }

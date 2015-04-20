@@ -3,6 +3,8 @@ var DatasetStatus = DatasetStatusConstants.DatasetStatus;
 var BudgetAppConstants = require('../constants/BudgetAppConstants');
 var ActionTypes = BudgetAppConstants.ActionTypes;
 var dispatcher = require('../dispatcher/BudgetAppDispatcher');
+var AccountTypeConstants = require('../constants/AccountTypeConstants');
+var AccountTypes = AccountTypeConstants.AccountTypes;
 
 function DataProvider(id, datasets, name) {
     this.id = id;
@@ -79,6 +81,9 @@ function DataProvider(id, datasets, name) {
         return result;
     };
 
+    /*
+     * One of the things we do here is reverse the sign on all revenue values.
+     */
     this.initialize = function () {
         console.log("Initializing provider " + this.name);
         var hierarchy = this.initializationParameters.hierarchy;
@@ -113,7 +118,10 @@ function DataProvider(id, datasets, name) {
 
             for (var j = 0; j < data.items.length; ++j) {
                 var item = data.items[j];
+                item.amount = Number(item.amount);
+
                 if (accountTypes.indexOf(item.type) < 0) continue;
+
                 var current = tree;
                 for (var level = 0; level < nCategories; ++level) {
                     if (!(item.categories[catMap[level]] in current)) current[item.categories[catMap[level]]] = {};
@@ -126,10 +134,11 @@ function DataProvider(id, datasets, name) {
                         categories: item.categories,
                         amount: new Array(nPeriods)
                     };
-                    for (var k = 0; k < nPeriods; ++k) current[item.account].amount[k] = 0.0;
+                    for (var k = 0; k < nPeriods; ++k) current[item.account].amount[k] = Number(0.0);
                     this.count++;
                 }
-                current[item.account].amount[iPeriod] += (+item.amount);
+                var factor = (item.type == AccountTypes.REVENUE)?-1.0:1.0;
+                current[item.account].amount[iPeriod] += item.amount * factor;
             }
         }
         console.log("Pre-threshold count: " + this.count);
@@ -171,18 +180,20 @@ function DataProvider(id, datasets, name) {
 
     this.getData = function (commands) {
         if (this.status == DatasetStatus.DS_STATE_READY) {
-            return {
-                getArray: function () {
-                    return [];
+            var data = [];
+            var accountTypes = null;
+            if ('accountTypes' in commands) accountTypes = commands.accountTypes;
+
+            for (var i=0; i<this.data.length; ++i) {
+                var item = this.data[i];
+                if (accountTypes == null || accountTypes.indexOf(item.accountType)>=0) {
+                    data.push(item);
                 }
-            };
+            }
+            return data;
         }
         else {
-            return {
-                getArray: function () {
-                    return null;
-                }
-            };
+            return null;
         }
     };
 }

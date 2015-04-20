@@ -20,23 +20,9 @@ var MultiYearTable = React.createClass({
             dataInitialization: {
                 hierarchy: ['Fund', 'Department', 'Division'],
                 accountTypes: [AccountTypes.EXPENSE, AccountTypes.REVENUE],
-                amountThreshold: 0.01
-            },
-            dataPrepCommands: [
-                {
-                    command: 'selectAccountTypes',
-                    values: [AccountTypes.EXPENSE, AccountTypes.REVENUE]
-                },
-                {
-                    command: 'setAmountThreshold',
-                    value: 0.01,
-                    abs: true
-                },
-                {
-                    command: 'setHierarchy', // Primary immediate effect is to aggregate up all other hierarchy levels
-                    fields: ['Fund', 'Department', 'Division']
-                }
-            ]
+                amountThreshold: 0.01,
+                outputForm: 'array'
+            }
         };
     },
 
@@ -74,25 +60,40 @@ var MultiYearTable = React.createClass({
     },
 
     onChange: function(e) {
-        this.setState({selectedItem: e.value});
+        this.setState({selectedItem: +e.target.value}); // Note cast to number
+    },
+
+    dollarsWithCommas: function(x) {
+        var prefix = '$';
+        if (x < 0.) prefix = '-$';
+        x = Math.abs(x);
+        var val = prefix + x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+        return val;
+    },
+
+    tableRow: function (item, index) {
+        return <tr key={index}>
+            <td>{item.account}</td>
+            <td>{this.dollarsWithCommas(item.amount[0])}</td>
+            <td>{this.dollarsWithCommas(item.amount[1])}</td>
+        </tr>
     },
 
     render: function() {
-        var rows = this.state.dataProvider.getData([
+        var rows = this.state.dataProvider.getData(
             {
-                command: 'selectAccountTypes',
-                values:[this.state.selectedItem]
-            },
-            {
-                command: 'toArray'
+                accountTypes:[this.state.selectedItem],
+                outputForm: 'array'
             }
-        ]);
-        console.log("Table Rendering with rows = " + JSON.stringify(rows));
+            // Need to sort, maybe top N
+        );
 
         if (rows == null) {
             return <div key={this.props.key}> Multiyear table loading ...</div>
         }
         else {
+            console.log("Table rendering with row count " + rows.length);
             return (
                 <div key={this.props.key}>
                     <select onChange={this.onChange} value={this.state.selectedItem}>
@@ -102,9 +103,19 @@ var MultiYearTable = React.createClass({
                         })}
                     </select>
                     <br/>
-                    Got me some doggone data!
+                    <table className="table">
+                        <thead>
+                            <tr>
+                                <th>Account</th><th>2010</th><th>2014</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {rows.map(this.tableRow)}
+                        </tbody>
+                    </table>
+
                 </div>
-            );
+            )
         }
     }
 });

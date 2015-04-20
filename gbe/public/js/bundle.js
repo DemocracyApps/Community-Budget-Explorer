@@ -20641,19 +20641,9 @@ var MultiYearTable = _React2['default'].createClass({
             dataInitialization: {
                 hierarchy: ['Fund', 'Department', 'Division'],
                 accountTypes: [AccountTypes.EXPENSE, AccountTypes.REVENUE],
-                amountThreshold: 0.01
-            },
-            dataPrepCommands: [{
-                command: 'selectAccountTypes',
-                values: [AccountTypes.EXPENSE, AccountTypes.REVENUE]
-            }, {
-                command: 'setAmountThreshold',
-                value: 0.01,
-                abs: true
-            }, {
-                command: 'setHierarchy', // Primary immediate effect is to aggregate up all other hierarchy levels
-                fields: ['Fund', 'Department', 'Division']
-            }]
+                amountThreshold: 0.01,
+                outputForm: 'array'
+            }
         };
     },
 
@@ -20690,17 +20680,47 @@ var MultiYearTable = _React2['default'].createClass({
     },
 
     onChange: function onChange(e) {
-        this.setState({ selectedItem: e.value });
+        this.setState({ selectedItem: +e.target.value }); // Note cast to number
+    },
+
+    dollarsWithCommas: function dollarsWithCommas(x) {
+        var prefix = '$';
+        if (x < 0) prefix = '-$';
+        x = Math.abs(x);
+        var val = prefix + x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+        return val;
+    },
+
+    tableRow: function tableRow(item, index) {
+        return _React2['default'].createElement(
+            'tr',
+            { key: index },
+            _React2['default'].createElement(
+                'td',
+                null,
+                item.account
+            ),
+            _React2['default'].createElement(
+                'td',
+                null,
+                this.dollarsWithCommas(item.amount[0])
+            ),
+            _React2['default'].createElement(
+                'td',
+                null,
+                this.dollarsWithCommas(item.amount[1])
+            )
+        );
     },
 
     render: function render() {
-        var rows = this.state.dataProvider.getData([{
-            command: 'selectAccountTypes',
-            values: [this.state.selectedItem]
-        }, {
-            command: 'toArray'
-        }]);
-        console.log('Table Rendering with rows = ' + JSON.stringify(rows));
+        var rows = this.state.dataProvider.getData({
+            accountTypes: [this.state.selectedItem],
+            outputForm: 'array'
+        }
+        // Need to sort, maybe top N
+        );
 
         if (rows == null) {
             return _React2['default'].createElement(
@@ -20709,6 +20729,7 @@ var MultiYearTable = _React2['default'].createClass({
                 ' Multiyear table loading ...'
             );
         } else {
+            console.log('Table rendering with row count ' + rows.length);
             return _React2['default'].createElement(
                 'div',
                 { key: this.props.key },
@@ -20726,7 +20747,38 @@ var MultiYearTable = _React2['default'].createClass({
                     })
                 ),
                 _React2['default'].createElement('br', null),
-                'Got me some doggone data!'
+                _React2['default'].createElement(
+                    'table',
+                    { className: 'table' },
+                    _React2['default'].createElement(
+                        'thead',
+                        null,
+                        _React2['default'].createElement(
+                            'tr',
+                            null,
+                            _React2['default'].createElement(
+                                'th',
+                                null,
+                                'Account'
+                            ),
+                            _React2['default'].createElement(
+                                'th',
+                                null,
+                                '2010'
+                            ),
+                            _React2['default'].createElement(
+                                'th',
+                                null,
+                                '2014'
+                            )
+                        )
+                    ),
+                    _React2['default'].createElement(
+                        'tbody',
+                        null,
+                        rows.map(this.tableRow)
+                    )
+                )
             );
         }
     }
@@ -21008,6 +21060,8 @@ var DatasetStatus = DatasetStatusConstants.DatasetStatus;
 var BudgetAppConstants = require('../constants/BudgetAppConstants');
 var ActionTypes = BudgetAppConstants.ActionTypes;
 var dispatcher = require('../dispatcher/BudgetAppDispatcher');
+var AccountTypeConstants = require('../constants/AccountTypeConstants');
+var AccountTypes = AccountTypeConstants.AccountTypes;
 
 function DataProvider(id, datasets, name) {
     this.id = id;
@@ -21085,6 +21139,9 @@ function DataProvider(id, datasets, name) {
         return result;
     };
 
+    /*
+     * One of the things we do here is reverse the sign on all revenue values.
+     */
     this.initialize = function () {
         console.log('Initializing provider ' + this.name);
         var hierarchy = this.initializationParameters.hierarchy;
@@ -21119,7 +21176,10 @@ function DataProvider(id, datasets, name) {
 
             for (var j = 0; j < data.items.length; ++j) {
                 var item = data.items[j];
+                item.amount = Number(item.amount);
+
                 if (accountTypes.indexOf(item.type) < 0) continue;
+
                 var current = tree;
                 for (var level = 0; level < nCategories; ++level) {
                     if (!(item.categories[catMap[level]] in current)) current[item.categories[catMap[level]]] = {};
@@ -21132,10 +21192,11 @@ function DataProvider(id, datasets, name) {
                         categories: item.categories,
                         amount: new Array(nPeriods)
                     };
-                    for (var k = 0; k < nPeriods; ++k) current[item.account].amount[k] = 0;
+                    for (var k = 0; k < nPeriods; ++k) current[item.account].amount[k] = Number(0);
                     this.count++;
                 }
-                current[item.account].amount[iPeriod] += +item.amount;
+                var factor = item.type == AccountTypes.REVENUE ? -1 : 1;
+                current[item.account].amount[iPeriod] += item.amount * factor;
             }
         }
         console.log('Pre-threshold count: ' + this.count);
@@ -21176,24 +21237,26 @@ function DataProvider(id, datasets, name) {
 
     this.getData = function (commands) {
         if (this.status == DatasetStatus.DS_STATE_READY) {
-            return {
-                getArray: function getArray() {
-                    return [];
+            var data = [];
+            var accountTypes = null;
+            if ('accountTypes' in commands) accountTypes = commands.accountTypes;
+
+            for (var i = 0; i < this.data.length; ++i) {
+                var item = this.data[i];
+                if (accountTypes == null || accountTypes.indexOf(item.accountType) >= 0) {
+                    data.push(item);
                 }
-            };
+            }
+            return data;
         } else {
-            return {
-                getArray: function getArray() {
-                    return null;
-                }
-            };
+            return null;
         }
     };
 }
 
 module.exports = DataProvider;
 
-},{"../constants/BudgetAppConstants":169,"../constants/DatasetStatusConstants":170,"../dispatcher/BudgetAppDispatcher":175}],174:[function(require,module,exports){
+},{"../constants/AccountTypeConstants":168,"../constants/BudgetAppConstants":169,"../constants/DatasetStatusConstants":170,"../dispatcher/BudgetAppDispatcher":175}],174:[function(require,module,exports){
 'use strict';
 
 var DatasetStatusConstants = require('../constants/DatasetStatusConstants');
@@ -21234,10 +21297,6 @@ function Dataset(version, localId, serverId) {
 
     this.getVersion = function () {
         return this.version;
-    };
-
-    this.registerCollection = function (id) {
-        this.registeredCollections.push(id);
     };
 };
 

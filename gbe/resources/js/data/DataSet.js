@@ -37,10 +37,6 @@ function Dataset(version, localId, serverId) {
     this.getVersion = function() {
         return this.version;
     };
-
-    this.registerCollection = function(id) {
-        this.registeredCollections.push(id);
-    }
 };
 
 module.exports = Dataset;
