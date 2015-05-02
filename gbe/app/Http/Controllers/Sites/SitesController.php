@@ -31,87 +31,123 @@ use DemocracyApps\GB\Sites\PageComponent;
 use DemocracyApps\GB\Sites\Component;
 use DemocracyApps\GB\Sites\Site;
 use Illuminate\Http\Request;
+use Util;
 
 class SitesController extends Controller {
 
 	public function page($slug, $pageName, Request $request)
     {
-        $site = Site::where('slug','=',$slug)->first();
+        $siteData = Site::where('slug','=',$slug)->first();
+        $government = GovernmentOrganization::where('id','=',$siteData->government)->first();
 
-        $page = Page::where('short_name','=',$pageName)->where('site','=',$site->id)->first();
+        $site = new \stdClass();
+        $site->name = $siteData->name;
+        $site->id = 0;
+        $site->slug = $siteData->slug;
+        $site->startPage = -1;
+        $site->baseUrl = url('/'.$slug);
+        $site->apiUrl  = Util::apiPath() . "/organizations/" . $government->id;
+        $site->ajaxUrl = Util::ajaxPath('sites', 'base');
+        $site->properties = $siteData->properties;
 
-        $government = GovernmentOrganization::where('id','=',$site->government)->first();
-
-        $layout = ($page->layout == null)?null:Layout::find($page->layout);
+        $pages = $siteData->getPages();
 
         $jp = new JsonProcessor();
+        // We need to generate unique IDs for each configuration object
+        $pageId = 0;
+        $componentId = 0;
+        $data = array();
+        $cardStore = array();
+        foreach ($pages as $page) {
+            $page->id = $pageId++;
+            if ($page->shortName == $pageName) {
+                $site->startPage = $page->id;
+            }
+            $layout = ($page->layout == null)?null:Layout::find($page->layout);
+            if ($layout != null) {
+                $str = $jp->minifyJson($layout->specification);
+                $cfig = $jp->decodeJson($str, true);
+                if (!$cfig) {
+                    throw new \Exception("Unable to parse layout specification " . $layout->name);
+                }
+                $page->layout = $cfig;
+            }
 
-        $str = $jp->minifyJson($layout->specification);
-        $cfig = $jp->decodeJson($str, true);
-        if ( ! $cfig) {
-            throw new \Exception("Unable to parse layout specification " . $layout->name);
-        }
-        $layout->specification = $cfig;
+            // Get the page components
+            $pComponents = PageComponent::where('page','=',$page->tableId)->get();
+            $page->components = array();
+            foreach ($pComponents as $pc) {
+                if ($pc->target != null) {
+                    if (!array_key_exists($pc->target, $page->components)) $components[$pc->target] = array();
+                    $c = new \stdClass();
+                    $c->id = $componentId++;
+                    $componentDefinition = Component::find($pc->component);
+                    $c->componentName = $componentDefinition->name;
+                    $c->componentType = $componentDefinition->type;
+                    $c->data = null;
+                    if ($pc->properties != null) {
+                        $c->data = array();
+                        $props = $jp->decodeJson($pc->properties, true);
+                        if (array_key_exists('data', $props)) {
+                            foreach ($props['data'] as $key => $dataItem) {
+                                if ($dataItem['type'] == 'card') {
+                                    $cId = $dataItem['items'][0];
+                                    if (array_key_exists($cId, $cardStore)) {
+                                        $card = $cardStore[$cId];
+                                    }
+                                    else {
+                                        $storedCard = Card::find($cId);
+                                        $card = $storedCard->asSimpleObject(['dataType' => 'card']);
+                                        $cardStore[$cId] = $card;
+                                    }
+                                    $data[] = $card;
+                                    $c->data[$key] = array('type'=> 'card', 'ids'=>array($card->id));
+                                } else if ($dataItem['type'] == 'cardset') {
+                                    $csId = $dataItem['items'][0];
+                                    $cardIdList = array();
+                                    $cards = Card::where('card_set', '=', $csId)->orderBy('ordinal')->get();
+                                    foreach ($cards as $card) {
+                                        if (! array_key_exists($card->id, $cardStore)) {
+                                            $cardStore[$card->id] = $card->asSimpleObject(['dataType' => 'card']);
+                                            $data[] = $cardStore[$card->id];
+                                        }
+                                        else {
+                                            $card = $cardStore[$card->id];
+                                        }
+                                        $cardIdList[] = $card->id;
+                                    }
+                                    $c->data[$key] = array('type'=>'card', 'ids'=>$cardIdList);
+                                } else if ($dataItem['type'] == 'dataset') {
+                                    $dsId = $dataItem['items'][0];
+                                    $ds = new \stdClass();
+                                    $ds->dataType = 'dataset';
+                                    $ds->ids = [$dsId];
 
-        $pages = Page::where('site','=',$site->id)->where('show_in_menu','=',true)->orderBy('ordinal')->get();
+                                    $data[] = $ds;
+                                    $c->data[$key] = array('type'=>'dataset', 'ids'=>array($ds->id));
 
-        // Get the page components
-        $pComponents = PageComponent::where('page','=',$page->id)->get();
-        $components = array();
-        foreach ($pComponents as $pc) {
-            if ($pc->target != null) {
-                if (! array_key_exists($pc->target, $components)) $components[$pc->target] = array();
-                $c = new \stdClass();
-                $componentDefinition = Component::find($pc->component);
-                $c->componentName = $componentDefinition->name;
-                $c->componentType = $componentDefinition->type;
-                $c->data = null;
-                if ($pc->properties != null) {
-                    $c->data = array();
-                    $props = $jp->decodeJson($pc->properties, true);
-                    if (array_key_exists('data', $props)) {
-                        foreach ($props['data'] as $key => $dataItem) {
-                            if ($dataItem['type'] == 'card') {
-                                $storedCard = Card::find($dataItem['items'][0]);
-                                $card = $storedCard->asSimpleObject(['dataType'=> 'card']);
-                                $c->data[$key] = $card;
-                            }
-                            else if ($dataItem['type'] == 'cardset') {
-                                $tmp = Cardset::find($dataItem['items'][0]);
-
-                                $cardset = $tmp->asSimpleObject(['dataType'=>'cardset']);
-                                $cardset->cards = array();
-                                $cardObjects = Card::where('card_set', '=', $cardset->id)->orderBy('ordinal')->get();
-                                foreach($cardObjects as $obj) {
-                                    $cardset->cards[] = $obj->asSimpleObject();
+                                } else if ($dataItem['type'] == 'multidataset') {
+                                    $idList = array();
+                                    foreach ($dataItem['items'] as $item) {
+                                        $dsetId = $item + 0; // make it a number
+                                        $ds = new \stdClass();
+                                        $ds->dataType = 'dataset';
+                                        $ds->id = $dsetId;
+                                        $data[] = $ds;
+                                        $idList[] = $dsetId;
+                                    }
+                                    $c->data[$key] = array('type'=>'dataset', 'ids'=>$idList);
                                 }
-                                $c->data[$key] = $cardset;
-                            }
-                            else if ($dataItem['type'] == 'dataset') {
-                                $ds = new \stdClass();
-                                $ds->dataType = 'dataset';
-                                $ds->id = [$dataItem['items'][0]];
-                                $c->data[$key] = $ds;
-                            }
-                            else if ($dataItem['type'] == 'multidataset') {
-                                $datasetList = new \stdClass();
-                                $datasetList->dataType = 'multidataset';
-                                $datasetList->idList = array();
-                                foreach ($dataItem['items'] as $dsetId) {
-                                    $datasetList->idList[] = $dsetId;
-                                }
-
-                                $c->data[$key] = $datasetList;
                             }
                         }
                     }
+                    $page->components[$pc->target][] = $c;
                 }
-                $components[$pc->target][] = $c;
             }
         }
-//dd($components);
-        return view('sites.page', array('site'=>$site, 'government'=>$government, 'pages'=>$pages, 'page'=>$page, 'layout'=>$layout,
-                                        'components'=>$components));
+        // Putting site in an array to work around stupid issue in Jeff Way's PHPToJavaScriptTransformer
+        // Stdclass objects are converted to JSON if they're in an array, but error out if not.
+        return view('sites.appPage', array('site'=>[$site], 'pages'=>$pages, 'data' => $data));
     }
 
     private function buildCardObject(Card $storedCard)

@@ -32,31 +32,13 @@
 
     <body>
         @include('templates.datarider')
-        <div class="cnp-header">
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-6"></div>
-                    <div class="col-md-6 hdr-right">
-                        <ul class="nav nav-pills" style="float:right;">
-                            <li role="presentation"><a href="/">Home</a></li>
-                            @foreach ($pages as $page)
-                                <li role="presentation"><a href="/sites/{!! $site->slug !!}/{!! $page->short_name !!}">{!! $page->short_name !!}</a></li>
-                            @endforeach
-                            @if (Auth::guest())
-                                <li role="presentation" ><a href="/auth/login">Log In</a></li>
-                            @endif
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <div class="container app-container">
-            @yield('content')
-        </div>
+        @yield('content')
+
         <script src="/js/all.js"></script>
+        <script src="/js/bundle.js"></script>
 
         @yield('scripts')
-        </body>
+    </body>
 
 </html>

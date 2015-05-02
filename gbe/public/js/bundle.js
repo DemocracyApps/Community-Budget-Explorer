@@ -7,11 +7,9 @@ var _React = require('react');
 
 var _React2 = _interopRequireWildcard(_React);
 
-// This is the layout manager for the page
+var _Site = require('./components/Site');
 
-var _BootstrapLayout = require('./components/BootstrapLayout');
-
-var _BootstrapLayout2 = _interopRequireWildcard(_BootstrapLayout);
+var _Site2 = _interopRequireWildcard(_Site);
 
 /*
  * Since we don't know in advance which components will be used by the layout,
@@ -31,8 +29,11 @@ var _SlideShow = require('./components/SlideShow');
 
 var _SlideShow2 = _interopRequireWildcard(_SlideShow);
 
-var cardStore = require('./stores/MainCardStore');
-var datasetStore = require('./stores/MainDatasetStore');
+console.log('Here\'s the big thing');
+
+var dispatcher = require('./common/BudgetAppDispatcher');
+var BudgetAppConstants = require('./constants/BudgetAppConstants');
+var ActionTypes = BudgetAppConstants.ActionTypes;
 
 var reactComponents = {};
 reactComponents.SimpleCard = _SimpleCard2['default'];
@@ -40,78 +41,72 @@ reactComponents.SlideShow = _SlideShow2['default'];
 reactComponents.MultiYearTable = _MultiYearTable2['default'];
 
 /*
- * Set up the stores.
- *
- * The card store currently just has static data - we'll simply initialize it here.
- * The only reason we're doing this as a store rather than props is that we may wish to later build
- * dynamic content that lets cards embed dataset data or something.
- *
- * The dataset store just kicks off API requests with callbacks that will emit change events when the
- * data is actually received.
+ * The stores, one for card-related data, the other for financial datasets.
  */
+var configStore = require('./stores/ConfigStore');
+var stateStore = require('./stores/StateStore');
+var cardStore = require('./stores/CardStore');
+var datasetStore = require('./stores/DatasetStore');
 
-console.log('Process the components for data');
 /*
- * Each key in GBEVars.components refers to a target cell in the layout and is associated with an array
- * of components that will be placed in that cell. Here we just want to extract the data associated with
- * each component - the component will retrieve it later via a key. We probably should move this logic
- * up to the server, though.
+ * Let's set up a couple standard sections in the configuration store
  */
-$.each(GBEVars.components, function (key, pageComponentsArray) {
-    for (var i = 0; i < pageComponentsArray.length; ++i) {
-        var pageComponent = pageComponentsArray[i];
-        if (pageComponent.data != null) {
-            for (var key in pageComponent.data) {
-                if (pageComponent.data.hasOwnProperty(key)) {
-                    if (pageComponent.data[key].dataType == 'card') {
-                        pageComponent.data[key] = {
-                            type: 'card',
-                            id: cardStore.storeCard(pageComponent.data[key])
-                        };
-                    } else if (pageComponent.data[key].dataType == 'cardset') {
-                        pageComponent.data[key] = {
-                            type: 'cardset',
-                            id: cardStore.storeCardSet(pageComponent.data[key])
-                        };
-                    } else if (pageComponent.data[key].dataType == 'dataset') {
-                        pageComponent.data[key] = {
-                            type: 'dataset',
-                            id: datasetStore.registerDataset(pageComponent.data[key].id, key)
-                        };
-                    } else if (pageComponent.data[key].dataType == 'multidataset') {
-                        var idList = [];
-                        for (var i = 0; i < pageComponent.data[key].idList.length; ++i) {
-                            idList.push(datasetStore.registerDataset(pageComponent.data[key].idList[i], key));
-                        }
-                        // Need to create a composite set and get the id to that
-                        var compositeId = datasetStore.registerDatasetCollection(idList, key);
-                        pageComponent.data[key] = {
-                            type: 'multidataset',
-                            id: compositeId, // ID of the composite set
-                            idList: idList
-                        };
-                    }
-                }
-            }
-            //$.each(pageComponent.componentProps.data, function (key, data) {
-            //    console.log("Processing the data associated with " + key);
-            //    if (data.type == 'card' || data.type == 'cardset') {
-            //        data.storeId = cardStore.importCards(key, data);
-            //    }
-            //});
-        }
+configStore.createSection('common');
+configStore.createSection('pages');
+
+/*****************************************************
+ * Process the incoming parameters ...
+ *****************************************************/
+
+var i;
+
+//  Site
+//   The site object contains a few global bits of information such as the site name (and short-name, or slug),
+//   the start page, and several URLs (base URL, API URL, base ajax URL). It also contains a hash named 'properties'
+//   that may be used later to pass in extended information.
+
+// Note that site is an array just to work around a bug in Jeff Way's PHPToJavascriptTransformer library.
+configStore.storeConfiguration('common', 'site', GBEVars.site[0]);
+//console.log("Site: " + JSON.stringify(GBEVars.site[0]));
+
+//  Pages
+//   This is an array of configurations of the pages on the site. Each page has title, description, layout
+//   and a list of components that are to be placed in the layout. These components are instantiated as
+//   React components (in the BootstrapLayout component) and contain indices for accessing any associated data.
+var pages = [];
+for (i = 0; i < GBEVars.pages.length; ++i) {
+    var page = GBEVars.pages[i];
+    //console.log("Page: " + JSON.stringify(page));
+    page.stateId = stateStore.registerComponent('page', page.shortName, null);
+    configStore.storeConfiguration('pages', page.id, page);
+    pages.push(page.id);
+}
+
+//  Data
+//   This is an array of data objects. In the case of cards, the data object contains the
+//   actual data. In the case of datasets, the object contains the dataset ID needed to make an API
+//   request. These need to be thrown into the card and dataset stores.
+
+while (GBEVars.data.length > 0) {
+    var datum = GBEVars.data.shift();
+    //console.log("DataItem: " + JSON.stringify(datum));
+    if (datum.dataType == 'card') {
+        cardStore.storeCard(datum);
+    } else if (datum.dataType == 'dataset') {
+        var ds = datasetStore.registerDataset(datum.id);
     }
-});
+}
 
-/*
- * The layout specific gives the grid. The components property has the component specifications by grid cell ID,
- * and reactComponents has the actual React components keyed by component name.
- */
-console.log('Now do the layout');
-var props = { layout: GBEVars.layout.specification, components: GBEVars.components, reactComponents: reactComponents };
-var layout = _React2['default'].render(_React2['default'].createElement(_BootstrapLayout2['default'], props), document.getElementById('app'));
+var props = {
+    site: GBEVars.site[0],
+    pages: pages,
+    configurationId: GBEVars.site[0].id,
+    reactComponents: reactComponents
+};
 
-},{"./components/BootstrapLayout":164,"./components/MultiYearTable":165,"./components/SimpleCard":166,"./components/SlideShow":167,"./stores/MainCardStore":176,"./stores/MainDatasetStore":177,"react":163}],2:[function(require,module,exports){
+var layout = _React2['default'].render(_React2['default'].createElement(_Site2['default'], props), document.getElementById('app'));
+
+},{"./common/BudgetAppDispatcher":165,"./components/MultiYearTable":167,"./components/SimpleCard":168,"./components/Site":169,"./components/SlideShow":171,"./constants/BudgetAppConstants":173,"./stores/CardStore":178,"./stores/ConfigStore":179,"./stores/DatasetStore":181,"./stores/StateStore":182,"react":163}],2:[function(require,module,exports){
 /**
  * Copyright (c) 2014, Facebook, Inc.
  * All rights reserved.
@@ -20534,6 +20529,93 @@ module.exports = warning;
 module.exports = require('./lib/React');
 
 },{"./lib/React":36}],164:[function(require,module,exports){
+'use strict';
+
+var configStore = require('../stores/ConfigStore');
+var datasetStore = require('../stores/DatasetStore');
+var dispatcher = require('../common/BudgetAppDispatcher');
+var BudgetAppConstants = require('../constants/BudgetAppConstants');
+var ActionTypes = BudgetAppConstants.ActionTypes;
+var assign = require('object-assign');
+
+var ApiActions = {
+
+    requestDatasetIfNeeded: function requestDatasetIfNeeded(id) {
+        console.log('Requesting dataset ' + id + ' via api');
+        var site = configStore.getConfiguration('common', 'site');
+        var ds = datasetStore.getDataset(id);
+        if (!ds.isReady() && !ds.isRequested()) {
+            var source = site.apiUrl + '/datasets/' + id;
+            $.get(source, function (r) {}).done(this.receiveData).fail(this.receiveError);
+            ds.setRequested();
+        }
+    },
+
+    receiveData: function receiveData(r) {
+        console.log('Wow! - got a dataset!');
+        for (var i = 0; i < r.data.length; ++i) {
+            dispatcher.dispatch({
+                actionType: ActionTypes.DATASET_RECEIVED,
+                payload: r.data[i]
+            });
+        }
+    },
+
+    receiveError: function receiveError(r) {
+        console.log('ERROR - failed to get the data: ' + JSON.stringify(r));
+    }
+
+};
+
+module.exports = ApiActions;
+
+},{"../common/BudgetAppDispatcher":165,"../constants/BudgetAppConstants":173,"../stores/ConfigStore":179,"../stores/DatasetStore":181,"object-assign":8}],165:[function(require,module,exports){
+'use strict';
+
+var FluxDispatcher = require('flux').Dispatcher;
+
+var dispatcher = new FluxDispatcher();
+var dispatchQueue = [];
+
+var inProcessing = false;
+
+function queueAction(payload) {
+    dispatchQueue.push(payload);
+    if (!inProcessing) {
+        startProcessing();
+    }
+}
+
+function startProcessing() {
+    inProcessing = true;
+
+    while (dispatchQueue.length > 0) {
+        if (dispatcher.isDispatching()) {
+            return setTimeout(startProcessing, 2000); // Avoid an Invariant error from Flux
+        }
+        var payload = dispatchQueue.shift();
+        dispatcher.dispatch(payload);
+    }
+    inProcessing = false;
+}
+
+var BudgetAppDispatcher = {
+    isProcessing: function isProcessing() {
+        return inProcessing;
+    },
+
+    dispatch: function dispatch(payload) {
+        queueAction(payload);
+    },
+
+    register: function register(callback) {
+        return dispatcher.register(callback);
+    }
+};
+
+module.exports = BudgetAppDispatcher;
+
+},{"flux":2}],166:[function(require,module,exports){
 "use strict";
 
 var _interopRequireWildcard = function (obj) { return obj && obj.__esModule ? obj : { "default": obj }; };
@@ -20546,6 +20628,40 @@ var _React = require("react");
 
 var _React2 = _interopRequireWildcard(_React);
 
+/*
+ * The BootstrapLayout takes 3 properties:
+ *
+ *  - layout:                  A JSON specification of the Bootstrap grid layout. Each cell of the
+ *                             layout has a tag that is used in the components array to map
+ *                             components to cells.
+ *  - components:              Associative array of component specifications keyed by grid cell ID (see above).
+ *  - reactComponents:         The actual React components keyed by component name.
+ *
+ */
+
+/*
+ * Each components is a is a PHP associative array translated to a Javascript object. Each array key is a
+ * tag of a target cell in the layout and the value associated with it is an array of components
+ * that are to be placed in that cell.
+ *
+ * The component specification consists of the React component name and a specification of the data which is
+ * to be passed to the component. A component may have any number of data elements associated with it, each
+ * with its own key for later retrieval. There are 4 types of data element:
+ *
+ *      - Dataset      - The ID of a single budget dataset on the server which the dataset store will retrieve
+ *                       and present through an internal interface.
+ *      - MultiDataset - The IDs of several individual datasets that combine into a multi-period dataset.
+ *                       Again, the dataset store will retrieve and combine them for presentation through the
+ *                       internal interface.
+ *      - Card         - A card is a generic container for non-numeric data. It consists of a title, a body, an
+ *                       image URL and a link (only the title is required). How this information is used is
+ *                       entirely up to the component.
+ *      - Cardset      - An ordered set of cards. Sample uses from last year's avlbudget.org site might include
+ *                       the "What's New" slideshow, the resources table, etc.
+ *
+ * In the following loop we extract the data element information associated with each component so that it can be
+ * managed by one of the data stores. The component gets an identifier that it uses to retrieve data through its state.
+ */
 var BootstrapLayout = _React2["default"].createClass({
     displayName: "BootstrapLayout",
 
@@ -20565,6 +20681,7 @@ var BootstrapLayout = _React2["default"].createClass({
         if (column.id in this.props.components) {
             clist = this.props.components[column.id];
         }
+        console.log("In buildColumn with list of " + clist.length);
         return _React2["default"].createElement(
             "div",
             { id: column.id, key: column.id, className: column["class"] },
@@ -20611,7 +20728,7 @@ var BootstrapLayout = _React2["default"].createClass({
 exports["default"] = BootstrapLayout;
 module.exports = exports["default"];
 
-},{"react":163}],165:[function(require,module,exports){
+},{"react":163}],167:[function(require,module,exports){
 'use strict';
 
 var _interopRequireWildcard = function (obj) { return obj && obj.__esModule ? obj : { 'default': obj }; };
@@ -20624,7 +20741,9 @@ var _React = require('react');
 
 var _React2 = _interopRequireWildcard(_React);
 
-var datasetStore = require('../stores/MainDatasetStore');
+var datasetStore = require('../stores/DatasetStore');
+var dataModelStore = require('../stores/DataModelStore');
+var apiActions = require('../common/ApiActions');
 var AccountTypeConstants = require('../constants/AccountTypeConstants');
 var AccountTypes = AccountTypeConstants.AccountTypes;
 
@@ -20650,32 +20769,40 @@ var MultiYearTable = _React2['default'].createClass({
     getInitialState: function getInitialState() {
         return {
             selectedItem: AccountTypes.EXPENSE,
-            version: -1,
-            dataProvider: null
+            timestamp: -1,
+            dataModelId: null
         };
     },
 
     componentWillMount: function componentWillMount() {
-        this.state.dataProvider = datasetStore.getDataProvider(this.props.data.alldata.id);
-        this.state.dataProvider.setInitializer(this.props.dataInitialization);
-        this.state.dataProvider.prepareData();
-        this.setState({ version: this.state.dataProvider.getVersion() });
+        // Create the data model that we'll use
+        var ids = this.props.data.alldata.ids;
+        ids.forEach(function (id) {
+            apiActions.requestDatasetIfNeeded(id);
+        });
+
+        var dm = dataModelStore.createModel(ids, this.props.dataInitialization);
+        this.setState({
+            dataModelId: dm.id,
+            timestamp: dm.getTimestamp()
+        });
     },
 
     componentDidMount: function componentDidMount() {
-        datasetStore.addChangeListener(this._onDataChange);
-        if (this.state.version != this.state.dataProvider.getVersion()) {
-            this.setState({ version: this.state.dataProvider.getVersion() });
-        }
+        dataModelStore.addChangeListener(this.onDataChange);
     },
 
-    componentWillUnmount: function componentWillUnmount() {
-        datasetStore.removeChangeListener(this._onDataChange);
+    shouldComponentUpdate: function shouldComponentUpdate(nextProps, nextState) {
+        var dataChanged = dataModelStore.getModel(this.state.dataModelId).dataChanged();
+        console.log('Data change status = ' + dataChanged);
+        return dataChanged || this.state.timestamp !== nextState.timestamp || this.state.selectedItem !== nextState.selectedItem;
     },
 
-    _onDataChange: function _onDataChange() {
-        if (this.state.version != this.state.dataProvider.getVersion()) {
-            this.setState({ version: this.state.dataProvider.getVersion() });
+    onDataChange: function onDataChange() {
+        var dm = dataModelStore.getModel(this.state.dataModelId);
+        dm.checkData();
+        if (this.state.timestamp != dm.getTimestamp()) {
+            this.setState({ timestamp: dm.getTimestamp() });
         }
     },
 
@@ -20692,6 +20819,14 @@ var MultiYearTable = _React2['default'].createClass({
         return val;
     },
 
+    tableColumn: function tableColumn(value, index) {
+        return _React2['default'].createElement(
+            'td',
+            null,
+            this.dollarsWithCommas(value)
+        );
+    },
+
     tableRow: function tableRow(item, index) {
         return _React2['default'].createElement(
             'tr',
@@ -20699,29 +20834,30 @@ var MultiYearTable = _React2['default'].createClass({
             _React2['default'].createElement(
                 'td',
                 null,
-                item.account
+                item.account,
+                ' '
             ),
-            _React2['default'].createElement(
-                'td',
-                null,
-                this.dollarsWithCommas(item.amount[0])
-            ),
-            _React2['default'].createElement(
-                'td',
-                null,
-                this.dollarsWithCommas(item.amount[1])
-            )
+            item.amount.map(this.tableColumn)
+        );
+    },
+
+    columnHeader: function columnHeader(header, index) {
+        return _React2['default'].createElement(
+            'th',
+            null,
+            header
         );
     },
 
     render: function render() {
-        var rows = this.state.dataProvider.getData({
+        var dm = dataModelStore.getModel(this.state.dataModelId);
+
+        var rows = dm.getData({
             accountTypes: [this.state.selectedItem],
             outputForm: 'array'
-        }
+        }, true
         // Need to sort, maybe top N
         );
-
         if (rows == null) {
             return _React2['default'].createElement(
                 'div',
@@ -20730,6 +20866,7 @@ var MultiYearTable = _React2['default'].createClass({
             );
         } else {
             console.log('Table rendering with row count ' + rows.length);
+            var headers = dm.getHeaders();
             return _React2['default'].createElement(
                 'div',
                 { key: this.props.key },
@@ -20761,16 +20898,7 @@ var MultiYearTable = _React2['default'].createClass({
                                 null,
                                 'Account'
                             ),
-                            _React2['default'].createElement(
-                                'th',
-                                null,
-                                '2010'
-                            ),
-                            _React2['default'].createElement(
-                                'th',
-                                null,
-                                '2014'
-                            )
+                            headers.map(this.columnHeader)
                         )
                     ),
                     _React2['default'].createElement(
@@ -20787,7 +20915,7 @@ var MultiYearTable = _React2['default'].createClass({
 exports['default'] = MultiYearTable;
 module.exports = exports['default'];
 
-},{"../constants/AccountTypeConstants":168,"../stores/MainDatasetStore":177,"react":163}],166:[function(require,module,exports){
+},{"../common/ApiActions":164,"../constants/AccountTypeConstants":172,"../stores/DataModelStore":180,"../stores/DatasetStore":181,"react":163}],168:[function(require,module,exports){
 'use strict';
 
 var _interopRequireWildcard = function (obj) { return obj && obj.__esModule ? obj : { 'default': obj }; };
@@ -20800,7 +20928,7 @@ var _React = require('react');
 
 var _React2 = _interopRequireWildcard(_React);
 
-var mainCardStore = require('../stores/MainCardStore');
+var cardStore = require('../stores/CardStore');
 
 var SimpleCard = _React2['default'].createClass({
     displayName: 'SimpleCard',
@@ -20808,45 +20936,20 @@ var SimpleCard = _React2['default'].createClass({
     propTypes: {
         data: _React2['default'].PropTypes.object.isRequired },
 
-    getInitialState: function getInitialState() {
-        return {
-            version: 0,
-            title: null,
-            body: null,
-            image: null,
-            link: null
-        };
-    },
-
     componentDidMount: function componentDidMount() {
-        this.updateData();
-        mainCardStore.addChangeListener(this._onChange);
+        cardStore.addChangeListener(this._onChange);
     },
 
     componentWillUnmount: function componentWillUnmount() {
-        mainCardStore.removeChangeListener(this._onChange);
+        cardStore.removeChangeListener(this._onChange);
     },
 
-    updateData: function updateData() {
-        var card = mainCardStore.getCardIfUpdated(this.props.data.mycard.id, this.state.version);
-        console.log('In SimpleCard updateData: version = ' + card.getVersion());
-        if (card != null) {
-            this.setState({
-                version: card.getVersion(),
-                title: card.title,
-                body: card.body,
-                image: card.image,
-                link: card.link
-            });
-        }
-    },
-
-    _onChange: function _onChange() {
-        this.updateData();
-    },
+    _onChange: function _onChange() {},
 
     render: function render() {
-        if (this.state.version == 0) {
+        console.log('Simple card rendering');
+        var card = cardStore.getCard(this.props.data.mycard.ids[0]);
+        if (card == undefined) {
             return _React2['default'].createElement(
                 'div',
                 { key: this.props.key },
@@ -20860,14 +20963,14 @@ var SimpleCard = _React2['default'].createClass({
                     'h1',
                     null,
                     ' ',
-                    this.state.title,
+                    card.title,
                     ' '
                 ),
                 _React2['default'].createElement(
                     'p',
                     null,
                     ' ',
-                    this.state.body,
+                    card.body,
                     ' '
                 )
             );
@@ -20878,7 +20981,9 @@ var SimpleCard = _React2['default'].createClass({
 exports['default'] = SimpleCard;
 module.exports = exports['default'];
 
-},{"../stores/MainCardStore":176,"react":163}],167:[function(require,module,exports){
+// Nothing, actually
+
+},{"../stores/CardStore":178,"react":163}],169:[function(require,module,exports){
 'use strict';
 
 var _interopRequireWildcard = function (obj) { return obj && obj.__esModule ? obj : { 'default': obj }; };
@@ -20891,7 +20996,190 @@ var _React = require('react');
 
 var _React2 = _interopRequireWildcard(_React);
 
-var mainCardStore = require('../stores/MainCardStore');
+var _BootstrapLayout = require('./BootstrapLayout');
+
+var _BootstrapLayout2 = _interopRequireWildcard(_BootstrapLayout);
+
+var _SiteNavigation = require('./SiteNavigation');
+
+var _SiteNavigation2 = _interopRequireWildcard(_SiteNavigation);
+
+var configStore = require('../stores/ConfigStore');
+var stateStore = require('../stores/StateStore');
+var datasetStore = require('../stores/DatasetStore');
+
+var Site = _React2['default'].createClass({
+    displayName: 'Site',
+
+    propTypes: {
+        site: _React2['default'].PropTypes.object.isRequired,
+        pages: _React2['default'].PropTypes.array.isRequired,
+        configurationId: _React2['default'].PropTypes.oneOfType([_React2['default'].PropTypes.string, _React2['default'].PropTypes.number]).isRequired
+    },
+
+    getInitialState: function getInitialState() {
+        return {
+            myStateId: null,
+            version: 0
+        };
+    },
+
+    componentWillMount: function componentWillMount() {
+        stateStore.registerState('site.currentPage', this.props.site.startPage);
+    },
+
+    componentDidMount: function componentDidMount() {
+        stateStore.addChangeListener(this._onStateChange);
+        datasetStore.addChangeListener(this._onDataChange);
+    },
+
+    _onDataChange: function _onDataChange() {
+        this.setState({ version: this.state.version++ });
+    },
+
+    _onStateChange: function _onStateChange() {
+        // Don't really care what the change was, we'll re-render
+        this.setState({ version: this.state.version++ });
+    },
+
+    render: function render() {
+
+        var currentPage = stateStore.getStateValue('site.currentPage');
+
+        var page = configStore.getConfiguration('pages', currentPage);
+
+        var layoutProps = {
+            layout: page.layout,
+            components: page.components,
+            reactComponents: this.props.reactComponents
+        };
+
+        return _React2['default'].createElement(
+            'div',
+            null,
+            _React2['default'].createElement(
+                'div',
+                { className: 'container gbe-header' },
+                _React2['default'].createElement(
+                    'div',
+                    { className: 'row' },
+                    _React2['default'].createElement(
+                        'div',
+                        { className: 'col-md-6 hdr-left' },
+                        _React2['default'].createElement(
+                            'h1',
+                            null,
+                            this.props.site.name
+                        )
+                    ),
+                    _React2['default'].createElement(
+                        'div',
+                        { className: 'col-md-6 hdr-right' },
+                        _React2['default'].createElement(_SiteNavigation2['default'], { site: this.props.site, pages: this.props.pages })
+                    )
+                )
+            ),
+            _React2['default'].createElement(
+                'div',
+                { className: 'container gbe-body' },
+                _React2['default'].createElement(_BootstrapLayout2['default'], layoutProps)
+            )
+        );
+    }
+});
+
+exports['default'] = Site;
+module.exports = exports['default'];
+
+},{"../stores/ConfigStore":179,"../stores/DatasetStore":181,"../stores/StateStore":182,"./BootstrapLayout":166,"./SiteNavigation":170,"react":163}],170:[function(require,module,exports){
+'use strict';
+
+var _interopRequireWildcard = function (obj) { return obj && obj.__esModule ? obj : { 'default': obj }; };
+
+Object.defineProperty(exports, '__esModule', {
+    value: true
+});
+
+var _React = require('react');
+
+var _React2 = _interopRequireWildcard(_React);
+
+var configStore = require('../stores/ConfigStore');
+var stateStore = require('../stores/StateStore');
+var dispatcher = require('../common/BudgetAppDispatcher');
+var BudgetAppConstants = require('../constants/BudgetAppConstants');
+var ActionTypes = BudgetAppConstants.ActionTypes;
+
+var SiteNavigation = _React2['default'].createClass({
+    displayName: 'SiteNavigation',
+
+    propTypes: {
+        site: _React2['default'].PropTypes.object.isRequired,
+        pages: _React2['default'].PropTypes.array.isRequired
+    },
+
+    render: function render() {
+
+        var menuItem = (function (pageId, index) {
+
+            var page = configStore.getConfiguration('pages', pageId);
+
+            var selectPage = function selectPage(e) {
+                dispatcher.dispatch({
+                    actionType: ActionTypes.STATE_CHANGE,
+                    payload: {
+                        name: 'site.currentPage',
+                        value: page.id
+                    }
+                });
+            };
+
+            return _React2['default'].createElement(
+                'li',
+                { key: index, role: 'presentation' },
+                _React2['default'].createElement(
+                    'a',
+                    { id: 'menuPage_{page.name}', href: '#',
+                        onClick: selectPage },
+                    page.shortName
+                )
+            );
+        }).bind(this);
+
+        return _React2['default'].createElement(
+            'ul',
+            { className: 'nav nav-pills' },
+            _React2['default'].createElement(
+                'li',
+                { role: 'presentation' },
+                _React2['default'].createElement(
+                    'a',
+                    { href: '/' },
+                    'Home'
+                )
+            ),
+            this.props.pages.map(menuItem)
+        );
+    }
+});
+
+exports['default'] = SiteNavigation;
+module.exports = exports['default'];
+
+},{"../common/BudgetAppDispatcher":165,"../constants/BudgetAppConstants":173,"../stores/ConfigStore":179,"../stores/StateStore":182,"react":163}],171:[function(require,module,exports){
+'use strict';
+
+var _interopRequireWildcard = function (obj) { return obj && obj.__esModule ? obj : { 'default': obj }; };
+
+Object.defineProperty(exports, '__esModule', {
+    value: true
+});
+
+var _React = require('react');
+
+var _React2 = _interopRequireWildcard(_React);
+
+var cardStore = require('../stores/CardStore');
 
 var SlideShow = _React2['default'].createClass({
     displayName: 'SlideShow',
@@ -20899,69 +21187,57 @@ var SlideShow = _React2['default'].createClass({
     propTypes: {
         data: _React2['default'].PropTypes.object.isRequired },
 
-    getInitialState: function getInitialState() {
-        return {
-            version: 0,
-            cards: []
-        };
-    },
+    componentWillMount: function componentWillMount() {},
 
     componentDidMount: function componentDidMount() {
-        this.updateData();
-        mainCardStore.addChangeListener(this._onChange);
+        cardStore.addChangeListener(this._onChange);
+        $(this.getDOMNode()).flexslider();
+    },
+
+    componentDidUpdate: function componentDidUpdate() {
+        $(this.getDOMNode()).flexslider();
     },
 
     componentWillUnmount: function componentWillUnmount() {
-        mainCardStore.removeChangeListener(this._onChange);
+        cardStore.removeChangeListener(this._onChange);
     },
 
-    updateData: function updateData() {
-        var cardset = mainCardStore.getCardSetIfUpdated(this.props.data.mycardset.id, this.state.version);
-        if (cardset != null) {
-            this.setState({
-                version: cardset.getVersion(),
-                cards: cardset.cards
-            });
-        }
-    },
-
-    _onChange: function _onChange() {
-        this.updateData();
-    },
+    _onChange: function _onChange() {},
 
     render: function render() {
-        if (this.state.version == 0) {
-            return _React2['default'].createElement(
+        console.log('Slide show rendering');
+        var cards = [];
+        for (var i = 0; i < this.props.data.mycardset.ids.length; ++i) {
+            cards.push(cardStore.getCard(this.props.data.mycardset.ids[i]));
+        }
+        return _React2['default'].createElement(
+            'div',
+            { key: this.props.key, className: 'slider' },
+            _React2['default'].createElement(
                 'div',
-                { key: this.props.key },
-                'SlideShow loading ...'
-            );
-        } else {
-            return _React2['default'].createElement(
-                'div',
-                { key: this.props.key },
+                { className: 'flexslider' },
                 _React2['default'].createElement(
                     'ul',
-                    null,
-                    this.state.cards.map(function (item, index) {
+                    { className: 'slides' },
+                    cards.map(function (item, index) {
                         return _React2['default'].createElement(
                             'li',
                             { key: index },
-                            ' ',
-                            item.title,
-                            ' '
+                            item.title
                         );
                     })
                 )
-            );
-        }
+            )
+        );
     }
 });
 
 exports['default'] = SlideShow;
 module.exports = exports['default'];
 
-},{"../stores/MainCardStore":176,"react":163}],168:[function(require,module,exports){
+// Nothing, actually
+
+},{"../stores/CardStore":178,"react":163}],172:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -20976,7 +21252,7 @@ module.exports = {
     }
 };
 
-},{}],169:[function(require,module,exports){
+},{}],173:[function(require,module,exports){
 'use strict';
 
 var keyMirror = require('keymirror');
@@ -20984,6 +21260,7 @@ var keyMirror = require('keymirror');
 module.exports = {
 
     ActionTypes: keyMirror({
+        STATE_CHANGE: null,
         INIT_CARD_STORE: null,
         DATASET_RECEIVED: null,
         ALL_DATASETS_RECEIVED: null,
@@ -20996,7 +21273,7 @@ module.exports = {
 
 };
 
-},{"keymirror":5}],170:[function(require,module,exports){
+},{"keymirror":5}],174:[function(require,module,exports){
 'use strict';
 
 var keyMirror = require('keymirror');
@@ -21007,12 +21284,13 @@ module.exports = {
         DS_STATE_NEW: null,
         DS_STATE_REQUESTED: null,
         DS_STATE_PENDING: null,
+        DS_STATE_PARTIAL: null,
         DS_STATE_READY: null
     })
 
 };
 
-},{"keymirror":5}],171:[function(require,module,exports){
+},{"keymirror":5}],175:[function(require,module,exports){
 'use strict';
 
 function Card(version, title, body, image, link) {
@@ -21031,124 +21309,112 @@ function Card(version, title, body, image, link) {
 
 module.exports = Card;
 
-},{}],172:[function(require,module,exports){
-'use strict';
-
-var Card = require('../data/Card');
-
-function CardSet(version, name, cards) {
-    this['class'] = 'CardSet';
-    this.version = version;
-    this.name = name;
-    this.cards = [];
-    for (var i = 0; i < cards.length; ++i) {
-        var card = new Card(null, cards[i].title, cards[i].body, cards[i].image, cards[i].link);
-        this.cards.push(card);
-    }
-    this.getVersion = function () {
-        return this.version;
-    };
-};
-
-module.exports = CardSet;
-
-},{"../data/Card":171}],173:[function(require,module,exports){
+},{}],176:[function(require,module,exports){
 'use strict';
 
 var DatasetStatusConstants = require('../constants/DatasetStatusConstants');
 var DatasetStatus = DatasetStatusConstants.DatasetStatus;
 var BudgetAppConstants = require('../constants/BudgetAppConstants');
 var ActionTypes = BudgetAppConstants.ActionTypes;
-var dispatcher = require('../dispatcher/BudgetAppDispatcher');
+var dispatcher = require('../common/BudgetAppDispatcher');
 var AccountTypeConstants = require('../constants/AccountTypeConstants');
 var AccountTypes = AccountTypeConstants.AccountTypes;
 
-function DataProvider(id, datasets, name) {
+var datasetStore = require('../stores/DatasetStore');
+
+function DataModel(id, datasetIds) {
+    var initialCommands = arguments[2] === undefined ? null : arguments[2];
+
     this.id = id;
-    this.name = name;
-    this.version = -1;
+    this.timestamp = -1;
     this.raw = []; // array of datasets
     this.initializationParameters = null;
     this.consumerReady = false;
     this.categories = null;
 
     this.data = null;
+    if (initialCommands != null) this.initializationParameters = initialCommands;
 
     this.status = DatasetStatus.DS_STATE_READY;
-    for (var i = 0; i < datasets.length; ++i) {
-        this.raw.push(datasets[i]);
-        if (!datasets[i].isReady()) this.status = DatasetStatus.DS_STATE_PENDING;
-        if (datasets[i].version > this.version) this.version = datasets[i].version;
+    var readyCount = 0;
+
+    for (var i = 0; i < datasetIds.length; ++i) {
+        var ds = datasetStore.getDataset(datasetIds[i]);
+        this.raw.push(ds);
+        if (ds.isReady()) ++readyCount;
+        if (ds.getTimestamp() > this.timestamp) this.timestamp = ds.getTimestamp();
+    }
+    if (readyCount < datasetIds.length) {
+        this.status = readyCount == 0 ? DatasetStatus.DS_STATE_PENDING : DatasetStatus.DS_STATE_PARTIAL;
     }
 
-    this.setInitializer = function () {
-        var initialCommands = arguments[0] === undefined ? null : arguments[0];
-
-        if (initialCommands != null) this.initializationParameters = initialCommands;
+    this.getTimestamp = function () {
+        return this.timestamp;
     };
 
-    this.getVersion = function () {
-        return this.version;
-    };
-
-    this.prepareData = function () {
+    this.dataChanged = function dataChanged() {
+        // We only know if the data has changed if a component asks
+        var needUpdate = false;
+        readyCount = 0;
+        var firstReady = -1;
         for (var i = 0; i < this.raw.length; ++i) {
-            var ds = this.raw[i];
-            if (!ds.isReady() && !ds.isRequested()) {
-                var source = GBEVars.apiPath + '/datasets/' + ds.serverId;
-                $.get(source, function (r) {}).done(this.receiveData).fail(this.receiveError);
-                ds.setRequested();
+            if (this.raw[i].isReady()) {
+                ++readyCount;
+                if (firstReady < 0) firstReady = i;
+            }
+            if (this.raw[i].timestamp > this.timestamp) {
+                this.timestamp = this.raw[i].timestamp;
+                needUpdate = true;
             }
         }
-        this.consumerReady = true;
-    };
-
-    this.receiveData = function (r) {
-        for (var i = 0; i < r.data.length; ++i) {
-            dispatcher.dispatch({
-                actionType: ActionTypes.DATASET_RECEIVED,
-                payload: r.data[i]
-            });
-        }
-    };
-
-    this.receiveError = function (r) {
-        console.log('ERROR - failed to get the data: ' + JSON.stringify(r));
-    };
-
-    this.updatedData = function () {
         this.status = DatasetStatus.DS_STATE_READY;
-        for (var i = 0; i < datasets.length; ++i) {
-            if (!datasets[i].isReady()) this.status = DatasetStatus.DS_STATE_PENDING;
-            if (datasets[i].version > this.version) this.version = datasets[i].version;
+        if (readyCount < datasetIds.length) {
+            this.status = readyCount == 0 ? DatasetStatus.DS_STATE_PENDING : DatasetStatus.DS_STATE_PARTIAL;
         }
-        if (this.consumerReady && this.isReady()) {
-            this.categories = this.raw[0].data.categoryIdentifiers;
+        if (readyCount > 0) {
+            this.data = null;
+            this.categories = this.raw[firstReady].data.categoryIdentifiers;
             this.initialize();
         }
+        return needUpdate;
     };
 
     this.datasetCompare = function (ds1, ds2) {
-        var result = ds1.data.year - ds2.data.year;
-        if (result == 0) {
-            result = ds1.data.month - ds2.data.month;
+        if (ds1.data == null || ds2.data == null) {
+            result = ds1.data == null ? 1 : -1;
+        } else {
+            var result = ds1.data.year - ds2.data.year;
             if (result == 0) {
-                result = ds1.data.day - ds2.data.day;
+                result = ds1.data.month - ds2.data.month;
+                if (result == 0) {
+                    result = ds1.data.day - ds2.data.day;
+                }
             }
         }
         return result;
     };
 
     /*
-     * One of the things we do here is reverse the sign on all revenue values.
+     * There are a few weirdnesses in the API-delivered data that we need to handle here.
+     * It's likely we actually want to change this on the server side, but for now we'll
+     * handle it here:
+     *
+     *  - Reverse sign on all revenue values - this is an artifact of the accounting system.
+     *    We should actually do this for other accounts similarly affected as well, but for
+     *    now I'll just assume nobody's looking at anything other than expense and revenue.
+     *
+     *  - Treat 'Account' as just another category. The incoming data has a 'categories' field
+     *    with the array of categories plus a separate 'account' field. We want interface to be
+     *    uniform for DataProvider users, so here we'll treat it as if the categories array
+     *    is just one longer with the acccount in the last slot.
      */
     this.initialize = function () {
-        console.log('Initializing provider ' + this.name);
         var hierarchy = this.initializationParameters.hierarchy;
         var nCategories = hierarchy.length;
         var nPeriods = this.raw.length;
         var accountTypes = this.initializationParameters.accountTypes;
         var amountThreshold = 0;
+        var iPeriod, iCat, level, i, j;
 
         if ('amountThreshold' in this.initializationParameters) {
             amountThreshold = +this.initializationParameters.amountThreshold;
@@ -21162,58 +21428,75 @@ function DataProvider(id, datasets, name) {
          */
         this.count = 0;
         var tree = {};
-        for (var iPeriod = 0; iPeriod < this.raw.length; ++iPeriod) {
+        for (iPeriod = 0; iPeriod < this.raw.length; ++iPeriod) {
             var data = this.raw[iPeriod].data;
+            if (!this.raw[iPeriod].isReady()) continue;
             console.log('Processing period ' + iPeriod + ': ' + data.name);
             // First we need to map the requested categories to those in the dataset
-            var catMap = new Array(nCategories);
-            for (var iCat = 0; iCat < nCategories; ++iCat) {
+            var catMap = new Array(nCategories + 1);
+            for (iCat = 0; iCat < nCategories; ++iCat) {
                 catMap[iCat] = data.categoryIdentifiers.indexOf(hierarchy[iCat]);
                 if (catMap[iCat] < 0) {
-                    throw 'Unable to map category ' + hierarchy[iCat] + ' in dataset ' + data.name;
+                    if (hierarchy[iCat] == 'Account') {
+                        catMap[iCat] = -1;
+                    } else {
+                        throw 'Unable to map category ' + hierarchy[iCat] + ' in dataset ' + data.name;
+                    }
                 }
             }
 
-            for (var j = 0; j < data.items.length; ++j) {
+            for (j = 0; j < data.items.length; ++j) {
                 var item = data.items[j];
                 item.amount = Number(item.amount);
 
                 if (accountTypes.indexOf(item.type) < 0) continue;
 
                 var current = tree;
-                for (var level = 0; level < nCategories; ++level) {
-                    if (!(item.categories[catMap[level]] in current)) current[item.categories[catMap[level]]] = {};
-                    current = current[item.categories[catMap[level]]];
+                var key;
+                /*
+                 * Build the tree up to, but not including the last level
+                 */
+                for (level = 0; level < nCategories - 1; ++level) {
+                    key = catMap[level] >= 0 ? item.categories[catMap[level]] : 'Account';
+                    if (!(key in current)) current[key] = {};
+                    current = current[key];
                 }
-                if (!(item.account in current)) {
-                    current[item.account] = {
-                        account: item.account,
+                level = nCategories - 1;
+                key = catMap[level] >= 0 ? item.categories[catMap[level]] : 'Account';
+
+                if (!(key in current)) {
+                    var amounts = new Array(nPeriods);
+                    for (var k = 0; k < nPeriods; ++k) amounts[k] = Number(0);
+                    var categories = new Array(nCategories);
+                    for (var level = 0; level < nCategories; ++level) {
+                        categories[level] = catMap[level] >= 0 ? item.categories[catMap[level]] : item.account;
+                    }
+
+                    current[key] = {
+                        account: categories[nCategories - 1],
                         accountType: item.type,
-                        categories: item.categories,
-                        amount: new Array(nPeriods)
+                        categories: categories,
+                        amount: amounts
                     };
-                    for (var k = 0; k < nPeriods; ++k) current[item.account].amount[k] = Number(0);
                     this.count++;
                 }
                 var factor = item.type == AccountTypes.REVENUE ? -1 : 1;
-                current[item.account].amount[iPeriod] += item.amount * factor;
+                current[key].amount[iPeriod] += item.amount * factor;
             }
         }
-        console.log('Pre-threshold count: ' + this.count);
 
         // Now collapse the tree back out
         this.data = this.collapseTree(tree, 0, nCategories, amountThreshold);
-        console.log('Final count: ' + this.data.length);
     };
 
     this.collapseTree = function (node, currentLevel, nLevels, threshold) {
         var data = [];
-        if (currentLevel == nLevels) {
+        if (currentLevel == nLevels - 1) {
             for (var acct in node) {
                 if (node.hasOwnProperty(acct)) {
                     var keep = false;
 
-                    for (var i = 0; !keep && i < node[acct].amount.length; ++i) {
+                    for (i = 0; !keep && i < node[acct].amount.length; ++i) {
                         var amt = node[acct].amount[i];
 
                         if (Math.abs(amt) >= threshold) keep = true;
@@ -21235,8 +21518,19 @@ function DataProvider(id, datasets, name) {
         return this.status == DatasetStatus.DS_STATE_READY;
     };
 
+    this.getHeaders = function getHeaders() {
+        var headers = [];
+        for (var i = 0; i < this.raw.length; ++i) {
+            if (this.raw[i].data != null) headers.push(this.raw[i].data.year + '');
+        }
+        console.log('Header = ' + JSON.stringify(headers));
+        return headers;
+    };
+
     this.getData = function (commands) {
-        if (this.status == DatasetStatus.DS_STATE_READY) {
+        var partialOk = arguments[1] === undefined ? false : arguments[1];
+
+        if (this.status == DatasetStatus.DS_STATE_READY || this.status == DatasetStatus.DS_STATE_PARTIAL && partialOk) {
             var data = [];
             var accountTypes = null;
             if ('accountTypes' in commands) accountTypes = commands.accountTypes;
@@ -21254,23 +21548,22 @@ function DataProvider(id, datasets, name) {
     };
 }
 
-module.exports = DataProvider;
+module.exports = DataModel;
 
-},{"../constants/AccountTypeConstants":168,"../constants/BudgetAppConstants":169,"../constants/DatasetStatusConstants":170,"../dispatcher/BudgetAppDispatcher":175}],174:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":165,"../constants/AccountTypeConstants":172,"../constants/BudgetAppConstants":173,"../constants/DatasetStatusConstants":174,"../stores/DatasetStore":181}],177:[function(require,module,exports){
 'use strict';
 
 var DatasetStatusConstants = require('../constants/DatasetStatusConstants');
 var DatasetStatus = DatasetStatusConstants.DatasetStatus;
 
-function Dataset(version, localId, serverId) {
-    this.version = version;
-    this.localId = localId;
-    this.serverId = serverId;
+function Dataset(timestamp, sourceId) {
+    this.timestamp = timestamp;
+    this.sourceId = sourceId;
     this.status = DatasetStatus.DS_STATE_NEW;
     this.data = null;
 
-    this.receiveDataset = function (data, newVersion) {
-        this.version = newVersion;
+    this.receiveDataset = function (data, newTimestamp) {
+        this.timestamp = newTimestamp;
         this.status = DatasetStatus.DS_STATE_READY;
         this.data = data;
     };
@@ -21295,24 +21588,17 @@ function Dataset(version, localId, serverId) {
         this.status = DatasetStatus.DS_STATE_REQUESTED;
     };
 
-    this.getVersion = function () {
-        return this.version;
+    this.getTimestamp = function () {
+        return this.timestamp;
     };
 };
 
 module.exports = Dataset;
 
-},{"../constants/DatasetStatusConstants":170}],175:[function(require,module,exports){
+},{"../constants/DatasetStatusConstants":174}],178:[function(require,module,exports){
 'use strict';
 
-var Dispatcher = require('flux').Dispatcher;
-
-module.exports = new Dispatcher();
-
-},{"flux":2}],176:[function(require,module,exports){
-'use strict';
-
-var dispatcher = require('../dispatcher/BudgetAppDispatcher');
+var dispatcher = require('../common/BudgetAppDispatcher');
 var EventEmitter = require('events').EventEmitter;
 
 var assign = require('object-assign');
@@ -21321,15 +21607,10 @@ var BudgetAppConstants = require('../constants/BudgetAppConstants');
 var ActionTypes = BudgetAppConstants.ActionTypes;
 
 var Card = require('../data/Card');
-var CardSet = require('../data/CardSet');
 
 var CHANGE_EVENT = 'change';
 
-var MainCardStore = assign({}, EventEmitter.prototype, {
-
-    idCounter: 0,
-
-    versionCounter: 1, // Let's components optimize whether they need to redraw
+var CardStore = assign({}, EventEmitter.prototype, {
 
     _cards: [],
 
@@ -21337,47 +21618,12 @@ var MainCardStore = assign({}, EventEmitter.prototype, {
         var card = new Card(this.versionCounter++, data.title, data.body, data.link, data.image);
         card.id = data.id;
         card.cardSet = data.cardSet;
-
-        this._cards[this.idCounter] = card;
+        this._cards[card.id] = card;
         this.emit(CHANGE_EVENT);
-        return this.idCounter++;
     },
 
-    storeCardSet: function storeCardSet(data) {
-        var cardset = new CardSet(this.versionCounter++, data.name, data.cards);
-        cardset.id = data.id;
-        this._cards[this.idCounter] = cardset;
-        this.emit(CHANGE_EVENT);
-        return this.idCounter++;
-    },
-
-    dataHasUpdated: function dataHasUpdated(id, version) {
-        if (id >= 0 && id < this._cards.length) {
-            return this._cards[id].version > version;
-        }
-        return false;
-    },
-
-    getData: function getData(id) {
-        if (id >= 0 && id < this._cards.length) {
-            return this._cards[id];
-        }
-        return null;
-    },
-
-    getDataIfUpdated: function getDataIfUpdated(id, version) {
-        if (this.dataHasUpdated(id, version)) {
-            return this.getData(id);
-        }
-        return null;
-    },
-
-    getCardIfUpdated: function getCardIfUpdated(id, version) {
-        return this.getDataIfUpdated(id, version);
-    },
-
-    getCardSetIfUpdated: function getCardSetIfUpdated(id, version) {
-        return this.getDataIfUpdated(id, version);
+    getCard: function getCard(id) {
+        return this._cards[id];
     },
 
     emitChange: function emitChange() {
@@ -21401,7 +21647,7 @@ var MainCardStore = assign({}, EventEmitter.prototype, {
 dispatcher.register(function (action) {
     switch (action.actionType) {
         case ActionTypes.INIT_CARD_STORE:
-            MainCardStore.emitChange();
+            CardStore.emitChange();
             break;
 
         default:
@@ -21409,12 +21655,12 @@ dispatcher.register(function (action) {
     }
 });
 
-module.exports = MainCardStore;
+module.exports = CardStore;
 
-},{"../constants/BudgetAppConstants":169,"../data/Card":171,"../data/CardSet":172,"../dispatcher/BudgetAppDispatcher":175,"events":6,"object-assign":8}],177:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":165,"../constants/BudgetAppConstants":173,"../data/Card":175,"events":6,"object-assign":8}],179:[function(require,module,exports){
 'use strict';
 
-var dispatcher = require('../dispatcher/BudgetAppDispatcher');
+var dispatcher = require('../common/BudgetAppDispatcher');
 var EventEmitter = require('events').EventEmitter;
 
 var assign = require('object-assign');
@@ -21422,75 +21668,174 @@ var assign = require('object-assign');
 var BudgetAppConstants = require('../constants/BudgetAppConstants');
 var ActionTypes = BudgetAppConstants.ActionTypes;
 
-var DatasetStatusConstants = require('../constants/DatasetStatusConstants');
-var DatasetStatus = DatasetStatusConstants.DatasetStatus;
+var CHANGE_EVENT = 'change';
+
+var ConfigStore = assign({}, EventEmitter.prototype, {
+
+    /*
+     * We're expecting sites, pages
+     */
+    areas: {},
+
+    createSection: function createSection(areaName) {
+        if (this.areas.hasOwnProperty(areaName)) throw 'createArea - ' + areaName + ' already exists';
+        this.areas[areaName] = {
+            name: areaName,
+            items: {}
+        };
+    },
+
+    storeConfiguration: function storeConfiguration(areaName, key, value) {
+        if (!this.areas.hasOwnProperty(areaName)) {
+            throw 'storeConfiguration called for non-existent area ' + areaName;
+        }
+        if (this.areas[areaName].items.hasOwnProperty(key)) {
+            throw 'Duplicate key for configuration ' + areaName + ':' + key;
+        }
+        this.areas[areaName].items[key] = value;
+    },
+
+    getConfiguration: function getConfiguration(areaName, key) {
+        if (!this.areas.hasOwnProperty(areaName)) throw 'getConfiguration called for non-existent area ' + areaName;
+        if (!this.areas[areaName].items.hasOwnProperty(key)) {
+            throw 'getConfigurationByID: bad key ' + areaName + ':' + key;
+        }
+        return this.areas[areaName].items[key];
+    },
+
+    emitChange: function emitChange() {
+        this.emit(CHANGE_EVENT);
+    },
+    /**
+     * @param {function} callback
+     */
+    addChangeListener: function addChangeListener(callback) {
+        this.on(CHANGE_EVENT, callback);
+    },
+
+    /**
+     * @param {function} callback
+     */
+    removeChangeListener: function removeChangeListener(callback) {
+        this.removeListener(CHANGE_EVENT, callback);
+    }
+});
+
+dispatcher.register(function (action) {
+    switch (action.actionType) {
+        case ActionTypes.INIT_CARD_STORE:
+            ConfigStore.emitChange();
+            break;
+
+        default:
+        // no op
+    }
+});
+
+module.exports = ConfigStore;
+
+},{"../common/BudgetAppDispatcher":165,"../constants/BudgetAppConstants":173,"events":6,"object-assign":8}],180:[function(require,module,exports){
+'use strict';
+
+var dispatcher = require('../common/BudgetAppDispatcher');
+var EventEmitter = require('events').EventEmitter;
+
+var assign = require('object-assign');
+
+var BudgetAppConstants = require('../constants/BudgetAppConstants');
+var ActionTypes = BudgetAppConstants.ActionTypes;
+
+var DataModel = require('../data/DataModel');
+
+var CHANGE_EVENT = 'change';
+
+var DataModelStore = assign({}, EventEmitter.prototype, {
+
+    modelIdCounter: 0,
+    _models: [],
+    dependencyMap: [],
+
+    createModel: function createModel(inputDatasets, initialization) {
+        var dm = new DataModel(this.modelIdCounter++, inputDatasets, initialization);
+        inputDatasets.forEach((function (datasetId) {
+            this.addDependency(datasetId, dm.id);
+        }).bind(this));
+        this._models[dm.id] = dm;
+        return dm;
+    },
+
+    getModel: function getModel(id) {
+        return this._models[id];
+    },
+
+    addDependency: function addDependency(datasetId, modelId) {
+        if (!(datasetId in this.dependencyMap)) this.dependencyMap[datasetId] = [];
+        this.dependencyMap[datasetId].push(modelId);
+    },
+
+    emitChange: function emitChange() {
+        this.emit(CHANGE_EVENT);
+    },
+    /**
+     * @param {function} callback
+     */
+    addChangeListener: function addChangeListener(callback) {
+        this.on(CHANGE_EVENT, callback);
+    },
+
+    /**
+     * @param {function} callback
+     */
+    removeChangeListener: function removeChangeListener(callback) {
+        this.removeListener(CHANGE_EVENT, callback);
+    }
+});
+
+dispatcher.register(function (action) {
+    switch (action.actionType) {
+        case ActionTypes.INIT_CARD_STORE:
+            DataModelStore.emitChange();
+            break;
+
+        default:
+        // no op
+    }
+});
+
+module.exports = DataModelStore;
+
+},{"../common/BudgetAppDispatcher":165,"../constants/BudgetAppConstants":173,"../data/DataModel":176,"events":6,"object-assign":8}],181:[function(require,module,exports){
+'use strict';
+
+var dispatcher = require('../common/BudgetAppDispatcher');
+var EventEmitter = require('events').EventEmitter;
+var assign = require('object-assign');
+
+var BudgetAppConstants = require('../constants/BudgetAppConstants');
+var ActionTypes = BudgetAppConstants.ActionTypes;
 
 var Dataset = require('../data/Dataset');
-var DataProvider = require('../data/DataProvider');
 
 var DS_CHANGE_EVENT = 'ds_change';
 
-var MainDatasetStore = assign({}, EventEmitter.prototype, {
+var DatasetStore = assign({}, EventEmitter.prototype, {
 
-    versionCounter: 1, // Let's components optimize whether they need to redraw
+    timestamp: 1, // Let's components optimize whether they need to redraw
+    _datasets: [], // These are the datasets as received from the server
 
-    datasetIdCounter: 0,
-
-    datasets: [], // These are the datasets as received from the server
-
-    dataProviderIdCounter: 0,
-
-    dataProviders: [], // These are the objects that components will actually operate with.
-
-    serverIdMap: {},
-
-    dependencyMap: {},
-
-    /*
-     * The serverId is the ID of the dataset on the server. This is unique as
-     * long as we are only dealing with one server, so why the localId? This is
-     * to prepare to allow aggregation of datasets from multiple sources, when
-     * the serverId may no longer be unique. We can deal with the additional
-     * complexity here without anything changing outside the store.
-     */
-    registerDataset: function registerDataset(serverId) {
-        var name = arguments[1] === undefined ? 'Unnamed' : arguments[1];
-
-        console.log('Registering dataset ' + name);
+    registerDataset: function registerDataset(sourceId) {
         var ds = null;
-        if (serverId in this.serverIdMap) {
-            ds = this.datasets[this.serverIdMap[serverId]];
+        if (sourceId in this._datasets) {
+            ds = this._datasets[sourceId];
         } else {
-            ds = new Dataset(this.versionCounter++, this.datasetIdCounter++, serverId);
-            this.serverIdMap[serverId] = ds.localId;
-            this.datasets[ds.localId] = ds;
+            ds = new Dataset(this.timestamp++, sourceId);
+            this._datasets[sourceId] = ds;
         }
-        var dp = new DataProvider(this.dataProviderIdCounter++, [ds], name);
-        this.dataProviders[dp.id] = dp;
-        this.addDependency(ds.localId, dp.id);
-        return dp.id;
+        return ds;
     },
 
-    addDependency: function addDependency(dsId, providerId) {
-        if (!(dsId in this.dependencyMap)) this.dependencyMap[dsId] = [];
-        this.dependencyMap[dsId].push(providerId);
-    },
-
-    registerDatasetCollection: function registerDatasetCollection(localIds) {
-        var name = arguments[1] === undefined ? 'Unnamed' : arguments[1];
-
-        var dsArray = [];
-        for (var i = 0; i < localIds.length; ++i) dsArray.push(this.datasets[localIds[i]]);
-
-        var dp = new DataProvider(this.dataProviderIdCounter++, dsArray, name);
-        this.dataProviders[dp.id] = dp;
-
-        for (var i = 0; i < localIds.length; ++i) this.addDependency(localIds[i], dp.id);
-        return dp.id;
-    },
-
-    getDataProvider: function getDataProvider(id) {
-        return this.dataProviders[id];
+    getDataset: function getDataset(sourceId) {
+        return this._datasets[sourceId];
     },
 
     emitChange: function emitChange() {
@@ -21511,23 +21856,15 @@ var MainDatasetStore = assign({}, EventEmitter.prototype, {
     }
 });
 
-MainDatasetStore.dispatchToken = dispatcher.register(function (action) {
+DatasetStore.dispatchToken = dispatcher.register(function (action) {
     switch (action.actionType) {
         case ActionTypes.DATASET_RECEIVED:
-            var dsId = MainDatasetStore.serverIdMap[action.payload.id];
 
-            console.log('DATASET_RECEIVED - ID = ' + dsId + ' corresponding to server ID = ' + action.payload.id);
+            console.log('DATASET_RECEIVED - ID = ' + action.payload.id);
 
-            var ds = MainDatasetStore.datasets[dsId];
-            ds.receiveDataset(action.payload, MainDatasetStore.versionCounter++);
-            if (dsId in MainDatasetStore.dependencyMap) {
-                for (var i = 0; i < MainDatasetStore.dependencyMap[dsId].length; ++i) {
-                    var id = MainDatasetStore.dependencyMap[dsId][i];
-                    var dp = MainDatasetStore.dataProviders[id];
-                    dp.updatedData(dsId);
-                }
-            }
-            MainDatasetStore.emitChange();
+            var ds = DatasetStore._datasets[action.payload.id];
+            ds.receiveDataset(action.payload, DatasetStore.timestamp++);
+            DatasetStore.emitChange();
             break;
 
         default:
@@ -21536,6 +21873,141 @@ MainDatasetStore.dispatchToken = dispatcher.register(function (action) {
     }
 });
 
-module.exports = MainDatasetStore;
+module.exports = DatasetStore;
 
-},{"../constants/BudgetAppConstants":169,"../constants/DatasetStatusConstants":170,"../data/DataProvider":173,"../data/Dataset":174,"../dispatcher/BudgetAppDispatcher":175,"events":6,"object-assign":8}]},{},[1]);
+},{"../common/BudgetAppDispatcher":165,"../constants/BudgetAppConstants":173,"../data/Dataset":177,"events":6,"object-assign":8}],182:[function(require,module,exports){
+'use strict';
+
+var dispatcher = require('../common/BudgetAppDispatcher');
+var EventEmitter = require('events').EventEmitter;
+
+var assign = require('object-assign');
+
+var BudgetAppConstants = require('../constants/BudgetAppConstants');
+var ActionTypes = BudgetAppConstants.ActionTypes;
+
+var CHANGE_EVENT = 'change';
+
+/*
+ * Ok, we have a couple kinds of state, at least:
+ *  - Internal component state - stuff only the component will ever care about.
+ *  - Shared state - things (like current page) that at least 2 components need to know
+ *
+ *  So at least we definitely need to introduce areas. A couple obvious ones are:
+ *   - site: things about the state of the whole site. Page is one. View styles might be another.
+ *   - components:
+ */
+
+var StateStore = assign({}, EventEmitter.prototype, {
+
+    currentId: 0,
+
+    store: {
+        site: {},
+        components: {}
+    },
+
+    components: [],
+
+    registerComponent: function registerComponent(type, name, initialState) {
+        var id = this.currentId++;
+        var component = {
+            id: id,
+            type: type,
+            name: name,
+            state: initialState
+        };
+        this.store.components[id] = component;
+        return id;
+    },
+
+    registerState: function setState(path, value) {
+        var pathArray = path.split('.');
+        var current = this.store;
+        while (pathArray.length > 1) {
+            current = current[pathArray.shift()];
+            if (current === undefined) throw 'Undefined state path ' + path;
+        }
+        current[pathArray.shift()] = value;
+    },
+
+    setState: function setState(path, value) {
+        var pathArray = path.split('.');
+        var current = this.store;
+        while (pathArray.length > 1) {
+            current = current[pathArray.shift()];
+            if (current === undefined) throw 'Undefined state path ' + path;
+        }
+        var stateVariable = pathArray.shift();
+        if (current[stateVariable] === undefined) throw 'Unknown state variable ' + stateVariable + ' in path ' + path;
+        current[stateVariable] = value;
+    },
+
+    getStateValue: function getStateValue(path) {
+        var pathArray = path.split('.');
+        var value = this.store;
+        while (pathArray.length > 0) {
+            value = value[pathArray.shift()];
+        }
+        return value;
+    },
+
+    setComponentState: function setComponentState(id, state) {
+        if (this.store.components.hasOwnProperty(id)) {
+            Object.assign(this.store.components[id].state, state);
+        }
+    },
+
+    getComponentState: function getComponentState(id) {
+        var state = {};
+        if (this.store.components.hasOwnProperty(id)) {
+            state = this.store.components[id].state;
+        }
+        return state;
+    },
+
+    getComponentStateValue: function getComponentStateValue(id, key) {
+        var value = null;
+        if (this.store.components[id].state.hasOwnProperty(id)) {
+            value = this.store.components[id].state[key];
+        }
+        return value;
+    },
+
+    emitChange: function emitChange() {
+        this.emit(CHANGE_EVENT);
+    },
+    /**
+     * @param {function} callback
+     */
+    addChangeListener: function addChangeListener(callback) {
+        this.on(CHANGE_EVENT, callback);
+    },
+
+    /**
+     * @param {function} callback
+     */
+    removeChangeListener: function removeChangeListener(callback) {
+        this.removeListener(CHANGE_EVENT, callback);
+    }
+});
+
+dispatcher.register(function (action) {
+    switch (action.actionType) {
+        case ActionTypes.INIT_CARD_STORE:
+            StateStore.emitChange();
+            break;
+
+        case ActionTypes.STATE_CHANGE:
+            StateStore.setState(action.payload.name, action.payload.value);
+            StateStore.emitChange();
+            break;
+
+        default:
+        // no op
+    }
+});
+
+module.exports = StateStore;
+
+},{"../common/BudgetAppDispatcher":165,"../constants/BudgetAppConstants":173,"events":6,"object-assign":8}]},{},[1]);

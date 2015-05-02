@@ -19,14 +19,16 @@ elixir(function(mix) {
     mix.sass('app.scss', 'public/css', {includePaths: [paths.bootstrap + 'stylesheets/']})
         .styles([
             'public/css/app.css',
-            'resources/css/local.css'
+            'resources/css/local.css',
+            './vendor/bower_components/FlexSlider/flexslider.css'
         ], './public/css/all.css', './')
         .browserify('app.js')
         .scripts([
-            './vendor/bower_components/jquery/dist/jquery.min.js',
+            './vendor/bower_components/jquery/dist/jquery.js',
             './vendor/bower_components/jquery-ui/jquery-ui.min.js',
             './vendor/bower_components/bootstrap-sass-official/assets/javascripts/bootstrap.min.js',
-            './vendor/bower_components/jquery-cookie/jquery.cookie.js'
+            './vendor/bower_components/jquery-cookie/jquery.cookie.js',
+            './vendor/bower_components/FlexSlider/jquery.flexslider-min.js'
         ], './public/js/all.js', './')
     ;
 });

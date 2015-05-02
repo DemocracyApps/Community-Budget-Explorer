@@ -1,6 +1,6 @@
 import React from 'react';
 
-var mainCardStore = require('../stores/MainCardStore');
+var cardStore = require('../stores/CardStore');
 
 var SlideShow = React.createClass({
 
@@ -8,51 +8,47 @@ var SlideShow = React.createClass({
         data: React.PropTypes.object.isRequired,
     },
 
-    getInitialState: function() {
-        return {
-            version: 0,
-            cards: []
-        };
+    componentWillMount: function () {
     },
 
     componentDidMount: function () {
-        this.updateData();
-        mainCardStore.addChangeListener(this._onChange);
+        cardStore.addChangeListener(this._onChange);
+        $(this.getDOMNode()).flexslider();
+    },
+
+    componentDidUpdate: function () {
+        $(this.getDOMNode()).flexslider();
     },
 
     componentWillUnmount: function () {
-        mainCardStore.removeChangeListener(this._onChange);
-    },
-
-    updateData: function () {
-        var cardset = mainCardStore.getCardSetIfUpdated(this.props.data["mycardset"].id, this.state.version);
-        if (cardset != null) {
-            this.setState({
-                version: cardset.getVersion(),
-                cards: cardset.cards
-            });
-        }
+        cardStore.removeChangeListener(this._onChange);
     },
 
     _onChange: function () {
-        this.updateData();
+        // Nothing, actually
     },
 
     render: function() {
-        if (this.state.version == 0) {
-            return <div key={this.props.key}>SlideShow loading ...</div>
+        console.log("Slide show rendering");
+        var cards = [];
+        for (var i=0; i<this.props.data["mycardset"].ids.length; ++i) {
+            cards.push(cardStore.getCard(this.props.data["mycardset"].ids[i]));
         }
-        else {
-            return (
-                <div key={this.props.key}>
-                    <ul>
-                        {this.state.cards.map(function (item, index) {
-                            return <li key={index}> {item.title} </li>
+        return (
+            <div key={this.props.key} className="slider">
+                <div className="flexslider">
+                    <ul className="slides">
+                        {cards.map(function (item, index) {
+                            return (
+                                <li key={index}>
+                                    {item.title}
+                                </li>
+                            )
                         })}
                     </ul>
                 </div>
-            );
-        }
+            </div>
+        );
     }
 });
 

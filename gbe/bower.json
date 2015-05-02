@@ -5,6 +5,15 @@
     "bootstrap-sass-official": "~3.3.4",
     "font-awesome": "~4.3.0",
     "jquery-ui": "~1.11.4",
-    "jquery-cookie": "~1.4.1"
+    "jquery-cookie": "~1.4.1",
+    "FlexSlider": "https://github.com/woothemes/FlexSlider.git"
+  },
+  "overrides": {
+    "FlexSlider": {
+      "main": [
+        "jquery.flexslider.js",
+        "flexslider.css"
+      ]
+    }
   }
 }

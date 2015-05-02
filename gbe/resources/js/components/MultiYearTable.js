@@ -1,6 +1,8 @@
 import React from 'react';
 
-var datasetStore = require('../stores/MainDatasetStore');
+var datasetStore = require('../stores/DatasetStore');
+var dataModelStore = require('../stores/DataModelStore');
+var apiActions = require('../common/ApiActions');
 var AccountTypeConstants = require('../constants/AccountTypeConstants');
 var AccountTypes = AccountTypeConstants.AccountTypes;
 
@@ -29,34 +31,45 @@ var MultiYearTable = React.createClass({
     getInitialState: function() {
         return {
             selectedItem: AccountTypes.EXPENSE,
-            version: -1,
-            dataProvider: null
+            timestamp: -1,
+            dataModelId: null
         };
     },
 
     componentWillMount: function () {
-        this.state.dataProvider = datasetStore.getDataProvider(this.props.data['alldata'].id);
-        this.state.dataProvider.setInitializer(this.props.dataInitialization);
-        this.state.dataProvider.prepareData();
-        this.setState({version: this.state.dataProvider.getVersion()})
+        // Create the data model that we'll use
+        var ids = this.props.data['alldata'].ids;
+        ids.forEach(function(id) {
+           apiActions.requestDatasetIfNeeded(id);
+        });
+
+        var dm = dataModelStore.createModel(ids, this.props.dataInitialization);
+        this.setState ({
+            dataModelId: dm.id,
+            timestamp: dm.getTimestamp()
+        });
     },
 
     componentDidMount: function () {
-        datasetStore.addChangeListener(this._onDataChange);
-        if (this.state.version != this.state.dataProvider.getVersion()) {
-            this.setState({version: this.state.dataProvider.getVersion()});
-        }
+        dataModelStore.addChangeListener(this.onDataChange);
     },
 
-    componentWillUnmount: function () {
-        datasetStore.removeChangeListener(this._onDataChange);
+    shouldComponentUpdate: function (nextProps, nextState) {
+        var dataChanged = dataModelStore.getModel(this.state.dataModelId).dataChanged();
+        console.log("Data change status = " + dataChanged);
+        return (
+            dataChanged ||
+            this.state.timestamp !== nextState.timestamp ||
+            this.state.selectedItem !== nextState.selectedItem
+        );
     },
 
-    _onDataChange: function () {
-        if (this.state.version != this.state.dataProvider.getVersion()) {
-            this.setState({version: this.state.dataProvider.getVersion()});
+    onDataChange: function () {
+        var dm = dataModelStore.getModel(this.state.dataModelId);
+        dm.checkData();
+        if (this.state.timestamp != dm.getTimestamp()) {
+            this.setState({timestamp: dm.getTimestamp()});
         }
-
     },
 
     onChange: function(e) {
@@ -72,28 +85,42 @@ var MultiYearTable = React.createClass({
         return val;
     },
 
+    tableColumn: function (value, index) {
+        return (
+            <td>
+                {this.dollarsWithCommas(value)}
+            </td>
+        )
+    },
+
     tableRow: function (item, index) {
         return <tr key={index}>
-            <td>{item.account}</td>
-            <td>{this.dollarsWithCommas(item.amount[0])}</td>
-            <td>{this.dollarsWithCommas(item.amount[1])}</td>
+            <td>{item.account} </td>
+            {item.amount.map(this.tableColumn)}
         </tr>
     },
 
+    columnHeader: function (header, index) {
+        return <th>{header}</th>
+    },
+
     render: function() {
-        var rows = this.state.dataProvider.getData(
+        var dm = dataModelStore.getModel(this.state.dataModelId);
+
+        var rows = dm.getData(
             {
                 accountTypes:[this.state.selectedItem],
                 outputForm: 'array'
-            }
+            },
+            true
             // Need to sort, maybe top N
         );
-
         if (rows == null) {
             return <div key={this.props.key}> Multiyear table loading ...</div>
         }
         else {
             console.log("Table rendering with row count " + rows.length);
+            var headers = dm.getHeaders();
             return (
                 <div key={this.props.key}>
                     <select onChange={this.onChange} value={this.state.selectedItem}>
@@ -106,7 +133,8 @@ var MultiYearTable = React.createClass({
                     <table className="table">
                         <thead>
                             <tr>
-                                <th>Account</th><th>2010</th><th>2014</th>
+                                <th>Account</th>
+                                {headers.map(this.columnHeader)}
                             </tr>
                         </thead>
                         <tbody>

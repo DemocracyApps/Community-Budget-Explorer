@@ -79,6 +79,7 @@ class DatasetsController extends APIController {
     // http://gbe.dev/api/v1/organizations/1/datasets/1?noMapping=true
 	public function show($orgId, $dsId, Request $request)
 	{
+        \Log::info("Got a request for org $orgId, dataset $dsId");
         $organization = GovernmentOrganization::find($orgId);
 
         if ($organization == null) return $this->respondNotFound('No such organization');
@@ -100,7 +101,7 @@ class DatasetsController extends APIController {
             $dataset = $this->transformer->transform($dataset, $params);
             $datasetList[] = $dataset;
         }
-
+        \Log::info("Ok, responding");
         return $this->respondItem('Dataset of ' . $organization->name, $datasetList);
 
     }

@@ -1,15 +1,14 @@
 var DatasetStatusConstants = require('../constants/DatasetStatusConstants');
 var DatasetStatus = DatasetStatusConstants.DatasetStatus;
 
-function Dataset(version, localId, serverId) {
-    this.version = version;
-    this.localId = localId;
-    this.serverId = serverId;
+function Dataset(timestamp, sourceId) {
+    this.timestamp = timestamp;
+    this.sourceId = sourceId;
     this.status = DatasetStatus.DS_STATE_NEW;
     this.data = null;
 
-    this.receiveDataset = function (data, newVersion) {
-        this.version = newVersion;
+    this.receiveDataset = function (data, newTimestamp) {
+        this.timestamp = newTimestamp;
         this.status = DatasetStatus.DS_STATE_READY;
         this.data = data;
     };
@@ -34,8 +33,8 @@ function Dataset(version, localId, serverId) {
         this.status = DatasetStatus.DS_STATE_REQUESTED;
     };
 
-    this.getVersion = function() {
-        return this.version;
+    this.getTimestamp = function() {
+        return this.timestamp;
     };
 };
 

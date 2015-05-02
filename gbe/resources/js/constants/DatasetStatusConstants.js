@@ -6,6 +6,7 @@ module.exports = {
         DS_STATE_NEW: null,
         DS_STATE_REQUESTED: null,
         DS_STATE_PENDING: null,
+        DS_STATE_PARTIAL: null,
         DS_STATE_READY: null
     })
 

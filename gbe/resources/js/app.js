@@ -1,10 +1,9 @@
+console.log("Here's the big thing");
 import React from 'react';
-
-var cardStore = require('./stores/MainCardStore');
-var datasetStore = require('./stores/MainDatasetStore');
-
-// This is the layout manager for the page
-import BootstrapLayout from './components/BootstrapLayout';
+import Site from './components/Site';
+var dispatcher = require('./common/BudgetAppDispatcher');
+var BudgetAppConstants = require('./constants/BudgetAppConstants');
+var ActionTypes = BudgetAppConstants.ActionTypes;
 
 /*
  * Since we don't know in advance which components will be used by the layout,
@@ -21,78 +20,69 @@ reactComponents['SlideShow'] = SlideShow;
 reactComponents['MultiYearTable'] = MultiYearTable;
 
 /*
- * Set up the stores.
- *
- * The card store currently just has static data - we'll simply initialize it here.
- * The only reason we're doing this as a store rather than props is that we may wish to later build
- * dynamic content that lets cards embed dataset data or something.
- *
- * The dataset store just kicks off API requests with callbacks that will emit change events when the
- * data is actually received.
+ * The stores, one for card-related data, the other for financial datasets.
  */
+var configStore = require('./stores/ConfigStore');
+var stateStore = require('./stores/StateStore');
+var cardStore = require('./stores/CardStore');
+var datasetStore = require('./stores/DatasetStore');
 
-console.log("Process the components for data");
 /*
- * Each key in GBEVars.components refers to a target cell in the layout and is associated with an array
- * of components that will be placed in that cell. Here we just want to extract the data associated with
- * each component - the component will retrieve it later via a key. We probably should move this logic
- * up to the server, though.
+ * Let's set up a couple standard sections in the configuration store
  */
-$.each(GBEVars.components, function (key, pageComponentsArray) {
-    for (var i=0; i<pageComponentsArray.length; ++i) {
-        var pageComponent = pageComponentsArray[i];
-        if (pageComponent.data != null) {
-            for (var key in pageComponent.data) {
-                if (pageComponent.data.hasOwnProperty(key)) {
-                    if (pageComponent.data[key].dataType == 'card') {
-                        pageComponent.data[key] = {
-                            type: 'card',
-                            id: cardStore.storeCard(pageComponent.data[key])
-                        };
-                    }
-                    else if (pageComponent.data[key].dataType == 'cardset') {
-                        pageComponent.data[key] = {
-                            type: 'cardset',
-                            id: cardStore.storeCardSet(pageComponent.data[key])
-                        }
-                    }
-                    else if (pageComponent.data[key].dataType == 'dataset') {
-                        pageComponent.data[key] = {
-                            type: 'dataset',
-                            id: datasetStore.registerDataset(pageComponent.data[key].id, key)
-                        }
-                    }
-                    else if (pageComponent.data[key].dataType == 'multidataset') {
-                        var idList = [];
-                        for (var i = 0; i < pageComponent.data[key].idList.length; ++i) {
-                            idList.push(datasetStore.registerDataset(pageComponent.data[key].idList[i], key));
-                        }
-                        // Need to create a composite set and get the id to that
-                        var compositeId =  datasetStore.registerDatasetCollection(idList, key);
-                        pageComponent.data[key] = {
-                            type: 'multidataset',
-                            id: compositeId, // ID of the composite set
-                            idList: idList
-                        }
+configStore.createSection('common');
+configStore.createSection('pages');
 
-                    }
-                }
-            }
-            //$.each(pageComponent.componentProps.data, function (key, data) {
-            //    console.log("Processing the data associated with " + key);
-            //    if (data.type == 'card' || data.type == 'cardset') {
-            //        data.storeId = cardStore.importCards(key, data);
-            //    }
-            //});
-        }
+/*****************************************************
+ * Process the incoming parameters ...
+ *****************************************************/
+
+var i;
+
+//  Site
+//   The site object contains a few global bits of information such as the site name (and short-name, or slug),
+//   the start page, and several URLs (base URL, API URL, base ajax URL). It also contains a hash named 'properties'
+//   that may be used later to pass in extended information.
+
+// Note that site is an array just to work around a bug in Jeff Way's PHPToJavascriptTransformer library.
+configStore.storeConfiguration('common', 'site', GBEVars.site[0]);
+//console.log("Site: " + JSON.stringify(GBEVars.site[0]));
+
+//  Pages
+//   This is an array of configurations of the pages on the site. Each page has title, description, layout
+//   and a list of components that are to be placed in the layout. These components are instantiated as
+//   React components (in the BootstrapLayout component) and contain indices for accessing any associated data.
+var pages = [];
+for (i=0; i<GBEVars.pages.length; ++i) {
+    var page = GBEVars.pages[i];
+    //console.log("Page: " + JSON.stringify(page));
+    page.stateId = stateStore.registerComponent('page', page.shortName, null);
+    configStore.storeConfiguration('pages', page.id, page);
+    pages.push(page.id);
+}
+
+//  Data
+//   This is an array of data objects. In the case of cards, the data object contains the
+//   actual data. In the case of datasets, the object contains the dataset ID needed to make an API
+//   request. These need to be thrown into the card and dataset stores.
+
+while (GBEVars.data.length > 0) {
+    var datum = GBEVars.data.shift();
+    //console.log("DataItem: " + JSON.stringify(datum));
+    if (datum.dataType == "card") {
+        cardStore.storeCard(datum);
     }
-});
+    else if (datum.dataType == "dataset") {
+        var ds = datasetStore.registerDataset(datum.id);
+    }
+}
 
-/*
- * The layout specific gives the grid. The components property has the component specifications by grid cell ID,
- * and reactComponents has the actual React components keyed by component name.
- */
-console.log("Now do the layout");
-var props = {layout:GBEVars.layout.specification, components:GBEVars.components, reactComponents:reactComponents}
-var layout = React.render(<BootstrapLayout {...props}/>, document.getElementById('app'));
+var props = {
+    site: GBEVars.site[0],
+    pages: pages,
+    configurationId: GBEVars.site[0].id,
+    reactComponents: reactComponents
+};
+
+var layout = React.render(<Site {...props}/>, document.getElementById('app'));
 
