@@ -40,6 +40,7 @@ var Site = React.createClass({
 
     _onStateChange: function() {
         // Don't really care what the change was, we'll re-render
+        // Any component that needs to be efficient can do it via componentWillUpdate
         this.setState({version: this.state.version++});
     },
 

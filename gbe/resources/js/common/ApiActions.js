@@ -1,8 +1,7 @@
 var configStore = require('../stores/ConfigStore');
 var datasetStore = require('../stores/DatasetStore');
 var dispatcher = require('../common/BudgetAppDispatcher');
-var BudgetAppConstants = require('../constants/BudgetAppConstants');
-var ActionTypes = BudgetAppConstants.ActionTypes;
+var ActionTypes = require('../constants/ActionTypes');
 var assign = require('object-assign');
 
 var ApiActions = {
@@ -20,7 +19,6 @@ var ApiActions = {
     },
 
     receiveData: function receiveData (r) {
-        console.log("Wow! - got a dataset!");
         for (var i=0; i<r.data.length; ++i) {
             dispatcher.dispatch({
                 actionType: ActionTypes.DATASET_RECEIVED,

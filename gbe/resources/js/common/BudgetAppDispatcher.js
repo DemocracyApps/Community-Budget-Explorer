@@ -13,7 +13,7 @@ function queueAction(payload) {
 }
 
 function startProcessing() {
-    inProcessing = true;
+    inProcessing = true; // Editor claims this is 'never used', but that doesn't account for asynchronous calls
 
     while (dispatchQueue.length > 0) {
         if (dispatcher.isDispatching()) {

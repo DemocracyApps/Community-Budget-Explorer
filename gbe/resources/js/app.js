@@ -1,9 +1,7 @@
-console.log("Here's the big thing");
 import React from 'react';
 import Site from './components/Site';
 var dispatcher = require('./common/BudgetAppDispatcher');
-var BudgetAppConstants = require('./constants/BudgetAppConstants');
-var ActionTypes = BudgetAppConstants.ActionTypes;
+var ActionTypes = require('./constants/ActionTypes');
 
 /*
  * Since we don't know in advance which components will be used by the layout,
@@ -56,7 +54,15 @@ var pages = [];
 for (i=0; i<GBEVars.pages.length; ++i) {
     var page = GBEVars.pages[i];
     //console.log("Page: " + JSON.stringify(page));
-    page.stateId = stateStore.registerComponent('page', page.shortName, null);
+    page.stateId = stateStore.registerComponent('page', page.shortName, {});
+    for (var key in page.components) {
+        if (page.components.hasOwnProperty(key)) {
+            page.components[key].forEach(function (c) {
+                c.stateId = stateStore.registerComponent('components', c.id, {});
+                //console.log("Registered component " + c.componentName + " with stateId " + c.stateId);
+            });
+        }
+    }
     configStore.storeConfiguration('pages', page.id, page);
     pages.push(page.id);
 }

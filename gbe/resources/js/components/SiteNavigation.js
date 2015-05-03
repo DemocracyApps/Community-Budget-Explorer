@@ -3,8 +3,7 @@ import React from 'react';
 var configStore = require('../stores/ConfigStore');
 var stateStore = require('../stores/StateStore');
 var dispatcher = require('../common/BudgetAppDispatcher');
-var BudgetAppConstants = require('../constants/BudgetAppConstants');
-var ActionTypes = BudgetAppConstants.ActionTypes;
+var ActionTypes = require('../constants/ActionTypes');
 
 var SiteNavigation = React.createClass({
 
@@ -12,7 +11,6 @@ var SiteNavigation = React.createClass({
         site: React.PropTypes.object.isRequired,
         pages: React.PropTypes.array.isRequired
     },
-
 
     render: function() {
 

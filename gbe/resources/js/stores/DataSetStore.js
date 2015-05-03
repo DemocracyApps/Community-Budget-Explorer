@@ -2,8 +2,7 @@ var dispatcher = require('../common/BudgetAppDispatcher');
 var EventEmitter = require('events').EventEmitter;
 var assign = require('object-assign');
 
-var BudgetAppConstants = require('../constants/BudgetAppConstants');
-var ActionTypes = BudgetAppConstants.ActionTypes;
+var ActionTypes = require('../constants/ActionTypes');
 
 var Dataset = require('../data/Dataset');
 

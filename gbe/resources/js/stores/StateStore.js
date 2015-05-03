@@ -3,8 +3,7 @@ var EventEmitter = require('events').EventEmitter;
 
 var assign = require('object-assign');
 
-var BudgetAppConstants = require('../constants/BudgetAppConstants');
-var ActionTypes = BudgetAppConstants.ActionTypes;
+var ActionTypes = require('../constants/ActionTypes');
 
 var CHANGE_EVENT = 'change';
 
@@ -88,7 +87,7 @@ var StateStore = assign({}, EventEmitter.prototype, {
 
     getComponentStateValue: function getComponentStateValue(id, key) {
         var value = null;
-        if (this.store.components[id].state.hasOwnProperty(id)) {
+        if (this.store.components[id].state.hasOwnProperty(key)) {
             value = this.store.components[id].state[key];
         }
         return value;
@@ -121,6 +120,13 @@ dispatcher.register(function (action) {
 
         case ActionTypes.STATE_CHANGE:
             StateStore.setState (action.payload.name, action.payload.value);
+            StateStore.emitChange();
+            break;
+
+        case ActionTypes.COMPONENT_STATE_CHANGE:
+            var newState = {};
+            newState[action.payload.name] = action.payload.value;
+            StateStore.setComponentState(action.payload.id, newState);
             StateStore.emitChange();
             break;
 

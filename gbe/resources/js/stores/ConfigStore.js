@@ -3,8 +3,7 @@ var EventEmitter = require('events').EventEmitter;
 
 var assign = require('object-assign');
 
-var BudgetAppConstants = require('../constants/BudgetAppConstants');
-var ActionTypes = BudgetAppConstants.ActionTypes;
+var ActionTypes = require('../constants/ActionTypes');
 
 var CHANGE_EVENT = 'change';
 
@@ -63,10 +62,6 @@ var ConfigStore = assign({}, EventEmitter.prototype, {
 dispatcher.register(function (action) {
     switch (action.actionType)
     {
-        case ActionTypes.INIT_CARD_STORE:
-            ConfigStore.emitChange()
-            break;
-
         default:
         // no op
     }

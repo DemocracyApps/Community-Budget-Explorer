@@ -6,13 +6,13 @@ var SlideShow = React.createClass({
 
     propTypes: {
         data: React.PropTypes.object.isRequired,
+        stateId: React.PropTypes.number.isRequired
     },
 
     componentWillMount: function () {
     },
 
     componentDidMount: function () {
-        cardStore.addChangeListener(this._onChange);
         $(this.getDOMNode()).flexslider();
     },
 
@@ -20,16 +20,7 @@ var SlideShow = React.createClass({
         $(this.getDOMNode()).flexslider();
     },
 
-    componentWillUnmount: function () {
-        cardStore.removeChangeListener(this._onChange);
-    },
-
-    _onChange: function () {
-        // Nothing, actually
-    },
-
     render: function() {
-        console.log("Slide show rendering");
         var cards = [];
         for (var i=0; i<this.props.data["mycardset"].ids.length; ++i) {
             cards.push(cardStore.getCard(this.props.data["mycardset"].ids[i]));

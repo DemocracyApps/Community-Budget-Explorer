@@ -1,5 +1,4 @@
-var DatasetStatusConstants = require('../constants/DatasetStatusConstants');
-var DatasetStatus = DatasetStatusConstants.DatasetStatus;
+var DatasetStatus = require('../constants/DatasetStatus');
 
 function Dataset(timestamp, sourceId) {
     this.timestamp = timestamp;

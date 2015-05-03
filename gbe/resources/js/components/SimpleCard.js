@@ -6,23 +6,10 @@ var SimpleCard = React.createClass({
 
     propTypes: {
         data: React.PropTypes.object.isRequired,
-    },
-
-    componentDidMount: function () {
-        cardStore.addChangeListener(this._onChange);
-    },
-
-    componentWillUnmount: function () {
-        cardStore.removeChangeListener(this._onChange);
-    },
-
-
-    _onChange: function () {
-        // Nothing, actually
+        stateId: React.PropTypes.number.isRequired
     },
 
     render: function() {
-        console.log("Simple card rendering");
         var card = cardStore.getCard(this.props.data['mycard'].ids[0]);
         if (card == undefined) {
             return <div key={this.props.key}>SimpleCard loading ...</div>

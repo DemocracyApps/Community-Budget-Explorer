@@ -1,10 +1,7 @@
-var DatasetStatusConstants = require('../constants/DatasetStatusConstants');
-var DatasetStatus = DatasetStatusConstants.DatasetStatus;
-var BudgetAppConstants = require('../constants/BudgetAppConstants');
-var ActionTypes = BudgetAppConstants.ActionTypes;
+var DatasetStatus = require('../constants/DatasetStatus');
+var ActionTypes = require('../constants/ActionTypes');
 var dispatcher = require('../common/BudgetAppDispatcher');
-var AccountTypeConstants = require('../constants/AccountTypeConstants');
-var AccountTypes = AccountTypeConstants.AccountTypes;
+var AccountTypes = require('../constants/AccountTypes');
 
 var datasetStore = require('../stores/DatasetStore');
 
@@ -14,8 +11,8 @@ function DataModel(id, datasetIds, initialCommands = null) {
     this.timestamp = -1;
     this.raw = []; // array of datasets
     this.initializationParameters = null;
-    this.consumerReady = false;
     this.categories = null;
+    this.currentCommands = null;
 
     this.data = null;
     if (initialCommands != null) this.initializationParameters = initialCommands;
@@ -35,6 +32,13 @@ function DataModel(id, datasetIds, initialCommands = null) {
 
     this.getTimestamp = function() {
         return this.timestamp;
+    };
+
+    this.commandsChanged = function commandsChanged(commands) {
+        if (JSON.stringify(this.currentCommands) === JSON.stringify(commands)) {
+            return false;
+        }
+        return true;
     };
 
     this.dataChanged = function dataChanged () {
@@ -117,7 +121,6 @@ function DataModel(id, datasetIds, initialCommands = null) {
         for (iPeriod = 0; iPeriod < this.raw.length; ++iPeriod) {
             var data = this.raw[iPeriod].data;
             if (! this.raw[iPeriod].isReady()) continue;
-            console.log("Processing period " + iPeriod + ": " + data.name);
             // First we need to map the requested categories to those in the dataset
             var catMap = new Array(nCategories+1);
             for (iCat = 0; iCat < nCategories; ++iCat) {
@@ -211,13 +214,14 @@ function DataModel(id, datasetIds, initialCommands = null) {
         for (var i=0; i<this.raw.length; ++i) {
             if (this.raw[i].data != null) headers.push(this.raw[i].data.year + "");
         }
-        console.log("Header = " + JSON.stringify(headers));
         return headers;
     };
 
     this.getData = function (commands, partialOk=false) {
         if (this.status == DatasetStatus.DS_STATE_READY ||
             (this.status == DatasetStatus.DS_STATE_PARTIAL && partialOk)) {
+            this.currentCommands = commands;
+
             var data = [];
             var accountTypes = null;
             if ('accountTypes' in commands) accountTypes = commands.accountTypes;

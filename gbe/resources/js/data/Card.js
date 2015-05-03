@@ -1,17 +1,16 @@
 
-function Card(version, title, body, image, link) {
+function Card(timestamp, title, body, image, link) {
     this.class = 'Card';
-    if (version == null) version = -1;
-    this.version = version;
+    if (timestamp == null) timestamp = -1;
+    this.timestamp = timestamp;
     this.title = title;
     this.body = body;
     this.image = image;
     this.link = link;
 
-    this.getVersion = function() {
-        return this.version;
+    this.getTimestamp = function() {
+        return this.timestamp;
     }
 };
-
 
 module.exports = Card;

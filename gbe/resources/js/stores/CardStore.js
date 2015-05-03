@@ -3,8 +3,7 @@ var EventEmitter = require('events').EventEmitter;
 
 var assign = require('object-assign');
 
-var BudgetAppConstants = require('../constants/BudgetAppConstants');
-var ActionTypes = BudgetAppConstants.ActionTypes;
+var ActionTypes = require('../constants/ActionTypes');
 
 var Card = require('../data/Card');
 
@@ -12,10 +11,11 @@ var CHANGE_EVENT = 'change';
 
 var CardStore = assign({}, EventEmitter.prototype, {
 
+    timestamp: 0,
     _cards: [],
 
     storeCard: function (data) {
-        var card = new Card(this.versionCounter++, data.title, data.body, data.link, data.image);
+        var card = new Card(this.timestamp++, data.title, data.body, data.link, data.image);
         card.id = data.id;
         card.cardSet = data.cardSet;
         this._cards[card.id] = card;
@@ -47,10 +47,6 @@ var CardStore = assign({}, EventEmitter.prototype, {
 dispatcher.register(function (action) {
     switch (action.actionType)
     {
-        case ActionTypes.INIT_CARD_STORE:
-            CardStore.emitChange()
-            break;
-
         default:
         // no op
     }
