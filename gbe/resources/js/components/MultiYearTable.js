@@ -110,10 +110,13 @@ var MultiYearTable = React.createClass({
             return (
                 <div key={this.props.key}>
                     <select onChange={this.onSelectChange} value={selectedItem}>
-                        {this.props.accountTypes.map(function (type, index)
                         {
-                           return <option key={index} value={type.value} > {type.name} </option>
-                        })}
+                            this.props.accountTypes.map(
+                                function (type, index) {
+                                    return <option key={index} value={type.value} > {type.name} </option>
+                                }
+                            )
+                        }
                     </select>
                     <br/>
                     <table className="table">
