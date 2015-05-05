@@ -11,7 +11,7 @@ var ActionTypes = require('../constants/ActionTypes');
 var MultiYearTable = React.createClass({
 
     propTypes: {
-        data: React.PropTypes.object.isRequired,
+        componentData: React.PropTypes.object.isRequired,
         stateId: React.PropTypes.number.isRequired
     },
 
@@ -36,7 +36,7 @@ var MultiYearTable = React.createClass({
 
     componentWillMount: function () {
         // Create the data model that we'll use
-        var ids = this.props.data['alldata'].ids;
+        var ids = this.props.componentData['alldata'].ids;
         ids.forEach(function(id) {
            apiActions.requestDatasetIfNeeded(id);
         });
@@ -100,7 +100,7 @@ var MultiYearTable = React.createClass({
         var rows = dm.getData({accountTypes:[selectedItem]}, true);
 
         if (rows == null) {
-            return <div> Multiyear table loading ...</div>
+            return <div> Multiyear table loading ... </div>
         }
         else {
             var headers = dm.getHeaders();

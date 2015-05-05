@@ -5,7 +5,7 @@ var cardStore = require('../stores/CardStore');
 var SlideShow = React.createClass({
 
     propTypes: {
-        data: React.PropTypes.object.isRequired,
+        componentData: React.PropTypes.object.isRequired,
         stateId: React.PropTypes.number.isRequired
     },
 
@@ -22,8 +22,8 @@ var SlideShow = React.createClass({
 
     render: function() {
         var cards = [];
-        for (var i=0; i<this.props.data["mycardset"].ids.length; ++i) {
-            var card = cardStore.getCard(this.props.data["mycardset"].ids[i]);
+        for (var i=0; i<this.props.componentData["mycardset"].ids.length; ++i) {
+            var card = cardStore.getCard(this.props.componentData["mycardset"].ids[i]);
             if (card !== undefined) cards.push(card);
         }
         return (

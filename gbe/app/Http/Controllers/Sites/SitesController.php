@@ -84,9 +84,9 @@ class SitesController extends Controller {
                     $componentDefinition = Component::find($pc->component);
                     $c->componentName = $componentDefinition->name;
                     $c->componentType = $componentDefinition->type;
-                    $c->data = null;
+                    $c->componentData = null;
                     if ($pc->properties != null) {
-                        $c->data = array();
+                        $c->componentData = array();
                         $props = $jp->decodeJson($pc->properties, true);
                         if (array_key_exists('data', $props)) {
                             foreach ($props['data'] as $key => $dataItem) {
@@ -101,7 +101,7 @@ class SitesController extends Controller {
                                         $cardStore[$cId] = $card;
                                     }
                                     $data[] = $card;
-                                    $c->data[$key] = array('type'=> 'card', 'ids'=>array($card->id));
+                                    $c->componentData[$key] = array('type'=> 'card', 'ids'=>array($card->id));
                                 } else if ($dataItem['type'] == 'cardset') {
                                     $csId = $dataItem['items'][0];
                                     $cardIdList = array();
@@ -116,7 +116,7 @@ class SitesController extends Controller {
                                         }
                                         $cardIdList[] = $card->id;
                                     }
-                                    $c->data[$key] = array('type'=>'card', 'ids'=>$cardIdList);
+                                    $c->componentData[$key] = array('type'=>'card', 'ids'=>$cardIdList);
                                 } else if ($dataItem['type'] == 'dataset') {
                                     $dsId = $dataItem['items'][0];
                                     $ds = new \stdClass();
@@ -124,7 +124,7 @@ class SitesController extends Controller {
                                     $ds->ids = [$dsId];
 
                                     $data[] = $ds;
-                                    $c->data[$key] = array('type'=>'dataset', 'ids'=>array($ds->id));
+                                    $c->componentData[$key] = array('type'=>'dataset', 'ids'=>array($ds->id));
 
                                 } else if ($dataItem['type'] == 'multidataset') {
                                     $idList = array();
@@ -136,7 +136,7 @@ class SitesController extends Controller {
                                         $data[] = $ds;
                                         $idList[] = $dsetId;
                                     }
-                                    $c->data[$key] = array('type'=>'dataset', 'ids'=>$idList);
+                                    $c->componentData[$key] = array('type'=>'dataset', 'ids'=>$idList);
                                 }
                             }
                         }

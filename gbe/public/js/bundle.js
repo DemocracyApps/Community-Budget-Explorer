@@ -20592,7 +20592,7 @@ var BootstrapLayout = _React2["default"].createClass({
 
     renderComponent: function renderComponent(component, index) {
         var comp = this.props.reactComponents[component.componentName];
-        return _React2["default"].createElement(comp, { key: index, data: component.data, stateId: component.stateId });
+        return _React2["default"].createElement(comp, { key: index, componentData: component.componentData, stateId: component.stateId });
     },
 
     buildColumn: function buildColumn(column, index) {
@@ -20671,7 +20671,7 @@ var MultiYearTable = _React2['default'].createClass({
     displayName: 'MultiYearTable',
 
     propTypes: {
-        data: _React2['default'].PropTypes.object.isRequired,
+        componentData: _React2['default'].PropTypes.object.isRequired,
         stateId: _React2['default'].PropTypes.number.isRequired
     },
 
@@ -20693,7 +20693,7 @@ var MultiYearTable = _React2['default'].createClass({
 
     componentWillMount: function componentWillMount() {
         // Create the data model that we'll use
-        var ids = this.props.data.alldata.ids;
+        var ids = this.props.componentData.alldata.ids;
         ids.forEach(function (id) {
             apiActions.requestDatasetIfNeeded(id);
         });
@@ -20771,7 +20771,7 @@ var MultiYearTable = _React2['default'].createClass({
             return _React2['default'].createElement(
                 'div',
                 null,
-                ' Multiyear table loading ...'
+                ' Multiyear table loading ... '
             );
         } else {
             var headers = dm.getHeaders();
@@ -20843,12 +20843,12 @@ var SimpleCard = _React2['default'].createClass({
     displayName: 'SimpleCard',
 
     propTypes: {
-        data: _React2['default'].PropTypes.object.isRequired,
+        componentData: _React2['default'].PropTypes.object.isRequired,
         stateId: _React2['default'].PropTypes.number.isRequired
     },
 
     render: function render() {
-        var card = cardStore.getCard(this.props.data.mycard.ids[0]);
+        var card = cardStore.getCard(this.props.componentData.mycard.ids[0]);
         if (card == undefined) {
             return _React2['default'].createElement(
                 'div',
@@ -21083,7 +21083,7 @@ var SlideShow = _React2['default'].createClass({
     displayName: 'SlideShow',
 
     propTypes: {
-        data: _React2['default'].PropTypes.object.isRequired,
+        componentData: _React2['default'].PropTypes.object.isRequired,
         stateId: _React2['default'].PropTypes.number.isRequired
     },
 
@@ -21099,8 +21099,8 @@ var SlideShow = _React2['default'].createClass({
 
     render: function render() {
         var cards = [];
-        for (var i = 0; i < this.props.data.mycardset.ids.length; ++i) {
-            var card = cardStore.getCard(this.props.data.mycardset.ids[i]);
+        for (var i = 0; i < this.props.componentData.mycardset.ids.length; ++i) {
+            var card = cardStore.getCard(this.props.componentData.mycardset.ids[i]);
             if (card !== undefined) cards.push(card);
         }
         return _React2['default'].createElement(
