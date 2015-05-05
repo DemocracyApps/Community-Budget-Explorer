@@ -8,7 +8,7 @@
     @include('build.tabs', ['page'=>'settings'])
     <div class="row">
         <div class="col-xs-12">
-            <button style="float:right; position:relative; right:50px; bottom:-20px;" class="btn btn-success btn-sm" onclick="window.location.href='/build/{!! $site->slug !!}/edit'">Edit {!!$site->slug!!}</button>
+            <button style="float:right; position:relative; right:50px; bottom:-20px;" class="disabled btn btn-success btn-sm" onclick="window.location.href='/build/{!! $site->slug !!}/edit'">Edit {!!$site->slug!!}</button>
         </div>
     </div>
 

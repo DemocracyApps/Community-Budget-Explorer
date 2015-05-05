@@ -23,10 +23,11 @@ var SlideShow = React.createClass({
     render: function() {
         var cards = [];
         for (var i=0; i<this.props.data["mycardset"].ids.length; ++i) {
-            cards.push(cardStore.getCard(this.props.data["mycardset"].ids[i]));
+            var card = cardStore.getCard(this.props.data["mycardset"].ids[i]);
+            if (card !== undefined) cards.push(card);
         }
         return (
-            <div key={this.props.key} className="slider">
+            <div className="slider">
                 <div className="flexslider">
                     <ul className="slides">
                         {cards.map(function (item, index) {

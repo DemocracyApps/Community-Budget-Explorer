@@ -23,9 +23,7 @@ var MultiYearTable = React.createClass({
             ],
             dataInitialization: {
                 hierarchy: ['Fund', 'Department', 'Division'],
-                accountTypes: [AccountTypes.EXPENSE, AccountTypes.REVENUE],
-                amountThreshold: 0.01,
-                outputForm: 'array'
+                accountTypes: [AccountTypes.EXPENSE, AccountTypes.REVENUE]
             }
         };
     },
@@ -102,13 +100,13 @@ var MultiYearTable = React.createClass({
         var rows = dm.getData({accountTypes:[selectedItem]}, true);
 
         if (rows == null) {
-            return <div key={this.props.key}> Multiyear table loading ...</div>
+            return <div> Multiyear table loading ...</div>
         }
         else {
             var headers = dm.getHeaders();
 
             return (
-                <div key={this.props.key}>
+                <div>
                     <select onChange={this.onSelectChange} value={selectedItem}>
                         {
                             this.props.accountTypes.map(

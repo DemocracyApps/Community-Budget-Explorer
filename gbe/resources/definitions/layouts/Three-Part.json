@@ -1,5 +1,6 @@
 {
   "name":"Three-Part",
+  "description":"A simple layout for illustration purposes.",
   "rows": [
     {
       "columns": [

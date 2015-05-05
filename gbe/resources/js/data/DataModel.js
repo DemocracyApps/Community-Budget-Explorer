@@ -118,6 +118,7 @@ function DataModel(id, datasetIds, initialCommands = null) {
          */
         this.count = 0;
         var tree = {};
+
         for (iPeriod = 0; iPeriod < this.raw.length; ++iPeriod) {
             var data = this.raw[iPeriod].data;
             if (! this.raw[iPeriod].isReady()) continue;
@@ -141,7 +142,8 @@ function DataModel(id, datasetIds, initialCommands = null) {
 
                 if (accountTypes.indexOf(item.type) < 0) continue;
 
-                var current = tree;
+                if (! (item.type in tree)) tree[item.type] = {};
+                var current = tree[item.type]; // We never aggregate across account types
                 var key;
                 /*
                  * Build the tree up to, but not including the last level
@@ -176,7 +178,11 @@ function DataModel(id, datasetIds, initialCommands = null) {
         }
 
         // Now collapse the tree back out
-        this.data = this.collapseTree (tree, 0, nCategories, amountThreshold);
+        this.data = [];
+        for (var accType in accountTypes) {
+            var partial = this.collapseTree (tree[accountTypes[accType]], 0, nCategories, amountThreshold);
+            this.data = this.data.concat(partial);
+        }
     };
 
     this.collapseTree = function (node, currentLevel, nLevels, threshold) {

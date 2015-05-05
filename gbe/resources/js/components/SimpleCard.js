@@ -12,11 +12,11 @@ var SimpleCard = React.createClass({
     render: function() {
         var card = cardStore.getCard(this.props.data['mycard'].ids[0]);
         if (card == undefined) {
-            return <div key={this.props.key}>SimpleCard loading ...</div>
+            return <div >SimpleCard loading ...</div>
         }
         else {
             return (
-                <div key={this.props.key}>
+                <div >
                     <h1> {card.title} </h1>
 
                     <p> {card.body} </p>

@@ -20680,9 +20680,7 @@ var MultiYearTable = _React2['default'].createClass({
             accountTypes: [{ name: 'Expense', value: AccountTypes.EXPENSE }, { name: 'Revenue', value: AccountTypes.REVENUE }],
             dataInitialization: {
                 hierarchy: ['Fund', 'Department', 'Division'],
-                accountTypes: [AccountTypes.EXPENSE, AccountTypes.REVENUE],
-                amountThreshold: 0.01,
-                outputForm: 'array'
+                accountTypes: [AccountTypes.EXPENSE, AccountTypes.REVENUE]
             }
         };
     },
@@ -20772,7 +20770,7 @@ var MultiYearTable = _React2['default'].createClass({
         if (rows == null) {
             return _React2['default'].createElement(
                 'div',
-                { key: this.props.key },
+                null,
                 ' Multiyear table loading ...'
             );
         } else {
@@ -20780,7 +20778,7 @@ var MultiYearTable = _React2['default'].createClass({
 
             return _React2['default'].createElement(
                 'div',
-                { key: this.props.key },
+                null,
                 _React2['default'].createElement(
                     'select',
                     { onChange: this.onSelectChange, value: selectedItem },
@@ -20854,13 +20852,13 @@ var SimpleCard = _React2['default'].createClass({
         if (card == undefined) {
             return _React2['default'].createElement(
                 'div',
-                { key: this.props.key },
+                null,
                 'SimpleCard loading ...'
             );
         } else {
             return _React2['default'].createElement(
                 'div',
-                { key: this.props.key },
+                null,
                 _React2['default'].createElement(
                     'h1',
                     null,
@@ -21102,11 +21100,12 @@ var SlideShow = _React2['default'].createClass({
     render: function render() {
         var cards = [];
         for (var i = 0; i < this.props.data.mycardset.ids.length; ++i) {
-            cards.push(cardStore.getCard(this.props.data.mycardset.ids[i]));
+            var card = cardStore.getCard(this.props.data.mycardset.ids[i]);
+            if (card !== undefined) cards.push(card);
         }
         return _React2['default'].createElement(
             'div',
-            { key: this.props.key, className: 'slider' },
+            { className: 'slider' },
             _React2['default'].createElement(
                 'div',
                 { className: 'flexslider' },
@@ -21304,6 +21303,7 @@ function DataModel(id, datasetIds) {
          */
         this.count = 0;
         var tree = {};
+
         for (iPeriod = 0; iPeriod < this.raw.length; ++iPeriod) {
             var data = this.raw[iPeriod].data;
             if (!this.raw[iPeriod].isReady()) continue;
@@ -21326,7 +21326,8 @@ function DataModel(id, datasetIds) {
 
                 if (accountTypes.indexOf(item.type) < 0) continue;
 
-                var current = tree;
+                if (!(item.type in tree)) tree[item.type] = {};
+                var current = tree[item.type]; // We never aggregate across account types
                 var key;
                 /*
                  * Build the tree up to, but not including the last level
@@ -21361,7 +21362,11 @@ function DataModel(id, datasetIds) {
         }
 
         // Now collapse the tree back out
-        this.data = this.collapseTree(tree, 0, nCategories, amountThreshold);
+        this.data = [];
+        for (var accType in accountTypes) {
+            var partial = this.collapseTree(tree[accountTypes[accType]], 0, nCategories, amountThreshold);
+            this.data = this.data.concat(partial);
+        }
     };
 
     this.collapseTree = function (node, currentLevel, nLevels, threshold) {
