@@ -18,6 +18,8 @@
  */
 
 Route::get('/', 'Build\BuildController@settings');
+Route::get('/edit', 'Build\BuildController@site_edit');
+Route::put('/', 'Build\BuildController@site_update');
 Route::get('/pages', 'Build\BuildController@pages');
 Route::get('/content', 'Build\BuildController@cards');
 Route::resource('/cardsets', 'Build\CardSetsController');

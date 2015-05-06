@@ -32,6 +32,23 @@ class BuildController extends Controller {
         return view('build.settings', array('site'=>$site));
     }
 
+    public function site_edit($slug)
+    {
+        $site = Site::where('slug','=', $slug)->first();
+        return view('build.site.edit', array('site'=>$site));
+    }
+
+    public function site_update($slug, Request $request)
+    {
+        $rules = ['name' => 'required'];
+        $this->validate($request, $rules);
+
+        $site = Site::where('slug','=', $slug)->first();
+        $site->name = $request->get('name');
+        $site->save();
+        return redirect('/build/'.$site->slug);
+    }
+
     public function pages($slug)
     {
         $site = Site::where('slug','=', $slug)->first();

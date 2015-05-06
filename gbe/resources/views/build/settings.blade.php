@@ -8,12 +8,28 @@
     @include('build.tabs', ['page'=>'settings'])
     <div class="row">
         <div class="col-xs-12">
-            <button style="float:right; position:relative; right:50px; bottom:-20px;" class="disabled btn btn-success btn-sm" onclick="window.location.href='/build/{!! $site->slug !!}/edit'">Edit {!!$site->slug!!}</button>
+            <button style="float:right; position:relative; right:50px; bottom:-20px;" class="btn btn-success btn-sm" onclick="window.location.href='/build/{!! $site->slug !!}/edit'">Edit {!!$site->slug!!}</button>
         </div>
     </div>
 
     <div class="row">
-        <p>This page will have logo and various settings </p>
+        <div class="col-xs-1"></div>
+        <div class="col-xs-2">
+            <p><b>Site slug: </b> </p>
+        </div>
+        <div class="col-xs-9">
+            <p>{!! $site->slug !!}</p>
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-xs-1"></div>
+        <div class="col-xs-2">
+            <p><b>Site Title: </b> </p>
+        </div>
+        <div class="col-xs-9">
+            <p>{!! $site->name !!}</p>
+        </div>
     </div>
 
 @stop
