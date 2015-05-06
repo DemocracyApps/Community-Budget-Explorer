@@ -1,0 +1,26 @@
+{
+  "name":"Test Layout",
+  "description":"A simple layout for illustration purposes.",
+  "rows": [
+    {
+      "columns": [
+        {
+          "id":"TopLeft",
+          "class":"col-xs-5 text-danger bg-danger"
+        },
+        {
+          "id":"TopRight",
+          "class":"col-xs-7"
+        }
+      ]
+    },
+    {
+      "columns": [
+        {
+          "id":"Bottom",
+          "class":"col-xs-12"
+        }
+      ]
+    }
+  ]
+}

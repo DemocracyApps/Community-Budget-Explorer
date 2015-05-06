@@ -149,6 +149,11 @@ class SystemController extends Controller
             $layout->specification = $specification;
         }
 
+        $layout->type = Layout::BOOTSTRAP;
+        $layout->owner = \Auth::user()->id;
+        $layout->public = true;
+
+
         $layout->save();
         return redirect('/system/layouts');
     }

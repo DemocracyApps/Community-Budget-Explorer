@@ -23,7 +23,8 @@ var MultiYearTable = React.createClass({
             ],
             dataInitialization: {
                 hierarchy: ['Fund', 'Department', 'Division'],
-                accountTypes: [AccountTypes.EXPENSE, AccountTypes.REVENUE]
+                accountTypes: [AccountTypes.EXPENSE, AccountTypes.REVENUE],
+                amountThreshold: 0.01
             }
         };
     },

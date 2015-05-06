@@ -20680,7 +20680,8 @@ var MultiYearTable = _React2['default'].createClass({
             accountTypes: [{ name: 'Expense', value: AccountTypes.EXPENSE }, { name: 'Revenue', value: AccountTypes.REVENUE }],
             dataInitialization: {
                 hierarchy: ['Fund', 'Department', 'Division'],
-                accountTypes: [AccountTypes.EXPENSE, AccountTypes.REVENUE]
+                accountTypes: [AccountTypes.EXPENSE, AccountTypes.REVENUE],
+                amountThreshold: 0.01
             }
         };
     },
@@ -20869,9 +20870,9 @@ var SimpleCard = _React2['default'].createClass({
                 _React2['default'].createElement(
                     'p',
                     null,
-                    ' ',
+                    '  ',
                     card.body,
-                    ' '
+                    '  '
                 )
             );
         }
