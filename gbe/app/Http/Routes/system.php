@@ -33,3 +33,11 @@ Route::get('layouts/create', 'System\SystemController@createLayout');
 Route::post('layouts', 'System\SystemController@storeLayout');
 Route::get('layouts/{layoutId}/edit', 'System\SystemController@editLayout');
 Route::put('layouts/{layoutId}', 'System\SystemController@updateLayout');
+
+Route::get('components', 'System\SystemController@components');
+Route::get('components/create', 'System\SystemController@createComponent');
+Route::post('components', 'System\SystemController@storeComponent');
+Route::get('components/{componentId}/edit', 'System\SystemController@editComponent');
+Route::put('components/{componentId}', 'System\SystemController@updateComponent');
+Route::get('components/{componentId}', 'System\SystemController@showComponent');
+Route::delete('components/{componentId}', 'System\SystemController@deleteComponent');

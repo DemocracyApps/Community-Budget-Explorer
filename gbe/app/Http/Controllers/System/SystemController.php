@@ -21,6 +21,7 @@ use DemocracyApps\GB\Http\Controllers\Controller;
 use DemocracyApps\GB\Organizations\GovernmentOrganization;
 use DemocracyApps\GB\Organizations\MediaOrganization;
 use DemocracyApps\GB\Services\JsonProcessor;
+use DemocracyApps\GB\Sites\Component;
 use DemocracyApps\GB\Sites\Layout;
 use DemocracyApps\GB\Users\User;
 use Illuminate\Http\Request;
@@ -47,7 +48,7 @@ class SystemController extends Controller
         return view('system.users', array('users' => $users));
     }
 
-    public function governments (Request $request)
+    public function governments(Request $request)
     {
         $organizations = GovernmentOrganization::orderBy('id')->get();
         return view('system.governments', array('organizations' => $organizations));
@@ -58,7 +59,7 @@ class SystemController extends Controller
      *
      * @return Response
      */
-    public function createGovernment (Request $request)
+    public function createGovernment(Request $request)
     {
         return view('system.government.create');
     }
@@ -85,7 +86,7 @@ class SystemController extends Controller
         return redirect('/system/governments');
     }
 
-    public function media (Request $request)
+    public function media(Request $request)
     {
         $organizations = MediaOrganization::orderBy('id')->get();
         return view('system.media', array('organizations' => $organizations));
@@ -96,7 +97,7 @@ class SystemController extends Controller
      *
      * @return Response
      */
-    public function createMedia (Request $request)
+    public function createMedia(Request $request)
     {
         return view('system.media.create');
     }
@@ -118,7 +119,7 @@ class SystemController extends Controller
         return redirect("/media/$organization->id");
     }
 
-    public function layouts ()
+    public function layouts()
     {
         $layouts = Layout::orderBy('id')->get();
         return view('system.layouts', array('layouts' => $layouts));
@@ -131,7 +132,7 @@ class SystemController extends Controller
 
     public function storeLayout(Request $request)
     {
-        $rules=['name'=>'required'];
+        $rules = ['name' => 'required'];
         $this->validate($request, $rules);
 
         $layout = new Layout();
@@ -161,12 +162,12 @@ class SystemController extends Controller
     public function editLayout($id)
     {
         $layout = Layout::find($id);
-        return view('system.layouts.edit', array('layout'=>$layout));
+        return view('system.layouts.edit', array('layout' => $layout));
     }
 
-    public function updateLayout ($id, Request $request)
+    public function updateLayout($id, Request $request)
     {
-        $rules=['name'=>'required'];
+        $rules = ['name' => 'required'];
         $this->validate($request, $rules);
 
         $layout = Layout::find($id);
@@ -194,9 +195,111 @@ class SystemController extends Controller
 
         $str = $jp->minifyJson($specification);
         $cfig = $jp->decodeJson($str, true);
-        if ( ! $cfig) {
+        if (!$cfig) {
             return null;
         }
         return $specification;
+    }
+
+    private function loadComponentSpecification($file)
+    {
+        $jp = new JsonProcessor();
+
+        $specification = \File::get($file->getRealPath());
+
+        $str = $jp->minifyJson($specification);
+        $cfig = $jp->decodeJson($str, true);
+        if (!$cfig) {
+            return null;
+        }
+        return $cfig;
+    }
+
+    public function components()
+    {
+        $components = Component::orderBy('id')->get();
+        return view('system.components', array('components' => $components));
+    }
+
+    public function createComponent()
+    {
+        return view('system.components.create');
+    }
+
+    public function storeComponent(Request $request)
+    {
+        $rules = ['name' => 'required'];
+        $this->validate($request, $rules);
+
+        $component = new Component();
+        $component->name = $request->get('name');
+        if ($request->has('description')) $component->description = $request->get('description');
+
+        // Now load in the file
+        if ($request->hasFile('specification')) {
+            $specification = $this->loadComponentSpecification($request->file('specification'));
+            if ($specification == null) {
+                return \Redirect::back()->withInput()->withErrors(array('fileerror' => 'JSON not well-formed'));
+            }
+            if (array_key_exists('data', $specification)) {
+                $component->setProperty('data', $specification['data']);
+            }
+
+        }
+
+        $component->type = Component::CORE;
+        $component->owner = \Auth::user()->id;
+
+        $component->save();
+        return redirect('/system/components');
+    }
+
+    public function showComponent($id)
+    {
+        $component = Component::find($id);
+        return view('system.components.show', array('component' => $component));
+    }
+
+    public function editComponent($id)
+    {
+        $component = Component::find($id);
+        return view('system.components.edit', array('component' => $component));
+    }
+
+    public function deleteComponent($id)
+    {
+        $component = Component::find($id);
+        $component->delete();
+        return redirect('/system/components');
+    }
+
+    public function updateComponent($id, Request $request)
+    {
+        $rules = ['name' => 'required'];
+        $this->validate($request, $rules);
+
+        $component = Component::find($id);
+        $component->name = $request->get('name');
+        if ($request->has('description')) {
+            $component->description = $request->get('description');
+        }
+        else {
+            $component->description = null;
+        }
+
+        // Now load in the file
+        if ($request->hasFile('specification')) {
+            $specification = $this->loadComponentSpecification($request->file('specification'));
+            if ($specification == null) {
+                return \Redirect::back()->withInput()->withErrors(array('fileerror' => 'JSON not well-formed'));
+            }
+            if (array_key_exists('data', $specification)) {
+                $component->setProperty('data', $specification['data']);
+            }
+
+        }
+
+        $component->save();
+        return redirect('/system/components');
     }
 }

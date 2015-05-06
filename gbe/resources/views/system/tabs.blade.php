@@ -4,5 +4,6 @@
     <li role="presentation" @if ($page == 'governments') class="active" @endif ><a href="/system/governments">Governments</a></li>
     <li role="presentation" @if ($page == 'media') class="active" @endif ><a href="/system/media">Media</a></li>
     <li role="presentation" @if ($page == 'layouts') class="active" @endif ><a href="/system/layouts">Layouts</a></li>
+    <li role="presentation" @if ($page == 'components') class="active" @endif ><a href="/system/components">Components</a></li>
 </ul>
 
