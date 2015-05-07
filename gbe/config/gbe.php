@@ -30,9 +30,6 @@ return [
     | their access setting until they confirm.
     */
 
-    'user_implements_superuser' => true,
-    'user_superuser_column' => 'superuser',
-
-    'user_confirmation_required_threshold' => 0,
+    'image_storage_filesystem' => 'local', // Options are 'local' or 's3' for now.
 
 ];

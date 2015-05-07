@@ -15,6 +15,9 @@ var paths = {
  'bootstrap': './vendor/bower_components/bootstrap-sass-official/assets/'
 }
 
+// WARNING: at some point there may be a folder change:
+//     https://laracasts.com/discuss/channels/general-discussion/important-elixir-folder-change
+
 elixir(function(mix) {
     mix.sass('app.scss', 'public/css', {includePaths: [paths.bootstrap + 'stylesheets/']})
         .styles([

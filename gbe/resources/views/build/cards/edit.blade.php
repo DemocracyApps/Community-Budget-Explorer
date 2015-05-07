@@ -2,16 +2,17 @@
 
 @section('content')
 
-<form method="POST" action="/build/{!! $site->slug !!}/cards" accept-charset="UTF-8" enctype="multipart/form-data">
+<form method="POST" action="/build/{!! $site->slug !!}/cards/{!! $card->id !!}" accept-charset="UTF-8" enctype="multipart/form-data">
     <input type="hidden" name="_token" value="{!! csrf_token() !!}">
+    <input type="hidden" name="_method" value="PUT">
     <input type="hidden" name="cardSet" value="{!! $cardSet !!}">
 
-    <h1>New Card</h1>
+    <h1>Edit Card</h1>
 
     <br>
     <div class="form-group">
         {!!  Form::label('title', 'Title: ')  !!}
-        {!!  Form::text('title', null, ['class' => 'form-control'])  !!}
+        {!!  Form::text('title', $card->title, ['class' => 'form-control'])  !!}
         <br>
         <span class="error">{!!  $errors->first('title')  !!}</span>
         <br>
@@ -20,7 +21,7 @@
     <br>
     <div class="form-group">
         {!!  Form::label('body', 'Body: ')  !!}
-        {!!  Form::textarea('body', null, ['class' => 'form-control'])  !!}
+        {!!  Form::textarea('body', $card->body, ['class' => 'form-control'])  !!}
         <br>
         <span class="error">{!!  $errors->first('body')  !!}</span>
         <br>
@@ -28,7 +29,7 @@
 
     <div class="form-group">
         {!!  Form::label('link', 'Link: ')  !!}
-        {!!  Form::text('link', null, ['class' => 'form-control'])  !!}
+        {!!  Form::text('link', $card->link, ['class' => 'form-control'])  !!}
         <br>
         <span class="error">{!!  $errors->first('link')  !!}</span>
         <br>
@@ -36,7 +37,7 @@
 
 
     <div class="form-group">
-        {!! Form::label('image', 'Upload an image: ') !!}
+        {!! Form::label('image', 'Upload a new image: ') !!}
         {!! Form::file('image') !!}
     </div>
     <br>

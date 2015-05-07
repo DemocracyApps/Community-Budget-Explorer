@@ -67,7 +67,9 @@
                         </div>
                         <div class="col-sm-1"></div>
                         <div class="col-sm-3">
-                            <button style="position:relative; bottom:-20px; right:20px;" class="btn btn-primary">Edit</button>
+                            <a style="position:relative; bottom:-20px; right:20px;"
+                               href="/build/{!! $site->slug !!}/cards/{!! $card->id !!}/edit?cardSet={!! $cardset->id !!}"
+                               class="btn btn-primary">Edit</a>
                         </div>
                     </div>
                     <br>
