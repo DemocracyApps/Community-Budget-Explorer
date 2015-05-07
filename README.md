@@ -2,8 +2,7 @@
 
 A SaaS platform for local budget sites like the [Asheville budget site](http://avlbudget.org) we built last year.
 
-See the [wiki](https://github.com/DemocracyApps/GBE/wiki) for more details or come join the discussion at 
-the [Open Budgets Project Discussion list](https://groups.google.com/forum/?hl=en#!forum/open-budgets-project).
+See the [wiki](https://github.com/DemocracyApps/GBE/wiki) for more details.
 
 If you are using Vagrant, the following commands will install and start an instance of a server seeded with the 2014 Asheville data:
 
@@ -20,8 +19,10 @@ If you are using Vagrant, the following commands will install and start an insta
     bower install
     ./artisan migrate --seed
     
-The server will be at 192.168.33.27, but that can of course be changed in the Vagrantfile.
-You will probably need to put in your Github credentials while running 'composer update' since you'll 
+The server will be at 192.168.33.27, but that can of course be changed in the Vagrantfile. You can also find the 
+configuration there for a Digital Ocean provider.
+
+You will probably need to enter your Github credentials while running 'composer update' since you'll 
 exceed their anonymous rate limits.
 
 
