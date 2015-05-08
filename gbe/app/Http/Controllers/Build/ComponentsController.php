@@ -36,7 +36,11 @@ class ComponentsController extends Controller {
     {
         $site = Site::where('slug','=',$slug)->first();
         $page = Page::find($pageId);
-        $components = Component::all();
+        $tmp = Component::all();
+        $components = [];
+        foreach ($tmp as $c) {
+            $components[$c->id] = $c;
+        }
         return view('build.pages.components.create', ['site'=>$site, 'page'=>$page, 'components'=>$components]);
     }
 
