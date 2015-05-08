@@ -4,20 +4,20 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "fe9801d01b24292e1b988e522ea5a266",
+    "hash": "415b514548c4090e99465331d36dbbaa",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
-            "version": "2.8.2",
+            "version": "2.8.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "4237e97388d2906d2aa88f727736968fc2df9cb6"
+                "reference": "85c5224582acf507afad232da20a7ef0b2ec0073"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/4237e97388d2906d2aa88f727736968fc2df9cb6",
-                "reference": "4237e97388d2906d2aa88f727736968fc2df9cb6",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/85c5224582acf507afad232da20a7ef0b2ec0073",
+                "reference": "85c5224582acf507afad232da20a7ef0b2ec0073",
                 "shasum": ""
             },
             "require": {
@@ -71,7 +71,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2015-04-23 20:14:25"
+            "time": "2015-05-07 21:02:23"
         },
         {
             "name": "classpreloader/classpreloader",
@@ -235,12 +235,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/DemocracyApps/member-org.git",
-                "reference": "0f118da0e254380ee46f5afdc968d70644614983"
+                "reference": "b0528bb7d4a8719d7789f716ab25244c211959b8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DemocracyApps/member-org/zipball/0f118da0e254380ee46f5afdc968d70644614983",
-                "reference": "0f118da0e254380ee46f5afdc968d70644614983",
+                "url": "https://api.github.com/repos/DemocracyApps/member-org/zipball/b0528bb7d4a8719d7789f716ab25244c211959b8",
+                "reference": "b0528bb7d4a8719d7789f716ab25244c211959b8",
                 "shasum": ""
             },
             "require": {
@@ -267,7 +267,7 @@
                 }
             ],
             "description": "Application support for multiple organization types, each with its own users and permissions",
-            "time": "2015-03-29 14:36:46"
+            "time": "2015-05-08 20:12:24"
         },
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -996,16 +996,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v5.0.28",
+            "version": "5.0.30",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "06a09429322cf53e5bd4587db1060f02a291562e"
+                "reference": "c7ffbf1fd4895ac4cdac551265d635d995346d97"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/06a09429322cf53e5bd4587db1060f02a291562e",
-                "reference": "06a09429322cf53e5bd4587db1060f02a291562e",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/c7ffbf1fd4895ac4cdac551265d635d995346d97",
+                "reference": "c7ffbf1fd4895ac4cdac551265d635d995346d97",
                 "shasum": ""
             },
             "require": {
@@ -1118,7 +1118,7 @@
                 "framework",
                 "laravel"
             ],
-            "time": "2015-04-21 01:44:32"
+            "time": "2015-05-08 19:11:13"
         },
         {
             "name": "laravel/socialite",
