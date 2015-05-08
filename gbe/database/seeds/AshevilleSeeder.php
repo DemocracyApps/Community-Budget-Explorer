@@ -11,11 +11,14 @@ class AshevilleSeeder extends Seeder {
 
     public function run()
     {
-        // Create the organization and first user
+        // Create the organization and first users
         $user = User::where('email','=','eric@deepweave.com')->first();
         $org = new GovernmentOrganization();
         $org->name = "Asheville City Government";
         $org->save();
+        $org->addMember($user, 9);
+
+        $user = User::where('email','=','admin@democracyapps.us')->first();
         $org->addMember($user, 9);
 
 

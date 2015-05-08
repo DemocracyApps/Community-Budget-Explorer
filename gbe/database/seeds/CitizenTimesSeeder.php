@@ -16,7 +16,8 @@ class CitizenTimesSeeder extends Seeder
         $org->name = "Asheville Citizen-Times";
         $org->save();
         $org->addMember($user, 9);
-
+        $user = User::where('email','=','admin@democracyapps.us')->first();
+        $org->addMember($user, 9);
     }
 
 }
