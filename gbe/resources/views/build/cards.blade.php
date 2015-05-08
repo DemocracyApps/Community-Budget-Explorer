@@ -74,6 +74,8 @@
                     </div>
                     <br>
                     <p>{!! $card->body !!} </p>
+                    <img src="{!! $card->image !!}" alt="Photo">
+
                 </div>
             @endforeach
 

@@ -59,7 +59,7 @@ class BuildController extends Controller {
     {
         $site = Site::where('slug','=', $slug)->first();
         $list = CardSet::where('site','=',$site->id)->orderBy('id')->get();
-        $cards = Card::where('site','=',$site->id)->orderBy('id')->get();
+        $cardList = Card::where('site','=',$site->id)->orderBy('id')->get();
         $cardsets = array();
         foreach ($list as $item) {
             $cardset = new \stdClass();
@@ -69,8 +69,25 @@ class BuildController extends Controller {
             $cardset->cardsById = array();
             $cardsets[$cardset->id] = $cardset;
         }
-        foreach($cards as $card) {
+        $usingS3 = (config('gbe.image_storage_filesystem') == 's3');
+
+        $cards = [];
+        foreach($cardList as $item) {
+            $card = new \stdClass();
+            //$card=$item;
+            $card->id = $item->id;
+            $card->title = $item->title;
+            $card->body = $item->body;
+            $card->link = $item->link;
+            $card->card_set = $item->card_set;
+            if ($usingS3) {
+                $card->image = "https://s3.amazonaws.com/cnptest/" . $item->image;
+            }
+            else {
+                $card->image = "/img/cards/" . $item->image;
+            }
             $cardsets[$card->card_set]->cards[] = $card;
+            $cards[] = $card;
         }
         $selectedSet = ($list != null && sizeof($list) > 0)?$list[0]->id:-1;
         if ($request->has('selectedSet')) {
