@@ -20867,13 +20867,7 @@ var SimpleCard = _React2['default'].createClass({
                     card.title,
                     ' '
                 ),
-                _React2['default'].createElement(
-                    'p',
-                    null,
-                    '  ',
-                    card.body,
-                    '  '
-                )
+                _React2['default'].createElement('span', { dangerouslySetInnerHTML: { __html: card.body } })
             );
         }
     }
@@ -21117,7 +21111,9 @@ var SlideShow = _React2['default'].createClass({
                         return _React2['default'].createElement(
                             'li',
                             { key: index },
-                            item.title
+                            item.title,
+                            _React2['default'].createElement('br', null),
+                            _React2['default'].createElement('span', { dangerouslySetInnerHTML: { __html: item.body } })
                         );
                     })
                 )

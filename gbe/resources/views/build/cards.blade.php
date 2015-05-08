@@ -59,6 +59,9 @@
         </div>
         <div class="col-sm-1"></div>
         <div class="col-sm-6">
+            <?php
+                $pd = new Parsedown();
+            ?>
             @foreach($cards as $card)
                 <div class="card-detail" id="card_{!! $card->id !!}">
                     <div class="row">
@@ -76,7 +79,7 @@
                     <p><b>Link: </b> {!! $card->link !!} </p>
                     <br>
                     <p><b>Card body:</b></p>
-                    <p>{!! $card->body !!} </p>
+                    <p>{!! $pd->text($card->body) !!} </p>
                     <br>
                     <p><b>Image:</b></p>
                     @if ($card->image != null)

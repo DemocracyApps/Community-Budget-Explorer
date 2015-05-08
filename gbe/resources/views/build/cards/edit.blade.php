@@ -20,7 +20,7 @@
 
     <br>
     <div class="form-group">
-        {!!  Form::label('body', 'Body: ')  !!}
+        {!!  Form::label('body', 'Body (you may use Markdown for formatting): ')  !!}
         {!!  Form::textarea('body', $card->body, ['class' => 'form-control'])  !!}
         <br>
         <span class="error">{!!  $errors->first('body')  !!}</span>

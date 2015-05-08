@@ -34,6 +34,8 @@ var SlideShow = React.createClass({
                             return (
                                 <li key={index}>
                                     {item.title}
+                                    <br/>
+                                    <span dangerouslySetInnerHTML={{__html: item.body}} />
                                 </li>
                             )
                         })}
