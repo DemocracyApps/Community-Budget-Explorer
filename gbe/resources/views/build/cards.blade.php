@@ -63,7 +63,7 @@
                 <div class="card-detail" id="card_{!! $card->id !!}">
                     <div class="row">
                         <div class="col-sm-8">
-                            <h3>{!! $card->title !!}</h3>
+                            <p><b>Title: </b>{!! $card->title !!}</p>
                         </div>
                         <div class="col-sm-1"></div>
                         <div class="col-sm-3">
@@ -73,8 +73,17 @@
                         </div>
                     </div>
                     <br>
+                    <p><b>Link: </b> {!! $card->link !!} </p>
+                    <br>
+                    <p><b>Card body:</b></p>
                     <p>{!! $card->body !!} </p>
-                    <img src="{!! $card->image !!}" alt="Photo">
+                    <br>
+                    <p><b>Image:</b></p>
+                    @if ($card->image != null)
+                        <img src="{!! $card->image !!}" alt="Photo">
+                    @else
+                        <p>-- No Image --</p>
+                    @endif
 
                 </div>
             @endforeach
