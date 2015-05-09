@@ -1,6 +1,7 @@
 {
   "name":"SlideShow",
   "description": "Carousel slideshow of pictures with title, text and link",
+  "props": {},
   "data": [
     {
       "tag":"mycardset",

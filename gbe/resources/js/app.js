@@ -11,11 +11,13 @@ var ActionTypes = require('./constants/ActionTypes');
 import SimpleCard from './components/SimpleCard';
 import MultiYearTable from './components/MultiYearTable';
 import SlideShow from './components/SlideShow';
+import BarchartExplorer from './components/BarchartExplorer';
 
 var reactComponents = {};
 reactComponents['SimpleCard'] = SimpleCard;
 reactComponents['SlideShow'] = SlideShow;
 reactComponents['MultiYearTable'] = MultiYearTable;
+reactComponents['BarchartExplorer'] = BarchartExplorer;
 
 /*
  * The stores, one for card-related data, the other for financial datasets.

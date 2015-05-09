@@ -1,6 +1,7 @@
 {
   "name":"SimpleCard",
   "description": "Just a simple display of a single card",
+  "props": {},
   "data": [
     {
       "tag":"mycard",

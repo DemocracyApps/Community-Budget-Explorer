@@ -8,6 +8,22 @@
 
         <h1>Configure Component</h1>
 
+        @foreach ($propDefs as $key => $def)
+            @if ($def['configurable'])
+                <?php
+                \Log::info("Got key = " . $key);
+            ?>
+                @if ($def['type'] == 'select')
+                    <label for="property_{!! $key !!}">{!! $def['label'] !!}</label>
+                    <select id="property_{!! $key !!}" class="form-control" name="property_{!! $key !!}">
+                        @foreach ($def['options'] as $option)
+                            <option value="{!! $option['value'] !!}">{!! $option['name'] !!}</option>
+                        @endforeach
+                    </select>
+                @endif
+            @endif
+        @endforeach
+
         @foreach ($dataDefs as $def)
 
             <?php

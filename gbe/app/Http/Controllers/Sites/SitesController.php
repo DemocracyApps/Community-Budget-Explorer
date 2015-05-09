@@ -86,11 +86,23 @@ class SitesController extends Controller {
                     $c->componentName = $componentDefinition->name;
                     $c->componentType = $componentDefinition->type;
                     $c->componentData = null;
+                    $c->componentProps = null;
+                    $c->componentState = null;
                     if ($pc->properties != null) {
                         $c->componentData = array();
-                        $props = $jp->decodeJson($pc->properties, true);
-                        if (array_key_exists('data', $props)) {
-                            foreach ($props['data'] as $key => $dataItem) {
+                        $c->componentProps = array();
+                        $c->componentState = array();
+
+                        if ($pc->hasProperty('props')) {
+                            $props = $pc->getProperty('props');
+                            // component has some properties to be set
+                            foreach ($props as $key => $value) {
+                                $c->componentProps[$key] = $value;
+                            }
+                        }
+                        if ($pc->hasProperty('data')) {
+                            $dataList = $pc->getProperty('data');
+                            foreach ($dataList as $key => $dataItem) {
                                 if ($dataItem['type'] == 'card') {
                                     $cId = $dataItem['items'][0];
                                     if (array_key_exists($cId, $cardStore)) {

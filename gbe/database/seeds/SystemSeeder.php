@@ -27,7 +27,7 @@ class SystemSeeder extends Seeder
                 $str = $jp->minifyJson($s);
                 $cfig = $jp->decodeJson($str, true);
                 if ( ! $cfig) {
-                    throw new \Exception("Error reading layout file " . $file);
+                    throw new \Exception("Error parsing layout file " . $file);
                 }
                 $layout = new Layout();
                 if (array_key_exists('name', $cfig)) {
@@ -59,7 +59,7 @@ class SystemSeeder extends Seeder
                 $str = $jp->minifyJson($s);
                 $cfig = $jp->decodeJson($str, true);
                 if ( ! $cfig) {
-                    throw new \Exception("Error reading component file " . $file);
+                    throw new \Exception("Error parsing component file " . $file);
                 }
                 $c = new Component();
 
@@ -76,6 +76,8 @@ class SystemSeeder extends Seeder
                 $c->type = Component::SYSTEM;
 
                 $c->setProperty('data', $cfig['data']);
+                if (array_key_exists('props', $cfig)) $c->setProperty('props', $cfig['props']);
+                if (array_key_exists('state', $cfig)) $c->setProperty('state', $cfig['state']);
                 $c->save();
             }
         }

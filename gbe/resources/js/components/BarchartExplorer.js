@@ -8,10 +8,11 @@ var AccountTypes = require('../constants/AccountTypes');
 var dispatcher = require('../common/BudgetAppDispatcher');
 var ActionTypes = require('../constants/ActionTypes');
 
-var MultiYearTable = React.createClass({
+var BarchartExplorer = React.createClass({
 
     propTypes: {
         componentData: React.PropTypes.object.isRequired,
+        componentProps: React.PropTypes.object.isRequired,
         storeId: React.PropTypes.number.isRequired
     },
 
@@ -30,11 +31,13 @@ var MultiYearTable = React.createClass({
     },
 
     componentWillMount: function () {
+        console.log("I got componentProps: " + JSON.stringify(this.props.componentProps));
+        console.log("The reduce method is " + this.props.componentProps.reduce);
         // If this is the first time this component is mounting, we need to create the data model
         // and do any other state initialization required.
         var dataModelId = stateStore.getComponentStateValue(this.props.storeId, 'dataModelId');
         if (dataModelId == null) {
-            var ids = this.props.componentData['alldata'].ids;
+            var ids = this.props.componentData['mydatasets'].ids;
             ids.forEach(function (id) {
                 apiActions.requestDatasetIfNeeded(id);
             });
@@ -137,4 +140,4 @@ var MultiYearTable = React.createClass({
     }
 });
 
-export default MultiYearTable;
+export default BarchartExplorer;

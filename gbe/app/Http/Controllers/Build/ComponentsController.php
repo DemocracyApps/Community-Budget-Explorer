@@ -84,6 +84,7 @@ class ComponentsController extends Controller {
         $dataSets = $site->getDatasets();
         return view('build.pages.components.edit', ['site'=>$site, 'page'=>$page, 'component'=>$component,
             'pageComponent'=>$this->pageComponent, 'dataDefs'=>$component->getProperty('data'),
+            'propDefs' => $component->getProperty('props'),
             'cardSets' => $cardSets, 'dataSets'=>$dataSets]);
 	}
 
@@ -98,6 +99,16 @@ class ComponentsController extends Controller {
         $site = Site::where('slug','=',$slug)->first();
         $this->pageComponent = PageComponent::find($id);
         $component = Component::find($this->pageComponent->component);
+        $propDefs = $component->getProperty('props');
+        $propBundle = array();
+        foreach ($propDefs as $key => $def) {
+            $propBundle[$key] = $def['value'];
+            if ($request->has('property_'.$key)) {
+                $propBundle[$key] = $request->get('property_'.$key);
+            }
+        }
+        $this->pageComponent->setProperty('props', $propBundle);
+
         $dataDefs = $component->getProperty('data');
         $dataBundle = array();
         foreach ($dataDefs as $def) {

@@ -1,6 +1,7 @@
 {
   "name":"MultiYearTable",
   "description": "A table of budget items over multiple years.",
+  "props": {},
   "data": [
     {
       "tag":"alldata",
