@@ -4,6 +4,8 @@ A SaaS platform for local budget sites like the [Asheville budget site](http://a
 
 See the [wiki](https://github.com/DemocracyApps/GBE/wiki) for more details.
 
+To track any upcoming or recent changes that may impact other developers, follow the [Changes page](Changes). 
+
 If you are using Vagrant, the following commands will install and start an instance of a server seeded with the 2014 Asheville data:
 
     git clone https://github.com/DemocracyApps/GBE.git
