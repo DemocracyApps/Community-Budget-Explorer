@@ -50,6 +50,7 @@ var datasetStore = require('./stores/DatasetStore');
  */
 configStore.createSection('common');
 configStore.createSection('pages');
+configStore.createSection('components');
 
 /*****************************************************
  * Process the incoming parameters ...
@@ -74,12 +75,13 @@ var pages = [];
 for (i = 0; i < GBEVars.pages.length; ++i) {
     var page = GBEVars.pages[i];
     //console.log("Page: " + JSON.stringify(page));
-    page.stateId = stateStore.registerComponent('page', page.shortName, {});
+    page.storeId = stateStore.registerComponent('page', page.shortName, {});
     for (var key in page.components) {
         if (page.components.hasOwnProperty(key)) {
             page.components[key].forEach(function (c) {
-                c.stateId = stateStore.registerComponent('components', c.id, {});
-                //console.log("Registered component " + c.componentName + " with stateId " + c.stateId);
+                c.storeId = stateStore.registerComponent('components', c.id, {}); // Should use a common ID generator, but no time right now
+                configStore.registerComponent(c.storeId, 'components', c.id, {});
+                //console.log("Registered component " + c.componentName + " with storeId " + c.storeId);
             });
         }
     }
@@ -20592,7 +20594,7 @@ var BootstrapLayout = _React2["default"].createClass({
 
     renderComponent: function renderComponent(component, index) {
         var comp = this.props.reactComponents[component.componentName];
-        return _React2["default"].createElement(comp, { key: index, componentData: component.componentData, stateId: component.stateId });
+        return _React2["default"].createElement(comp, { key: index, componentData: component.componentData, storeId: component.storeId });
     },
 
     buildColumn: function buildColumn(column, index) {
@@ -20672,7 +20674,7 @@ var MultiYearTable = _React2['default'].createClass({
 
     propTypes: {
         componentData: _React2['default'].PropTypes.object.isRequired,
-        stateId: _React2['default'].PropTypes.number.isRequired
+        storeId: _React2['default'].PropTypes.number.isRequired
     },
 
     getDefaultProps: function getDefaultProps() {
@@ -20686,29 +20688,28 @@ var MultiYearTable = _React2['default'].createClass({
         };
     },
 
-    getInitialState: function getInitialState() {
-        return {
-            dataModelId: null
-        };
-    },
-
     componentWillMount: function componentWillMount() {
-        // Create the data model that we'll use
-        var ids = this.props.componentData.alldata.ids;
-        ids.forEach(function (id) {
-            apiActions.requestDatasetIfNeeded(id);
-        });
+        // If this is the first time this component is mounting, we need to create the data model
+        // and do any other state initialization required.
+        var dataModelId = stateStore.getComponentStateValue(this.props.storeId, 'dataModelId');
+        if (dataModelId == null) {
+            var ids = this.props.componentData.alldata.ids;
+            ids.forEach(function (id) {
+                apiActions.requestDatasetIfNeeded(id);
+            });
 
-        var dm = dataModelStore.createModel(ids, this.props.dataInitialization);
-        this.setState({
-            dataModelId: dm.id
-        });
-        stateStore.setComponentState(this.props.stateId, { selectedItem: AccountTypes.REVENUE });
+            var dm = dataModelStore.createModel(ids, this.props.dataInitialization);
+            stateStore.setComponentState(this.props.storeId, {
+                selectedItem: AccountTypes.REVENUE,
+                dataModelId: dm.id
+            });
+        }
     },
 
     shouldComponentUpdate: function shouldComponentUpdate(nextProps, nextState) {
-        var dm = dataModelStore.getModel(this.state.dataModelId);
-        var selectedItem = stateStore.getComponentStateValue(this.props.stateId, 'selectedItem');
+        var dataModelId = stateStore.getComponentStateValue(this.props.storeId, 'dataModelId');
+        var dm = dataModelStore.getModel(dataModelId);
+        var selectedItem = stateStore.getComponentStateValue(this.props.storeId, 'selectedItem');
 
         return dm.dataChanged() || dm.commandsChanged({ accountTypes: [selectedItem] });
     },
@@ -20717,7 +20718,7 @@ var MultiYearTable = _React2['default'].createClass({
         dispatcher.dispatch({
             actionType: ActionTypes.COMPONENT_STATE_CHANGE,
             payload: {
-                id: this.props.stateId,
+                id: this.props.storeId,
                 name: 'selectedItem',
                 value: Number(e.target.value)
             }
@@ -20764,8 +20765,9 @@ var MultiYearTable = _React2['default'].createClass({
     },
 
     render: function render() {
-        var dm = dataModelStore.getModel(this.state.dataModelId);
-        var selectedItem = stateStore.getComponentStateValue(this.props.stateId, 'selectedItem');
+        var dataModelId = stateStore.getComponentStateValue(this.props.storeId, 'dataModelId');
+        var dm = dataModelStore.getModel(dataModelId);
+        var selectedItem = stateStore.getComponentStateValue(this.props.storeId, 'selectedItem');
         var rows = dm.getData({ accountTypes: [selectedItem] }, true);
 
         if (rows == null) {
@@ -20845,7 +20847,7 @@ var SimpleCard = _React2['default'].createClass({
 
     propTypes: {
         componentData: _React2['default'].PropTypes.object.isRequired,
-        stateId: _React2['default'].PropTypes.number.isRequired
+        storeId: _React2['default'].PropTypes.number.isRequired
     },
 
     render: function render() {
@@ -21079,7 +21081,7 @@ var SlideShow = _React2['default'].createClass({
 
     propTypes: {
         componentData: _React2['default'].PropTypes.object.isRequired,
-        stateId: _React2['default'].PropTypes.number.isRequired
+        storeId: _React2['default'].PropTypes.number.isRequired
     },
 
     componentWillMount: function componentWillMount() {},
@@ -21557,6 +21559,16 @@ var ConfigStore = assign({}, EventEmitter.prototype, {
         };
     },
 
+    registerComponent: function registerComponent(storeId, type, name, initialValue) {
+        var component = {
+            id: storeId,
+            type: type,
+            name: name,
+            state: initialValue
+        };
+        this.storeConfiguration('components', storeId, component);
+    },
+
     storeConfiguration: function storeConfiguration(areaName, key, value) {
         if (!this.areas.hasOwnProperty(areaName)) {
             throw 'storeConfiguration called for non-existent area ' + areaName;
@@ -21782,7 +21794,7 @@ var StateStore = assign({}, EventEmitter.prototype, {
         return id;
     },
 
-    registerState: function setState(path, value) {
+    registerState: function registerState(path, value) {
         var pathArray = path.split('.');
         var current = this.store;
         while (pathArray.length > 1) {

@@ -15,7 +15,7 @@ var BootstrapLayout = React.createClass({
 
     renderComponent: function (component, index) {
         var comp = this.props.reactComponents[component.componentName];
-        return React.createElement(comp, {key:index, componentData:component.componentData, stateId:component.stateId});
+        return React.createElement(comp, {key:index, componentData:component.componentData, storeId:component.storeId});
     },
 
     buildColumn: function (column, index) {

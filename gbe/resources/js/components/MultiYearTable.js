@@ -12,7 +12,7 @@ var MultiYearTable = React.createClass({
 
     propTypes: {
         componentData: React.PropTypes.object.isRequired,
-        stateId: React.PropTypes.number.isRequired
+        storeId: React.PropTypes.number.isRequired
     },
 
     getDefaultProps: function() {
@@ -29,29 +29,29 @@ var MultiYearTable = React.createClass({
         };
     },
 
-    getInitialState: function() {
-        return {
-            dataModelId: null
-        };
-    },
-
     componentWillMount: function () {
-        // Create the data model that we'll use
-        var ids = this.props.componentData['alldata'].ids;
-        ids.forEach(function(id) {
-           apiActions.requestDatasetIfNeeded(id);
-        });
+        // If this is the first time this component is mounting, we need to create the data model
+        // and do any other state initialization required.
+        var dataModelId = stateStore.getComponentStateValue(this.props.storeId, 'dataModelId');
+        if (dataModelId == null) {
+            var ids = this.props.componentData['alldata'].ids;
+            ids.forEach(function (id) {
+                apiActions.requestDatasetIfNeeded(id);
+            });
 
-        var dm = dataModelStore.createModel(ids, this.props.dataInitialization);
-        this.setState ({
-            dataModelId: dm.id
-        });
-        stateStore.setComponentState(this.props.stateId, {selectedItem: AccountTypes.REVENUE});
+            var dm = dataModelStore.createModel(ids, this.props.dataInitialization);
+            stateStore.setComponentState(this.props.storeId,
+                {
+                    selectedItem: AccountTypes.REVENUE,
+                    dataModelId: dm.id
+                });
+        }
     },
 
     shouldComponentUpdate: function (nextProps, nextState) {
-        var dm = dataModelStore.getModel(this.state.dataModelId);
-        var selectedItem = stateStore.getComponentStateValue(this.props.stateId, 'selectedItem');
+        var dataModelId = stateStore.getComponentStateValue(this.props.storeId, 'dataModelId');
+        var dm = dataModelStore.getModel(dataModelId);
+        var selectedItem = stateStore.getComponentStateValue(this.props.storeId, 'selectedItem');
 
         return ( dm.dataChanged() || dm.commandsChanged({accountTypes:[selectedItem]}) );
     },
@@ -60,7 +60,7 @@ var MultiYearTable = React.createClass({
         dispatcher.dispatch({
             actionType: ActionTypes.COMPONENT_STATE_CHANGE,
             payload: {
-                id: this.props.stateId,
+                id: this.props.storeId,
                 name: 'selectedItem',
                 value: Number(e.target.value)
             }
@@ -96,8 +96,9 @@ var MultiYearTable = React.createClass({
     },
 
     render: function() {
-        var dm = dataModelStore.getModel(this.state.dataModelId);
-        var selectedItem = stateStore.getComponentStateValue(this.props.stateId, 'selectedItem');
+        var dataModelId = stateStore.getComponentStateValue(this.props.storeId, 'dataModelId');
+        var dm = dataModelStore.getModel(dataModelId);
+        var selectedItem = stateStore.getComponentStateValue(this.props.storeId, 'selectedItem');
         var rows = dm.getData({accountTypes:[selectedItem]}, true);
 
         if (rows == null) {

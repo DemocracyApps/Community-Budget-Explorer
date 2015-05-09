@@ -6,7 +6,7 @@ var SlideShow = React.createClass({
 
     propTypes: {
         componentData: React.PropTypes.object.isRequired,
-        stateId: React.PropTypes.number.isRequired
+        storeId: React.PropTypes.number.isRequired
     },
 
     componentWillMount: function () {

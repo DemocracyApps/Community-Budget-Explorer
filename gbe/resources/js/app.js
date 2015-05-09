@@ -30,6 +30,7 @@ var datasetStore = require('./stores/DatasetStore');
  */
 configStore.createSection('common');
 configStore.createSection('pages');
+configStore.createSection('components');
 
 /*****************************************************
  * Process the incoming parameters ...
@@ -54,12 +55,13 @@ var pages = [];
 for (i=0; i<GBEVars.pages.length; ++i) {
     var page = GBEVars.pages[i];
     //console.log("Page: " + JSON.stringify(page));
-    page.stateId = stateStore.registerComponent('page', page.shortName, {});
+    page.storeId = stateStore.registerComponent('page', page.shortName, {});
     for (var key in page.components) {
         if (page.components.hasOwnProperty(key)) {
             page.components[key].forEach(function (c) {
-                c.stateId = stateStore.registerComponent('components', c.id, {});
-                //console.log("Registered component " + c.componentName + " with stateId " + c.stateId);
+                c.storeId = stateStore.registerComponent('components', c.id, {}); // Should use a common ID generator, but no time right now
+                configStore.registerComponent(c.storeId, 'components', c.id, {});
+                //console.log("Registered component " + c.componentName + " with storeId " + c.storeId);
             });
         }
     }

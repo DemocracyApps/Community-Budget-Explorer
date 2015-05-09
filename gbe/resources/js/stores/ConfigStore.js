@@ -23,6 +23,16 @@ var ConfigStore = assign({}, EventEmitter.prototype, {
 
     },
 
+    registerComponent: function registerComponent (storeId, type, name, initialValue) {
+        var component = {
+            id: storeId,
+            type: type,
+            name: name,
+            state: initialValue
+        }
+        this.storeConfiguration('components', storeId, component);
+    },
+
     storeConfiguration: function (areaName, key, value) {
         if (!(this.areas.hasOwnProperty(areaName))) {
             throw "storeConfiguration called for non-existent area " + areaName;

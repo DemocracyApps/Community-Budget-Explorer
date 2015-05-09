@@ -1,12 +1,21 @@
 {
-  "name":"SimpleCard",
-  "description": "Just a simple display of a single card",
+  "name":"BarchartExplorer",
+  "description": "Interactive barchart for exploring hierarchical datasets",
   "data": [
     {
-      "tag":"mycard",
-      "name":"Your Card",
-      "description": "Pick a card, any card",
-      "type":"card"
+      "tag":"mydatasets",
+      "name":"Datasets for the BarchartExplorer",
+      "description":"Add datasets in any order - sequencing is handled automatically.",
+      "type":"multidataset"
+    },
+  ],
+  "props": {
+    "reduce": {
+      "configurable": true,
+
     }
-  ]
+  },
+  "state": {
+
+  }
 }
