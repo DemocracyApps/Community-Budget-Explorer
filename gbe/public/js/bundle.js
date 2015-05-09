@@ -29,6 +29,10 @@ var _SlideShow = require('./components/SlideShow');
 
 var _SlideShow2 = _interopRequireWildcard(_SlideShow);
 
+var _BarchartExplorer = require('./components/BarchartExplorer');
+
+var _BarchartExplorer2 = _interopRequireWildcard(_BarchartExplorer);
+
 var dispatcher = require('./common/BudgetAppDispatcher');
 var ActionTypes = require('./constants/ActionTypes');
 
@@ -36,6 +40,7 @@ var reactComponents = {};
 reactComponents.SimpleCard = _SimpleCard2['default'];
 reactComponents.SlideShow = _SlideShow2['default'];
 reactComponents.MultiYearTable = _MultiYearTable2['default'];
+reactComponents.BarchartExplorer = _BarchartExplorer2['default'];
 
 /*
  * The stores, one for card-related data, the other for financial datasets.
@@ -113,7 +118,7 @@ var props = {
 
 var layout = _React2['default'].render(_React2['default'].createElement(_Site2['default'], props), document.getElementById('app'));
 
-},{"./common/BudgetAppDispatcher":164,"./components/MultiYearTable":166,"./components/SimpleCard":167,"./components/Site":168,"./components/SlideShow":170,"./constants/ActionTypes":172,"./stores/CardStore":177,"./stores/ConfigStore":178,"./stores/DatasetStore":180,"./stores/StateStore":181,"react":162}],2:[function(require,module,exports){
+},{"./common/BudgetAppDispatcher":164,"./components/BarchartExplorer":165,"./components/MultiYearTable":167,"./components/SimpleCard":168,"./components/Site":169,"./components/SlideShow":171,"./constants/ActionTypes":173,"./stores/CardStore":178,"./stores/ConfigStore":179,"./stores/DatasetStore":181,"./stores/StateStore":182,"react":162}],2:[function(require,module,exports){
 /**
  * Copyright (c) 2014, Facebook, Inc.
  * All rights reserved.
@@ -20519,7 +20524,7 @@ var ApiActions = {
 
 module.exports = ApiActions;
 
-},{"../common/BudgetAppDispatcher":164,"../constants/ActionTypes":172,"../stores/ConfigStore":178,"../stores/DatasetStore":180,"object-assign":7}],164:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":164,"../constants/ActionTypes":173,"../stores/ConfigStore":179,"../stores/DatasetStore":181,"object-assign":7}],164:[function(require,module,exports){
 'use strict';
 
 var FluxDispatcher = require('flux').Dispatcher;
@@ -20566,6 +20571,188 @@ var BudgetAppDispatcher = {
 module.exports = BudgetAppDispatcher;
 
 },{"flux":2}],165:[function(require,module,exports){
+'use strict';
+
+var _interopRequireWildcard = function (obj) { return obj && obj.__esModule ? obj : { 'default': obj }; };
+
+Object.defineProperty(exports, '__esModule', {
+    value: true
+});
+
+var _React = require('react');
+
+var _React2 = _interopRequireWildcard(_React);
+
+var datasetStore = require('../stores/DatasetStore');
+var stateStore = require('../stores/StateStore');
+var dataModelStore = require('../stores/DataModelStore');
+var apiActions = require('../common/ApiActions');
+var AccountTypes = require('../constants/AccountTypes');
+var dispatcher = require('../common/BudgetAppDispatcher');
+var ActionTypes = require('../constants/ActionTypes');
+
+var BarchartExplorer = _React2['default'].createClass({
+    displayName: 'BarchartExplorer',
+
+    propTypes: {
+        componentData: _React2['default'].PropTypes.object.isRequired,
+        componentProps: _React2['default'].PropTypes.object.isRequired,
+        storeId: _React2['default'].PropTypes.number.isRequired
+    },
+
+    getDefaultProps: function getDefaultProps() {
+        return {
+            accountTypes: [{ name: 'Expense', value: AccountTypes.EXPENSE }, { name: 'Revenue', value: AccountTypes.REVENUE }],
+            dataInitialization: {
+                hierarchy: ['Fund', 'Department', 'Division'],
+                accountTypes: [AccountTypes.EXPENSE, AccountTypes.REVENUE],
+                amountThreshold: 0.01
+            }
+        };
+    },
+
+    componentWillMount: function componentWillMount() {
+        console.log('I got componentProps: ' + JSON.stringify(this.props.componentProps));
+        console.log('The reduce method is ' + this.props.componentProps.reduce);
+        // If this is the first time this component is mounting, we need to create the data model
+        // and do any other state initialization required.
+        var dataModelId = stateStore.getComponentStateValue(this.props.storeId, 'dataModelId');
+        if (dataModelId == null) {
+            var ids = this.props.componentData.mydatasets.ids;
+            ids.forEach(function (id) {
+                apiActions.requestDatasetIfNeeded(id);
+            });
+
+            var dm = dataModelStore.createModel(ids, this.props.dataInitialization);
+            stateStore.setComponentState(this.props.storeId, {
+                selectedItem: AccountTypes.REVENUE,
+                dataModelId: dm.id
+            });
+        }
+    },
+
+    shouldComponentUpdate: function shouldComponentUpdate(nextProps, nextState) {
+        var dataModelId = stateStore.getComponentStateValue(this.props.storeId, 'dataModelId');
+        var dm = dataModelStore.getModel(dataModelId);
+        var selectedItem = stateStore.getComponentStateValue(this.props.storeId, 'selectedItem');
+
+        return dm.dataChanged() || dm.commandsChanged({ accountTypes: [selectedItem] });
+    },
+
+    onSelectChange: function onSelectChange(e) {
+        dispatcher.dispatch({
+            actionType: ActionTypes.COMPONENT_STATE_CHANGE,
+            payload: {
+                id: this.props.storeId,
+                name: 'selectedItem',
+                value: Number(e.target.value)
+            }
+        });
+    },
+
+    dollarsWithCommas: function dollarsWithCommas(x) {
+        var prefix = '$';
+        if (x < 0) prefix = '-$';
+        x = Math.abs(x);
+        var val = prefix + x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+        return val;
+    },
+
+    tableColumn: function tableColumn(value, index) {
+        return _React2['default'].createElement(
+            'td',
+            { key: index + 1 },
+            this.dollarsWithCommas(value)
+        );
+    },
+
+    tableRow: function tableRow(item, index) {
+        return _React2['default'].createElement(
+            'tr',
+            { key: index },
+            _React2['default'].createElement(
+                'td',
+                { key: '0' },
+                item.account,
+                ' '
+            ),
+            item.amount.map(this.tableColumn)
+        );
+    },
+
+    columnHeader: function columnHeader(header, index) {
+        return _React2['default'].createElement(
+            'th',
+            { key: index + 1 },
+            header
+        );
+    },
+
+    render: function render() {
+        var dataModelId = stateStore.getComponentStateValue(this.props.storeId, 'dataModelId');
+        var dm = dataModelStore.getModel(dataModelId);
+        var selectedItem = stateStore.getComponentStateValue(this.props.storeId, 'selectedItem');
+        var rows = dm.getData({ accountTypes: [selectedItem] }, true);
+
+        if (rows == null) {
+            return _React2['default'].createElement(
+                'div',
+                null,
+                ' Multiyear table loading ... '
+            );
+        } else {
+            var headers = dm.getHeaders();
+
+            return _React2['default'].createElement(
+                'div',
+                null,
+                _React2['default'].createElement(
+                    'select',
+                    { onChange: this.onSelectChange, value: selectedItem },
+                    this.props.accountTypes.map(function (type, index) {
+                        return _React2['default'].createElement(
+                            'option',
+                            { key: index, value: type.value },
+                            ' ',
+                            type.name,
+                            ' '
+                        );
+                    })
+                ),
+                _React2['default'].createElement('br', null),
+                _React2['default'].createElement(
+                    'table',
+                    { className: 'table' },
+                    _React2['default'].createElement(
+                        'thead',
+                        null,
+                        _React2['default'].createElement(
+                            'tr',
+                            null,
+                            _React2['default'].createElement(
+                                'th',
+                                { key: '0' },
+                                'Account'
+                            ),
+                            headers.map(this.columnHeader)
+                        )
+                    ),
+                    _React2['default'].createElement(
+                        'tbody',
+                        null,
+                        rows.map(this.tableRow)
+                    )
+                )
+            );
+        }
+    }
+});
+
+exports['default'] = BarchartExplorer;
+module.exports = exports['default'];
+
+},{"../common/ApiActions":163,"../common/BudgetAppDispatcher":164,"../constants/AccountTypes":172,"../constants/ActionTypes":173,"../stores/DataModelStore":180,"../stores/DatasetStore":181,"../stores/StateStore":182,"react":162}],166:[function(require,module,exports){
 "use strict";
 
 var _interopRequireWildcard = function (obj) { return obj && obj.__esModule ? obj : { "default": obj }; };
@@ -20594,7 +20781,12 @@ var BootstrapLayout = _React2["default"].createClass({
 
     renderComponent: function renderComponent(component, index) {
         var comp = this.props.reactComponents[component.componentName];
-        return _React2["default"].createElement(comp, { key: index, componentData: component.componentData, storeId: component.storeId });
+        return _React2["default"].createElement(comp, {
+            key: index,
+            componentData: component.componentData,
+            componentProps: component.componentProps,
+            storeId: component.storeId
+        });
     },
 
     buildColumn: function buildColumn(column, index) {
@@ -20648,7 +20840,7 @@ var BootstrapLayout = _React2["default"].createClass({
 exports["default"] = BootstrapLayout;
 module.exports = exports["default"];
 
-},{"react":162}],166:[function(require,module,exports){
+},{"react":162}],167:[function(require,module,exports){
 'use strict';
 
 var _interopRequireWildcard = function (obj) { return obj && obj.__esModule ? obj : { 'default': obj }; };
@@ -20674,6 +20866,7 @@ var MultiYearTable = _React2['default'].createClass({
 
     propTypes: {
         componentData: _React2['default'].PropTypes.object.isRequired,
+        componentProps: _React2['default'].PropTypes.object.isRequired,
         storeId: _React2['default'].PropTypes.number.isRequired
     },
 
@@ -20827,7 +21020,7 @@ var MultiYearTable = _React2['default'].createClass({
 exports['default'] = MultiYearTable;
 module.exports = exports['default'];
 
-},{"../common/ApiActions":163,"../common/BudgetAppDispatcher":164,"../constants/AccountTypes":171,"../constants/ActionTypes":172,"../stores/DataModelStore":179,"../stores/DatasetStore":180,"../stores/StateStore":181,"react":162}],167:[function(require,module,exports){
+},{"../common/ApiActions":163,"../common/BudgetAppDispatcher":164,"../constants/AccountTypes":172,"../constants/ActionTypes":173,"../stores/DataModelStore":180,"../stores/DatasetStore":181,"../stores/StateStore":182,"react":162}],168:[function(require,module,exports){
 'use strict';
 
 var _interopRequireWildcard = function (obj) { return obj && obj.__esModule ? obj : { 'default': obj }; };
@@ -20847,6 +21040,7 @@ var SimpleCard = _React2['default'].createClass({
 
     propTypes: {
         componentData: _React2['default'].PropTypes.object.isRequired,
+        componentProps: _React2['default'].PropTypes.object.isRequired,
         storeId: _React2['default'].PropTypes.number.isRequired
     },
 
@@ -20878,7 +21072,7 @@ var SimpleCard = _React2['default'].createClass({
 exports['default'] = SimpleCard;
 module.exports = exports['default'];
 
-},{"../stores/CardStore":177,"react":162}],168:[function(require,module,exports){
+},{"../stores/CardStore":178,"react":162}],169:[function(require,module,exports){
 'use strict';
 
 var _interopRequireWildcard = function (obj) { return obj && obj.__esModule ? obj : { 'default': obj }; };
@@ -20987,7 +21181,7 @@ var Site = _React2['default'].createClass({
 exports['default'] = Site;
 module.exports = exports['default'];
 
-},{"../stores/ConfigStore":178,"../stores/DatasetStore":180,"../stores/StateStore":181,"./BootstrapLayout":165,"./SiteNavigation":169,"react":162}],169:[function(require,module,exports){
+},{"../stores/ConfigStore":179,"../stores/DatasetStore":181,"../stores/StateStore":182,"./BootstrapLayout":166,"./SiteNavigation":170,"react":162}],170:[function(require,module,exports){
 'use strict';
 
 var _interopRequireWildcard = function (obj) { return obj && obj.__esModule ? obj : { 'default': obj }; };
@@ -21061,7 +21255,7 @@ var SiteNavigation = _React2['default'].createClass({
 exports['default'] = SiteNavigation;
 module.exports = exports['default'];
 
-},{"../common/BudgetAppDispatcher":164,"../constants/ActionTypes":172,"../stores/ConfigStore":178,"../stores/StateStore":181,"react":162}],170:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":164,"../constants/ActionTypes":173,"../stores/ConfigStore":179,"../stores/StateStore":182,"react":162}],171:[function(require,module,exports){
 'use strict';
 
 var _interopRequireWildcard = function (obj) { return obj && obj.__esModule ? obj : { 'default': obj }; };
@@ -21081,6 +21275,7 @@ var SlideShow = _React2['default'].createClass({
 
     propTypes: {
         componentData: _React2['default'].PropTypes.object.isRequired,
+        componentProps: _React2['default'].PropTypes.object.isRequired,
         storeId: _React2['default'].PropTypes.number.isRequired
     },
 
@@ -21127,7 +21322,7 @@ var SlideShow = _React2['default'].createClass({
 exports['default'] = SlideShow;
 module.exports = exports['default'];
 
-},{"../stores/CardStore":177,"react":162}],171:[function(require,module,exports){
+},{"../stores/CardStore":178,"react":162}],172:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -21140,7 +21335,7 @@ module.exports = {
     CONTRA: 6
 };
 
-},{}],172:[function(require,module,exports){
+},{}],173:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -21149,7 +21344,7 @@ module.exports = {
     DATASET_RECEIVED: "DATASET_RECEIVED"
 };
 
-},{}],173:[function(require,module,exports){
+},{}],174:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -21160,7 +21355,7 @@ module.exports = {
     DS_STATE_READY: "DS_STATE_READY"
 };
 
-},{}],174:[function(require,module,exports){
+},{}],175:[function(require,module,exports){
 'use strict';
 
 function Card(timestamp, title, body, image, link) {
@@ -21179,7 +21374,7 @@ function Card(timestamp, title, body, image, link) {
 
 module.exports = Card;
 
-},{}],175:[function(require,module,exports){
+},{}],176:[function(require,module,exports){
 'use strict';
 
 var DatasetStatus = require('../constants/DatasetStatus');
@@ -21430,7 +21625,7 @@ function DataModel(id, datasetIds) {
 
 module.exports = DataModel;
 
-},{"../common/BudgetAppDispatcher":164,"../constants/AccountTypes":171,"../constants/ActionTypes":172,"../constants/DatasetStatus":173,"../stores/DatasetStore":180}],176:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":164,"../constants/AccountTypes":172,"../constants/ActionTypes":173,"../constants/DatasetStatus":174,"../stores/DatasetStore":181}],177:[function(require,module,exports){
 'use strict';
 
 var DatasetStatus = require('../constants/DatasetStatus');
@@ -21474,7 +21669,7 @@ function Dataset(timestamp, sourceId) {
 
 module.exports = Dataset;
 
-},{"../constants/DatasetStatus":173}],177:[function(require,module,exports){
+},{"../constants/DatasetStatus":174}],178:[function(require,module,exports){
 'use strict';
 
 var dispatcher = require('../common/BudgetAppDispatcher');
@@ -21532,7 +21727,7 @@ dispatcher.register(function (action) {
 
 module.exports = CardStore;
 
-},{"../common/BudgetAppDispatcher":164,"../constants/ActionTypes":172,"../data/Card":174,"events":5,"object-assign":7}],178:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":164,"../constants/ActionTypes":173,"../data/Card":175,"events":5,"object-assign":7}],179:[function(require,module,exports){
 'use strict';
 
 var dispatcher = require('../common/BudgetAppDispatcher');
@@ -21614,7 +21809,7 @@ dispatcher.register(function (action) {
 
 module.exports = ConfigStore;
 
-},{"../common/BudgetAppDispatcher":164,"../constants/ActionTypes":172,"events":5,"object-assign":7}],179:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":164,"../constants/ActionTypes":173,"events":5,"object-assign":7}],180:[function(require,module,exports){
 'use strict';
 
 var dispatcher = require('../common/BudgetAppDispatcher');
@@ -21679,7 +21874,7 @@ dispatcher.register(function (action) {
 
 module.exports = DataModelStore;
 
-},{"../common/BudgetAppDispatcher":164,"../constants/ActionTypes":172,"../data/DataModel":175,"events":5,"object-assign":7}],180:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":164,"../constants/ActionTypes":173,"../data/DataModel":176,"events":5,"object-assign":7}],181:[function(require,module,exports){
 'use strict';
 
 var dispatcher = require('../common/BudgetAppDispatcher');
@@ -21749,7 +21944,7 @@ DatasetStore.dispatchToken = dispatcher.register(function (action) {
 
 module.exports = DatasetStore;
 
-},{"../common/BudgetAppDispatcher":164,"../constants/ActionTypes":172,"../data/Dataset":176,"events":5,"object-assign":7}],181:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":164,"../constants/ActionTypes":173,"../data/Dataset":177,"events":5,"object-assign":7}],182:[function(require,module,exports){
 'use strict';
 
 var dispatcher = require('../common/BudgetAppDispatcher');
@@ -21890,4 +22085,4 @@ dispatcher.register(function (action) {
 
 module.exports = StateStore;
 
-},{"../common/BudgetAppDispatcher":164,"../constants/ActionTypes":172,"events":5,"object-assign":7}]},{},[1]);
+},{"../common/BudgetAppDispatcher":164,"../constants/ActionTypes":173,"events":5,"object-assign":7}]},{},[1]);
