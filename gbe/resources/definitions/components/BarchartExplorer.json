@@ -1,0 +1,12 @@
+{
+  "name":"SimpleCard",
+  "description": "Just a simple display of a single card",
+  "data": [
+    {
+      "tag":"mycard",
+      "name":"Your Card",
+      "description": "Pick a card, any card",
+      "type":"card"
+    }
+  ]
+}
