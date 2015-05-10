@@ -25,10 +25,8 @@
     "karma-chrome-launcher": "^0.1.10",
     "karma-cli": "0.0.4",
     "karma-jasmine": "^0.3.5",
-    "karma-mocha": "^0.1.10",
     "karma-sourcemap-loader": "^0.3.4",
     "laravel-elixir": "*",
-    "mocha": "^2.2.4",
     "proxyquireify": "^2.0.0",
     "vinyl-source-stream": "^1.1.0"
   },
