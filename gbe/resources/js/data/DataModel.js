@@ -63,6 +63,7 @@ function DataModel(id, datasetIds, initialCommands = null) {
         if (readyCount > 0) {
             this.data = null;
             this.categories = this.raw[firstReady].data.categoryIdentifiers;
+            console.log("this.categories = " + this.categories);
             this.initialize();
         }
         return needUpdate;
@@ -238,7 +239,12 @@ function DataModel(id, datasetIds, initialCommands = null) {
                     data.push(item);
                 }
             }
-            return data;
+
+            return {
+                categories:this.initializationParameters.hierarchy,
+                dataHeaders:this.getHeaders(),
+                data: data
+            };
         }
         else {
             return null;

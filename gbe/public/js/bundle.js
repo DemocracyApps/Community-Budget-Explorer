@@ -20693,16 +20693,17 @@ var BarchartExplorer = _React2['default'].createClass({
         var dataModelId = stateStore.getComponentStateValue(this.props.storeId, 'dataModelId');
         var dm = dataModelStore.getModel(dataModelId);
         var selectedItem = stateStore.getComponentStateValue(this.props.storeId, 'selectedItem');
-        var rows = dm.getData({ accountTypes: [selectedItem] }, true);
+        var newData = dm.getData({ accountTypes: [selectedItem] }, true);
 
-        if (rows == null) {
+        if (newData == null) {
             return _React2['default'].createElement(
                 'div',
                 null,
                 ' Multiyear table loading ... '
             );
         } else {
-            var headers = dm.getHeaders();
+            var rows = newData.data;
+            var headers = newData.dataHeaders;
 
             return _React2['default'].createElement(
                 'div',
@@ -20870,6 +20871,7 @@ var MultiYearTable = _React2['default'].createClass({
         storeId: _React2['default'].PropTypes.number.isRequired
     },
 
+    // These should really be put in config store.
     getDefaultProps: function getDefaultProps() {
         return {
             accountTypes: [{ name: 'Expense', value: AccountTypes.EXPENSE }, { name: 'Revenue', value: AccountTypes.REVENUE }],
@@ -20961,16 +20963,17 @@ var MultiYearTable = _React2['default'].createClass({
         var dataModelId = stateStore.getComponentStateValue(this.props.storeId, 'dataModelId');
         var dm = dataModelStore.getModel(dataModelId);
         var selectedItem = stateStore.getComponentStateValue(this.props.storeId, 'selectedItem');
-        var rows = dm.getData({ accountTypes: [selectedItem] }, true);
+        var newData = dm.getData({ accountTypes: [selectedItem] }, true);
 
-        if (rows == null) {
+        if (newData == null) {
             return _React2['default'].createElement(
                 'div',
                 null,
                 ' Multiyear table loading ... '
             );
         } else {
-            var headers = dm.getHeaders();
+            var rows = newData.data;
+            var headers = newData.dataHeaders;
 
             return _React2['default'].createElement(
                 'div',
@@ -21443,6 +21446,7 @@ function DataModel(id, datasetIds) {
         if (readyCount > 0) {
             this.data = null;
             this.categories = this.raw[firstReady].data.categoryIdentifiers;
+            console.log('this.categories = ' + this.categories);
             this.initialize();
         }
         return needUpdate;
@@ -21616,7 +21620,12 @@ function DataModel(id, datasetIds) {
                     data.push(item);
                 }
             }
-            return data;
+
+            return {
+                categories: this.initializationParameters.hierarchy,
+                dataHeaders: this.getHeaders(),
+                data: data
+            };
         } else {
             return null;
         }

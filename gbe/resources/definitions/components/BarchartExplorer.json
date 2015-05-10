@@ -10,12 +10,12 @@
     }
   ],
   "props": {
-    "example": {
-      "value": 42,
+    "max_items": {
+      "value": 10,
       "configurable": false
     },
     "reduce": {
-      "value": "absolute_change",
+      "value": "difference",
       "configurable": true,
       "label": "Select reduction method",
       "type":"select",
@@ -26,13 +26,13 @@
           "description": "No reduction, using a single dataset."
         },
         {
-          "name": "Absolute Change",
-          "value": "absolute_change",
+          "name": "Actual Difference",
+          "value": "difference",
           "description": "Value difference between a later and earlier period. Max of 2 datasets."
         },
         {
-          "name": "Percent Change",
-          "value": "percent_change",
+          "name": "Percent Difference",
+          "value": "percent_difference",
           "description": "Percentage difference between a later and earlier period. Max of 2 datasets."
         },
         {

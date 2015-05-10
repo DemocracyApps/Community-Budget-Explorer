@@ -102,13 +102,14 @@ var BarchartExplorer = React.createClass({
         var dataModelId = stateStore.getComponentStateValue(this.props.storeId, 'dataModelId');
         var dm = dataModelStore.getModel(dataModelId);
         var selectedItem = stateStore.getComponentStateValue(this.props.storeId, 'selectedItem');
-        var rows = dm.getData({accountTypes:[selectedItem]}, true);
+        var newData = dm.getData({accountTypes:[selectedItem]}, true);
 
-        if (rows == null) {
+        if (newData == null) {
             return <div> Multiyear table loading ... </div>
         }
         else {
-            var headers = dm.getHeaders();
+            var rows = newData.data;
+            var headers = newData.dataHeaders;
 
             return (
                 <div>
