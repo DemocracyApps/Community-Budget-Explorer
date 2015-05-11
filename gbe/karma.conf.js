@@ -4,11 +4,12 @@ module.exports = function (config) {
     singleRun: true, //just run once by default
     frameworks: [ 'browserify','jasmine' ], //use the mocha test framework
     files: [
-      'resources/js/spec_helper.js','resources/js/*/__tests__/*.js'
+
+      'resources/assets/js/spec_helper.js','resources/assets/js/*/__tests__/*.js'
     ],
     preprocessors: {
-      'resources/js/*/__tests__/*.js': [ 'browserify' ],
-      'resources/js/spec_helper.js': [ 'browserify' ]
+      'resources/assets/js/*/__tests__/*.js': [ 'browserify' ],
+      'resources/assets/js/spec_helper.js': [ 'browserify' ]
     },
     browserify: {
       plugin: ['proxyquireify/plugin'],
