@@ -20665,7 +20665,7 @@ var BarchartExplorer = _react2['default'].createClass({
         return {
             accountTypes: [{ name: 'Expense', value: AccountTypes.EXPENSE }, { name: 'Revenue', value: AccountTypes.REVENUE }],
             dataInitialization: {
-                hierarchy: ['Fund', 'Department', 'Division'],
+                hierarchy: ['Fund', 'Department', 'Division', 'Account'],
                 accountTypes: [AccountTypes.EXPENSE, AccountTypes.REVENUE],
                 amountThreshold: 0.01
             }
@@ -20673,8 +20673,6 @@ var BarchartExplorer = _react2['default'].createClass({
     },
 
     componentWillMount: function componentWillMount() {
-        console.log('I got componentProps: ' + JSON.stringify(this.props.componentProps));
-        console.log('The reduce method is ' + this.props.componentProps.reduce);
         // If this is the first time this component is mounting, we need to create the data model
         // and do any other state initialization required.
         var dataModelId = stateStore.getComponentStateValue(this.props.storeId, 'dataModelId');
@@ -20687,7 +20685,8 @@ var BarchartExplorer = _react2['default'].createClass({
             var dm = dataModelStore.createModel(ids, this.props.dataInitialization);
             stateStore.setComponentState(this.props.storeId, {
                 selectedItem: AccountTypes.REVENUE,
-                dataModelId: dm.id
+                dataModelId: dm.id,
+                currentLevel: 0
             });
         }
     },
@@ -20735,7 +20734,7 @@ var BarchartExplorer = _react2['default'].createClass({
             _react2['default'].createElement(
                 'td',
                 { key: '0' },
-                item.account,
+                item.categories[item.categories.length - 1],
                 ' '
             ),
             item.amount.map(this.tableColumn)
@@ -20754,13 +20753,16 @@ var BarchartExplorer = _react2['default'].createClass({
         var dataModelId = stateStore.getComponentStateValue(this.props.storeId, 'dataModelId');
         var dm = dataModelStore.getModel(dataModelId);
         var selectedItem = stateStore.getComponentStateValue(this.props.storeId, 'selectedItem');
-        var newData = dm.getData({ accountTypes: [selectedItem] }, true);
+        var newData = dm.getData({
+            accountTypes: [selectedItem],
+            reduce: this.props.componentProps.reduce
+        }, true);
 
         if (newData == null) {
             return _react2['default'].createElement(
                 'div',
                 null,
-                ' Multiyear table loading ... '
+                ' BarchartExplorer loading ... '
             );
         } else {
             var rows = newData.data;
@@ -21005,7 +21007,7 @@ var MultiYearTable = _react2['default'].createClass({
             _react2['default'].createElement(
                 'td',
                 { key: '0' },
-                item.account,
+                item.categories[item.categories.length - 1],
                 ' '
             ),
             item.amount.map(this.tableColumn)

@@ -23,7 +23,7 @@ var BarchartExplorer = React.createClass({
                 { name: "Revenue", value: AccountTypes.REVENUE}
             ],
             dataInitialization: {
-                hierarchy: ['Fund', 'Department', 'Division'],
+                hierarchy: ['Fund', 'Department', 'Division', 'Account'],
                 accountTypes: [AccountTypes.EXPENSE, AccountTypes.REVENUE],
                 amountThreshold: 0.01
             }
@@ -31,8 +31,6 @@ var BarchartExplorer = React.createClass({
     },
 
     componentWillMount: function () {
-        console.log("I got componentProps: " + JSON.stringify(this.props.componentProps));
-        console.log("The reduce method is " + this.props.componentProps.reduce);
         // If this is the first time this component is mounting, we need to create the data model
         // and do any other state initialization required.
         var dataModelId = stateStore.getComponentStateValue(this.props.storeId, 'dataModelId');
@@ -46,7 +44,8 @@ var BarchartExplorer = React.createClass({
             stateStore.setComponentState(this.props.storeId,
                 {
                     selectedItem: AccountTypes.REVENUE,
-                    dataModelId: dm.id
+                    dataModelId:  dm.id,
+                    currentLevel: 0
                 });
         }
     },
@@ -89,7 +88,7 @@ var BarchartExplorer = React.createClass({
 
     tableRow: function (item, index) {
         return <tr key={index}>
-            <td key="0">{item.account} </td>
+            <td key="0">{item.categories[item.categories.length-1]} </td>
             {item.amount.map(this.tableColumn)}
         </tr>
     },
@@ -102,10 +101,13 @@ var BarchartExplorer = React.createClass({
         var dataModelId = stateStore.getComponentStateValue(this.props.storeId, 'dataModelId');
         var dm = dataModelStore.getModel(dataModelId);
         var selectedItem = stateStore.getComponentStateValue(this.props.storeId, 'selectedItem');
-        var newData = dm.getData({accountTypes:[selectedItem]}, true);
+        var newData = dm.getData({
+            accountTypes:[selectedItem],
+            reduce: this.props.componentProps.reduce
+        }, true);
 
         if (newData == null) {
-            return <div> Multiyear table loading ... </div>
+            return <div> BarchartExplorer loading ... </div>
         }
         else {
             var rows = newData.data;

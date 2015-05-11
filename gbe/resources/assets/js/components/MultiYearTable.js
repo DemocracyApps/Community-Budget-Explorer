@@ -88,7 +88,7 @@ var MultiYearTable = React.createClass({
 
     tableRow: function (item, index) {
         return <tr key={index}>
-            <td key="0">{item.account} </td>
+            <td key="0">{item.categories[item.categories.length-1]} </td>
             {item.amount.map(this.tableColumn)}
         </tr>
     },
