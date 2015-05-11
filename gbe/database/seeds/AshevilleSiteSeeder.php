@@ -62,11 +62,11 @@ class AshevilleSiteSeeder extends Seeder
         $page->save();
 
         $c = new PageComponent();
-        $c->component = 1;
+        $c->component = 2;
         $c->page = $page->id;
         $c->save();
         $c = new PageComponent();
-        $c->component = 2;
+        $c->component = 4;
         $c->page = $page->id;
         $c->save();
 

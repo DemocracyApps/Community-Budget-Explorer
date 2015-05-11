@@ -8,7 +8,7 @@ var AccountTypes = require('../constants/AccountTypes');
 var dispatcher = require('../common/BudgetAppDispatcher');
 var ActionTypes = require('../constants/ActionTypes');
 
-var MultiYearTable = React.createClass({
+var BarchartExplorer = React.createClass({
 
     propTypes: {
         componentData: React.PropTypes.object.isRequired,
@@ -16,7 +16,6 @@ var MultiYearTable = React.createClass({
         storeId: React.PropTypes.number.isRequired
     },
 
-    // These should really be put in config store.
     getDefaultProps: function() {
         return {
             accountTypes: [
@@ -24,7 +23,7 @@ var MultiYearTable = React.createClass({
                 { name: "Revenue", value: AccountTypes.REVENUE}
             ],
             dataInitialization: {
-                hierarchy: ['Fund', 'Department', 'Division'],
+                hierarchy: ['Fund', 'Department', 'Division', 'Account'],
                 accountTypes: [AccountTypes.EXPENSE, AccountTypes.REVENUE],
                 amountThreshold: 0.01
             }
@@ -36,7 +35,7 @@ var MultiYearTable = React.createClass({
         // and do any other state initialization required.
         var dataModelId = stateStore.getComponentStateValue(this.props.storeId, 'dataModelId');
         if (dataModelId == null) {
-            var ids = this.props.componentData['alldata'].ids;
+            var ids = this.props.componentData['mydatasets'].ids;
             ids.forEach(function (id) {
                 apiActions.requestDatasetIfNeeded(id);
             });
@@ -45,7 +44,8 @@ var MultiYearTable = React.createClass({
             stateStore.setComponentState(this.props.storeId,
                 {
                     selectedItem: AccountTypes.REVENUE,
-                    dataModelId: dm.id
+                    dataModelId:  dm.id,
+                    currentLevel: 0
                 });
         }
     },
@@ -88,7 +88,7 @@ var MultiYearTable = React.createClass({
 
     tableRow: function (item, index) {
         return <tr key={index}>
-            <td key="0">{item.account} </td>
+            <td key="0">{item.categories[item.categories.length-1]} </td>
             {item.amount.map(this.tableColumn)}
         </tr>
     },
@@ -101,10 +101,13 @@ var MultiYearTable = React.createClass({
         var dataModelId = stateStore.getComponentStateValue(this.props.storeId, 'dataModelId');
         var dm = dataModelStore.getModel(dataModelId);
         var selectedItem = stateStore.getComponentStateValue(this.props.storeId, 'selectedItem');
-        var newData = dm.getData({accountTypes:[selectedItem]}, true);
+        var newData = dm.getData({
+            accountTypes:[selectedItem],
+            reduce: this.props.componentProps.reduce
+        }, true);
 
         if (newData == null) {
-            return <div> Multiyear table loading ... </div>
+            return <div> BarchartExplorer loading ... </div>
         }
         else {
             var rows = newData.data;
@@ -140,4 +143,4 @@ var MultiYearTable = React.createClass({
     }
 });
 
-export default MultiYearTable;
+export default BarchartExplorer;

@@ -8,7 +8,7 @@ var AccountTypes = require('../constants/AccountTypes');
 var dispatcher = require('../common/BudgetAppDispatcher');
 var ActionTypes = require('../constants/ActionTypes');
 
-var BarchartExplorer = React.createClass({
+var MultiYearTable = React.createClass({
 
     propTypes: {
         componentData: React.PropTypes.object.isRequired,
@@ -16,6 +16,7 @@ var BarchartExplorer = React.createClass({
         storeId: React.PropTypes.number.isRequired
     },
 
+    // These should really be put in config store.
     getDefaultProps: function() {
         return {
             accountTypes: [
@@ -31,13 +32,11 @@ var BarchartExplorer = React.createClass({
     },
 
     componentWillMount: function () {
-        console.log("I got componentProps: " + JSON.stringify(this.props.componentProps));
-        console.log("The reduce method is " + this.props.componentProps.reduce);
         // If this is the first time this component is mounting, we need to create the data model
         // and do any other state initialization required.
         var dataModelId = stateStore.getComponentStateValue(this.props.storeId, 'dataModelId');
         if (dataModelId == null) {
-            var ids = this.props.componentData['mydatasets'].ids;
+            var ids = this.props.componentData['alldata'].ids;
             ids.forEach(function (id) {
                 apiActions.requestDatasetIfNeeded(id);
             });
@@ -89,7 +88,7 @@ var BarchartExplorer = React.createClass({
 
     tableRow: function (item, index) {
         return <tr key={index}>
-            <td key="0">{item.account} </td>
+            <td key="0">{item.categories[item.categories.length-1]} </td>
             {item.amount.map(this.tableColumn)}
         </tr>
     },
@@ -141,4 +140,4 @@ var BarchartExplorer = React.createClass({
     }
 });
 
-export default BarchartExplorer;
+export default MultiYearTable;

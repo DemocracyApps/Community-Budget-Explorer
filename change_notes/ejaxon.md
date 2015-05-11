@@ -1,4 +1,20 @@
-5/10/2015 by ejaxon
+5/11/2015
+
+- Move js and css directories from gbe/resources/ to gbe/resources/assets to match Elixir's expected default location 
+  after an update.
+  
+
+5/10/2015
+
+- Made changes to DataModel.js. Rather than returning the rows of data, it returns an object. 
+  The object has 3 members for now:
+    categories: the list of category names that remain in the dataset
+    dataHeaders: the list of headers for each of the included datasets
+    data: the rows of data.
+- Changed the reduce options to difference, percent_difference, and average.
+
+
+5/9/2015
 
 - Externalized	the dataModelId	state variable in MultiYearTable. Otherwise, when you switch pages,
   you lose the local state and the next instance of the component creates a new dataModel
