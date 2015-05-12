@@ -15,6 +15,9 @@ module.exports = function (config) {
       plugin: ['proxyquireify/plugin'],
       transform: [ 'babelify']
     },
+    watchify:{
+      poll: true
+    },
     reporters: [ 'dots' ], //report results in this format
     singleRun: false,
     autoWatch: true

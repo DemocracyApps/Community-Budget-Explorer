@@ -12,7 +12,7 @@ else
 fi
 
 echo "Apache User: $www_user"
-# End PRC 
+# End PRC
 
 sudo apt-get update
 
@@ -42,7 +42,7 @@ sudo service apache2 restart
 curl -sS https://getcomposer.org/installer | php
 sudo mv composer.phar /usr/local/bin/composer
 
-# Above is from original install.sh by Jeffrey Way. 
+# Above is from original install.sh by Jeffrey Way.
 # The following complete the set-up for a gbe test/dev machine.
 
 sudo add-apt-repository -y ppa:ubuntugis/ubuntugis-unstable
@@ -57,7 +57,7 @@ sudo chmod -R 777 /var/www/gbe/storage
 # PRC Start
 # On DigitalOcean this caused issues, as there is no vagrant user, so we make this configurable
 if [ "$www_user" != "" ]; then
-	echo "Editing Apache User" 
+	echo "Editing Apache User"
 	sed -i "s/www-data/$www_user/" /etc/apache2/envvars
 fi
 # End PRC
@@ -116,8 +116,14 @@ sudo npm install -g npm@next
 sudo npm install -g bower
 sudo npm install -g gulp
 
+# karma dependencies and configuration
+sudo apt-get install -y chromium-browser
+sudo apt-get install -y xvfb
+
+Xvfb :10 -screen 0 1366x768x24 -ac &
 
 
+cp setup/bash_profile /home/vagrant/.bash_profile
 #sudo apt-get -y purge nodejs npm
 #sudo apt-get -y install python-software-properties
 #sudo apt-get -y autoremove
@@ -127,5 +133,3 @@ sudo npm install -g gulp
 #sudo npm install -g gulp
 #sudo npm install -g bower
 #sudo npm install -g react
-
-

@@ -21,7 +21,7 @@
     "gulp": "^3.8.8",
     "jasmine-core": "^2.3.2",
     "karma": "^0.12.31",
-    "karma-browserify": "^4.1.2",
+    "karma-browserify": "git://github.com/andrewswerlick/karma-browserify",
     "karma-chrome-launcher": "^0.1.10",
     "karma-cli": "0.0.4",
     "karma-jasmine": "^0.3.5",
@@ -30,7 +30,7 @@
     "proxyquireify": "^2.0.0",
     "vinyl-source-stream": "^1.1.0"
   },
-  "scripts":{
-    "test":"karma start"
+  "scripts": {
+    "test": "karma start"
   }
 }
