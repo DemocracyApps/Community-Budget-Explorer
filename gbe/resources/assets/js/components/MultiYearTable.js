@@ -104,7 +104,7 @@ var MultiYearTable = React.createClass({
         var newData = dm.getData({accountTypes:[selectedItem]}, true);
 
         if (newData == null) {
-            return <div> Multiyear table loading ... </div>
+            return <div> Multiyear table loading ...</div>
         }
         else {
             var rows = newData.data;

@@ -88,7 +88,7 @@ var BarchartExplorer = React.createClass({
 
     tableRow: function (item, index) {
         return <tr key={index}>
-            <td key="0">{item.categories[item.categories.length-1]} </td>
+            <td key="0">{item.account} </td>
             {item.amount.map(this.tableColumn)}
         </tr>
     },
@@ -103,6 +103,8 @@ var BarchartExplorer = React.createClass({
         var selectedItem = stateStore.getComponentStateValue(this.props.storeId, 'selectedItem');
         var newData = dm.getData({
             accountTypes:[selectedItem],
+            startPath: ['General Fund'],
+            nLevels: 1,
             reduce: this.props.componentProps.reduce
         }, true);
 

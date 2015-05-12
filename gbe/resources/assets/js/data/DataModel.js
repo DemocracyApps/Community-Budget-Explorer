@@ -12,6 +12,7 @@ function DataModel(id, datasetIds, initialCommands = null) {
     this.raw = []; // array of datasets
     this.initializationParameters = null;
     this.categories = null;
+    this.categoryMap = null;
     this.currentCommands = null;
 
     this.data = null;
@@ -60,10 +61,12 @@ function DataModel(id, datasetIds, initialCommands = null) {
         if (readyCount < datasetIds.length) {
             this.status = (readyCount == 0?DatasetStatus.DS_STATE_PENDING:DatasetStatus.DS_STATE_PARTIAL);
         }
+        /*
+         * TODO: Need a better way to deal with categories across (and within) datasets. This assumes they are uniform.
+         */
         if (readyCount > 0) {
             this.data = null;
             this.categories = this.raw[firstReady].data.categoryIdentifiers;
-            console.log("this.categories = " + this.categories);
             this.initialize();
         }
         return needUpdate;
@@ -101,16 +104,35 @@ function DataModel(id, datasetIds, initialCommands = null) {
      */
     this.initialize = function () {
         var hierarchy = this.initializationParameters.hierarchy;
-        var nCategories = hierarchy.length;
         var nPeriods = this.raw.length;
         var accountTypes = this.initializationParameters.accountTypes;
         var amountThreshold = 0.0;
-        var iPeriod, iCat, level, i, j;
 
         if ('amountThreshold' in this.initializationParameters) {
-            amountThreshold = +this.initializationParameters.amountThreshold;
+            amountThreshold = Number(this.initializationParameters.amountThreshold);
         }
         if (this.raw.length > 1) this.raw.sort(this.datasetCompare);
+
+        /* Now set up a couple utility functions to use below */
+        var mapCategories = function(desiredHierarchy, apiData) {
+            let catMap = new Array(desiredHierarchy.length);
+            for (let i = 0; i < desiredHierarchy.length; ++i) {
+                catMap[i] = apiData.categoryIdentifiers.indexOf(hierarchy[i]);
+                if (catMap[i] < 0) {
+                    if (hierarchy[i] == 'Account') {
+                        catMap[i] = -1;
+                    }
+                    else {
+                        throw "Unable to map category " + hierarchy[i] + " in dataset " + data.name;
+                    }
+                }
+            }
+            return catMap;
+        };
+
+        var getCurrentCategory = function(level, item, categoryMap) {
+             return (categoryMap[level] >= 0)?item.categories[categoryMap[level]]:item.account;
+        };
         /*
          * We need to do a pass to:
          *  - Merge datasets from multiple periods
@@ -118,94 +140,97 @@ function DataModel(id, datasetIds, initialCommands = null) {
          * We'll do the merge/aggregation using a tree.
          */
         this.count = 0;
-        var tree = {};
+        this.altCount = 0;
+        this.nzCount = 0;
+        var tree = {isBottom:false};
 
-        for (iPeriod = 0; iPeriod < this.raw.length; ++iPeriod) {
-            var data = this.raw[iPeriod].data;
+        for (let iPeriod = 0; iPeriod < this.raw.length; ++iPeriod) {
+            let data = this.raw[iPeriod].data;
             if (! this.raw[iPeriod].isReady()) continue;
-            // First we need to map the requested categories to those in the dataset
-            var catMap = new Array(nCategories+1);
-            for (iCat = 0; iCat < nCategories; ++iCat) {
-                catMap[iCat] = data.categoryIdentifiers.indexOf(hierarchy[iCat]);
-                if (catMap[iCat] < 0) {
-                    if (hierarchy[iCat] == 'Account') {
-                        catMap[iCat] = -1;
-                    }
-                    else {
-                        throw "Unable to map category " + hierarchy[iCat] + " in dataset " + data.name;
-                    }
-                }
-            }
+            /*
+             * First we need to map the requested categories to those in the dataset
+             * The catMap array will contain, for each category requested, its index in
+             * the array of categories in the dataset, or -1 for Account, since that is
+             * treated specially in the data we get from the API.
+             *
+             */
+            let categoryMap = mapCategories(hierarchy, data);
 
-            for (j = 0; j < data.items.length; ++j) {
-                var item = data.items[j];
+            console.log("Incoming dataset for period " + iPeriod + " is " + data.items.length);
+            for (let j = 0; j < data.items.length; ++j) {
+                let level;
+                let item = data.items[j];
                 item.amount = Number(item.amount);
 
-                if (accountTypes.indexOf(item.type) < 0) continue;
+                if (accountTypes.indexOf(item.type) < 0) continue; // Skip if not one of the specified account types
 
-                if (! (item.type in tree)) tree[item.type] = {};
-                var current = tree[item.type]; // We never aggregate across account types
-                var key;
+                if (! (item.type in tree)) tree[item.type] = {isBottom:false};
+
+                let current = tree[item.type]; // We never aggregate across account types
+                let key;
                 /*
                  * Build the tree up to, but not including the last level
                  */
-                for (level = 0; level < nCategories - 1; ++level) {
-                    key = (catMap[level] >= 0)?item.categories[catMap[level]]:'Account';
-                    if (!(key in current)) current[key] = {};
+                for (level = 0; level < hierarchy.length - 1; ++level) {
+                    key = getCurrentCategory(level, item, categoryMap);
+                    if (!(key in current)) current[key] = {isBottom:false};
                     current = current[key];
                 }
-                level = nCategories - 1;
-                key = (catMap[level] >= 0)?item.categories[catMap[level]]:'Account';
 
+                key = getCurrentCategory(hierarchy.length-1, item, categoryMap);
                 if (!(key in current)) {
-                    var amounts = new Array(nPeriods);
+                    let amounts = new Array(nPeriods);
                     for (var k = 0; k < nPeriods; ++k) amounts[k] = Number(0.0);
-                    var categories = new Array(nCategories);
-                    for (var level = 0; level < nCategories; ++level) {
-                        categories[level] = (catMap[level] >= 0)?item.categories[catMap[level]]:item.account;
+                    let categories = new Array(hierarchy.length);
+                    for (level = 0; level < hierarchy.length; ++level) {
+                        categories[level] = getCurrentCategory(level, item, categoryMap);
                     }
 
                     current[key] = {
-                        account: categories[nCategories-1],
+                        isBottom: true,
                         accountType: item.type,
                         categories: categories,
                         amount: amounts
                     };
                     this.count++;
                 }
-                var factor = (item.type == AccountTypes.REVENUE)?-1.0:1.0;
-                current[key].amount[iPeriod] += item.amount * factor;
+                else {
+                    this.altCount++;
+                }
+                if (Math.abs(item.amount) > 0.0) ++this.nzCount;
+                let factor = (item.type == AccountTypes.REVENUE)?-1.0:1.0;
+                current[key].amount[iPeriod] += Number(item.amount) * factor;
             }
         }
+        console.log("Non-zero count = " + this.nzCount);
+        console.log("The counts before extraction are " + this.count + ", " + this.altCount);
 
         // Now collapse the tree back out
         this.data = [];
         for (var accType in accountTypes) {
-            var partial = this.collapseTree (tree[accountTypes[accType]], 0, nCategories, amountThreshold);
+            var partial = this.extractFromTree (tree[accountTypes[accType]], amountThreshold);
             this.data = this.data.concat(partial);
         }
+        console.log("Final data length is " + this.data.length);
     };
 
-    this.collapseTree = function (node, currentLevel, nLevels, threshold) {
+    this.extractFromTree = function (node, threshold) {
         var data = [];
-        if (currentLevel == nLevels-1) {
-            for (var acct in node) {
-                if (node.hasOwnProperty(acct)) {
-                    var keep = false;
 
-                    for (i=0; !keep && i<node[acct].amount.length; ++i) {
-                        var amt = node[acct].amount[i];
-
-                        if (Math.abs(amt) >= threshold) keep = true;
-                    }
-                    if (keep) data.push(node[acct]);
+        if (node.hasOwnProperty('isBottom')) {
+            if (node.isBottom) {
+                var keep = false;
+                for (i = 0; !keep && i < node.amount.length; ++i) {
+                    if (Math.abs(node.amount[i]) >= threshold) keep = true;
                 }
+                keep = true;
+                if (keep) data.push(node);
             }
-        }
-        else {
-            for (var prop in node) {
-                if (node.hasOwnProperty(prop)) {
-                    data = data.concat(this.collapseTree(node[prop], currentLevel + 1, nLevels, threshold));
+            else {
+                for (var prop in node) {
+                    if (prop != 'isBottom' && node.hasOwnProperty(prop)) {
+                        data = data.concat(this.extractFromTree(node[prop], threshold));
+                    }
                 }
             }
         }
@@ -224,7 +249,130 @@ function DataModel(id, datasetIds, initialCommands = null) {
         return headers;
     };
 
+
+    this.pathMatches = function pathMatches(template, path) {
+        var keep = true;
+        for (let i=0; keep && i<template.length; ++i) {
+            if (template[i] != null && template[i] != path[i]) keep = false;
+        }
+        return keep;
+    };
+
     this.getData = function (commands, partialOk=false) {
+        if (this.status == DatasetStatus.DS_STATE_READY ||
+            (this.status == DatasetStatus.DS_STATE_PARTIAL && partialOk)) {
+            this.currentCommands = commands;
+
+            var data = [];
+            var accountTypes = null;
+            var startPath = null;
+            var startLevel = 0;
+            var nLevels = 1000;
+
+            // Basic order is: (1) filters, including startPath, (2) reduce
+
+            if ('accountTypes' in commands) accountTypes = commands.accountTypes;
+            if ('startPath' in commands) {
+                startPath = commands.startPath;
+                if (startPath != null) startLevel = startPath.length;
+            }
+            if ('nLevels' in commands) {
+                nLevels = commands.nLevels;
+                if (startLevel + nLevels > this.initializationParameters.hierarchy.length) {
+                    nLevels = this.initializationParameters.hierarchy.length - startLevel;
+                }
+            }
+            console.log("The start path is " + startPath);
+            console.log(" and the starting data length is " + this.data.length);
+            /* Filters
+             * What want to do is include only those that
+             *    a. have a type in accountTypes (or accountTypes is null)
+             *    b. match the startPath
+             * then we want to traverse the remaining path for maxLevels and copy over
+             */
+            var tree = {};
+            for (let i=0; i<this.data.length; ++i) {
+                let item = this.data[i];
+
+                // See if it's an included account type
+                if (accountTypes == null || accountTypes.indexOf(item.accountType)>=0) {
+                    // Now see if it matches startPath
+                    if (startPath == null || this.pathMatches(startPath, item.categories)) {
+                        // Ok, we're taking it, up to maxlevels deep from the end of startPath
+
+                        if (! (item.type in tree)) tree[item.type] = {isBottom:false};
+                        var current = tree[item.type]; // We never aggregate across account types
+                        /*
+                         * Build the tree from startLevel up to, but not including startLevel+maxLevels
+                         */
+                        for (let i = 0; i < nLevels; ++i) {
+                            let key = item.categories[startLevel+i];
+                            if (i == nLevels-1) {
+                                if (!(key in current)) {
+                                    current[key] = {
+                                        isBottom: true,
+                                        account: key,
+                                        accountType: item.type,
+                                        categories: item.categories.slice(),
+                                        amount: item.amount.slice()
+                                    }
+                                }
+                                else {
+                                    for (let j = 0; j < item.amount.length; ++j) {
+                                        current[key].amount[j] += item.amount[j];
+                                    }
+                                }
+                            }
+                            else {
+                                if (!(key in current)) current[key] = {isBottom:false};
+                                current = current[key];
+                            }
+                        }
+                    }
+                }
+            }
+            // Now collapse the tree back out
+            for (var accType in tree) {
+                var partial = this.extractFromTree (tree[accType], 0.0);
+                data = data.concat(partial);
+            }
+
+            let headers = this.getHeaders();
+            if (false && 'reduce' in commands) {
+                let reduceCmd = commands.reduce;
+                if (reduceCmd == 'difference') {
+                    headers = ['Difference'];
+                    if (data[0].amount.length < 2) throw "Difference reduce requires 2 datasets";
+                    if (data[0].amount.length > 2)
+                        console.log("Warning: difference reduce applied to more than 2 datasets - using first two.");
+                    for (let i=0; i<data.length; ++i) {
+                        let inItem = data[i];
+                        let outItem = {
+                            accountType: inItem.accountType,
+                            categories: inItem.categories,
+                            amount: [inItem.amount[1] - inItem.amount[0]]
+                        }
+                        data[i] = outItem;
+                    }
+                }
+                else {
+                    throw "Reduce command " + reduceCmd + " not yet implemented.";
+                }
+
+            }
+console.log("getData return data length = " + data.length);
+            return {
+                categories:this.initializationParameters.hierarchy,
+                dataHeaders:headers,
+                data: data
+            };
+        }
+        else {
+            return null;
+        }
+    };
+
+    this.old_getData = function (commands, partialOk=false) {
         if (this.status == DatasetStatus.DS_STATE_READY ||
             (this.status == DatasetStatus.DS_STATE_PARTIAL && partialOk)) {
             this.currentCommands = commands;
@@ -239,7 +387,6 @@ function DataModel(id, datasetIds, initialCommands = null) {
                     data.push(item);
                 }
             }
-
             return {
                 categories:this.initializationParameters.hierarchy,
                 dataHeaders:this.getHeaders(),
