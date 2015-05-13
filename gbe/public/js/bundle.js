@@ -118,7 +118,7 @@ var props = {
 
 var layout = _react2['default'].render(_react2['default'].createElement(_componentsSite2['default'], props), document.getElementById('app'));
 
-},{"./common/BudgetAppDispatcher":164,"./components/BarchartExplorer":165,"./components/MultiYearTable":167,"./components/SimpleCard":168,"./components/Site":169,"./components/SlideShow":171,"./constants/ActionTypes":173,"./stores/CardStore":178,"./stores/ConfigStore":179,"./stores/DatasetStore":181,"./stores/StateStore":182,"react":162}],2:[function(require,module,exports){
+},{"./common/BudgetAppDispatcher":164,"./components/BarchartExplorer":165,"./components/MultiYearTable":167,"./components/SimpleCard":168,"./components/Site":169,"./components/SlideShow":171,"./constants/ActionTypes":173,"./stores/CardStore":179,"./stores/ConfigStore":180,"./stores/DatasetStore":182,"./stores/StateStore":183,"react":162}],2:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -20585,7 +20585,7 @@ var ApiActions = {
 
 module.exports = ApiActions;
 
-},{"../common/BudgetAppDispatcher":164,"../constants/ActionTypes":173,"../stores/ConfigStore":179,"../stores/DatasetStore":181,"object-assign":7}],164:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":164,"../constants/ActionTypes":173,"../stores/ConfigStore":180,"../stores/DatasetStore":182,"object-assign":7}],164:[function(require,module,exports){
 'use strict';
 
 var FluxDispatcher = require('flux').Dispatcher;
@@ -20818,7 +20818,7 @@ var BarchartExplorer = _react2['default'].createClass({
 exports['default'] = BarchartExplorer;
 module.exports = exports['default'];
 
-},{"../common/ApiActions":163,"../common/BudgetAppDispatcher":164,"../constants/AccountTypes":172,"../constants/ActionTypes":173,"../stores/DataModelStore":180,"../stores/DatasetStore":181,"../stores/StateStore":182,"react":162}],166:[function(require,module,exports){
+},{"../common/ApiActions":163,"../common/BudgetAppDispatcher":164,"../constants/AccountTypes":172,"../constants/ActionTypes":173,"../stores/DataModelStore":181,"../stores/DatasetStore":182,"../stores/StateStore":183,"react":162}],166:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -20941,7 +20941,7 @@ var MultiYearTable = _react2['default'].createClass({
         return {
             accountTypes: [{ name: 'Expense', value: AccountTypes.EXPENSE }, { name: 'Revenue', value: AccountTypes.REVENUE }],
             dataInitialization: {
-                hierarchy: ['Fund', 'Department', 'Division'],
+                hierarchy: ['Fund', 'Department', 'Division', 'Account'],
                 accountTypes: [AccountTypes.EXPENSE, AccountTypes.REVENUE],
                 amountThreshold: 0.01
             }
@@ -20952,6 +20952,7 @@ var MultiYearTable = _react2['default'].createClass({
         // If this is the first time this component is mounting, we need to create the data model
         // and do any other state initialization required.
         var dataModelId = stateStore.getComponentStateValue(this.props.storeId, 'dataModelId');
+        console.log('MultiYear Table storeID = ' + this.props.storeId + ', dataModelId = ' + dataModelId);
         if (dataModelId == null) {
             var ids = this.props.componentData['alldata'].ids;
             ids.forEach(function (id) {
@@ -20963,6 +20964,7 @@ var MultiYearTable = _react2['default'].createClass({
                 selectedItem: AccountTypes.REVENUE,
                 dataModelId: dm.id
             });
+            console.log('Created MYT dataModelId: ' + dm.id);
         }
     },
 
@@ -20970,6 +20972,7 @@ var MultiYearTable = _react2['default'].createClass({
         var dataModelId = stateStore.getComponentStateValue(this.props.storeId, 'dataModelId');
         var dm = dataModelStore.getModel(dataModelId);
         var selectedItem = stateStore.getComponentStateValue(this.props.storeId, 'selectedItem');
+        console.log('In MYT shouldComponentUpdate returning ' + (dm.dataChanged() || dm.commandsChanged({ accountTypes: [selectedItem] })));
 
         return dm.dataChanged() || dm.commandsChanged({ accountTypes: [selectedItem] });
     },
@@ -21028,6 +21031,7 @@ var MultiYearTable = _react2['default'].createClass({
         var dataModelId = stateStore.getComponentStateValue(this.props.storeId, 'dataModelId');
         var dm = dataModelStore.getModel(dataModelId);
         var selectedItem = stateStore.getComponentStateValue(this.props.storeId, 'selectedItem');
+        console.log('MYT calling getData');
         var newData = dm.getData({ accountTypes: [selectedItem] }, true);
 
         if (newData == null) {
@@ -21088,7 +21092,7 @@ var MultiYearTable = _react2['default'].createClass({
 exports['default'] = MultiYearTable;
 module.exports = exports['default'];
 
-},{"../common/ApiActions":163,"../common/BudgetAppDispatcher":164,"../constants/AccountTypes":172,"../constants/ActionTypes":173,"../stores/DataModelStore":180,"../stores/DatasetStore":181,"../stores/StateStore":182,"react":162}],168:[function(require,module,exports){
+},{"../common/ApiActions":163,"../common/BudgetAppDispatcher":164,"../constants/AccountTypes":172,"../constants/ActionTypes":173,"../stores/DataModelStore":181,"../stores/DatasetStore":182,"../stores/StateStore":183,"react":162}],168:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -21118,7 +21122,7 @@ var SimpleCard = _react2['default'].createClass({
             return _react2['default'].createElement(
                 'div',
                 null,
-                'SimpleCard loading ...'
+                'SimpleCard loading ... '
             );
         } else {
             return _react2['default'].createElement(
@@ -21140,7 +21144,7 @@ var SimpleCard = _react2['default'].createClass({
 exports['default'] = SimpleCard;
 module.exports = exports['default'];
 
-},{"../stores/CardStore":178,"react":162}],169:[function(require,module,exports){
+},{"../stores/CardStore":179,"react":162}],169:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -21249,7 +21253,7 @@ var Site = _react2['default'].createClass({
 exports['default'] = Site;
 module.exports = exports['default'];
 
-},{"../stores/ConfigStore":179,"../stores/DatasetStore":181,"../stores/StateStore":182,"./BootstrapLayout":166,"./SiteNavigation":170,"react":162}],170:[function(require,module,exports){
+},{"../stores/ConfigStore":180,"../stores/DatasetStore":182,"../stores/StateStore":183,"./BootstrapLayout":166,"./SiteNavigation":170,"react":162}],170:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -21323,7 +21327,7 @@ var SiteNavigation = _react2['default'].createClass({
 exports['default'] = SiteNavigation;
 module.exports = exports['default'];
 
-},{"../common/BudgetAppDispatcher":164,"../constants/ActionTypes":173,"../stores/ConfigStore":179,"../stores/StateStore":182,"react":162}],171:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":164,"../constants/ActionTypes":173,"../stores/ConfigStore":180,"../stores/StateStore":183,"react":162}],171:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -21390,7 +21394,7 @@ var SlideShow = _react2['default'].createClass({
 exports['default'] = SlideShow;
 module.exports = exports['default'];
 
-},{"../stores/CardStore":178,"react":162}],172:[function(require,module,exports){
+},{"../stores/CardStore":179,"react":162}],172:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -21451,32 +21455,58 @@ var dispatcher = require('../common/BudgetAppDispatcher');
 var AccountTypes = require('../constants/AccountTypes');
 
 var datasetStore = require('../stores/DatasetStore');
+var datasetUtilities = require('./DatasetUtilities');
 
 function DataModel(id, datasetIds) {
     var initialCommands = arguments[2] === undefined ? null : arguments[2];
 
     this.id = id;
     this.timestamp = -1;
-    this.raw = []; // array of datasets
+    this.readyCount = 0;
+    this.rawDatasets = []; // array of datasets
     this.initializationParameters = null;
-    this.categories = null;
-    this.categoryMap = null;
     this.currentCommands = null;
-
     this.data = null;
-    if (initialCommands != null) this.initializationParameters = initialCommands;
-
-    this.status = DatasetStatus.DS_STATE_READY;
-    var readyCount = 0;
 
     for (var i = 0; i < datasetIds.length; ++i) {
         var ds = datasetStore.getDataset(datasetIds[i]);
-        this.raw.push(ds);
-        if (ds.isReady()) ++readyCount;
-        if (ds.getTimestamp() > this.timestamp) this.timestamp = ds.getTimestamp();
+        this.rawDatasets.push(ds);
     }
-    if (readyCount < datasetIds.length) {
-        this.status = readyCount == 0 ? DatasetStatus.DS_STATE_PENDING : DatasetStatus.DS_STATE_PARTIAL;
+
+    if (initialCommands != null) this.initializationParameters = initialCommands;
+
+    this.checkReady = function () {
+        var needsUpdate = false;
+        this.status = DatasetStatus.DS_STATE_READY;
+        this.readyCount = 0;
+        for (var i = 0; i < this.rawDatasets.length; ++i) {
+            if (this.rawDatasets[i].isReady()) {
+                ++this.readyCount;
+            }
+            if (this.rawDatasets[i].timestamp > this.timestamp) {
+                this.timestamp = this.rawDatasets[i].getTimestamp();
+                needsUpdate = true;
+            }
+        }
+        if (this.readyCount < this.rawDatasets.length) {
+            this.status = this.readyCount == 0 ? DatasetStatus.DS_STATE_PENDING : DatasetStatus.DS_STATE_PARTIAL;
+        }
+        return needsUpdate;
+    };
+
+    this.checkReady();
+    if (this.readyCount > 0) {
+        this.data = null;
+
+        var amountThreshold = 0;
+        if ('amountThreshold' in this.initializationParameters) {
+            amountThreshold = Number(this.initializationParameters.amountThreshold);
+        }
+        this.data = datasetUtilities.mergeDatasets(this.rawDatasets, {
+            hierarchy: this.initializationParameters.hierarchy,
+            accountTypes: this.initializationParameters.accountTypes,
+            amountThreshold: amountThreshold
+        });
     }
 
     this.getTimestamp = function () {
@@ -21492,216 +21522,43 @@ function DataModel(id, datasetIds) {
 
     this.dataChanged = function dataChanged() {
         // We only know if the data has changed if a component asks
-        var needUpdate = false;
-        readyCount = 0;
-        var firstReady = -1;
-        for (var i = 0; i < this.raw.length; ++i) {
-            if (this.raw[i].isReady()) {
-                ++readyCount;
-                if (firstReady < 0) firstReady = i;
-            }
-            if (this.raw[i].timestamp > this.timestamp) {
-                this.timestamp = this.raw[i].timestamp;
-                needUpdate = true;
-            }
-        }
-        this.status = DatasetStatus.DS_STATE_READY;
-        if (readyCount < datasetIds.length) {
-            this.status = readyCount == 0 ? DatasetStatus.DS_STATE_PENDING : DatasetStatus.DS_STATE_PARTIAL;
-        }
+        var needUpdate = this.checkReady();
         /*
          * TODO: Need a better way to deal with categories across (and within) datasets. This assumes they are uniform.
          */
-        if (readyCount > 0) {
+        if (this.readyCount > 0) {
             this.data = null;
-            this.categories = this.raw[firstReady].data.categoryIdentifiers;
-            this.initialize();
+
+            var amountThreshold = 0;
+            if ('amountThreshold' in this.initializationParameters) {
+                amountThreshold = Number(this.initializationParameters.amountThreshold);
+            }
+            this.data = datasetUtilities.mergeDatasets(this.rawDatasets, {
+                hierarchy: this.initializationParameters.hierarchy,
+                accountTypes: this.initializationParameters.accountTypes,
+                amountThreshold: amountThreshold
+            });
         }
         return needUpdate;
     };
 
-    this.datasetCompare = function (ds1, ds2) {
-        if (ds1.data == null || ds2.data == null) {
-            result = ds1.data == null ? 1 : -1;
-        } else {
-            var result = ds1.data.year - ds2.data.year;
-            if (result == 0) {
-                result = ds1.data.month - ds2.data.month;
-                if (result == 0) {
-                    result = ds1.data.day - ds2.data.day;
-                }
-            }
-        }
-        return result;
-    };
-
-    /*
-     * There are a few weirdnesses in the API-delivered data that we need to handle here.
-     * It's likely we actually want to change this on the server side, but for now we'll
-     * handle it here:
-     *
-     *  - Reverse sign on all revenue values - this is an artifact of the accounting system.
-     *    We should actually do this for other accounts similarly affected as well, but for
-     *    now I'll just assume nobody's looking at anything other than expense and revenue.
-     *
-     *  - Treat 'Account' as just another category. The incoming data has a 'categories' field
-     *    with the array of categories plus a separate 'account' field. We want interface to be
-     *    uniform for DataProvider users, so here we'll treat it as if the categories array
-     *    is just one longer with the acccount in the last slot.
-     */
-    this.initialize = function () {
-        var hierarchy = this.initializationParameters.hierarchy;
-        var nPeriods = this.raw.length;
-        var accountTypes = this.initializationParameters.accountTypes;
-        var amountThreshold = 0;
-
-        if ('amountThreshold' in this.initializationParameters) {
-            amountThreshold = Number(this.initializationParameters.amountThreshold);
-        }
-        if (this.raw.length > 1) this.raw.sort(this.datasetCompare);
-
-        /* Now set up a couple utility functions to use below */
-        var mapCategories = function mapCategories(desiredHierarchy, apiData) {
-            var catMap = new Array(desiredHierarchy.length);
-            for (var _i = 0; _i < desiredHierarchy.length; ++_i) {
-                catMap[_i] = apiData.categoryIdentifiers.indexOf(hierarchy[_i]);
-                if (catMap[_i] < 0) {
-                    if (hierarchy[_i] == 'Account') {
-                        catMap[_i] = -1;
-                    } else {
-                        throw 'Unable to map category ' + hierarchy[_i] + ' in dataset ' + data.name;
-                    }
-                }
-            }
-            return catMap;
-        };
-
-        var getCurrentCategory = function getCurrentCategory(level, item, categoryMap) {
-            return categoryMap[level] >= 0 ? item.categories[categoryMap[level]] : item.account;
-        };
-        /*
-         * We need to do a pass to:
-         *  - Merge datasets from multiple periods
-         *  - Aggregate over categories that are not explicitly included in the hierarchy
-         * We'll do the merge/aggregation using a tree.
-         */
-        this.count = 0;
-        this.altCount = 0;
-        this.nzCount = 0;
-        var tree = { isBottom: false };
-
-        for (var iPeriod = 0; iPeriod < this.raw.length; ++iPeriod) {
-            var _data = this.raw[iPeriod].data;
-            if (!this.raw[iPeriod].isReady()) continue;
-            /*
-             * First we need to map the requested categories to those in the dataset
-             * The catMap array will contain, for each category requested, its index in
-             * the array of categories in the dataset, or -1 for Account, since that is
-             * treated specially in the data we get from the API.
-             *
-             */
-            var categoryMap = mapCategories(hierarchy, _data);
-
-            console.log('Incoming dataset for period ' + iPeriod + ' is ' + _data.items.length);
-            for (var j = 0; j < _data.items.length; ++j) {
-                var level = undefined;
-                var item = _data.items[j];
-                item.amount = Number(item.amount);
-
-                if (accountTypes.indexOf(item.type) < 0) continue; // Skip if not one of the specified account types
-
-                if (!(item.type in tree)) tree[item.type] = { isBottom: false };
-
-                var current = tree[item.type]; // We never aggregate across account types
-                var key = undefined;
-                /*
-                 * Build the tree up to, but not including the last level
-                 */
-                for (level = 0; level < hierarchy.length - 1; ++level) {
-                    key = getCurrentCategory(level, item, categoryMap);
-                    if (!(key in current)) current[key] = { isBottom: false };
-                    current = current[key];
-                }
-
-                key = getCurrentCategory(hierarchy.length - 1, item, categoryMap);
-                if (!(key in current)) {
-                    var amounts = new Array(nPeriods);
-                    for (var k = 0; k < nPeriods; ++k) amounts[k] = Number(0);
-                    var categories = new Array(hierarchy.length);
-                    for (level = 0; level < hierarchy.length; ++level) {
-                        categories[level] = getCurrentCategory(level, item, categoryMap);
-                    }
-
-                    current[key] = {
-                        isBottom: true,
-                        accountType: item.type,
-                        categories: categories,
-                        amount: amounts
-                    };
-                    this.count++;
-                } else {
-                    this.altCount++;
-                }
-                if (Math.abs(item.amount) > 0) ++this.nzCount;
-                var factor = item.type == AccountTypes.REVENUE ? -1 : 1;
-                current[key].amount[iPeriod] += Number(item.amount) * factor;
-            }
-        }
-        console.log('Non-zero count = ' + this.nzCount);
-        console.log('The counts before extraction are ' + this.count + ', ' + this.altCount);
-
-        // Now collapse the tree back out
-        this.data = [];
-        for (var accType in accountTypes) {
-            var partial = this.extractFromTree(tree[accountTypes[accType]], amountThreshold);
-            this.data = this.data.concat(partial);
-        }
-        console.log('Final data length is ' + this.data.length);
-    };
-
-    this.extractFromTree = function (node, threshold) {
-        var data = [];
-
-        if (node.hasOwnProperty('isBottom')) {
-            if (node.isBottom) {
-                var keep = false;
-                for (i = 0; !keep && i < node.amount.length; ++i) {
-                    if (Math.abs(node.amount[i]) >= threshold) keep = true;
-                }
-                keep = true;
-                if (keep) data.push(node);
-            } else {
-                for (var prop in node) {
-                    if (prop != 'isBottom' && node.hasOwnProperty(prop)) {
-                        data = data.concat(this.extractFromTree(node[prop], threshold));
-                    }
-                }
-            }
-        }
-        return data;
-    };
-
-    this.isReady = function () {
-        return this.status == DatasetStatus.DS_STATE_READY;
-    };
-
     this.getHeaders = function getHeaders() {
         var headers = [];
-        for (var i = 0; i < this.raw.length; ++i) {
-            if (this.raw[i].data != null) headers.push(this.raw[i].data.year + '');
+        for (var i = 0; i < this.rawDatasets.length; ++i) {
+            if (this.rawDatasets[i].data != null) headers.push(this.rawDatasets[i].data.year + '');
         }
         return headers;
     };
 
     this.pathMatches = function pathMatches(template, path) {
         var keep = true;
-        for (var _i2 = 0; keep && _i2 < template.length; ++_i2) {
-            if (template[_i2] != null && template[_i2] != path[_i2]) keep = false;
+        for (var i = 0; keep && i < template.length; ++i) {
+            if (template[i] != null && template[i] != path[i]) keep = false;
         }
         return keep;
     };
 
-    this.getData = function (commands) {
+    this.getData = function getData(commands) {
         var partialOk = arguments[1] === undefined ? false : arguments[1];
 
         if (this.status == DatasetStatus.DS_STATE_READY || this.status == DatasetStatus.DS_STATE_PARTIAL && partialOk) {
@@ -21713,8 +21570,21 @@ function DataModel(id, datasetIds) {
             var startLevel = 0;
             var nLevels = 1000;
 
-            // Basic order is: (1) filters, including startPath, (2) reduce
-
+            /*
+             * Possible incoming instructions
+             *
+             *  - accountTypes: array of account types to include (expense, revenue, liabilities, etc.)
+             *  - startPath:    array of category values at 1 or more levels to start at a specific point
+             *                  in the hierarchy, e.g., ['General Fund','Police Department'] would restrict
+             *                  only to divisions and accounts under the Police department.
+             *  - nLevels:      Number of hierarchy levels to explicitly include beyond the startPath point;
+             *                  everything beyond that level will be aggregated up. For example, in the Asheville
+             *                  data, if startPath is null and nLevels is 1, we'll get the totals for each fund,
+             *                  which is the first category. if startPath is ['General Fund'] and nLevels is 2,
+             *                  we'll get data for the mini-hierarchy of department+division in the General Fund, with
+             *                  account-level detail aggregated up to the division.
+             *  - reduce:       xxx
+             */
             if ('accountTypes' in commands) accountTypes = commands.accountTypes;
             if ('startPath' in commands) {
                 startPath = commands.startPath;
@@ -21726,8 +21596,7 @@ function DataModel(id, datasetIds) {
                     nLevels = this.initializationParameters.hierarchy.length - startLevel;
                 }
             }
-            console.log('The start path is ' + startPath);
-            console.log(' and the starting data length is ' + this.data.length);
+
             /* Filters
              * What want to do is include only those that
              *    a. have a type in accountTypes (or accountTypes is null)
@@ -21735,8 +21604,8 @@ function DataModel(id, datasetIds) {
              * then we want to traverse the remaining path for maxLevels and copy over
              */
             var tree = {};
-            for (var _i3 = 0; _i3 < this.data.length; ++_i3) {
-                var item = this.data[_i3];
+            for (var i = 0; i < this.data.length; ++i) {
+                var item = this.data[i];
 
                 // See if it's an included account type
                 if (accountTypes == null || accountTypes.indexOf(item.accountType) >= 0) {
@@ -21749,9 +21618,9 @@ function DataModel(id, datasetIds) {
                         /*
                          * Build the tree from startLevel up to, but not including startLevel+maxLevels
                          */
-                        for (var _i4 = 0; _i4 < nLevels; ++_i4) {
-                            var key = item.categories[startLevel + _i4];
-                            if (_i4 == nLevels - 1) {
+                        for (var _i = 0; _i < nLevels; ++_i) {
+                            var key = item.categories[startLevel + _i];
+                            if (_i == nLevels - 1) {
                                 if (!(key in current)) {
                                     current[key] = {
                                         isBottom: true,
@@ -21775,60 +21644,33 @@ function DataModel(id, datasetIds) {
             }
             // Now collapse the tree back out
             for (var accType in tree) {
-                var partial = this.extractFromTree(tree[accType], 0);
+                var partial = datasetUtilities.extractFromTree(tree[accType], 0);
                 data = data.concat(partial);
             }
 
             var headers = this.getHeaders();
-            if (false && 'reduce' in commands) {
+            if ('reduce' in commands) {
                 var reduceCmd = commands.reduce;
                 if (reduceCmd == 'difference') {
                     headers = ['Difference'];
                     if (data[0].amount.length < 2) throw 'Difference reduce requires 2 datasets';
                     if (data[0].amount.length > 2) console.log('Warning: difference reduce applied to more than 2 datasets - using first two.');
-                    for (var _i5 = 0; _i5 < data.length; ++_i5) {
-                        var inItem = data[_i5];
+                    for (var i = 0; i < data.length; ++i) {
+                        var inItem = data[i];
                         var outItem = {
                             accountType: inItem.accountType,
                             categories: inItem.categories,
                             amount: [inItem.amount[1] - inItem.amount[0]]
                         };
-                        data[_i5] = outItem;
+                        data[i] = outItem;
                     }
                 } else {
                     throw 'Reduce command ' + reduceCmd + ' not yet implemented.';
                 }
             }
-            console.log('getData return data length = ' + data.length);
             return {
                 categories: this.initializationParameters.hierarchy,
                 dataHeaders: headers,
-                data: data
-            };
-        } else {
-            return null;
-        }
-    };
-
-    this.old_getData = function (commands) {
-        var partialOk = arguments[1] === undefined ? false : arguments[1];
-
-        if (this.status == DatasetStatus.DS_STATE_READY || this.status == DatasetStatus.DS_STATE_PARTIAL && partialOk) {
-            this.currentCommands = commands;
-
-            var data = [];
-            var accountTypes = null;
-            if ('accountTypes' in commands) accountTypes = commands.accountTypes;
-
-            for (var i = 0; i < this.data.length; ++i) {
-                var item = this.data[i];
-                if (accountTypes == null || accountTypes.indexOf(item.accountType) >= 0) {
-                    data.push(item);
-                }
-            }
-            return {
-                categories: this.initializationParameters.hierarchy,
-                dataHeaders: this.getHeaders(),
                 data: data
             };
         } else {
@@ -21839,7 +21681,7 @@ function DataModel(id, datasetIds) {
 
 module.exports = DataModel;
 
-},{"../common/BudgetAppDispatcher":164,"../constants/AccountTypes":172,"../constants/ActionTypes":173,"../constants/DatasetStatus":174,"../stores/DatasetStore":181}],177:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":164,"../constants/AccountTypes":172,"../constants/ActionTypes":173,"../constants/DatasetStatus":174,"../stores/DatasetStore":182,"./DatasetUtilities":178}],177:[function(require,module,exports){
 'use strict';
 
 var DatasetStatus = require('../constants/DatasetStatus');
@@ -21884,6 +21726,174 @@ function Dataset(timestamp, sourceId) {
 module.exports = Dataset;
 
 },{"../constants/DatasetStatus":174}],178:[function(require,module,exports){
+'use strict';
+
+var assign = require('object-assign');
+
+var DatasetStatus = require('../constants/DatasetStatus');
+var ActionTypes = require('../constants/ActionTypes');
+var dispatcher = require('../common/BudgetAppDispatcher');
+var AccountTypes = require('../constants/AccountTypes');
+
+var datasetStore = require('../stores/DatasetStore');
+
+var DatasetUtilities = {
+    /*
+     * There are a few weirdnesses in the API-delivered data that we need to handle here.
+     * It's likely we actually want to change this on the server side, but for now we'll
+     * handle it here:
+     *
+     *  - Reverse sign on all revenue values - this is an artifact of the accounting system.
+     *    We should actually do this for other accounts similarly affected as well, but for
+     *    now I'll just assume nobody's looking at anything other than expense and revenue.
+     *
+     *  - Treat 'Account' as just another category. The incoming data has a 'categories' field
+     *    with the array of categories plus a separate 'account' field. We want interface to be
+     *    uniform for DataProvider users, so here we'll treat it as if the categories array
+     *    is just one longer with the acccount in the last slot.
+     */
+
+    mergeDatasets: function mergeDatasets(rawDatasets, parameters) {
+
+        var hierarchy = parameters.hierarchy;
+        var accountTypes = parameters.accountTypes;
+        var amountThreshold = parameters.amountThreshold;
+        var nPeriods = rawDatasets.length;
+
+        if (rawDatasets.length > 1) rawDatasets.sort(this.datasetCompare);
+
+        /* Now set up a couple utility functions to use below */
+        var mapCategories = function mapCategories(desiredHierarchy, apiData) {
+            var catMap = new Array(desiredHierarchy.length);
+            for (var i = 0; i < desiredHierarchy.length; ++i) {
+                catMap[i] = apiData.categoryIdentifiers.indexOf(hierarchy[i]);
+                if (catMap[i] < 0) {
+                    if (hierarchy[i] == 'Account') {
+                        catMap[i] = -1;
+                    } else {
+                        throw 'Unable to map category ' + hierarchy[i] + ' in dataset ' + data.name;
+                    }
+                }
+            }
+            return catMap;
+        };
+
+        var getCurrentCategory = function getCurrentCategory(level, item, categoryMap) {
+            return categoryMap[level] >= 0 ? item.categories[categoryMap[level]] : item.account;
+        };
+        /*
+         * We need to do a pass to:
+         *  - Merge datasets from multiple periods
+         *  - Aggregate over categories that are not explicitly included in the hierarchy
+         * We'll do the merge/aggregation using a tree.
+         */
+        this.count = 0;
+        var tree = { isBottom: false };
+
+        for (var iPeriod = 0; iPeriod < rawDatasets.length; ++iPeriod) {
+            var _data = rawDatasets[iPeriod].data;
+            if (!rawDatasets[iPeriod].isReady()) continue;
+            /*
+             * First we need to map the requested categories to those in the dataset
+             * The catMap array will contain, for each category requested, its index in
+             * the array of categories in the dataset, or -1 for Account, since that is
+             * treated specially in the data we get from the API.
+             *
+             */
+            var categoryMap = mapCategories(hierarchy, _data);
+
+            for (var j = 0; j < _data.items.length; ++j) {
+                var level = undefined;
+                var item = _data.items[j];
+                item.amount = Number(item.amount);
+
+                if (accountTypes.indexOf(item.type) < 0) continue; // Skip if not one of the specified account types
+
+                if (!(item.type in tree)) tree[item.type] = { isBottom: false };
+
+                var current = tree[item.type]; // We never aggregate across account types
+                var key = undefined;
+                /*
+                 * Build the tree up to, but not including the last level
+                 */
+                for (level = 0; level < hierarchy.length - 1; ++level) {
+                    key = getCurrentCategory(level, item, categoryMap);
+                    if (!(key in current)) current[key] = { isBottom: false };
+                    current = current[key];
+                }
+
+                key = getCurrentCategory(hierarchy.length - 1, item, categoryMap);
+                if (!(key in current)) {
+                    var amounts = new Array(nPeriods);
+                    for (var k = 0; k < nPeriods; ++k) amounts[k] = Number(0);
+                    var categories = new Array(hierarchy.length);
+                    for (level = 0; level < hierarchy.length; ++level) {
+                        categories[level] = getCurrentCategory(level, item, categoryMap);
+                    }
+
+                    current[key] = {
+                        isBottom: true,
+                        accountType: item.type,
+                        categories: categories,
+                        amount: amounts
+                    };
+                    this.count++;
+                }
+
+                var factor = item.type == AccountTypes.REVENUE ? -1 : 1;
+                current[key].amount[iPeriod] += Number(item.amount) * factor;
+            }
+        }
+
+        // Now collapse the tree back out
+        var mergedData = [];
+        for (var accType in accountTypes) {
+            var partial = this.extractFromTree(tree[accountTypes[accType]], +amountThreshold);
+            mergedData = mergedData.concat(partial);
+        }
+        return mergedData;
+    },
+
+    extractFromTree: function extractFromTree(node, threshold) {
+        var data = [];
+
+        if (node.hasOwnProperty('isBottom')) {
+            if (node.isBottom) {
+                var keep = false;
+                for (var i = 0; !keep && i < node.amount.length; ++i) {
+                    if (Math.abs(node.amount[i]) >= threshold) keep = true;
+                }
+                if (keep) data.push(node);
+            } else {
+                for (var prop in node) {
+                    if (prop != 'isBottom' && node.hasOwnProperty(prop)) {
+                        data = data.concat(this.extractFromTree(node[prop], threshold));
+                    }
+                }
+            }
+        }
+        return data;
+    },
+
+    datasetCompare: function datasetCompare(ds1, ds2) {
+        if (ds1.data == null || ds2.data == null) {
+            result = ds1.data == null ? 1 : -1;
+        } else {
+            var result = ds1.data.year - ds2.data.year;
+            if (result == 0) {
+                result = ds1.data.month - ds2.data.month;
+                if (result == 0) {
+                    result = ds1.data.day - ds2.data.day;
+                }
+            }
+        }
+        return result;
+    }
+};
+
+module.exports = DatasetUtilities;
+
+},{"../common/BudgetAppDispatcher":164,"../constants/AccountTypes":172,"../constants/ActionTypes":173,"../constants/DatasetStatus":174,"../stores/DatasetStore":182,"object-assign":7}],179:[function(require,module,exports){
 'use strict';
 
 var dispatcher = require('../common/BudgetAppDispatcher');
@@ -21941,7 +21951,7 @@ dispatcher.register(function (action) {
 
 module.exports = CardStore;
 
-},{"../common/BudgetAppDispatcher":164,"../constants/ActionTypes":173,"../data/Card":175,"events":2,"object-assign":7}],179:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":164,"../constants/ActionTypes":173,"../data/Card":175,"events":2,"object-assign":7}],180:[function(require,module,exports){
 'use strict';
 
 var dispatcher = require('../common/BudgetAppDispatcher');
@@ -22023,7 +22033,7 @@ dispatcher.register(function (action) {
 
 module.exports = ConfigStore;
 
-},{"../common/BudgetAppDispatcher":164,"../constants/ActionTypes":173,"events":2,"object-assign":7}],180:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":164,"../constants/ActionTypes":173,"events":2,"object-assign":7}],181:[function(require,module,exports){
 'use strict';
 
 var dispatcher = require('../common/BudgetAppDispatcher');
@@ -22088,7 +22098,7 @@ dispatcher.register(function (action) {
 
 module.exports = DataModelStore;
 
-},{"../common/BudgetAppDispatcher":164,"../constants/ActionTypes":173,"../data/DataModel":176,"events":2,"object-assign":7}],181:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":164,"../constants/ActionTypes":173,"../data/DataModel":176,"events":2,"object-assign":7}],182:[function(require,module,exports){
 'use strict';
 
 var dispatcher = require('../common/BudgetAppDispatcher');
@@ -22158,7 +22168,7 @@ DatasetStore.dispatchToken = dispatcher.register(function (action) {
 
 module.exports = DatasetStore;
 
-},{"../common/BudgetAppDispatcher":164,"../constants/ActionTypes":173,"../data/Dataset":177,"events":2,"object-assign":7}],182:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":164,"../constants/ActionTypes":173,"../data/Dataset":177,"events":2,"object-assign":7}],183:[function(require,module,exports){
 'use strict';
 
 var dispatcher = require('../common/BudgetAppDispatcher');

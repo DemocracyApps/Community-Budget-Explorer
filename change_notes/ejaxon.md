@@ -1,3 +1,7 @@
+5/12/2015
+
+- 
+
 5/11/2015
 
 - Move js and css directories from gbe/resources/ to gbe/resources/assets to match Elixir's expected default location 

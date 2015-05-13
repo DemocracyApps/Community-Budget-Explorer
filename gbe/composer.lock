@@ -710,16 +710,16 @@
         },
         {
             "name": "intervention/image",
-            "version": "2.2.0",
+            "version": "2.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Intervention/image.git",
-                "reference": "6626d7624ac0895137a38c123943afedd0827efc"
+                "reference": "79f0a35da7d4f75bb85d9c04513dd5929e21f75e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Intervention/image/zipball/6626d7624ac0895137a38c123943afedd0827efc",
-                "reference": "6626d7624ac0895137a38c123943afedd0827efc",
+                "url": "https://api.github.com/repos/Intervention/image/zipball/79f0a35da7d4f75bb85d9c04513dd5929e21f75e",
+                "reference": "79f0a35da7d4f75bb85d9c04513dd5929e21f75e",
                 "shasum": ""
             },
             "require": {
@@ -762,7 +762,7 @@
                 "thumbnail",
                 "watermark"
             ],
-            "time": "2015-04-24 14:50:48"
+            "time": "2015-05-09 16:06:30"
         },
         {
             "name": "ircmaxell/password-compat",
@@ -996,16 +996,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "5.0.30",
+            "version": "v5.0.31",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "c7ffbf1fd4895ac4cdac551265d635d995346d97"
+                "reference": "db0a7400465df159ba8c6eaa954f97f50bc19687"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/c7ffbf1fd4895ac4cdac551265d635d995346d97",
-                "reference": "c7ffbf1fd4895ac4cdac551265d635d995346d97",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/db0a7400465df159ba8c6eaa954f97f50bc19687",
+                "reference": "db0a7400465df159ba8c6eaa954f97f50bc19687",
                 "shasum": ""
             },
             "require": {
@@ -1118,7 +1118,7 @@
                 "framework",
                 "laravel"
             ],
-            "time": "2015-05-08 19:11:13"
+            "time": "2015-05-11 22:15:00"
         },
         {
             "name": "laravel/socialite",
@@ -1785,12 +1785,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/stripe/stripe-php.git",
-                "reference": "ab8d6d0f2971fa4a9b346299a719a6ab50bd9c69"
+                "reference": "c928f9576b70e2e11e558ef635fc809f302bbab6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stripe/stripe-php/zipball/ab8d6d0f2971fa4a9b346299a719a6ab50bd9c69",
-                "reference": "ab8d6d0f2971fa4a9b346299a719a6ab50bd9c69",
+                "url": "https://api.github.com/repos/stripe/stripe-php/zipball/c928f9576b70e2e11e558ef635fc809f302bbab6",
+                "reference": "c928f9576b70e2e11e558ef635fc809f302bbab6",
                 "shasum": ""
             },
             "require": {
@@ -1832,7 +1832,7 @@
                 "payment processing",
                 "stripe"
             ],
-            "time": "2015-04-30 17:33:43"
+            "time": "2015-05-12 09:50:14"
         },
         {
             "name": "swiftmailer/swiftmailer",

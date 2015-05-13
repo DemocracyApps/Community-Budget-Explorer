@@ -24,7 +24,7 @@ var MultiYearTable = React.createClass({
                 { name: "Revenue", value: AccountTypes.REVENUE}
             ],
             dataInitialization: {
-                hierarchy: ['Fund', 'Department', 'Division'],
+                hierarchy: ['Fund', 'Department', 'Division', 'Account'],
                 accountTypes: [AccountTypes.EXPENSE, AccountTypes.REVENUE],
                 amountThreshold: 0.01
             }
@@ -35,6 +35,7 @@ var MultiYearTable = React.createClass({
         // If this is the first time this component is mounting, we need to create the data model
         // and do any other state initialization required.
         var dataModelId = stateStore.getComponentStateValue(this.props.storeId, 'dataModelId');
+        console.log("MultiYear Table storeID = " + this.props.storeId + ", dataModelId = " + dataModelId);
         if (dataModelId == null) {
             var ids = this.props.componentData['alldata'].ids;
             ids.forEach(function (id) {
@@ -47,6 +48,7 @@ var MultiYearTable = React.createClass({
                     selectedItem: AccountTypes.REVENUE,
                     dataModelId: dm.id
                 });
+            console.log("Created MYT dataModelId: " + dm.id);
         }
     },
 
@@ -54,6 +56,8 @@ var MultiYearTable = React.createClass({
         var dataModelId = stateStore.getComponentStateValue(this.props.storeId, 'dataModelId');
         var dm = dataModelStore.getModel(dataModelId);
         var selectedItem = stateStore.getComponentStateValue(this.props.storeId, 'selectedItem');
+        console.log("In MYT shouldComponentUpdate returning "
+            + ( dm.dataChanged() || dm.commandsChanged({accountTypes:[selectedItem]}) ));
 
         return ( dm.dataChanged() || dm.commandsChanged({accountTypes:[selectedItem]}) );
     },
@@ -101,6 +105,7 @@ var MultiYearTable = React.createClass({
         var dataModelId = stateStore.getComponentStateValue(this.props.storeId, 'dataModelId');
         var dm = dataModelStore.getModel(dataModelId);
         var selectedItem = stateStore.getComponentStateValue(this.props.storeId, 'selectedItem');
+        console.log("MYT calling getData");
         var newData = dm.getData({accountTypes:[selectedItem]}, true);
 
         if (newData == null) {

@@ -13,7 +13,7 @@ var SimpleCard = React.createClass({
     render: function() {
         var card = cardStore.getCard(this.props.componentData['mycard'].ids[0]);
         if (card == undefined) {
-            return <div >SimpleCard loading ...</div>
+            return <div >SimpleCard loading ... </div>
         }
         else {
             return (
