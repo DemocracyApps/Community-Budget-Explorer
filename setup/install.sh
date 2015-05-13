@@ -120,9 +120,6 @@ sudo npm install -g gulp
 sudo apt-get install -y chromium-browser
 sudo apt-get install -y xvfb
 
-Xvfb :10 -screen 0 1366x768x24 -ac &
-
-
 cp setup/bash_profile /home/vagrant/.bash_profile
 #sudo apt-get -y purge nodejs npm
 #sudo apt-get -y install python-software-properties
