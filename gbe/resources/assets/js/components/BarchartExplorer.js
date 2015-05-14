@@ -128,7 +128,26 @@ var BarchartExplorer = React.createClass({
         }
     },
 
-    categorySelector: function categorySelector(data, rows) {
+    doReset: function (e) {
+        dispatcher.dispatch({
+            actionType: ActionTypes.COMPONENT_STATE_CHANGE,
+            payload: {
+                id: this.props.storeId,
+                changes: [
+                    {
+                        name: 'startPath',
+                        value: []
+                    },
+                    {
+                        name: 'currentLevel',
+                        value: 0
+                    }
+                ]
+            }
+        });
+    },
+
+    renderCategorySelector: function categorySelector(data, rows) {
         if (this.state.showCategorySelector) {
             let currentLevel = stateStore.getValue(this.props.storeId,'currentLevel');
             return (
@@ -150,7 +169,13 @@ var BarchartExplorer = React.createClass({
     interactionPanel: function interactionPanel(data, rows) {
         return (
           <div className="row">
-              {this.categorySelector(data, rows)}
+              <div className="col-xs-6">
+                  {this.renderCategorySelector(data, rows)}
+              </div>
+              <div className="col-xs-1"></div>
+              <div className="col-xs-6">
+                  <button className="btn" onClick={this.doReset}>Reset</button>
+              </div>
           </div>
       )
     },

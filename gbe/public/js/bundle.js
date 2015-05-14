@@ -20764,7 +20764,23 @@ var BarchartExplorer = _react2['default'].createClass({
         }
     },
 
-    categorySelector: function categorySelector(data, rows) {
+    doReset: function doReset(e) {
+        dispatcher.dispatch({
+            actionType: ActionTypes.COMPONENT_STATE_CHANGE,
+            payload: {
+                id: this.props.storeId,
+                changes: [{
+                    name: 'startPath',
+                    value: []
+                }, {
+                    name: 'currentLevel',
+                    value: 0
+                }]
+            }
+        });
+    },
+
+    renderCategorySelector: function categorySelector(data, rows) {
         var _this = this;
 
         if (this.state.showCategorySelector) {
@@ -20808,7 +20824,21 @@ var BarchartExplorer = _react2['default'].createClass({
         return _react2['default'].createElement(
             'div',
             { className: 'row' },
-            this.categorySelector(data, rows)
+            _react2['default'].createElement(
+                'div',
+                { className: 'col-xs-6' },
+                this.renderCategorySelector(data, rows)
+            ),
+            _react2['default'].createElement('div', { className: 'col-xs-1' }),
+            _react2['default'].createElement(
+                'div',
+                { className: 'col-xs-6' },
+                _react2['default'].createElement(
+                    'button',
+                    { className: 'btn', onClick: this.doReset },
+                    'Reset'
+                )
+            )
         );
     },
 
