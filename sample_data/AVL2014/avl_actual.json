@@ -18,7 +18,7 @@
     {
       "name":"pluckColumns",
       "specification":[
-        1,8,2,3,4,5,6
+        1,10,2,3,4,5,6      // NOTE: 10=Actual, 9 = Revised budget
       ],
       "run":true
     }
