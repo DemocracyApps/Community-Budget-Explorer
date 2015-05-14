@@ -106,6 +106,36 @@ function DataModel(id, datasetIds, initialCommands = null) {
         return keep;
     };
 
+    this.checkData = function checkData(commands, partialOk=false) {
+        if (this.status == DatasetStatus.DS_STATE_READY ||
+            (this.status == DatasetStatus.DS_STATE_PARTIAL && partialOk)) {
+            var startPath = null;
+            var startLevel = 0;
+            var nLevels = 1000;
+            if ('startPath' in commands) {
+                startPath = commands.startPath;
+                if (startPath != null) startLevel = startPath.length;
+            }
+            if ('nLevels' in commands) {
+                nLevels = commands.nLevels;
+                if (startLevel + nLevels > this.initializationParameters.hierarchy.length) {
+                    nLevels = this.initializationParameters.hierarchy.length - startLevel;
+                }
+            }
+            let headers = this.getHeaders();
+
+            return {
+                categories:this.initializationParameters.hierarchy,
+                dataHeaders:headers,
+                levelsDown: startLevel,
+                levelsAggregated: this.initializationParameters.hierarchy.length - nLevels - startLevel,
+            };
+        }
+        else {
+            return null;
+        }
+    };
+
     this.getData = function getData (commands, partialOk=false) {
         if (this.status == DatasetStatus.DS_STATE_READY ||
             (this.status == DatasetStatus.DS_STATE_PARTIAL && partialOk)) {
@@ -143,7 +173,7 @@ function DataModel(id, datasetIds, initialCommands = null) {
                     nLevels = this.initializationParameters.hierarchy.length - startLevel;
                 }
             }
-            console.log("Nlevels is " + commands.nLevels + " -> " + nLevels);
+            console.log("startPath = " + startPath + ",  startLevel = " + startLevel);
 
             /* Filters
              * What want to do is include only those that

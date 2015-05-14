@@ -20662,6 +20662,10 @@ var BarchartExplorer = _react2['default'].createClass({
         storeId: _react2['default'].PropTypes.number.isRequired
     },
 
+    getInitialState: function getInitialState() {
+        return { showCategorySelector: false };
+    },
+
     getDefaultProps: function getDefaultProps() {
         return {
             accountTypes: [{ name: 'Expense', value: AccountTypes.EXPENSE }, { name: 'Revenue', value: AccountTypes.REVENUE }],
@@ -20673,34 +20677,59 @@ var BarchartExplorer = _react2['default'].createClass({
         };
     },
 
+    prepareLocalState: function prepareLocalState(dm) {
+        var accountType = stateStore.getValue(this.props.storeId, 'accountType');
+        var newData = dm.checkData({
+            accountTypes: [accountType],
+            startPath: [],
+            nLevels: 1,
+            reduce: this.props.componentProps.reduce
+        }, true);
+        this.setState({ showCategorySelector: false });
+        if (newData != null) {
+            var nLevels = newData.categories.length;
+            var currentLevel = stateStore.getValue(this.props.storeId, 'currentLevel');
+            if (currentLevel < nLevels - 1) {
+                this.setState({ showCategorySelector: true });
+            }
+        }
+    },
+
     componentWillMount: function componentWillMount() {
         // If this is the first time this component is mounting, we need to create the data model
         // and do any other state initialization required.
         var dataModelId = stateStore.getComponentStateValue(this.props.storeId, 'dataModelId');
+        var dm = null;
         if (dataModelId == null) {
             var ids = this.props.componentData['mydatasets'].ids;
             ids.forEach(function (id) {
                 apiActions.requestDatasetIfNeeded(id);
             });
 
-            var dm = dataModelStore.createModel(ids, this.props.dataInitialization);
+            dm = dataModelStore.createModel(ids, this.props.dataInitialization);
             stateStore.setComponentState(this.props.storeId, {
                 accountType: AccountTypes.REVENUE,
                 dataModelId: dm.id,
-                currentLevel: 0
+                currentLevel: 0,
+                startPath: []
             });
         }
     },
 
-    shouldComponentUpdate: function shouldComponentUpdate(nextProps, nextState) {
-        var dataModelId = stateStore.getComponentStateValue(this.props.storeId, 'dataModelId');
+    componentWillReceiveProps: function componentWillReceiveProps() {
+        var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
         var dm = dataModelStore.getModel(dataModelId);
-        var selectedItem = stateStore.getComponentStateValue(this.props.storeId, 'selectedItem');
+        this.prepareLocalState(dm);
+    },
 
+    shouldComponentUpdate: function shouldComponentUpdate(nextProps, nextState) {
+        var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
+        var dm = dataModelStore.getModel(dataModelId);
+        var selectedItem = stateStore.getValue(this.props.storeId, 'selectedItem');
         return dm.dataChanged() || dm.commandsChanged({ accountTypes: [selectedItem] });
     },
 
-    onSelectChange: function onSelectChange(e) {
+    onAccountTypeChange: function onAccountTypeChange(e) {
         dispatcher.dispatch({
             actionType: ActionTypes.COMPONENT_STATE_CHANGE,
             payload: {
@@ -20714,44 +20743,72 @@ var BarchartExplorer = _react2['default'].createClass({
     },
 
     onCategoryChange: function onCategoryChange(e) {
-        dispatcher.dispatch({
-            actionType: ActionTypes.COMPONENT_STATE_CHANGE,
-            payload: {
-                id: this.props.storeId,
-                changes: [{
-                    name: 'accountType',
-                    value: Number(e.target.value)
-                }]
-            }
-        });
+        if (e.target.value != '--') {
+            var startPath = stateStore.getValue(this.props.storeId, 'startPath');
+            startPath.push(e.target.value);
+            var currentLevel = stateStore.getValue(this.props.storeId, 'currentLevel');
+
+            dispatcher.dispatch({
+                actionType: ActionTypes.COMPONENT_STATE_CHANGE,
+                payload: {
+                    id: this.props.storeId,
+                    changes: [{
+                        name: 'startPath',
+                        value: startPath
+                    }, {
+                        name: 'currentLevel',
+                        value: ++currentLevel
+                    }]
+                }
+            });
+        }
+    },
+
+    categorySelector: function categorySelector(data, rows) {
+        var _this = this;
+
+        if (this.state.showCategorySelector) {
+            var _ret = (function () {
+                var currentLevel = stateStore.getValue(_this.props.storeId, 'currentLevel');
+                return {
+                    v: _react2['default'].createElement(
+                        'div',
+                        { className: 'form-group' },
+                        _react2['default'].createElement(
+                            'label',
+                            null,
+                            'Select ',
+                            data.categories[currentLevel]
+                        ),
+                        _react2['default'].createElement(
+                            'select',
+                            { className: 'form-control', onChange: _this.onCategoryChange, value: '--' },
+                            _react2['default'].createElement(
+                                'option',
+                                { key: '0', value: '--' },
+                                '--'
+                            ),
+                            rows.map(function (item, index) {
+                                return _react2['default'].createElement(
+                                    'option',
+                                    { key: index + 1, value: item.categories[currentLevel] },
+                                    item.categories[currentLevel]
+                                );
+                            })
+                        )
+                    )
+                };
+            })();
+
+            if (typeof _ret === 'object') return _ret.v;
+        }
     },
 
     interactionPanel: function interactionPanel(data, rows) {
-        var currentLevel = stateStore.getValue(this.props.storeId, 'currentLevel');
         return _react2['default'].createElement(
             'div',
             { className: 'row' },
-            _react2['default'].createElement(
-                'div',
-                { className: 'form-group' },
-                _react2['default'].createElement(
-                    'label',
-                    null,
-                    'Select ',
-                    data.categories[currentLevel]
-                ),
-                _react2['default'].createElement(
-                    'select',
-                    { className: 'form-control', onChange: this.onCategoryChange },
-                    rows.map(function (item, index) {
-                        return _react2['default'].createElement(
-                            'option',
-                            { key: index },
-                            item.categories[currentLevel]
-                        );
-                    })
-                )
-            )
+            this.categorySelector(data, rows)
         );
     },
 
@@ -20788,15 +20845,17 @@ var BarchartExplorer = _react2['default'].createClass({
     },
 
     render: function render() {
-        var dataModelId = stateStore.getComponentStateValue(this.props.storeId, 'dataModelId');
+        var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
         var dm = dataModelStore.getModel(dataModelId);
-        var accountType = stateStore.getComponentStateValue(this.props.storeId, 'accountType');
+        var accountType = stateStore.getValue(this.props.storeId, 'accountType');
+        var startPath = stateStore.getValue(this.props.storeId, 'startPath');
         var newData = dm.getData({
             accountTypes: [accountType],
-            startPath: [],
+            startPath: startPath,
             nLevels: 1,
             reduce: this.props.componentProps.reduce
         }, true);
+
         if (newData == null) {
             return _react2['default'].createElement(
                 'div',
@@ -20807,12 +20866,7 @@ var BarchartExplorer = _react2['default'].createClass({
             var rows = newData.data.sort(this.sortByAbsoluteDifference);
             var headers = newData.dataHeaders;
             var currentLevel = stateStore.getValue(this.props.storeId, 'currentLevel');
-            //console.log("Got data with hierarchy " + newData.categories);
-            //console.log("  LevelsDown = " + newData.levelsDown + ", levelsAggregated = " + newData.levelsAggregated);
 
-            // So we'll display "Select {categories[levelsDown]}: " and a select with all the list (sorted and chopped)
-            // Reset sets LevelsDown = 0
-            // Select changes startPath.
             return _react2['default'].createElement(
                 'div',
                 null,
@@ -20820,7 +20874,7 @@ var BarchartExplorer = _react2['default'].createClass({
                 _react2['default'].createElement('br', null),
                 _react2['default'].createElement(
                     'select',
-                    { onChange: this.onSelectChange, value: accountType },
+                    { onChange: this.onAccountTypeChange, value: accountType },
                     this.props.accountTypes.map(function (type, index) {
                         return _react2['default'].createElement(
                             'option',
@@ -21624,6 +21678,35 @@ function DataModel(id, datasetIds) {
         return keep;
     };
 
+    this.checkData = function checkData(commands) {
+        var partialOk = arguments[1] === undefined ? false : arguments[1];
+
+        if (this.status == DatasetStatus.DS_STATE_READY || this.status == DatasetStatus.DS_STATE_PARTIAL && partialOk) {
+            var startPath = null;
+            var startLevel = 0;
+            var nLevels = 1000;
+            if ('startPath' in commands) {
+                startPath = commands.startPath;
+                if (startPath != null) startLevel = startPath.length;
+            }
+            if ('nLevels' in commands) {
+                nLevels = commands.nLevels;
+                if (startLevel + nLevels > this.initializationParameters.hierarchy.length) {
+                    nLevels = this.initializationParameters.hierarchy.length - startLevel;
+                }
+            }
+            var headers = this.getHeaders();
+
+            return {
+                categories: this.initializationParameters.hierarchy,
+                dataHeaders: headers,
+                levelsDown: startLevel,
+                levelsAggregated: this.initializationParameters.hierarchy.length - nLevels - startLevel };
+        } else {
+            return null;
+        }
+    };
+
     this.getData = function getData(commands) {
         var partialOk = arguments[1] === undefined ? false : arguments[1];
 
@@ -21662,7 +21745,7 @@ function DataModel(id, datasetIds) {
                     nLevels = this.initializationParameters.hierarchy.length - startLevel;
                 }
             }
-            console.log('Nlevels is ' + commands.nLevels + ' -> ' + nLevels);
+            console.log('startPath = ' + startPath + ',  startLevel = ' + startLevel);
 
             /* Filters
              * What want to do is include only those that

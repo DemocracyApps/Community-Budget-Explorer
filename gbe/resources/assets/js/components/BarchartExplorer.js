@@ -17,6 +17,10 @@ var BarchartExplorer = React.createClass({
         storeId: React.PropTypes.number.isRequired
     },
 
+    getInitialState: function() {
+        return {showCategorySelector:false};
+    },
+
     getDefaultProps: function() {
         return {
             accountTypes: [
@@ -31,35 +35,60 @@ var BarchartExplorer = React.createClass({
         };
     },
 
+    prepareLocalState: function (dm) {
+        var accountType = stateStore.getValue(this.props.storeId, 'accountType');
+        var newData = dm.checkData({
+            accountTypes:[accountType],
+            startPath: [],
+            nLevels: 1,
+            reduce: this.props.componentProps.reduce
+        }, true);
+        this.setState({showCategorySelector:false});
+        if (newData != null) {
+            let nLevels = newData.categories.length;
+            let currentLevel = stateStore.getValue(this.props.storeId,'currentLevel');
+            if (currentLevel < nLevels-1) {
+                this.setState({showCategorySelector:true});
+            }
+        }
+    },
+
     componentWillMount: function () {
         // If this is the first time this component is mounting, we need to create the data model
         // and do any other state initialization required.
         var dataModelId = stateStore.getComponentStateValue(this.props.storeId, 'dataModelId');
+        let dm = null;
         if (dataModelId == null) {
             var ids = this.props.componentData['mydatasets'].ids;
             ids.forEach(function (id) {
                 apiActions.requestDatasetIfNeeded(id);
             });
 
-            var dm = dataModelStore.createModel(ids, this.props.dataInitialization);
+            dm = dataModelStore.createModel(ids, this.props.dataInitialization);
             stateStore.setComponentState(this.props.storeId,
                 {
                     accountType: AccountTypes.REVENUE,
                     dataModelId:  dm.id,
-                    currentLevel: 0
+                    currentLevel: 0,
+                    startPath: []
                 });
         }
     },
 
-    shouldComponentUpdate: function (nextProps, nextState) {
-        var dataModelId = stateStore.getComponentStateValue(this.props.storeId, 'dataModelId');
+    componentWillReceiveProps: function() {
+        var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
         var dm = dataModelStore.getModel(dataModelId);
-        var selectedItem = stateStore.getComponentStateValue(this.props.storeId, 'selectedItem');
+        this.prepareLocalState(dm);
+    },
 
+    shouldComponentUpdate: function (nextProps, nextState) {
+        var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
+        var dm = dataModelStore.getModel(dataModelId);
+        var selectedItem = stateStore.getValue(this.props.storeId, 'selectedItem');
         return ( dm.dataChanged() || dm.commandsChanged({accountTypes:[selectedItem]}) );
     },
 
-    onSelectChange: function(e) {
+    onAccountTypeChange: function(e) {
         dispatcher.dispatch({
             actionType: ActionTypes.COMPONENT_STATE_CHANGE,
             payload: {
@@ -75,34 +104,53 @@ var BarchartExplorer = React.createClass({
     },
 
     onCategoryChange: function(e) {
-        dispatcher.dispatch({
-            actionType: ActionTypes.COMPONENT_STATE_CHANGE,
-            payload: {
-                id: this.props.storeId,
-                changes:[
-                    {
-                        name: 'accountType',
-                        value: Number(e.target.value)
-                    }
-                ]
-            }
-        });
+        if (e.target.value != '--') {
+            let startPath = stateStore.getValue(this.props.storeId, 'startPath');
+            startPath.push(e.target.value);
+            let currentLevel = stateStore.getValue(this.props.storeId, 'currentLevel');
+
+            dispatcher.dispatch({
+                actionType: ActionTypes.COMPONENT_STATE_CHANGE,
+                payload: {
+                    id: this.props.storeId,
+                    changes: [
+                        {
+                            name: 'startPath',
+                            value: startPath
+                        },
+                        {
+                            name: 'currentLevel',
+                            value: ++currentLevel
+                        }
+                    ]
+                }
+            });
+        }
+    },
+
+    categorySelector: function categorySelector(data, rows) {
+        if (this.state.showCategorySelector) {
+            let currentLevel = stateStore.getValue(this.props.storeId,'currentLevel');
+            return (
+                <div className="form-group">
+                    <label>Select {data.categories[currentLevel]}</label>
+                    <select className="form-control" onChange={this.onCategoryChange} value="--">
+                        <option key="0" value="--">--</option>
+                        {rows.map(function(item, index) {
+                            return (
+                                <option key={index+1} value={item.categories[currentLevel]}>{item.categories[currentLevel]}</option>
+                            )
+                        })}
+                    </select>
+                </div>
+            );
+        }
     },
 
     interactionPanel: function interactionPanel(data, rows) {
-        let currentLevel = stateStore.getValue(this.props.storeId,'currentLevel');
         return (
           <div className="row">
-              <div className="form-group">
-                  <label>Select {data.categories[currentLevel]}</label>
-                  <select className="form-control" onChange={this.onCategoryChange}>
-                      {rows.map(function(item, index) {
-                         return (
-                             <option key={index}>{item.categories[currentLevel]}</option>
-                         )
-                      })}
-                  </select>
-              </div>
+              {this.categorySelector(data, rows)}
           </div>
       )
     },
@@ -122,33 +170,30 @@ var BarchartExplorer = React.createClass({
     },
 
     render: function() {
-        var dataModelId = stateStore.getComponentStateValue(this.props.storeId, 'dataModelId');
+        var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
         var dm = dataModelStore.getModel(dataModelId);
-        var accountType = stateStore.getComponentStateValue(this.props.storeId, 'accountType');
+        var accountType = stateStore.getValue(this.props.storeId, 'accountType');
+        var startPath = stateStore.getValue(this.props.storeId, 'startPath');
         var newData = dm.getData({
             accountTypes:[accountType],
-            startPath: [],
+            startPath: startPath,
             nLevels: 1,
             reduce: this.props.componentProps.reduce
         }, true);
+
         if (newData == null) {
             return <div> BarchartExplorer loading ... </div>
         }
         else {
-            var rows = newData.data.sort(this.sortByAbsoluteDifference);
+            var rows =  newData.data.sort(this.sortByAbsoluteDifference);
             var headers = newData.dataHeaders;
             let currentLevel = stateStore.getValue(this.props.storeId,'currentLevel');
-            //console.log("Got data with hierarchy " + newData.categories);
-            //console.log("  LevelsDown = " + newData.levelsDown + ", levelsAggregated = " + newData.levelsAggregated);
 
-            // So we'll display "Select {categories[levelsDown]}: " and a select with all the list (sorted and chopped)
-            // Reset sets LevelsDown = 0
-            // Select changes startPath.
             return (
                 <div>
                     {this.interactionPanel(newData, rows)}
                     <br/>
-                    <select onChange={this.onSelectChange} value={accountType}>
+                    <select onChange={this.onAccountTypeChange} value={accountType}>
                         {
                             this.props.accountTypes.map(
                                 function (type, index) {
