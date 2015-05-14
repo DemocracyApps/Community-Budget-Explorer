@@ -16,6 +16,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with the GBE.  If not, see <http://www.gnu.org/licenses/>.
  */
+use DemocracyApps\GB\Budget\Account;
 use DemocracyApps\GB\Budget\Dataset;
 use DemocracyApps\GB\Http\Controllers\Controller;
 
@@ -105,7 +106,31 @@ class DatasetsController extends Controller {
 	 */
 	public function show($govId, $id)
 	{
-		//
+		$this->dataset = Dataset::find($id);
+
+        $items = \DB::table('data_items')
+            ->join('accounts', 'accounts.id', '=', 'data_items.account')
+            ->join('account_category_values', 'account_category_values.id', '=', 'data_items.category1')
+            ->where('data_items.dataset','=',$id)
+            ->orderBy('data_items.category1')
+            ->select('account_category_values.name', 'accounts.type', 'data_items.amount')
+            ->get();
+        $output = array();
+        foreach ($items as $item) {
+            if (! array_key_exists($item->name, $output)) {
+                $output[$item->name] = new \stdClass();
+                $output[$item->name]->name = $item->name;
+                $output[$item->name]->revenue = 0.0;
+                $output[$item->name]->expense = 0.0;
+            }
+            if ($item->type == Account::EXPENSE)
+                $output[$item->name]->expense += $item->amount;
+            elseif ($item->type == Account::REVENUE)
+                $output[$item->name]->revenue += $item->amount;
+        }
+        $organization = GovernmentOrganization::find($govId);
+
+        return view('government.dataset.show', array('organization'=>$organization, 'dataset'=>$this->dataset, 'data'=>$output));
 	}
 
 	/**
