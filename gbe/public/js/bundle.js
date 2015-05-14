@@ -20705,8 +20705,23 @@ var BarchartExplorer = _react2['default'].createClass({
             actionType: ActionTypes.COMPONENT_STATE_CHANGE,
             payload: {
                 id: this.props.storeId,
-                name: 'accountType',
-                value: Number(e.target.value)
+                changes: [{
+                    name: 'accountType',
+                    value: Number(e.target.value)
+                }]
+            }
+        });
+    },
+
+    onCategoryChange: function onCategoryChange(e) {
+        dispatcher.dispatch({
+            actionType: ActionTypes.COMPONENT_STATE_CHANGE,
+            payload: {
+                id: this.props.storeId,
+                changes: [{
+                    name: 'accountType',
+                    value: Number(e.target.value)
+                }]
             }
         });
     },
@@ -20717,21 +20732,25 @@ var BarchartExplorer = _react2['default'].createClass({
             'div',
             { className: 'row' },
             _react2['default'].createElement(
-                'label',
-                null,
-                'Select ',
-                data.categories[currentLevel]
-            ),
-            _react2['default'].createElement(
-                'select',
-                null,
-                rows.map(function (item, index) {
-                    return _react2['default'].createElement(
-                        'option',
-                        { key: index },
-                        item.categories[currentLevel]
-                    );
-                })
+                'div',
+                { className: 'form-group' },
+                _react2['default'].createElement(
+                    'label',
+                    null,
+                    'Select ',
+                    data.categories[currentLevel]
+                ),
+                _react2['default'].createElement(
+                    'select',
+                    { className: 'form-control', onChange: this.onCategoryChange },
+                    rows.map(function (item, index) {
+                        return _react2['default'].createElement(
+                            'option',
+                            { key: index },
+                            item.categories[currentLevel]
+                        );
+                    })
+                )
             )
         );
     },
@@ -21334,8 +21353,10 @@ var SiteNavigation = _react2['default'].createClass({
                 dispatcher.dispatch({
                     actionType: ActionTypes.STATE_CHANGE,
                     payload: {
-                        name: 'site.currentPage',
-                        value: page.id
+                        changes: [{
+                            name: 'site.currentPage',
+                            value: page.id
+                        }]
                     }
                 });
             };
@@ -22361,15 +22382,25 @@ dispatcher.register(function (action) {
             break;
 
         case ActionTypes.STATE_CHANGE:
-            StateStore.setState(action.payload.name, action.payload.value);
-            StateStore.emitChange();
+            {
+                var changes = action.payload.changes;
+                for (var i = 0; i < changes.length; ++i) {
+                    StateStore.setState(changes[i].name, changes[i].value);
+                }
+                StateStore.emitChange();
+            }
             break;
 
         case ActionTypes.COMPONENT_STATE_CHANGE:
-            var newState = {};
-            newState[action.payload.name] = action.payload.value;
-            StateStore.setComponentState(action.payload.id, newState);
-            StateStore.emitChange();
+            {
+                var changes = action.payload.changes;
+                var newState = {};
+                for (var i = 0; i < changes.length; ++i) {
+                    newState[changes[i].name] = changes[i].value;
+                }
+                StateStore.setComponentState(action.payload.id, newState);
+                StateStore.emitChange();
+            }
             break;
 
         default:

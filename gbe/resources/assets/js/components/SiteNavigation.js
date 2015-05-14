@@ -22,9 +22,13 @@ var SiteNavigation = React.createClass({
                 dispatcher.dispatch({
                     actionType: ActionTypes.STATE_CHANGE,
                     payload: {
-                        name: "site.currentPage",
-                        value: page.id
-                }
+                        changes: [
+                            {
+                                name: "site.currentPage",
+                                value: page.id
+                            }
+                        ]
+                    }
                 });
 
             };

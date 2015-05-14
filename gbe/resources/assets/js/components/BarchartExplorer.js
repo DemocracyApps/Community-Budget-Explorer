@@ -64,8 +64,27 @@ var BarchartExplorer = React.createClass({
             actionType: ActionTypes.COMPONENT_STATE_CHANGE,
             payload: {
                 id: this.props.storeId,
-                name: 'accountType',
-                value: Number(e.target.value)
+                changes: [
+                    {
+                        name: 'accountType',
+                        value: Number(e.target.value)
+                    }
+                ]
+            }
+        });
+    },
+
+    onCategoryChange: function(e) {
+        dispatcher.dispatch({
+            actionType: ActionTypes.COMPONENT_STATE_CHANGE,
+            payload: {
+                id: this.props.storeId,
+                changes:[
+                    {
+                        name: 'accountType',
+                        value: Number(e.target.value)
+                    }
+                ]
             }
         });
     },
@@ -74,14 +93,16 @@ var BarchartExplorer = React.createClass({
         let currentLevel = stateStore.getValue(this.props.storeId,'currentLevel');
         return (
           <div className="row">
-              <label>Select {data.categories[currentLevel]}</label>
-              <select>
-                  {rows.map(function(item, index) {
-                     return (
-                         <option key={index}>{item.categories[currentLevel]}</option>
-                     )
-                  })}
-              </select>
+              <div className="form-group">
+                  <label>Select {data.categories[currentLevel]}</label>
+                  <select className="form-control" onChange={this.onCategoryChange}>
+                      {rows.map(function(item, index) {
+                         return (
+                             <option key={index}>{item.categories[currentLevel]}</option>
+                         )
+                      })}
+                  </select>
+              </div>
           </div>
       )
     },

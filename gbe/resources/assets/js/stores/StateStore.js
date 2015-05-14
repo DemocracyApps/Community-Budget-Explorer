@@ -126,15 +126,25 @@ dispatcher.register(function (action) {
             break;
 
         case ActionTypes.STATE_CHANGE:
-            StateStore.setState (action.payload.name, action.payload.value);
-            StateStore.emitChange();
+            {
+                let changes = action.payload.changes;
+                for (let i=0; i<changes.length; ++i) {
+                    StateStore.setState (changes[i].name, changes[i].value);
+                }
+                StateStore.emitChange();
+            }
             break;
 
         case ActionTypes.COMPONENT_STATE_CHANGE:
-            var newState = {};
-            newState[action.payload.name] = action.payload.value;
-            StateStore.setComponentState(action.payload.id, newState);
-            StateStore.emitChange();
+            {
+                let changes = action.payload.changes;
+                var newState = {};
+                for (let i=0; i<changes.length; ++i) {
+                    newState[changes[i].name] = changes[i].value;
+                }
+                StateStore.setComponentState(action.payload.id, newState);
+                StateStore.emitChange();
+            }
             break;
 
         default:
