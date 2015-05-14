@@ -7,6 +7,7 @@ var apiActions = require('../common/ApiActions');
 var AccountTypes = require('../constants/AccountTypes');
 var dispatcher = require('../common/BudgetAppDispatcher');
 var ActionTypes = require('../constants/ActionTypes');
+var datasetUtilities = require('../data/DatasetUtilities');
 
 var BarchartExplorer = React.createClass({
 
@@ -43,7 +44,7 @@ var BarchartExplorer = React.createClass({
             var dm = dataModelStore.createModel(ids, this.props.dataInitialization);
             stateStore.setComponentState(this.props.storeId,
                 {
-                    selectedItem: AccountTypes.REVENUE,
+                    accountType: AccountTypes.REVENUE,
                     dataModelId:  dm.id,
                     currentLevel: 0
                 });
@@ -63,61 +64,70 @@ var BarchartExplorer = React.createClass({
             actionType: ActionTypes.COMPONENT_STATE_CHANGE,
             payload: {
                 id: this.props.storeId,
-                name: 'selectedItem',
+                name: 'accountType',
                 value: Number(e.target.value)
             }
         });
     },
 
-    dollarsWithCommas: function(x) {
-        var prefix = '$';
-        if (x < 0.) prefix = '-$';
-        x = Math.abs(x);
-        var val = prefix + x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-
-        return val;
-    },
-
-    tableColumn: function (value, index) {
+    interactionPanel: function interactionPanel(data, rows) {
+        let currentLevel = stateStore.getValue(this.props.storeId,'currentLevel');
         return (
-            <td key={index+1}>
-                {this.dollarsWithCommas(value)}
-            </td>
-        )
+          <div className="row">
+              <label>Select {data.categories[currentLevel]}</label>
+              <select>
+                  {rows.map(function(item, index) {
+                     return (
+                         <option key={index}>{item.categories[currentLevel]}</option>
+                     )
+                  })}
+              </select>
+          </div>
+      )
     },
 
     tableRow: function (item, index) {
         return <tr key={index}>
-            <td key="0">{item.account} </td>
-            {item.amount.map(this.tableColumn)}
+            <td key="0">{item.categories[stateStore.getValue(this.props.storeId,'currentLevel')]}</td>
+            <td key="1">{datasetUtilities.formatDollarAmount(item.reduce)}</td>
+            <td key="2">{datasetUtilities.formatDollarAmount(item.amount[0])}</td>
+            <td key="3">{datasetUtilities.formatDollarAmount(item.amount[1])}</td>
         </tr>
     },
 
-    columnHeader: function (header, index) {
-        return <th key={index+1}>{header}</th>
+    sortByAbsoluteDifference: function sortByAbsoluteDifference(item1, item2) {
+        var result = Math.abs(item2.reduce) - Math.abs(item1.reduce);
+        return result;
     },
 
     render: function() {
         var dataModelId = stateStore.getComponentStateValue(this.props.storeId, 'dataModelId');
         var dm = dataModelStore.getModel(dataModelId);
-        var selectedItem = stateStore.getComponentStateValue(this.props.storeId, 'selectedItem');
+        var accountType = stateStore.getComponentStateValue(this.props.storeId, 'accountType');
         var newData = dm.getData({
-            accountTypes:[selectedItem],
-            startPath: ['General Fund'],
+            accountTypes:[accountType],
+            startPath: [],
             nLevels: 1,
             reduce: this.props.componentProps.reduce
         }, true);
-
         if (newData == null) {
             return <div> BarchartExplorer loading ... </div>
         }
         else {
-            var rows = newData.data;
+            var rows = newData.data.sort(this.sortByAbsoluteDifference);
             var headers = newData.dataHeaders;
+            let currentLevel = stateStore.getValue(this.props.storeId,'currentLevel');
+            //console.log("Got data with hierarchy " + newData.categories);
+            //console.log("  LevelsDown = " + newData.levelsDown + ", levelsAggregated = " + newData.levelsAggregated);
 
+            // So we'll display "Select {categories[levelsDown]}: " and a select with all the list (sorted and chopped)
+            // Reset sets LevelsDown = 0
+            // Select changes startPath.
             return (
                 <div>
-                    <select onChange={this.onSelectChange} value={selectedItem}>
+                    {this.interactionPanel(newData, rows)}
+                    <br/>
+                    <select onChange={this.onSelectChange} value={accountType}>
                         {
                             this.props.accountTypes.map(
                                 function (type, index) {
@@ -127,11 +137,14 @@ var BarchartExplorer = React.createClass({
                         }
                     </select>
                     <br/>
+                    <hr/>
                     <table className="table">
                         <thead>
                             <tr>
                                 <th key="0">Account</th>
-                                {headers.map(this.columnHeader)}
+                                <th key="1"> Delta </th>
+                                <th key="2"> Value for {headers[0]} </th>
+                                <th key="3"> Value for {headers[1]} </th>
                             </tr>
                         </thead>
                         <tbody>

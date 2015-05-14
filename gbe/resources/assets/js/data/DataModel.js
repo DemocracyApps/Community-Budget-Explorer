@@ -143,6 +143,7 @@ function DataModel(id, datasetIds, initialCommands = null) {
                     nLevels = this.initializationParameters.hierarchy.length - startLevel;
                 }
             }
+            console.log("Nlevels is " + commands.nLevels + " -> " + nLevels);
 
             /* Filters
              * What want to do is include only those that
@@ -153,7 +154,6 @@ function DataModel(id, datasetIds, initialCommands = null) {
             var tree = {};
             for (let i=0; i<this.data.length; ++i) {
                 let item = this.data[i];
-
                 // See if it's an included account type
                 if (accountTypes == null || accountTypes.indexOf(item.accountType)>=0) {
                     // Now see if it matches startPath
@@ -174,12 +174,13 @@ function DataModel(id, datasetIds, initialCommands = null) {
                                         account: key,
                                         accountType: item.type,
                                         categories: item.categories.slice(),
-                                        amount: item.amount.slice()
+                                        amount: item.amount.slice(),
+                                        reduce: 0
                                     }
                                 }
                                 else {
                                     for (let j = 0; j < item.amount.length; ++j) {
-                                        current[key].amount[j] += item.amount[j];
+                                        current[key].amount[j] += Number(item.amount[j]);
                                     }
                                 }
                             }
@@ -196,23 +197,22 @@ function DataModel(id, datasetIds, initialCommands = null) {
                 var partial = datasetUtilities.extractFromTree (tree[accType], 0.0);
                 data = data.concat(partial);
             }
-
             let headers = this.getHeaders();
             if ('reduce' in commands) {
                 let reduceCmd = commands.reduce;
                 if (reduceCmd == 'difference') {
-                    headers = ['Difference'];
                     if (data[0].amount.length < 2) throw "Difference reduce requires 2 datasets";
                     if (data[0].amount.length > 2)
                         console.log("Warning: difference reduce applied to more than 2 datasets - using first two.");
                     for (let i=0; i<data.length; ++i) {
-                        let inItem = data[i];
-                        let outItem = {
-                            accountType: inItem.accountType,
-                            categories: inItem.categories,
-                            amount: [inItem.amount[1] - inItem.amount[0]]
-                        }
-                        data[i] = outItem;
+                        //let inItem = data[i];
+                        data[i].reduce = data[i].amount[1] - data[i].amount[0];
+                        //let outItem = {
+                        //    accountType: inItem.accountType,
+                        //    categories: inItem.categories,
+                        //    amount: [inItem.amount[1] - inItem.amount[0]]
+                        //}
+                        //data[i] = outItem;
                     }
                 }
                 else {
@@ -220,15 +220,26 @@ function DataModel(id, datasetIds, initialCommands = null) {
                 }
 
             }
+
             return {
                 categories:this.initializationParameters.hierarchy,
                 dataHeaders:headers,
+                levelsDown: startLevel,
+                levelsAggregated: this.initializationParameters.hierarchy.length - nLevels - startLevel,
                 data: data
             };
         }
         else {
             return null;
         }
+    };
+
+    this.getDataModelInfo = function getDataModelInfo() {
+
+        return {
+            nDatasets: this.rawDatasets.length,
+            nCategories: this.rawDatasets
+        };
     };
 }
 

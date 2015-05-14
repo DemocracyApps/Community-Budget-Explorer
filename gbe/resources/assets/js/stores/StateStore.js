@@ -62,6 +62,13 @@ var StateStore = assign({}, EventEmitter.prototype, {
         current[stateVariable] = value;
     },
 
+    getValue: function getValue (/*path OR id, key */) {
+        if (arguments.length == 1)
+            return this.getStateValue(arguments[0]);
+        else
+            return this.getComponentStateValue(arguments[0], arguments[1]);
+    },
+
     getStateValue: function getStateValue (path) {
         var pathArray = path.split(".");
         var value = this.store;

@@ -46,7 +46,7 @@ var Site = React.createClass({
 
     render: function() {
 
-        var currentPage = stateStore.getStateValue('site.currentPage');
+        var currentPage = stateStore.getValue('site.currentPage');
 
         var page = configStore.getConfiguration('pages', currentPage);
 

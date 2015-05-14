@@ -20651,6 +20651,7 @@ var apiActions = require('../common/ApiActions');
 var AccountTypes = require('../constants/AccountTypes');
 var dispatcher = require('../common/BudgetAppDispatcher');
 var ActionTypes = require('../constants/ActionTypes');
+var datasetUtilities = require('../data/DatasetUtilities');
 
 var BarchartExplorer = _react2['default'].createClass({
     displayName: 'BarchartExplorer',
@@ -20684,7 +20685,7 @@ var BarchartExplorer = _react2['default'].createClass({
 
             var dm = dataModelStore.createModel(ids, this.props.dataInitialization);
             stateStore.setComponentState(this.props.storeId, {
-                selectedItem: AccountTypes.REVENUE,
+                accountType: AccountTypes.REVENUE,
                 dataModelId: dm.id,
                 currentLevel: 0
             });
@@ -20704,26 +20705,34 @@ var BarchartExplorer = _react2['default'].createClass({
             actionType: ActionTypes.COMPONENT_STATE_CHANGE,
             payload: {
                 id: this.props.storeId,
-                name: 'selectedItem',
+                name: 'accountType',
                 value: Number(e.target.value)
             }
         });
     },
 
-    dollarsWithCommas: function dollarsWithCommas(x) {
-        var prefix = '$';
-        if (x < 0) prefix = '-$';
-        x = Math.abs(x);
-        var val = prefix + x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-
-        return val;
-    },
-
-    tableColumn: function tableColumn(value, index) {
+    interactionPanel: function interactionPanel(data, rows) {
+        var currentLevel = stateStore.getValue(this.props.storeId, 'currentLevel');
         return _react2['default'].createElement(
-            'td',
-            { key: index + 1 },
-            this.dollarsWithCommas(value)
+            'div',
+            { className: 'row' },
+            _react2['default'].createElement(
+                'label',
+                null,
+                'Select ',
+                data.categories[currentLevel]
+            ),
+            _react2['default'].createElement(
+                'select',
+                null,
+                rows.map(function (item, index) {
+                    return _react2['default'].createElement(
+                        'option',
+                        { key: index },
+                        item.categories[currentLevel]
+                    );
+                })
+            )
         );
     },
 
@@ -20734,32 +20743,41 @@ var BarchartExplorer = _react2['default'].createClass({
             _react2['default'].createElement(
                 'td',
                 { key: '0' },
-                item.account,
-                ' '
+                item.categories[stateStore.getValue(this.props.storeId, 'currentLevel')]
             ),
-            item.amount.map(this.tableColumn)
+            _react2['default'].createElement(
+                'td',
+                { key: '1' },
+                datasetUtilities.formatDollarAmount(item.reduce)
+            ),
+            _react2['default'].createElement(
+                'td',
+                { key: '2' },
+                datasetUtilities.formatDollarAmount(item.amount[0])
+            ),
+            _react2['default'].createElement(
+                'td',
+                { key: '3' },
+                datasetUtilities.formatDollarAmount(item.amount[1])
+            )
         );
     },
 
-    columnHeader: function columnHeader(header, index) {
-        return _react2['default'].createElement(
-            'th',
-            { key: index + 1 },
-            header
-        );
+    sortByAbsoluteDifference: function sortByAbsoluteDifference(item1, item2) {
+        var result = Math.abs(item2.reduce) - Math.abs(item1.reduce);
+        return result;
     },
 
     render: function render() {
         var dataModelId = stateStore.getComponentStateValue(this.props.storeId, 'dataModelId');
         var dm = dataModelStore.getModel(dataModelId);
-        var selectedItem = stateStore.getComponentStateValue(this.props.storeId, 'selectedItem');
+        var accountType = stateStore.getComponentStateValue(this.props.storeId, 'accountType');
         var newData = dm.getData({
-            accountTypes: [selectedItem],
-            startPath: ['General Fund'],
+            accountTypes: [accountType],
+            startPath: [],
             nLevels: 1,
             reduce: this.props.componentProps.reduce
         }, true);
-
         if (newData == null) {
             return _react2['default'].createElement(
                 'div',
@@ -20767,15 +20785,23 @@ var BarchartExplorer = _react2['default'].createClass({
                 ' BarchartExplorer loading ... '
             );
         } else {
-            var rows = newData.data;
+            var rows = newData.data.sort(this.sortByAbsoluteDifference);
             var headers = newData.dataHeaders;
+            var currentLevel = stateStore.getValue(this.props.storeId, 'currentLevel');
+            //console.log("Got data with hierarchy " + newData.categories);
+            //console.log("  LevelsDown = " + newData.levelsDown + ", levelsAggregated = " + newData.levelsAggregated);
 
+            // So we'll display "Select {categories[levelsDown]}: " and a select with all the list (sorted and chopped)
+            // Reset sets LevelsDown = 0
+            // Select changes startPath.
             return _react2['default'].createElement(
                 'div',
                 null,
+                this.interactionPanel(newData, rows),
+                _react2['default'].createElement('br', null),
                 _react2['default'].createElement(
                     'select',
-                    { onChange: this.onSelectChange, value: selectedItem },
+                    { onChange: this.onSelectChange, value: accountType },
                     this.props.accountTypes.map(function (type, index) {
                         return _react2['default'].createElement(
                             'option',
@@ -20787,6 +20813,7 @@ var BarchartExplorer = _react2['default'].createClass({
                     })
                 ),
                 _react2['default'].createElement('br', null),
+                _react2['default'].createElement('hr', null),
                 _react2['default'].createElement(
                     'table',
                     { className: 'table' },
@@ -20801,7 +20828,25 @@ var BarchartExplorer = _react2['default'].createClass({
                                 { key: '0' },
                                 'Account'
                             ),
-                            headers.map(this.columnHeader)
+                            _react2['default'].createElement(
+                                'th',
+                                { key: '1' },
+                                ' Delta '
+                            ),
+                            _react2['default'].createElement(
+                                'th',
+                                { key: '2' },
+                                ' Value for ',
+                                headers[0],
+                                ' '
+                            ),
+                            _react2['default'].createElement(
+                                'th',
+                                { key: '3' },
+                                ' Value for ',
+                                headers[1],
+                                ' '
+                            )
                         )
                     ),
                     _react2['default'].createElement(
@@ -20818,7 +20863,7 @@ var BarchartExplorer = _react2['default'].createClass({
 exports['default'] = BarchartExplorer;
 module.exports = exports['default'];
 
-},{"../common/ApiActions":163,"../common/BudgetAppDispatcher":164,"../constants/AccountTypes":172,"../constants/ActionTypes":173,"../stores/DataModelStore":181,"../stores/DatasetStore":182,"../stores/StateStore":183,"react":162}],166:[function(require,module,exports){
+},{"../common/ApiActions":163,"../common/BudgetAppDispatcher":164,"../constants/AccountTypes":172,"../constants/ActionTypes":173,"../data/DatasetUtilities":178,"../stores/DataModelStore":181,"../stores/DatasetStore":182,"../stores/StateStore":183,"react":162}],166:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -21206,7 +21251,7 @@ var Site = _react2['default'].createClass({
 
     render: function render() {
 
-        var currentPage = stateStore.getStateValue('site.currentPage');
+        var currentPage = stateStore.getValue('site.currentPage');
 
         var page = configStore.getConfiguration('pages', currentPage);
 
@@ -21596,6 +21641,7 @@ function DataModel(id, datasetIds) {
                     nLevels = this.initializationParameters.hierarchy.length - startLevel;
                 }
             }
+            console.log('Nlevels is ' + commands.nLevels + ' -> ' + nLevels);
 
             /* Filters
              * What want to do is include only those that
@@ -21606,7 +21652,6 @@ function DataModel(id, datasetIds) {
             var tree = {};
             for (var i = 0; i < this.data.length; ++i) {
                 var item = this.data[i];
-
                 // See if it's an included account type
                 if (accountTypes == null || accountTypes.indexOf(item.accountType) >= 0) {
                     // Now see if it matches startPath
@@ -21627,11 +21672,12 @@ function DataModel(id, datasetIds) {
                                         account: key,
                                         accountType: item.type,
                                         categories: item.categories.slice(),
-                                        amount: item.amount.slice()
+                                        amount: item.amount.slice(),
+                                        reduce: 0
                                     };
                                 } else {
                                     for (var j = 0; j < item.amount.length; ++j) {
-                                        current[key].amount[j] += item.amount[j];
+                                        current[key].amount[j] += Number(item.amount[j]);
                                     }
                                 }
                             } else {
@@ -21647,35 +21693,45 @@ function DataModel(id, datasetIds) {
                 var partial = datasetUtilities.extractFromTree(tree[accType], 0);
                 data = data.concat(partial);
             }
-
             var headers = this.getHeaders();
             if ('reduce' in commands) {
                 var reduceCmd = commands.reduce;
                 if (reduceCmd == 'difference') {
-                    headers = ['Difference'];
                     if (data[0].amount.length < 2) throw 'Difference reduce requires 2 datasets';
                     if (data[0].amount.length > 2) console.log('Warning: difference reduce applied to more than 2 datasets - using first two.');
                     for (var i = 0; i < data.length; ++i) {
-                        var inItem = data[i];
-                        var outItem = {
-                            accountType: inItem.accountType,
-                            categories: inItem.categories,
-                            amount: [inItem.amount[1] - inItem.amount[0]]
-                        };
-                        data[i] = outItem;
+                        //let inItem = data[i];
+                        data[i].reduce = data[i].amount[1] - data[i].amount[0];
+                        //let outItem = {
+                        //    accountType: inItem.accountType,
+                        //    categories: inItem.categories,
+                        //    amount: [inItem.amount[1] - inItem.amount[0]]
+                        //}
+                        //data[i] = outItem;
                     }
                 } else {
                     throw 'Reduce command ' + reduceCmd + ' not yet implemented.';
                 }
             }
+
             return {
                 categories: this.initializationParameters.hierarchy,
                 dataHeaders: headers,
+                levelsDown: startLevel,
+                levelsAggregated: this.initializationParameters.hierarchy.length - nLevels - startLevel,
                 data: data
             };
         } else {
             return null;
         }
+    };
+
+    this.getDataModelInfo = function getDataModelInfo() {
+
+        return {
+            nDatasets: this.rawDatasets.length,
+            nCategories: this.rawDatasets
+        };
     };
 }
 
@@ -21888,6 +21944,16 @@ var DatasetUtilities = {
             }
         }
         return result;
+    },
+
+    formatDollarAmount: function formatDollarAmount(x) {
+        x = Math.round(x);
+        var prefix = '$';
+        if (x < 0) prefix = '-$';
+        x = Math.abs(x);
+        var val = prefix + x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+        return val;
     }
 };
 
@@ -22235,6 +22301,10 @@ var StateStore = assign({}, EventEmitter.prototype, {
         current[stateVariable] = value;
     },
 
+    getValue: function getValue() {
+        if (arguments.length == 1) return this.getStateValue(arguments[0]);else return this.getComponentStateValue(arguments[0], arguments[1]);
+    },
+
     getStateValue: function getStateValue(path) {
         var pathArray = path.split('.');
         var value = this.store;
@@ -22308,5 +22378,6 @@ dispatcher.register(function (action) {
 });
 
 module.exports = StateStore;
+/*path OR id, key */
 
 },{"../common/BudgetAppDispatcher":164,"../constants/ActionTypes":173,"events":2,"object-assign":7}]},{},[1]);
