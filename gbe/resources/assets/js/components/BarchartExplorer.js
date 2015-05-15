@@ -167,13 +167,28 @@ var BarchartExplorer = React.createClass({
     },
 
     interactionPanel: function interactionPanel(data, rows) {
+        var accountType = stateStore.getValue(this.props.storeId, 'accountType');
         return (
           <div className="row">
               <div className="col-xs-6">
                   {this.renderCategorySelector(data, rows)}
               </div>
               <div className="col-xs-1"></div>
-              <div className="col-xs-6">
+              <div className="col-xs-3">
+                  <br/>
+                  <select onChange={this.onAccountTypeChange} value={accountType}>
+                      {
+                          this.props.accountTypes.map(
+                              function (type, index) {
+                                  return <option key={index} value={type.value} > {type.name} </option>
+                              }
+                          )
+                      }
+                  </select>
+              </div>
+              <div className="col-xs-1"></div>
+              <div className="col-xs-2">
+                  <br/>
                   <button className="btn" onClick={this.doReset}>Reset</button>
               </div>
           </div>
@@ -183,15 +198,23 @@ var BarchartExplorer = React.createClass({
     tableRow: function (item, index) {
         return <tr key={index}>
             <td key="0">{item.categories[stateStore.getValue(this.props.storeId,'currentLevel')]}</td>
-            <td key="1">{datasetUtilities.formatDollarAmount(item.reduce)}</td>
             <td key="2">{datasetUtilities.formatDollarAmount(item.amount[0])}</td>
             <td key="3">{datasetUtilities.formatDollarAmount(item.amount[1])}</td>
+            <td key="1">{datasetUtilities.formatDollarAmount(item.reduce)}</td>
         </tr>
     },
 
     sortByAbsoluteDifference: function sortByAbsoluteDifference(item1, item2) {
         var result = Math.abs(item2.reduce) - Math.abs(item1.reduce);
         return result;
+    },
+
+    bars: function (item, index) {
+            return (
+                <g key={index} transform={"translate(" + item.x1 +"," + item.y+")"}>
+                    <rect strokeWidth="2" height="19" width={item.width}></rect>
+                </g>
+            )
     },
 
     render: function() {
@@ -204,7 +227,7 @@ var BarchartExplorer = React.createClass({
             startPath: startPath,
             nLevels: 1,
             reduce: this.props.componentProps.reduce
-        }, true);
+        }, false);
 
         if (newData == null) {
             return <div> BarchartExplorer loading ... </div>
@@ -214,32 +237,57 @@ var BarchartExplorer = React.createClass({
             var headers = newData.dataHeaders;
             let currentLevel = stateStore.getValue(this.props.storeId,'currentLevel');
 
+            let chartWidth = 700, chartHeight = 500; // We need to get these from enclosing div - how do we do that?
+
+            let minValue = 1.e7, maxValue = -1.e7;
+            for (let i=0; i< rows.length; ++i) {
+                minValue = Math.min(minValue, rows[i].reduce);
+                maxValue = Math.max(maxValue, rows[i].reduce);
+            }
+            if (minValue > 0.0) minValue = 0.0;
+            if (maxValue < 0.0) maxValue = 0.0;
+
+            let xborder = 150, yborder = 5;
+            let offset = -minValue;
+            let scale = (chartWidth - 2 * xborder)/(maxValue - minValue);
+            console.log("offset = " + offset + ",  scale = " + scale);
+            for (let i=0; i< rows.length; ++i) {
+                rows[i].x = Math.round(scale * (rows[i].reduce + offset)) + xborder;
+                if (rows[i].reduce < 0) {
+                    rows[i].x1 = Math.round(scale * (rows[i].reduce + offset)) + xborder;
+                    rows[i].x2 = Math.round(scale * (0+offset)) + xborder;
+                }
+                else {
+                    rows[i].x1 = Math.round(scale * (0+offset)) + xborder;
+                    rows[i].x2 = Math.round(scale * (rows[i].reduce + offset)) + xborder;
+                }
+                rows[i].y = yborder + i * 40 + 10;
+                rows[i].width = rows[i].x2 - rows[i].x1;
+                console.log("Reduce=" + Math.round(rows[i].reduce) + ", x1/x2 = " + rows[i].x1 + "/" + rows[i].x2 + ", width = " + rows[i].width);
+            }
+
             return (
                 <div>
                     {this.interactionPanel(newData, rows)}
                     <br/>
-                    <select onChange={this.onAccountTypeChange} value={accountType}>
-                        {
-                            this.props.accountTypes.map(
-                                function (type, index) {
-                                    return <option key={index} value={type.value} > {type.name} </option>
-                                }
-                            )
-                        }
-                    </select>
+                    <div>
+                        <svg className="chart span12" id="chart" width="700" height="470">
+                            {rows.map(this.bars)}
+                        </svg>
+                    </div>
                     <br/>
                     <hr/>
                     <table className="table">
                         <thead>
-                            <tr>
-                                <th key="0">Account</th>
-                                <th key="1"> Delta </th>
-                                <th key="2"> Value for {headers[0]} </th>
-                                <th key="3"> Value for {headers[1]} </th>
-                            </tr>
+                        <tr>
+                            <th key="0">Account</th>
+                            <th key="2">{headers[0]}</th>
+                            <th key="3">{headers[1]}</th>
+                            <th key="1">Difference</th>
+                        </tr>
                         </thead>
                         <tbody>
-                            {rows.map(this.tableRow)}
+                        {rows.map(this.tableRow)}
                         </tbody>
                     </table>
 

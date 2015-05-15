@@ -20821,6 +20821,7 @@ var BarchartExplorer = _react2['default'].createClass({
     },
 
     interactionPanel: function interactionPanel(data, rows) {
+        var accountType = stateStore.getValue(this.props.storeId, 'accountType');
         return _react2['default'].createElement(
             'div',
             { className: 'row' },
@@ -20832,7 +20833,27 @@ var BarchartExplorer = _react2['default'].createClass({
             _react2['default'].createElement('div', { className: 'col-xs-1' }),
             _react2['default'].createElement(
                 'div',
-                { className: 'col-xs-6' },
+                { className: 'col-xs-3' },
+                _react2['default'].createElement('br', null),
+                _react2['default'].createElement(
+                    'select',
+                    { onChange: this.onAccountTypeChange, value: accountType },
+                    this.props.accountTypes.map(function (type, index) {
+                        return _react2['default'].createElement(
+                            'option',
+                            { key: index, value: type.value },
+                            ' ',
+                            type.name,
+                            ' '
+                        );
+                    })
+                )
+            ),
+            _react2['default'].createElement('div', { className: 'col-xs-1' }),
+            _react2['default'].createElement(
+                'div',
+                { className: 'col-xs-2' },
+                _react2['default'].createElement('br', null),
                 _react2['default'].createElement(
                     'button',
                     { className: 'btn', onClick: this.doReset },
@@ -20853,11 +20874,6 @@ var BarchartExplorer = _react2['default'].createClass({
             ),
             _react2['default'].createElement(
                 'td',
-                { key: '1' },
-                datasetUtilities.formatDollarAmount(item.reduce)
-            ),
-            _react2['default'].createElement(
-                'td',
                 { key: '2' },
                 datasetUtilities.formatDollarAmount(item.amount[0])
             ),
@@ -20865,6 +20881,11 @@ var BarchartExplorer = _react2['default'].createClass({
                 'td',
                 { key: '3' },
                 datasetUtilities.formatDollarAmount(item.amount[1])
+            ),
+            _react2['default'].createElement(
+                'td',
+                { key: '1' },
+                datasetUtilities.formatDollarAmount(item.reduce)
             )
         );
     },
@@ -20872,6 +20893,14 @@ var BarchartExplorer = _react2['default'].createClass({
     sortByAbsoluteDifference: function sortByAbsoluteDifference(item1, item2) {
         var result = Math.abs(item2.reduce) - Math.abs(item1.reduce);
         return result;
+    },
+
+    bars: function bars(item, index) {
+        return _react2['default'].createElement(
+            'g',
+            { key: index, transform: 'translate(' + item.x1 + ',' + item.y + ')' },
+            _react2['default'].createElement('rect', { strokeWidth: '2', height: '19', width: item.width })
+        );
     },
 
     render: function render() {
@@ -20884,7 +20913,7 @@ var BarchartExplorer = _react2['default'].createClass({
             startPath: startPath,
             nLevels: 1,
             reduce: this.props.componentProps.reduce
-        }, true);
+        }, false);
 
         if (newData == null) {
             return _react2['default'].createElement(
@@ -20897,23 +20926,50 @@ var BarchartExplorer = _react2['default'].createClass({
             var headers = newData.dataHeaders;
             var currentLevel = stateStore.getValue(this.props.storeId, 'currentLevel');
 
+            var chartWidth = 700,
+                chartHeight = 500; // We need to get these from enclosing div - how do we do that?
+
+            var minValue = 10000000,
+                maxValue = -10000000;
+            for (var i = 0; i < rows.length; ++i) {
+                minValue = Math.min(minValue, rows[i].reduce);
+                maxValue = Math.max(maxValue, rows[i].reduce);
+            }
+            if (minValue > 0) minValue = 0;
+            if (maxValue < 0) maxValue = 0;
+
+            var xborder = 150,
+                yborder = 5;
+            var offset = -minValue;
+            var scale = (chartWidth - 2 * xborder) / (maxValue - minValue);
+            console.log('offset = ' + offset + ',  scale = ' + scale);
+            for (var i = 0; i < rows.length; ++i) {
+                rows[i].x = Math.round(scale * (rows[i].reduce + offset)) + xborder;
+                if (rows[i].reduce < 0) {
+                    rows[i].x1 = Math.round(scale * (rows[i].reduce + offset)) + xborder;
+                    rows[i].x2 = Math.round(scale * (0 + offset)) + xborder;
+                } else {
+                    rows[i].x1 = Math.round(scale * (0 + offset)) + xborder;
+                    rows[i].x2 = Math.round(scale * (rows[i].reduce + offset)) + xborder;
+                }
+                rows[i].y = yborder + i * 40 + 10;
+                rows[i].width = rows[i].x2 - rows[i].x1;
+                console.log('Reduce=' + Math.round(rows[i].reduce) + ', x1/x2 = ' + rows[i].x1 + '/' + rows[i].x2 + ', width = ' + rows[i].width);
+            }
+
             return _react2['default'].createElement(
                 'div',
                 null,
                 this.interactionPanel(newData, rows),
                 _react2['default'].createElement('br', null),
                 _react2['default'].createElement(
-                    'select',
-                    { onChange: this.onAccountTypeChange, value: accountType },
-                    this.props.accountTypes.map(function (type, index) {
-                        return _react2['default'].createElement(
-                            'option',
-                            { key: index, value: type.value },
-                            ' ',
-                            type.name,
-                            ' '
-                        );
-                    })
+                    'div',
+                    null,
+                    _react2['default'].createElement(
+                        'svg',
+                        { className: 'chart span12', id: 'chart', width: '700', height: '470' },
+                        rows.map(this.bars)
+                    )
                 ),
                 _react2['default'].createElement('br', null),
                 _react2['default'].createElement('hr', null),
@@ -20933,22 +20989,18 @@ var BarchartExplorer = _react2['default'].createClass({
                             ),
                             _react2['default'].createElement(
                                 'th',
-                                { key: '1' },
-                                ' Delta '
-                            ),
-                            _react2['default'].createElement(
-                                'th',
                                 { key: '2' },
-                                ' Value for ',
-                                headers[0],
-                                ' '
+                                headers[0]
                             ),
                             _react2['default'].createElement(
                                 'th',
                                 { key: '3' },
-                                ' Value for ',
-                                headers[1],
-                                ' '
+                                headers[1]
+                            ),
+                            _react2['default'].createElement(
+                                'th',
+                                { key: '1' },
+                                'Difference'
                             )
                         )
                     ),
