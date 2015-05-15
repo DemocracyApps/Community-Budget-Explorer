@@ -210,9 +210,18 @@ var BarchartExplorer = React.createClass({
     },
 
     bars: function (item, index) {
-            return (
+        let color = item.reduce < 0?"Tomato":"CornflowerBlue";
+        let textColor = "Black";
+        var dollarSign = "$";
+        var currentValue = datasetUtilities.formatDollarAmount(Math.abs(Math.round(item.amount[1])));
+        if (item.amount[1] < 0.0) dollarSign = "-$";
+        let currentLevel = stateStore.getValue(this.props.storeId,'currentLevel');
+        let label = item.categories[currentLevel] + " (" + currentValue + ")";
+
+        return (
                 <g key={index} transform={"translate(" + item.x1 +"," + item.y+")"}>
-                    <rect strokeWidth="2" height="19" width={item.width}></rect>
+                    <rect strokeWidth="2" height="19" width={item.width} fill={color}></rect>
+                    <text x="5" y="-3" fontFamily="Strait" fontSize="12" stroke={textColor}>{label}</text>
                 </g>
             )
     },
@@ -265,14 +274,24 @@ var BarchartExplorer = React.createClass({
                 rows[i].width = rows[i].x2 - rows[i].x1;
                 console.log("Reduce=" + Math.round(rows[i].reduce) + ", x1/x2 = " + rows[i].x1 + "/" + rows[i].x2 + ", width = " + rows[i].width);
             }
-
+            let screenZero = Math.round (scale * offset) + xborder;
+            let yAxis = {
+                x1: screenZero,
+                y1: yborder - 2,
+                x2: screenZero,
+                y2: chartHeight - (yborder + 20)
+            };
             return (
                 <div>
+                    <br/>
+                    <hr/>
                     {this.interactionPanel(newData, rows)}
                     <br/>
                     <div>
                         <svg className="chart span12" id="chart" width="700" height="470">
                             {rows.map(this.bars)}
+                            <line x1={yAxis.x1} y1={yAxis.y1} x2={yAxis.x2} y2={yAxis.y2}
+                                  stroke="rgb(255,0,0)" strokeWidth="2"/>
                         </svg>
                     </div>
                     <br/>

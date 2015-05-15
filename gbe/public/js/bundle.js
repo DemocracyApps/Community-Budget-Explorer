@@ -20896,10 +20896,23 @@ var BarchartExplorer = _react2['default'].createClass({
     },
 
     bars: function bars(item, index) {
+        var color = item.reduce < 0 ? 'Tomato' : 'CornflowerBlue';
+        var textColor = 'Black';
+        var dollarSign = '$';
+        var currentValue = datasetUtilities.formatDollarAmount(Math.abs(Math.round(item.amount[1])));
+        if (item.amount[1] < 0) dollarSign = '-$';
+        var currentLevel = stateStore.getValue(this.props.storeId, 'currentLevel');
+        var label = item.categories[currentLevel] + ' (' + currentValue + ')';
+
         return _react2['default'].createElement(
             'g',
             { key: index, transform: 'translate(' + item.x1 + ',' + item.y + ')' },
-            _react2['default'].createElement('rect', { strokeWidth: '2', height: '19', width: item.width })
+            _react2['default'].createElement('rect', { strokeWidth: '2', height: '19', width: item.width, fill: color }),
+            _react2['default'].createElement(
+                'text',
+                { x: '5', y: '-3', fontFamily: 'Strait', fontSize: '12', stroke: textColor },
+                label
+            )
         );
     },
 
@@ -20956,10 +20969,18 @@ var BarchartExplorer = _react2['default'].createClass({
                 rows[i].width = rows[i].x2 - rows[i].x1;
                 console.log('Reduce=' + Math.round(rows[i].reduce) + ', x1/x2 = ' + rows[i].x1 + '/' + rows[i].x2 + ', width = ' + rows[i].width);
             }
-
+            var screenZero = Math.round(scale * offset) + xborder;
+            var yAxis = {
+                x1: screenZero,
+                y1: yborder - 2,
+                x2: screenZero,
+                y2: chartHeight - (yborder + 20)
+            };
             return _react2['default'].createElement(
                 'div',
                 null,
+                _react2['default'].createElement('br', null),
+                _react2['default'].createElement('hr', null),
                 this.interactionPanel(newData, rows),
                 _react2['default'].createElement('br', null),
                 _react2['default'].createElement(
@@ -20968,7 +20989,9 @@ var BarchartExplorer = _react2['default'].createClass({
                     _react2['default'].createElement(
                         'svg',
                         { className: 'chart span12', id: 'chart', width: '700', height: '470' },
-                        rows.map(this.bars)
+                        rows.map(this.bars),
+                        _react2['default'].createElement('line', { x1: yAxis.x1, y1: yAxis.y1, x2: yAxis.x2, y2: yAxis.y2,
+                            stroke: 'rgb(255,0,0)', strokeWidth: '2' })
                     )
                 ),
                 _react2['default'].createElement('br', null),

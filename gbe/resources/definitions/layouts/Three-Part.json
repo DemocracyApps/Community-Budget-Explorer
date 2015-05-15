@@ -6,7 +6,7 @@
       "columns": [
         {
           "id":"TopLeft",
-          "class":"col-xs-5 text-danger bg-danger"
+          "class":"col-xs-5"
         },
         {
           "id":"TopRight",
