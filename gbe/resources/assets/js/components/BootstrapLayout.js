@@ -20,7 +20,7 @@ var BootstrapLayout = React.createClass({
             key:index,
             componentData:component.componentData,
             componentProps:componentProps,
-            storeId:component.storeId
+            storeId:component.storeId,
         });
     },
 
@@ -31,7 +31,7 @@ var BootstrapLayout = React.createClass({
         }
         let className = column.class + " component-div"
         return (
-                <div id={column.id} key={column.id} className={className}>
+                <div id={column.id} key={column.id} className={className} style={column.style}>
                     {clist.map(this.renderComponent)}
                 </div>
         );

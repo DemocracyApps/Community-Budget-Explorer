@@ -6,7 +6,10 @@
       "columns": [
         {
           "id":"Top",
-          "class":"col-xs-12"
+          "class":"col-xs-12",
+          "style": {
+            "margin": "0px 0px 50px"
+          }
         }
       ]
     },

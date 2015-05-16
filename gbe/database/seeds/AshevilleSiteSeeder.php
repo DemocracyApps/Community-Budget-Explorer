@@ -115,23 +115,47 @@ class AshevilleSiteSeeder extends Seeder
 
         $page = new Page();
         $page->site = $site->id;
-        $page->title = "Second Page";
-        $page->short_name = 'Second';
+        $page->title = "Investigate What's Changed";
+        $page->short_name = "What's New";
         $page->ordinal = 2;
         $page->show_in_menu = true;
         $page->description = "The second page of the site.";
+        $layout = Layout::where('name','=','One-Column')->first();
+        $page->layout = $layout->id;
+        $page->save();
+
+        $page = new Page();
+        $page->site = $site->id;
+        $page->title = "Detailed Breakdown of Spending & Revenue";
+        $page->short_name = "Break It Down";
+        $page->ordinal = 3;
+        $page->show_in_menu = true;
+        $page->description = "The second page of the site.";
+        $layout = Layout::where('name','=','One-Column')->first();
+        $page->layout = $layout->id;
+        $page->save();
+
+        $page = new Page();
+        $page->site = $site->id;
+        $page->title = "Some Helpful Resources";
+        $page->short_name = 'Resources';
+        $page->ordinal = 4;
+        $page->show_in_menu = true;
+        $page->description = "The third page of the site.";
         $page->layout = 1;
         $page->save();
 
         $page = new Page();
         $page->site = $site->id;
-        $page->title = "Third Page";
-        $page->short_name = 'Third';
-        $page->ordinal = 3;
+        $page->title = "About This Site";
+        $page->short_name = "About";
+        $page->ordinal = 5;
         $page->show_in_menu = true;
-        $page->description = "The third page of the site.";
-        $page->layout = 1;
+        $page->description = "The second page of the site.";
+        $layout = Layout::where('name','=','One-Column')->first();
+        $page->layout = $layout->id;
         $page->save();
+
 
     }
 

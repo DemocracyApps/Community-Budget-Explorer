@@ -42,7 +42,7 @@ var SlideShow = React.createClass({
         };
 
         return (
-            <div className="slider">
+            <div className="slider" >
                 <div className="flexslider">
                     <ul className="slides">
                         {cards.map(function (item, index) {

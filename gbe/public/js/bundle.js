@@ -21076,8 +21076,7 @@ var BootstrapLayout = _react2["default"].createClass({
             key: index,
             componentData: component.componentData,
             componentProps: componentProps,
-            storeId: component.storeId
-        });
+            storeId: component.storeId });
     },
 
     buildColumn: function buildColumn(column, index) {
@@ -21088,7 +21087,7 @@ var BootstrapLayout = _react2["default"].createClass({
         var className = column["class"] + " component-div";
         return _react2["default"].createElement(
             "div",
-            { id: column.id, key: column.id, className: className },
+            { id: column.id, key: column.id, className: className, style: column.style },
             clist.map(this.renderComponent)
         );
     },
