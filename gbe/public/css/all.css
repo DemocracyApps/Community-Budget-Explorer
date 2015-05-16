@@ -5869,13 +5869,17 @@ button.close {
             font-weight: 300;
         }
         a{
-            color: #EB7722;
+            color: #2472eb;
         }
         ul, p, li, th, td, input, a {
             font-size: 110%;
         }
         div.presentation {
             font-size: 110%;
+        }
+
+        div.component-div {
+            padding:0px;
         }
 /*
  * jQuery FlexSlider v2.4.0

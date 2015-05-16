@@ -1,0 +1,30 @@
+{
+  "name":"DefaultHome",
+  "description":"Default budget site home page.",
+  "rows": [
+    {
+      "columns": [
+        {
+          "id":"Top",
+          "class":"col-xs-12"
+        }
+      ]
+    },
+    {
+      "columns": [
+        {
+          "id":"BottomLeft",
+          "class":"col-sm-4 col-xs-12"
+        },
+        {
+          "id":"BottomMiddle",
+          "class":"col-sm-4 col-xs-12"
+        },
+        {
+          "id":"BottomRight",
+          "class":"col-sm-4 col-xs-12"
+        }
+      ]
+    }
+  ]
+}

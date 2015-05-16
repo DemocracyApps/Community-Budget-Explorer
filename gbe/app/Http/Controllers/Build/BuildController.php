@@ -82,11 +82,7 @@ class BuildController extends Controller {
             $card->card_set = $item->card_set;
             $card->image = null;
             if ($item->image != null) {
-                if ($usingS3) {
-                    $card->image = "https://s3.amazonaws.com/cnptest/" . $item->image;
-                } else {
-                    $card->image = "/img/cards/" . $item->image;
-                }
+                $card->image = $item->image;
             }
             $cardsets[$card->card_set]->cards[] = $card;
             $cards[] = $card;

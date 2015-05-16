@@ -41,9 +41,10 @@ var SiteNavigation = React.createClass({
             )
         }.bind(this);
 
+        var navProps = this.props.styleProps.navProps;
+
         return (
-            <ul className="nav nav-pills">
-                <li role="presentation"><a href="/">Home</a></li>
+            <ul className="nav nav-pills" style={navProps}>
                 {this.props.pages.map(menuItem)}
             </ul>
         );

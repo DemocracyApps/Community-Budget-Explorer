@@ -67,12 +67,13 @@ class CardsController extends Controller {
                $constraint->upsize();
             })->save($path);
             if (config('gbe.image_storage_filesystem') == 's3') {
+                throw new Exception("Need to fix the image path for S3 storage in CardsController");
                 $picture = \File::get($path);
                 $disk = \Storage::disk('s3');
                 $disk->put($name, $picture);
                 unlink($path);
             }
-            $this->card->image = $name;
+            $this->card->image = $path;
         }
 
         $this->card->save();

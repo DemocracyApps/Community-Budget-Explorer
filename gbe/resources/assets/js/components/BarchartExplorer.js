@@ -213,15 +213,16 @@ var BarchartExplorer = React.createClass({
         let color = item.reduce < 0?"Tomato":"CornflowerBlue";
         let textColor = "Black";
         var dollarSign = "$";
-        var currentValue = datasetUtilities.formatDollarAmount(Math.abs(Math.round(item.amount[1])));
+        var currentValue = datasetUtilities.formatDollarAmount(Math.round(item.amount[1]));
         if (item.amount[1] < 0.0) dollarSign = "-$";
         let currentLevel = stateStore.getValue(this.props.storeId,'currentLevel');
         let label = item.categories[currentLevel] + " (" + currentValue + ")";
-
+        let  diff = datasetUtilities.formatDollarAmount(Math.round(item.reduce));
         return (
                 <g key={index} transform={"translate(" + item.x1 +"," + item.y+")"}>
                     <rect strokeWidth="2" height="19" width={item.width} fill={color}></rect>
                     <text x="5" y="-3" fontFamily="Strait" fontSize="12" stroke={textColor}>{label}</text>
+                    <text x="5" y="15" fontFamily="Strait" fontSize="12" stroke={textColor}>{diff}</text>
                 </g>
             )
     },

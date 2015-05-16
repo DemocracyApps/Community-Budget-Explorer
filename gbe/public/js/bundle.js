@@ -70,7 +70,6 @@ var i;
 
 // Note that site is an array just to work around a bug in Jeff Way's PHPToJavascriptTransformer library.
 configStore.storeConfiguration('common', 'site', GBEVars.site[0]);
-//console.log("Site: " + JSON.stringify(GBEVars.site[0]));
 
 //  Pages
 //   This is an array of configurations of the pages on the site. Each page has title, description, layout
@@ -79,14 +78,12 @@ configStore.storeConfiguration('common', 'site', GBEVars.site[0]);
 var pages = [];
 for (i = 0; i < GBEVars.pages.length; ++i) {
     var page = GBEVars.pages[i];
-    //console.log("Page: " + JSON.stringify(page));
     page.storeId = stateStore.registerComponent('page', page.shortName, {});
     for (var key in page.components) {
         if (page.components.hasOwnProperty(key)) {
             page.components[key].forEach(function (c) {
                 c.storeId = stateStore.registerComponent('components', c.id, {}); // Should use a common ID generator, but no time right now
                 configStore.registerComponent(c.storeId, 'components', c.id, {});
-                //console.log("Registered component " + c.componentName + " with storeId " + c.storeId);
             });
         }
     }
@@ -101,7 +98,6 @@ for (i = 0; i < GBEVars.pages.length; ++i) {
 
 while (GBEVars.data.length > 0) {
     var datum = GBEVars.data.shift();
-    //console.log("DataItem: " + JSON.stringify(datum));
     if (datum.dataType == 'card') {
         cardStore.storeCard(datum);
     } else if (datum.dataType == 'dataset') {
@@ -20899,11 +20895,11 @@ var BarchartExplorer = _react2['default'].createClass({
         var color = item.reduce < 0 ? 'Tomato' : 'CornflowerBlue';
         var textColor = 'Black';
         var dollarSign = '$';
-        var currentValue = datasetUtilities.formatDollarAmount(Math.abs(Math.round(item.amount[1])));
+        var currentValue = datasetUtilities.formatDollarAmount(Math.round(item.amount[1]));
         if (item.amount[1] < 0) dollarSign = '-$';
         var currentLevel = stateStore.getValue(this.props.storeId, 'currentLevel');
         var label = item.categories[currentLevel] + ' (' + currentValue + ')';
-
+        var diff = datasetUtilities.formatDollarAmount(Math.round(item.reduce));
         return _react2['default'].createElement(
             'g',
             { key: index, transform: 'translate(' + item.x1 + ',' + item.y + ')' },
@@ -20912,6 +20908,11 @@ var BarchartExplorer = _react2['default'].createClass({
                 'text',
                 { x: '5', y: '-3', fontFamily: 'Strait', fontSize: '12', stroke: textColor },
                 label
+            ),
+            _react2['default'].createElement(
+                'text',
+                { x: '5', y: '15', fontFamily: 'Strait', fontSize: '12', stroke: textColor },
+                diff
             )
         );
     },
@@ -21070,10 +21071,11 @@ var BootstrapLayout = _react2["default"].createClass({
 
     renderComponent: function renderComponent(component, index) {
         var comp = this.props.reactComponents[component.componentName];
+        var componentProps = component.componentProps.length == 0 ? {} : component.componentProps;
         return _react2["default"].createElement(comp, {
             key: index,
             componentData: component.componentData,
-            componentProps: component.componentProps,
+            componentProps: componentProps,
             storeId: component.storeId
         });
     },
@@ -21083,15 +21085,10 @@ var BootstrapLayout = _react2["default"].createClass({
         if (column.id in this.props.components) {
             clist = this.props.components[column.id];
         }
+        var className = column["class"] + " component-div";
         return _react2["default"].createElement(
             "div",
-            { id: column.id, key: column.id, className: column["class"] },
-            _react2["default"].createElement(
-                "b",
-                null,
-                "Layout cell: ",
-                column.id
-            ),
+            { id: column.id, key: column.id, className: className },
             clist.map(this.renderComponent)
         );
     },
@@ -21115,11 +21112,6 @@ var BootstrapLayout = _react2["default"].createClass({
             return _react2["default"].createElement(
                 "div",
                 { key: "bootstrapLayout" },
-                _react2["default"].createElement(
-                    "h1",
-                    null,
-                    " Page Title "
-                ),
                 this.props.layout.rows.map(this.buildRow)
             );
         }
@@ -21427,10 +21419,29 @@ var Site = _react2['default'].createClass({
         this.setState({ version: this.state.version++ });
     },
 
+    pageTitle: function pageTitle(page) {
+        if (page.title != undefined) {
+            return _react2['default'].createElement(
+                'h2',
+                null,
+                page.title
+            );
+        }
+    },
+
+    m: function m() {
+        var res = {};
+        for (var i = 0; i < arguments.length; ++i) {
+            if (arguments[i]) {
+                Object.assign(res, arguments[i]);
+            }
+        }
+        return res;
+    },
+
     render: function render() {
 
         var currentPage = stateStore.getValue('site.currentPage');
-
         var page = configStore.getConfiguration('pages', currentPage);
 
         var layoutProps = {
@@ -21439,35 +21450,96 @@ var Site = _react2['default'].createClass({
             reactComponents: this.props.reactComponents
         };
 
+        var siteHeaderStyles = {
+            headerStyle: {
+                minHeight: 50
+            },
+            brandTitleStyle: {
+                fontWeight: 'lighter',
+                fontSize: '1.75em'
+            },
+            siteNavigationStyles: {
+                navProps: {
+                    fontSize: '1em',
+                    fontWeight: '600',
+                    padding: '10px 0px 0px 0px',
+                    float: 'right'
+                }
+            },
+            hrProps: {
+                padding: '0px 0px 0px 0px',
+                margin: '0px 0px 0px 0px',
+                border: '0px 0px 0px 0px'
+            }
+
+        };
+
         return _react2['default'].createElement(
             'div',
             null,
             _react2['default'].createElement(
                 'div',
-                { className: 'container gbe-header' },
+                { className: 'container site-header', style: this.m(siteHeaderStyles.headerStyle) },
                 _react2['default'].createElement(
                     'div',
                     { className: 'row' },
                     _react2['default'].createElement(
                         'div',
-                        { className: 'col-md-6 hdr-left' },
+                        { className: 'col-xs-6 site-hdr-brand' },
                         _react2['default'].createElement(
-                            'h1',
-                            null,
-                            this.props.site.name
+                            'div',
+                            { className: 'site-brand', style: siteHeaderStyles.brandStyle },
+                            _react2['default'].createElement(
+                                'h1',
+                                { style: siteHeaderStyles.brandTitleStyle },
+                                _react2['default'].createElement(
+                                    'a',
+                                    { href: this.props.site.baseUrl },
+                                    this.props.site.name
+                                )
+                            )
                         )
                     ),
                     _react2['default'].createElement(
                         'div',
-                        { className: 'col-md-6 hdr-right' },
-                        _react2['default'].createElement(_SiteNavigation2['default'], { site: this.props.site, pages: this.props.pages })
+                        { className: 'col-xs-6 navigation site-navbar' },
+                        _react2['default'].createElement(_SiteNavigation2['default'], { site: this.props.site, pages: this.props.pages, styleProps: siteHeaderStyles.siteNavigationStyles })
+                    ),
+                    _react2['default'].createElement(
+                        'div',
+                        { className: 'col-xs-12', style: { padding: '0px', margin: '0px', border: '0px' } },
+                        _react2['default'].createElement('hr', { style: siteHeaderStyles.hrProps })
                     )
                 )
             ),
             _react2['default'].createElement(
                 'div',
-                { className: 'container gbe-body' },
+                { className: 'container site-body' },
+                this.pageTitle(page),
                 _react2['default'].createElement(_BootstrapLayout2['default'], layoutProps)
+            ),
+            _react2['default'].createElement(
+                'div',
+                { className: 'container site-footer' },
+                _react2['default'].createElement(
+                    'div',
+                    { className: 'row' },
+                    _react2['default'].createElement('hr', null),
+                    _react2['default'].createElement(
+                        'div',
+                        { className: 'col-xs-12' },
+                        _react2['default'].createElement(
+                            'span',
+                            { style: { float: 'right' } },
+                            'Powered by ',
+                            _react2['default'].createElement(
+                                'a',
+                                { href: 'http://democracyapps.us', target: '_blank' },
+                                'DemocracyApps'
+                            )
+                        )
+                    )
+                )
             )
         );
     }
@@ -21532,18 +21604,11 @@ var SiteNavigation = _react2['default'].createClass({
             );
         }).bind(this);
 
+        var navProps = this.props.styleProps.navProps;
+
         return _react2['default'].createElement(
             'ul',
-            { className: 'nav nav-pills' },
-            _react2['default'].createElement(
-                'li',
-                { role: 'presentation' },
-                _react2['default'].createElement(
-                    'a',
-                    { href: '/' },
-                    'Home'
-                )
-            ),
+            { className: 'nav nav-pills', style: navProps },
             this.props.pages.map(menuItem)
         );
     }
@@ -21592,6 +21657,20 @@ var SlideShow = _react2['default'].createClass({
             var card = cardStore.getCard(this.props.componentData['mycardset'].ids[i]);
             if (card !== undefined) cards.push(card);
         }
+        var overlayStyle = {
+            zIndex: '100',
+            position: 'absolute',
+            width: '50%',
+            top: 110,
+            right: '10%',
+            background: '#666',
+            padding: '20px 30px 30px 30px',
+            color: 'white'
+        };
+        var imgStyle = {
+            zIndex: '1'
+        };
+
         return _react2['default'].createElement(
             'div',
             { className: 'slider' },
@@ -21605,9 +21684,18 @@ var SlideShow = _react2['default'].createClass({
                         return _react2['default'].createElement(
                             'li',
                             { key: index },
-                            item.title,
-                            _react2['default'].createElement('br', null),
-                            _react2['default'].createElement('span', { dangerouslySetInnerHTML: { __html: item.body } })
+                            _react2['default'].createElement('img', { src: item.image, style: imgStyle }),
+                            _react2['default'].createElement(
+                                'div',
+                                { style: overlayStyle },
+                                _react2['default'].createElement(
+                                    'h2',
+                                    null,
+                                    item.title
+                                ),
+                                _react2['default'].createElement('br', null),
+                                _react2['default'].createElement('span', { dangerouslySetInnerHTML: { __html: item.body } })
+                            )
                         );
                     })
                 )
@@ -21655,7 +21743,7 @@ module.exports = {
 },{}],175:[function(require,module,exports){
 'use strict';
 
-function Card(timestamp, title, body, image, link) {
+function Card(timestamp, title, body, link, image) {
     this['class'] = 'Card';
     if (timestamp == null) timestamp = -1;
     this.timestamp = timestamp;
@@ -22487,6 +22575,8 @@ var StateStore = assign({}, EventEmitter.prototype, {
         this.store.components[id] = component;
         return id;
     },
+
+    registerPage: function registerPage(type, name, initialState) {},
 
     registerState: function registerState(path, value) {
         var pathArray = path.split('.');

@@ -47,7 +47,6 @@ var i;
 
 // Note that site is an array just to work around a bug in Jeff Way's PHPToJavascriptTransformer library.
 configStore.storeConfiguration('common', 'site', GBEVars.site[0]);
-//console.log("Site: " + JSON.stringify(GBEVars.site[0]));
 
 //  Pages
 //   This is an array of configurations of the pages on the site. Each page has title, description, layout
@@ -56,14 +55,12 @@ configStore.storeConfiguration('common', 'site', GBEVars.site[0]);
 var pages = [];
 for (i=0; i<GBEVars.pages.length; ++i) {
     var page = GBEVars.pages[i];
-    //console.log("Page: " + JSON.stringify(page));
     page.storeId = stateStore.registerComponent('page', page.shortName, {});
     for (var key in page.components) {
         if (page.components.hasOwnProperty(key)) {
             page.components[key].forEach(function (c) {
                 c.storeId = stateStore.registerComponent('components', c.id, {}); // Should use a common ID generator, but no time right now
                 configStore.registerComponent(c.storeId, 'components', c.id, {});
-                //console.log("Registered component " + c.componentName + " with storeId " + c.storeId);
             });
         }
     }
@@ -78,7 +75,6 @@ for (i=0; i<GBEVars.pages.length; ++i) {
 
 while (GBEVars.data.length > 0) {
     var datum = GBEVars.data.shift();
-    //console.log("DataItem: " + JSON.stringify(datum));
     if (datum.dataType == "card") {
         cardStore.storeCard(datum);
     }

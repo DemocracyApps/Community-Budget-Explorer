@@ -40,6 +40,10 @@ var StateStore = assign({}, EventEmitter.prototype, {
         return id;
     },
 
+    registerPage: function registerPage (type, name, initialState) {
+
+    },
+
     registerState: function registerState (path, value) {
         var pathArray = path.split(".");
         var current = this.store;

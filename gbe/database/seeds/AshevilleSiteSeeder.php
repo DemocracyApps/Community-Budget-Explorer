@@ -2,6 +2,8 @@
 
 use DemocracyApps\GB\Sites\Card;
 use DemocracyApps\GB\Sites\CardSet;
+use DemocracyApps\GB\Sites\Component;
+use DemocracyApps\GB\Sites\Layout;
 use DemocracyApps\GB\Sites\Page;
 use DemocracyApps\GB\Sites\PageComponent;
 use DemocracyApps\GB\Sites\Site;
@@ -12,9 +14,14 @@ class AshevilleSiteSeeder extends Seeder
 
     public function run()
     {
+        $slideShowComponent = Component::where('name','=','SlideShow')->first();
+        $simpleCardComponent = Component::where('name','=','SimpleCard')->first();
+        $barchartExplorerComponent = Component::where('name','=','BarchartExplorer')->first();
+        $multiYearTableComponent = Component::where('name','=','MultiYearTable')->first();
+
         // Create the Asheville site
         $site = new Site();
-        $site->name = "The City of Asheville Budget Site";
+        $site->name = "Asheville Budget 2014-2015";
         $site->owner_type = Site::GOVERNMENT;
         $site->owner = 1; // Asheville government;
         $site->government = 1; // Ditto
@@ -24,15 +31,20 @@ class AshevilleSiteSeeder extends Seeder
 
         $cardset = new CardSet();
         $cardset->site = $site->id;
-        $cardset->name = 'Slides';
+        $cardset->name = 'Highlights';
         $cardset->save();
 
         $card = new Card();
         $card->site = $site->id;
         $card->card_set = $cardset->id;
         $card->ordinal = 1;
-        $card->title = 'Budget Goals';
+        $card->title = 'City Council Budget Goals';
         $card->body = "These are the goals for the budget";
+
+        $picName = uniqid('pic') . '.jpg';
+        $path = public_path().'/img/cards/'.$picName;
+        \Image::make(public_path().'/img/init/slide1.jpg')->save($path);
+        $card->image = '/img/cards/'.$picName;
         $card->save();
 
         $card = new Card();
@@ -41,6 +53,11 @@ class AshevilleSiteSeeder extends Seeder
         $card->ordinal = 2;
         $card->title = 'Revenue Highlights';
         $card->body = "These are the big changes to revenue";
+        $picName = uniqid('pic') . '.jpg';
+        $path = public_path().'/img/cards/'.$picName;
+        \Image::make(public_path().'/img/init/slide2.jpg')->save($path);
+        $card->image = '/img/cards/'.$picName;
+
         $card->save();
 
         $card = new Card();
@@ -49,24 +66,50 @@ class AshevilleSiteSeeder extends Seeder
         $card->ordinal = 3;
         $card->title = 'Spending Highlights';
         $card->body = "These are the big changes to spending";
+        $picName = uniqid('pic') . '.jpg';
+        $path = public_path().'/img/cards/'.$picName;
+        \Image::make(public_path().'/img/init/slide3.jpg')->save($path);
+        $card->image = '/img/cards/'.$picName;
         $card->save();
 
+        /*
+         * Set up the home page
+         */
         $page = new Page();
         $page->site = $site->id;
-        $page->title = "First Page";
-        $page->short_name = 'First';
+        $page->title = "Welcome to the 2015-16 Asheville Budget Explorer!";
+        $page->short_name = 'Home';
         $page->ordinal = 1;
         $page->show_in_menu = true;
         $page->description = "The first page of the site.";
-        $page->layout = 2;
+        $layout = Layout::where('name','=','DefaultHome')->first();
+        $page->layout = $layout->id;
         $page->save();
 
         $c = new PageComponent();
-        $c->component = 2;
+        $c->component = $slideShowComponent->id;
+        $c->page = $page->id;
+        $c->target="Top";
+        $data = array();
+        $data['type'] = 'cardset';
+        $data['items'] = array("$cardset->id");
+        $dataBundle = array();
+        $dataBundle['mycardset'] = $data;
+        $c->setProperty('data', $dataBundle);
+        $c->save();
+
+        $c = new PageComponent();
+        $c->component = $simpleCardComponent->id;
         $c->page = $page->id;
         $c->save();
+
         $c = new PageComponent();
-        $c->component = 4;
+        $c->component = $simpleCardComponent->id;
+        $c->page = $page->id;
+        $c->save();
+
+        $c = new PageComponent();
+        $c->component = $simpleCardComponent->id;
         $c->page = $page->id;
         $c->save();
 

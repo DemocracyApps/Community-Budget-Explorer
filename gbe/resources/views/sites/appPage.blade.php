@@ -1,5 +1,8 @@
 @extends('templates.sites.default')
 
+@section('head')
+    <link rel="stylesheet"
+@stop
 @section('content')
 
     <div id="app">

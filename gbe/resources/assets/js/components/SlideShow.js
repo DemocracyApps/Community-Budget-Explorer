@@ -27,6 +27,20 @@ var SlideShow = React.createClass({
             var card = cardStore.getCard(this.props.componentData["mycardset"].ids[i]);
             if (card !== undefined) cards.push(card);
         }
+        var overlayStyle = {
+            zIndex:"100",
+            position:"absolute",
+            width:"50%",
+            top:110,
+            right:"10%",
+            background: "#666",
+            padding: "20px 30px 30px 30px",
+            color:"white"
+    };
+        var imgStyle={
+            zIndex:"1"
+        };
+
         return (
             <div className="slider">
                 <div className="flexslider">
@@ -34,9 +48,12 @@ var SlideShow = React.createClass({
                         {cards.map(function (item, index) {
                             return (
                                 <li key={index}>
-                                    {item.title}
-                                    <br/>
-                                    <span dangerouslySetInnerHTML={{__html: item.body}} />
+                                    <img src={item.image} style={imgStyle}/>
+                                    <div style={overlayStyle}>
+                                        <h2>{item.title}</h2>
+                                        <br/>
+                                        <span dangerouslySetInnerHTML={{__html: item.body}} />
+                                    </div>
                                 </li>
                             )
                         })}

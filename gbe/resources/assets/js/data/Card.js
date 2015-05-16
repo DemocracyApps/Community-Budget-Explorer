@@ -1,5 +1,5 @@
 
-function Card(timestamp, title, body, image, link) {
+function Card(timestamp, title, body, link, image) {
     this.class = 'Card';
     if (timestamp == null) timestamp = -1;
     this.timestamp = timestamp;

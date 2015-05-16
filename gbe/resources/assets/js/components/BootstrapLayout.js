@@ -15,10 +15,11 @@ var BootstrapLayout = React.createClass({
 
     renderComponent: function (component, index) {
         var comp = this.props.reactComponents[component.componentName];
+        var componentProps = (component.componentProps.length == 0)?{}:component.componentProps;
         return React.createElement(comp, {
             key:index,
             componentData:component.componentData,
-            componentProps:component.componentProps,
+            componentProps:componentProps,
             storeId:component.storeId
         });
     },
@@ -28,9 +29,9 @@ var BootstrapLayout = React.createClass({
         if (column.id in this.props.components) {
             clist = this.props.components[column.id];
         }
+        let className = column.class + " component-div"
         return (
-                <div id={column.id} key={column.id} className={column.class}>
-                    <b>Layout cell: {column.id}</b>
+                <div id={column.id} key={column.id} className={className}>
                     {clist.map(this.renderComponent)}
                 </div>
         );
@@ -51,10 +52,7 @@ var BootstrapLayout = React.createClass({
         else {
             return (
                 <div key="bootstrapLayout">
-                    <h1> Page Title </h1>
-
                     {this.props.layout.rows.map(this.buildRow)}
-
                 </div>
             );
         }
