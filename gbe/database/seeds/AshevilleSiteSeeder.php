@@ -18,6 +18,7 @@ class AshevilleSiteSeeder extends Seeder
         $simpleCardComponent = Component::where('name','=','SimpleCard')->first();
         $barchartExplorerComponent = Component::where('name','=','BarchartExplorer')->first();
         $multiYearTableComponent = Component::where('name','=','MultiYearTable')->first();
+        $treemapComponent = Component::where('name','=','Treemap')->first();
 
         // Create the Asheville site
         $site = new Site();
@@ -134,6 +135,13 @@ class AshevilleSiteSeeder extends Seeder
         $layout = Layout::where('name','=','One-Column')->first();
         $page->layout = $layout->id;
         $page->save();
+
+        $c = new PageComponent();
+        $c->component = $treemapComponent->id;
+        $c->page = $page->id;
+        $c->target="main";
+        $c->save();
+
 
         $page = new Page();
         $page->site = $site->id;

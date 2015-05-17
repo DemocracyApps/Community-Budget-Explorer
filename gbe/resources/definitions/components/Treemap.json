@@ -1,0 +1,21 @@
+{
+  "name":"Treemap",
+  "description": "Interactive treemap for exploring budget allocations. Takes a single dataset.",
+  "data": [
+    {
+      "tag":"mydataset",
+      "name":"Dataset for the Treemap",
+      "description":"Select a dataset.",
+      "type":"dataset"
+    }
+  ],
+  "props": {
+    "max_items": {
+      "value": 10,
+      "configurable": false
+    }
+  },
+  "state": {
+
+  }
+}
