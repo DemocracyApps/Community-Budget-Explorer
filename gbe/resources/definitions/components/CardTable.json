@@ -1,0 +1,13 @@
+{
+  "name":"CardTable",
+  "description": "A table that displays cards",
+  "props": {},
+  "data": [
+    {
+      "tag":"mycardset",
+      "name":"Slide Show Card Set",
+      "description":"Pick a card set - the cards in it will be shown sequentially.",
+      "type":"cardset"
+    }
+  ]
+}
