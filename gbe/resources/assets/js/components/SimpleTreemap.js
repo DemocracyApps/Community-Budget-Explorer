@@ -1,6 +1,6 @@
 import React from 'react';
-//var rd3 = require('react-d3');
-//var Treemap = rd3.Treemap;
+var rd3 = require('react-d3');
+var Treemap = rd3.Treemap;
 
 var SimpleTreemap = React.createClass({
 
@@ -23,20 +23,19 @@ var SimpleTreemap = React.createClass({
             {label: "United States", value: 203}
         ];
 
-        //
-        //return (
-        //    <div >
-        //        <Treemap
-        //            data={treemapData}
-        //            width={450}
-        //            height={250}
-        //            textColor="#484848"
-        //            fontSize="10px"
-        //            title="Treemap"
-        //            hoverAnimation={true}
-        //            />
-        //    </div>
-        //)
+        return (
+            <div >
+                <Treemap
+                    data={treemapData}
+                    width={450}
+                    height={250}
+                    textColor="#484848"
+                    fontSize="10px"
+                    title="Treemap"
+                    hoverAnimation={true}
+                    />
+            </div>
+        )
     }
 });
 

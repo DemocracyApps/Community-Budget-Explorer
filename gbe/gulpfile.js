@@ -14,9 +14,9 @@ var elixir = require('laravel-elixir');
 var paths = {
  'bootstrap': './vendor/bower_components/bootstrap-sass-official/assets/'
 }
-
-// WARNING: at some point there may be a folder change:
-//     https://laracasts.com/discuss/channels/general-discussion/important-elixir-folder-change
+var browserifyOpts = {
+    extensions: [ '.jsx', '.js' ]
+};
 
 elixir(function(mix) {
     mix.sass('app.scss', 'public/css', {includePaths: [paths.bootstrap + 'stylesheets/']})
@@ -25,7 +25,7 @@ elixir(function(mix) {
             'resources/assets/css/local.css',
             './vendor/bower_components/FlexSlider/flexslider.css'
         ], './public/css/all.css', './')
-        .browserify('app.js')
+        .browserify('app.js', null, null, browserifyOpts)
         .scripts([
             './vendor/bower_components/jquery/dist/jquery.js',
             './vendor/bower_components/jquery-ui/jquery-ui.min.js',
