@@ -19139,6 +19139,21 @@ module.exports = React.createClass({
     }
 
     var t = ("translate(" + props.x + ", " + props.y + "  )");
+    var avgAlphaWidth = 12;
+    if (props.extraProperties.hasOwnProperty('averageCharacterWidth')) {
+      avgAlphaWidth = props.extraProperties.averageCharacterWidth;
+    }
+
+    var label = props.label || "";
+    if (label.length*avgAlphaWidth > props.width) {
+      if (props.width/avgAlphaWidth < 6) {
+        label = "";
+      }
+      else {
+        var allowed = props.width/avgAlphaWidth - 3;
+        label = label.substring(0,allowed) + "...";
+      }
+    }
     return (
       React.createElement("g", {transform: t}, 
         React.createElement("rect", {
@@ -19158,7 +19173,7 @@ module.exports = React.createClass({
           className: "rd3-treemap-cell-text", 
           onClick: onClickHandler
         }, 
-          props.label
+          label
         )
       )
     );
@@ -19274,6 +19289,7 @@ module.exports = React.createClass({
           textColor: props.textColor, 
           hoverAnimation: props.hoverAnimation, 
           eventHandlers: props.eventHandlers, 
+          extraProperties: props.extraProperties, 
           dataContext: {index: idx, label: node.label, value: node.value}}
         )
       );
@@ -19349,7 +19365,8 @@ module.exports = React.createClass({
             textColor: props.textColor, 
             fontSize: props.fontSize, 
             hoverAnimation: props.hoverAnimation, 
-            eventHandlers: props.eventHandlers}
+            eventHandlers: props.eventHandlers, 
+            extraProperties: props.extraProperties || {}}
           )
         )
       )
@@ -40065,6 +40082,15 @@ var _react2 = _interopRequireDefault(_react);
 var rd3 = require('react-d3');
 var Treemap = rd3.Treemap;
 
+var datasetStore = require('../stores/DatasetStore');
+var stateStore = require('../stores/StateStore');
+var dataModelStore = require('../stores/DataModelStore');
+var apiActions = require('../common/ApiActions');
+var AccountTypes = require('../constants/AccountTypes');
+var dispatcher = require('../common/BudgetAppDispatcher');
+var ActionTypes = require('../constants/ActionTypes');
+var datasetUtilities = require('../data/DatasetUtilities');
+
 var SimpleTreemap = _react2['default'].createClass({
     displayName: 'SimpleTreemap',
 
@@ -40074,26 +40100,212 @@ var SimpleTreemap = _react2['default'].createClass({
         storeId: _react2['default'].PropTypes.number.isRequired
     },
 
+    getDefaultProps: function getDefaultProps() {
+        return {
+            accountTypes: [{ name: 'Expense', value: AccountTypes.EXPENSE }, { name: 'Revenue', value: AccountTypes.REVENUE }],
+            dataInitialization: {
+                hierarchy: ['Fund', 'Department', 'Division', 'Account'],
+                accountTypes: [AccountTypes.EXPENSE, AccountTypes.REVENUE],
+                amountThreshold: 0.01
+            }
+        };
+    },
+
+    prepareLocalState: function prepareLocalState(dm) {
+        var accountType = stateStore.getValue(this.props.storeId, 'accountType');
+        var newData = dm.checkData({
+            accountTypes: [accountType],
+            startPath: [],
+            nLevels: 1
+        }, true);
+        return newData;
+    },
+
+    componentDidMount: function componentDidMount() {
+        console.log('Got the width: ' + this.getDOMNode().offsetWidth);
+    },
+
+    componentDidUpdate: function componentDidUpdate() {
+        console.log('Got the width: ' + this.getDOMNode().offsetWidth);
+    },
+
+    componentWillMount: function componentWillMount() {
+        // If this is the first time this component is mounting, we need to create the data model
+        // and do any other state initialization required.
+        var dataModelId = stateStore.getComponentStateValue(this.props.storeId, 'dataModelId');
+        var dm = null;
+        if (dataModelId == null) {
+            var ids = this.props.componentData['mydataset'].ids;
+            ids.forEach(function (id) {
+                apiActions.requestDatasetIfNeeded(id);
+            });
+
+            dm = dataModelStore.createModel(ids, this.props.dataInitialization);
+            stateStore.setComponentState(this.props.storeId, {
+                accountType: AccountTypes.EXPENSE,
+                dataModelId: dm.id,
+                currentLevel: 0,
+                startPath: []
+            });
+        }
+    },
+
+    componentWillReceiveProps: function componentWillReceiveProps() {
+        var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
+        var dm = dataModelStore.getModel(dataModelId);
+        this.prepareLocalState(dm);
+    },
+
+    shouldComponentUpdate: function shouldComponentUpdate(nextProps, nextState) {
+        var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
+        var dm = dataModelStore.getModel(dataModelId);
+        var selectedItem = stateStore.getValue(this.props.storeId, 'selectedItem');
+        return dm.dataChanged() || dm.commandsChanged({ accountTypes: [selectedItem] });
+    },
+
     clickHandler: function clickHandler(context) {
         alert('Yo! Index = ' + context.index + ', label = ' + context.label + ', value = ' + context.value);
-    },
-    render: function render() {
+        var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
+        var dm = dataModelStore.getModel(dataModelId);
+        var newData = this.prepareLocalState(dm);
 
-        var treemapData = [{ label: 'China', value: 1364 }, { label: 'India', value: 1296 }, { label: 'Brazil', value: 703 }, { label: 'Indonesia', value: 303 }, { label: 'United States', value: 203 }];
+        var currentLevel = stateStore.getValue(this.props.storeId, 'currentLevel');
+        var nLevels = newData.categories.length;
+        if (currentLevel < nLevels - 1) {
+            var startPath = stateStore.getValue(this.props.storeId, 'startPath');
+            startPath.push(context.label);
+            dispatcher.dispatch({
+                actionType: ActionTypes.COMPONENT_STATE_CHANGE,
+                payload: {
+                    id: this.props.storeId,
+                    changes: [{
+                        name: 'startPath',
+                        value: startPath
+                    }, {
+                        name: 'currentLevel',
+                        value: ++currentLevel
+                    }]
+                }
+            });
+        }
+    },
+
+    doReset: function doReset(e) {
+        dispatcher.dispatch({
+            actionType: ActionTypes.COMPONENT_STATE_CHANGE,
+            payload: {
+                id: this.props.storeId,
+                changes: [{
+                    name: 'startPath',
+                    value: []
+                }, {
+                    name: 'currentLevel',
+                    value: 0
+                }]
+            }
+        });
+    },
+
+    onAccountTypeChange: function onAccountTypeChange(e) {
+        dispatcher.dispatch({
+            actionType: ActionTypes.COMPONENT_STATE_CHANGE,
+            payload: {
+                id: this.props.storeId,
+                changes: [{
+                    name: 'accountType',
+                    value: Number(e.target.value)
+                }]
+            }
+        });
+    },
+
+    render: function render() {
+        var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
+        var dm = dataModelStore.getModel(dataModelId);
+        var accountType = stateStore.getValue(this.props.storeId, 'accountType');
+        var startPath = stateStore.getValue(this.props.storeId, 'startPath');
+        var newData = dm.getData({
+            accountTypes: [accountType],
+            startPath: startPath,
+            nLevels: 1 }, false);
+        var currentLevel = stateStore.getValue(this.props.storeId, 'currentLevel');
+
+        var treemapData = [];
+        if (newData != null) {
+            for (var i = 0; i < newData.data.length; ++i) {
+                var item = newData.data[i];
+                var _name = item.categories[currentLevel];
+                treemapData.push({ label: _name, value: item.amount[0] });
+            }
+        }
+        //var treemapData = [
+        //    {label: "China", value: 1364},
+        //    {label: "India", value: 1296},
+        //    {label: "Brazil", value: 703},
+        //    {label: "Indonesia", value: 303},
+        //    {label: "United States", value: 203}
+        //];
+
+        var title = currentLevel == 0 ? 'All Funds' : '';
+        if (currentLevel > 0) {
+            for (var i = 0; i < startPath.length; ++i) {
+                if (i == 0) title = startPath[0];else {
+                    title += ' > ' + startPath[i];
+                }
+            }
+        }
 
         return _react2['default'].createElement(
             'div',
             null,
-            _react2['default'].createElement(Treemap, {
-                data: treemapData,
-                width: 450,
-                height: 250,
-                textColor: '#484848',
-                fontSize: '10px',
-                title: 'Treemap',
-                hoverAnimation: true,
-                eventHandlers: { onClick: this.clickHandler }
-            })
+            _react2['default'].createElement(
+                'div',
+                { className: 'row' },
+                _react2['default'].createElement(
+                    'div',
+                    { className: 'col-xs-7' },
+                    _react2['default'].createElement('br', null),
+                    _react2['default'].createElement(
+                        'select',
+                        { onChange: this.onAccountTypeChange, value: accountType },
+                        this.props.accountTypes.map(function (type, index) {
+                            return _react2['default'].createElement(
+                                'option',
+                                { key: index, value: type.value },
+                                ' ',
+                                type.name,
+                                ' '
+                            );
+                        })
+                    )
+                ),
+                _react2['default'].createElement('div', { className: 'col-xs-2' }),
+                _react2['default'].createElement(
+                    'div',
+                    { className: 'col-xs-3' },
+                    _react2['default'].createElement('br', null),
+                    _react2['default'].createElement(
+                        'button',
+                        { className: 'btn', onClick: this.doReset },
+                        'Reset'
+                    )
+                )
+            ),
+            _react2['default'].createElement(
+                'div',
+                { className: 'row' },
+                _react2['default'].createElement(Treemap, {
+                    data: treemapData,
+                    width: 750,
+                    height: 750,
+                    textColor: '#484848',
+                    fontSize: '10px',
+                    title: title,
+                    hoverAnimation: true,
+                    eventHandlers: { onClick: this.clickHandler },
+                    extraProperties: { avgCharWidth: 5 }
+                })
+            )
         );
     }
 });
@@ -40101,7 +40313,7 @@ var SimpleTreemap = _react2['default'].createClass({
 exports['default'] = SimpleTreemap;
 module.exports = exports['default'];
 
-},{"react":221,"react-d3":43}],229:[function(require,module,exports){
+},{"../common/ApiActions":222,"../common/BudgetAppDispatcher":223,"../constants/AccountTypes":232,"../constants/ActionTypes":233,"../data/DatasetUtilities":238,"../stores/DataModelStore":241,"../stores/DatasetStore":242,"../stores/StateStore":243,"react":221,"react-d3":43}],229:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -40739,14 +40951,7 @@ function DataModel(id, datasetIds) {
                     if (data[0].amount.length < 2) throw 'Difference reduce requires 2 datasets';
                     if (data[0].amount.length > 2) console.log('Warning: difference reduce applied to more than 2 datasets - using first two.');
                     for (var i = 0; i < data.length; ++i) {
-                        //let inItem = data[i];
                         data[i].reduce = data[i].amount[1] - data[i].amount[0];
-                        //let outItem = {
-                        //    accountType: inItem.accountType,
-                        //    categories: inItem.categories,
-                        //    amount: [inItem.amount[1] - inItem.amount[0]]
-                        //}
-                        //data[i] = outItem;
                     }
                 } else {
                     throw 'Reduce command ' + reduceCmd + ' not yet implemented.';

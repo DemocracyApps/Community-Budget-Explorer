@@ -235,14 +235,7 @@ function DataModel(id, datasetIds, initialCommands = null) {
                     if (data[0].amount.length > 2)
                         console.log("Warning: difference reduce applied to more than 2 datasets - using first two.");
                     for (let i=0; i<data.length; ++i) {
-                        //let inItem = data[i];
                         data[i].reduce = data[i].amount[1] - data[i].amount[0];
-                        //let outItem = {
-                        //    accountType: inItem.accountType,
-                        //    categories: inItem.categories,
-                        //    amount: [inItem.amount[1] - inItem.amount[0]]
-                        //}
-                        //data[i] = outItem;
                     }
                 }
                 else {
