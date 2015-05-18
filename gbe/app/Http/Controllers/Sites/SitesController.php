@@ -133,10 +133,10 @@ class SitesController extends Controller {
                                     }
                                     $c->componentData[$key] = array('type'=>'card', 'ids'=>$cardIdList);
                                 } else if ($dataItem['type'] == 'dataset') {
-                                    $dsId = $dataItem['items'][0];
+                                    $dsId = $dataItem['items'][0]+0; // make it a number
                                     $ds = new \stdClass();
                                     $ds->dataType = 'dataset';
-                                    $ds->ids = [$dsId];
+                                    $ds->id = $dsId;
 
                                     $data[] = $ds;
                                     $c->componentData[$key] = array('type'=>'dataset', 'ids'=>array($ds->id));

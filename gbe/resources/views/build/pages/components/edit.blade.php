@@ -74,9 +74,11 @@
                         <div class="form-group">
                             <label for="selectedDataset_{!! $dTag !!}">CardSet:</label>
                             <select id="selectedDataset_{!! $dTag !!}" class="form-control"
-                                    name="selectedDataset_{!! $dTag !!}[]"
                                     @if ($dType == 'multidataset')
+                                        name="selectedDataset_{!! $dTag !!}[]"
                                         multiple size={!! sizeof($dataSets) !!}
+                                    @else
+                                        name="selectedDataset_{!! $dTag !!}"
                                     @endif
                             >
                                 @foreach ($dataSets as $set)
