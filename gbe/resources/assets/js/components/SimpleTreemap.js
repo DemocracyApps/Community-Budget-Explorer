@@ -10,8 +10,8 @@ var SimpleTreemap = React.createClass({
         storeId: React.PropTypes.number.isRequired
     },
 
-    clickHandler: function () {
-       alert("Yo!");
+    clickHandler: function (context) {
+       alert("Yo! Index = " + context.index + ", label = " + context.label + ", value = " + context.value);
     },
     render: function() {
 
@@ -33,6 +33,7 @@ var SimpleTreemap = React.createClass({
                     fontSize="10px"
                     title="Treemap"
                     hoverAnimation={true}
+                    eventHandlers={{onClick: this.clickHandler}}
                     />
             </div>
         )

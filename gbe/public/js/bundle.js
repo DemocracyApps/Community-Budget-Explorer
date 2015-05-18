@@ -19131,9 +19131,14 @@ module.exports = React.createClass({
       'fill': props.textColor,
       'fontSize': props.fontSize
     };
+    var onClickHandler = undefined;
+    if (this.props.hasOwnProperty('eventHandlers')) {
+      if (this.props.eventHandlers.hasOwnProperty('onClick')) {
+        onClickHandler = this.props.eventHandlers.onClick.bind(null, props.dataContext);
+      }
+    }
 
     var t = ("translate(" + props.x + ", " + props.y + "  )");
-
     return (
       React.createElement("g", {transform: t}, 
         React.createElement("rect", {
@@ -19142,14 +19147,16 @@ module.exports = React.createClass({
           height: props.height, 
           fill: props.fill, 
           onMouseOver: props.handleMouseOver, 
-          onMouseLeave: props.handleMouseLeave}
+          onMouseLeave: props.handleMouseLeave, 
+          onClick: onClickHandler}
         ), 
         React.createElement("text", {
           x: props.width / 2, 
           y: props.height / 2, 
           dy: ".35em", 
           style: textStyle, 
-          className: "rd3-treemap-cell-text"
+          className: "rd3-treemap-cell-text", 
+          onClick: onClickHandler
         }, 
           props.label
         )
@@ -19265,7 +19272,9 @@ module.exports = React.createClass({
           label: node.label, 
           fontSize: props.fontSize, 
           textColor: props.textColor, 
-          hoverAnimation: props.hoverAnimation}
+          hoverAnimation: props.hoverAnimation, 
+          eventHandlers: props.eventHandlers, 
+          dataContext: {index: idx, label: node.label, value: node.value}}
         )
       );
     }, this);
@@ -19324,7 +19333,6 @@ module.exports = React.createClass({
   render:function() {
 
     var props = this.props;
-
     return (
       React.createElement(Chart, {
         title: props.title, 
@@ -19340,7 +19348,8 @@ module.exports = React.createClass({
             colorAccessor: props.colorAccessor, 
             textColor: props.textColor, 
             fontSize: props.fontSize, 
-            hoverAnimation: props.hoverAnimation}
+            hoverAnimation: props.hoverAnimation, 
+            eventHandlers: props.eventHandlers}
           )
         )
       )
@@ -39751,12 +39760,14 @@ var BootstrapLayout = _react2["default"].createClass({
 
     renderComponent: function renderComponent(component, index) {
         var comp = this.props.reactComponents[component.componentName];
+        var componentData = component.componentData.length == 0 ? {} : component.componentData;
         var componentProps = component.componentProps.length == 0 ? {} : component.componentProps;
         return _react2["default"].createElement(comp, {
             key: index,
-            componentData: component.componentData,
+            componentData: componentData,
             componentProps: componentProps,
-            storeId: component.storeId });
+            storeId: component.storeId
+        });
     },
 
     buildColumn: function buildColumn(column, index) {
@@ -40063,8 +40074,8 @@ var SimpleTreemap = _react2['default'].createClass({
         storeId: _react2['default'].PropTypes.number.isRequired
     },
 
-    clickHandler: function clickHandler() {
-        alert('Yo!');
+    clickHandler: function clickHandler(context) {
+        alert('Yo! Index = ' + context.index + ', label = ' + context.label + ', value = ' + context.value);
     },
     render: function render() {
 
@@ -40080,7 +40091,8 @@ var SimpleTreemap = _react2['default'].createClass({
                 textColor: '#484848',
                 fontSize: '10px',
                 title: 'Treemap',
-                hoverAnimation: true
+                hoverAnimation: true,
+                eventHandlers: { onClick: this.clickHandler }
             })
         );
     }

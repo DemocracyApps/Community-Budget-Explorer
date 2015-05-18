@@ -15,12 +15,13 @@ var BootstrapLayout = React.createClass({
 
     renderComponent: function (component, index) {
         var comp = this.props.reactComponents[component.componentName];
+        var componentData = (component.componentData.length == 0)?{}:component.componentData;
         var componentProps = (component.componentProps.length == 0)?{}:component.componentProps;
         return React.createElement(comp, {
             key:index,
-            componentData:component.componentData,
+            componentData:componentData,
             componentProps:componentProps,
-            storeId:component.storeId,
+            storeId:component.storeId
         });
     },
 
