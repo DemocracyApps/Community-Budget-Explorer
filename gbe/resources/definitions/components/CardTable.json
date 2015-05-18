@@ -9,5 +9,38 @@
       "description":"Pick a card set - the cards in it will be shown sequentially.",
       "type":"cardset"
     }
-  ]
+  ],
+  "props": {
+    "maxColumns": {
+      "value": "maxColumns",
+      "configurable": true,
+      "label": "Select max number of columns",
+      "type":"select",
+      "options": [
+        {
+          "name": "1",
+          "value": "1",
+          "description": "One column."
+        },
+        {
+          "name": "2",
+          "value": "2",
+          "description": "Two columns."
+        },
+        {
+          "name": "3",
+          "value": "3",
+          "description": "Three columns."
+        },
+        {
+          "name": "4",
+          "value": "4",
+          "description": "Four columns."
+        }
+      ]
+    }
+  },
+  "state": {
+
+  }
 }

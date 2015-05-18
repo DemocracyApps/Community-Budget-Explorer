@@ -63,9 +63,8 @@ class CardsController extends Controller {
             }
             $name = uniqid('pic') . $ext;
             $path = public_path().'/img/cards/'.$name;
-            \Image::make(\Input::file('image'))->resize(300,250, function ($constraint) {
-               $constraint->upsize();
-            })->save($path);
+            \Image::make(\Input::file('image'))->save($path);
+            $this->card->image = '/img/cards/'.$name;
             if (config('gbe.image_storage_filesystem') == 's3') {
                 throw new Exception("Need to fix the image path for S3 storage in CardsController");
                 $picture = \File::get($path);
@@ -73,7 +72,6 @@ class CardsController extends Controller {
                 $disk->put($name, $picture);
                 unlink($path);
             }
-            $this->card->image = $path;
         }
 
         $this->card->save();
@@ -146,7 +144,7 @@ class CardsController extends Controller {
                 }
                 else {
                     $path = public_path().'/img/cards/'.$this->card->image;
-                    unlink($path);
+                    //unlink($path);
                 }
             }
             $file = $request->file('image');
@@ -157,16 +155,15 @@ class CardsController extends Controller {
             }
             $name = uniqid('pic') . $ext;
             $path = public_path().'/img/cards/'.$name;
-            \Image::make(\Input::file('image'))->resize(300,250, function ($constraint) {
-                $constraint->upsize();
-            })->save($path);
+            \Image::make(\Input::file('image'))->save($path);
             if (config('gbe.image_storage_filesystem') == 's3') {
+                throw new Exception("Need to fix the image path for S3 storage in CardsController");
                 $picture = \File::get($path);
                 $disk = \Storage::disk('s3');
                 $disk->put($name, $picture);
                 unlink($path);
             }
-            $this->card->image = $name;
+            $this->card->image = '/img/cards/'.$name;
         }
 
         $this->card->save();

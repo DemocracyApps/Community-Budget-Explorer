@@ -37,6 +37,10 @@ var _componentsSimpleTreemap = require('./components/SimpleTreemap');
 
 var _componentsSimpleTreemap2 = _interopRequireDefault(_componentsSimpleTreemap);
 
+var _componentsCardTable = require('./components/CardTable');
+
+var _componentsCardTable2 = _interopRequireDefault(_componentsCardTable);
+
 var dispatcher = require('./common/BudgetAppDispatcher');
 var ActionTypes = require('./constants/ActionTypes');
 
@@ -46,6 +50,7 @@ reactComponents['SlideShow'] = _componentsSlideShow2['default'];
 reactComponents['MultiYearTable'] = _componentsMultiYearTable2['default'];
 reactComponents['BarchartExplorer'] = _componentsBarchartExplorer2['default'];
 reactComponents['Treemap'] = _componentsSimpleTreemap2['default'];
+reactComponents['CardTable'] = _componentsCardTable2['default'];
 
 /*
  * The stores, one for card-related data, the other for financial datasets.
@@ -119,7 +124,7 @@ var props = {
 
 var layout = _react2['default'].render(_react2['default'].createElement(_componentsSite2['default'], props), document.getElementById('app'));
 
-},{"./common/BudgetAppDispatcher":223,"./components/BarchartExplorer":224,"./components/MultiYearTable":226,"./components/SimpleCard":227,"./components/SimpleTreemap":228,"./components/Site":229,"./components/SlideShow":231,"./constants/ActionTypes":233,"./stores/CardStore":239,"./stores/ConfigStore":240,"./stores/DatasetStore":242,"./stores/StateStore":243,"react":221}],2:[function(require,module,exports){
+},{"./common/BudgetAppDispatcher":223,"./components/BarchartExplorer":224,"./components/CardTable":226,"./components/MultiYearTable":227,"./components/SimpleCard":228,"./components/SimpleTreemap":229,"./components/Site":230,"./components/SlideShow":232,"./constants/ActionTypes":234,"./stores/CardStore":240,"./stores/ConfigStore":241,"./stores/DatasetStore":243,"./stores/StateStore":244,"react":221}],2:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -39292,7 +39297,7 @@ var ApiActions = {
 
 module.exports = ApiActions;
 
-},{"../common/BudgetAppDispatcher":223,"../constants/ActionTypes":233,"../stores/ConfigStore":240,"../stores/DatasetStore":242,"object-assign":7}],223:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":223,"../constants/ActionTypes":234,"../stores/ConfigStore":241,"../stores/DatasetStore":243,"object-assign":7}],223:[function(require,module,exports){
 'use strict';
 
 var FluxDispatcher = require('flux').Dispatcher;
@@ -39753,7 +39758,7 @@ var BarchartExplorer = _react2['default'].createClass({
 exports['default'] = BarchartExplorer;
 module.exports = exports['default'];
 
-},{"../common/ApiActions":222,"../common/BudgetAppDispatcher":223,"../constants/AccountTypes":232,"../constants/ActionTypes":233,"../data/DatasetUtilities":238,"../stores/DataModelStore":241,"../stores/DatasetStore":242,"../stores/StateStore":243,"react":221}],225:[function(require,module,exports){
+},{"../common/ApiActions":222,"../common/BudgetAppDispatcher":223,"../constants/AccountTypes":233,"../constants/ActionTypes":234,"../data/DatasetUtilities":239,"../stores/DataModelStore":242,"../stores/DatasetStore":243,"../stores/StateStore":244,"react":221}],225:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -39834,6 +39839,120 @@ exports["default"] = BootstrapLayout;
 module.exports = exports["default"];
 
 },{"react":221}],226:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+    value: true
+});
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var cardStore = require('../stores/CardStore');
+
+var CardTable = _react2['default'].createClass({
+    displayName: 'CardTable',
+
+    propTypes: {
+        componentData: _react2['default'].PropTypes.object.isRequired,
+        componentProps: _react2['default'].PropTypes.object.isRequired,
+        storeId: _react2['default'].PropTypes.number.isRequired
+    },
+
+    render: function render() {
+        var _this = this;
+
+        console.log('Here we go: ' + this.props.componentData['mycardset'].ids.length);
+
+        if (this.props.componentData['mycardset'] && this.props.componentData['mycardset'].ids.length > 0) {
+            var rowStyle;
+            var columnStyle;
+            var rowFunction;
+
+            var _ret = (function () {
+                var colClasses = ['col-md-12', 'col-md-12', 'col-md-6 col-sm-12', 'col-md-4 col-sm-12', 'col-md-3 col-sm-6 col-xs-12'];
+
+                var maxColumns = Number(_this.props.componentProps.maxColumns);
+                console.log('Max columns = ' + maxColumns);
+                var colClass = colClasses[maxColumns];
+                var count = _this.props.componentData['mycardset'].ids.length;
+                var rowCount = Math.floor(count / maxColumns);
+                var remainder = count % maxColumns;
+                var hasRemainder = false;
+                if (remainder > 0) {
+                    ++rowCount;
+                    hasRemainder = true;
+                }
+
+                var rows = [];
+                var cardIndex = 0;
+                for (var row = 0; row < rowCount; ++row) {
+                    var cMax = row == rowCount - 1 && hasRemainder ? remainder : maxColumns;
+                    rows.push([]);
+                    for (var column = 0; column < cMax; ++column) {
+                        var card = cardStore.getCard(_this.props.componentData['mycardset'].ids[cardIndex++]);
+                        rows[row].push(card);
+                    }
+                }
+
+                rowStyle = {
+                    marginTop: 1
+                };
+                columnStyle = {
+                    background: '#ccc',
+                    marginTop: 75,
+                    paddingLeft: 50,
+                    paddingRight: 5,
+                    paddingTop: 5,
+                    paddingBottom: 5,
+                    border: '1px solid black'
+                };
+
+                rowFunction = function rowFunction(item, index) {
+                    return _react2['default'].createElement(
+                        'div',
+                        { key: index, className: 'row', style: rowStyle },
+                        item.map(function (colItem, colIndex) {
+                            return _react2['default'].createElement(
+                                'div',
+                                { className: colClass, style: { paddingLeft: 5, paddingRight: 5 } },
+                                _react2['default'].createElement(
+                                    'div',
+                                    { key: colIndex, style: columnStyle },
+                                    _react2['default'].createElement(
+                                        'h2',
+                                        null,
+                                        colItem.title
+                                    ),
+                                    _react2['default'].createElement('br', null),
+                                    _react2['default'].createElement('span', { dangerouslySetInnerHTML: { __html: colItem.body } })
+                                )
+                            );
+                        })
+                    );
+                };
+
+                return {
+                    v: _react2['default'].createElement(
+                        'div',
+                        null,
+                        rows.map(rowFunction)
+                    )
+                };
+            })();
+
+            if (typeof _ret === 'object') return _ret.v;
+        }
+    }
+});
+
+exports['default'] = CardTable;
+module.exports = exports['default'];
+
+},{"../stores/CardStore":240,"react":221}],227:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -40019,7 +40138,7 @@ var MultiYearTable = _react2['default'].createClass({
 exports['default'] = MultiYearTable;
 module.exports = exports['default'];
 
-},{"../common/ApiActions":222,"../common/BudgetAppDispatcher":223,"../constants/AccountTypes":232,"../constants/ActionTypes":233,"../stores/DataModelStore":241,"../stores/DatasetStore":242,"../stores/StateStore":243,"react":221}],227:[function(require,module,exports){
+},{"../common/ApiActions":222,"../common/BudgetAppDispatcher":223,"../constants/AccountTypes":233,"../constants/ActionTypes":234,"../stores/DataModelStore":242,"../stores/DatasetStore":243,"../stores/StateStore":244,"react":221}],228:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -40071,7 +40190,7 @@ var SimpleCard = _react2['default'].createClass({
 exports['default'] = SimpleCard;
 module.exports = exports['default'];
 
-},{"../stores/CardStore":239,"react":221}],228:[function(require,module,exports){
+},{"../stores/CardStore":240,"react":221}],229:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -40175,7 +40294,7 @@ var SimpleTreemap = _react2['default'].createClass({
     },
 
     clickHandler: function clickHandler(context) {
-        alert('Yo! Index = ' + context.index + ', label = ' + context.label + ', value = ' + context.value);
+        //alert("Yo! Index = " + context.index + ", label = " + context.label + ", value = " + context.value);
         var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
         var dm = dataModelStore.getModel(dataModelId);
         var newData = this.prepareLocalState(dm);
@@ -40324,7 +40443,7 @@ var SimpleTreemap = _react2['default'].createClass({
 exports['default'] = SimpleTreemap;
 module.exports = exports['default'];
 
-},{"../common/ApiActions":222,"../common/BudgetAppDispatcher":223,"../constants/AccountTypes":232,"../constants/ActionTypes":233,"../data/DatasetUtilities":238,"../stores/DataModelStore":241,"../stores/DatasetStore":242,"../stores/StateStore":243,"react":221,"react-d3":43}],229:[function(require,module,exports){
+},{"../common/ApiActions":222,"../common/BudgetAppDispatcher":223,"../constants/AccountTypes":233,"../constants/ActionTypes":234,"../data/DatasetUtilities":239,"../stores/DataModelStore":242,"../stores/DatasetStore":243,"../stores/StateStore":244,"react":221,"react-d3":43}],230:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -40513,7 +40632,7 @@ var Site = _react2['default'].createClass({
 exports['default'] = Site;
 module.exports = exports['default'];
 
-},{"../stores/ConfigStore":240,"../stores/DatasetStore":242,"../stores/StateStore":243,"./BootstrapLayout":225,"./SiteNavigation":230,"react":221}],230:[function(require,module,exports){
+},{"../stores/ConfigStore":241,"../stores/DatasetStore":243,"../stores/StateStore":244,"./BootstrapLayout":225,"./SiteNavigation":231,"react":221}],231:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -40582,7 +40701,7 @@ var SiteNavigation = _react2['default'].createClass({
 exports['default'] = SiteNavigation;
 module.exports = exports['default'];
 
-},{"../common/BudgetAppDispatcher":223,"../constants/ActionTypes":233,"../stores/ConfigStore":240,"../stores/StateStore":243,"react":221}],231:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":223,"../constants/ActionTypes":234,"../stores/ConfigStore":241,"../stores/StateStore":244,"react":221}],232:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -40632,6 +40751,7 @@ var SlideShow = _react2['default'].createClass({
             padding: '20px 30px 30px 30px',
             color: 'white'
         };
+
         var imgStyle = {
             zIndex: '1'
         };
@@ -40672,7 +40792,7 @@ var SlideShow = _react2['default'].createClass({
 exports['default'] = SlideShow;
 module.exports = exports['default'];
 
-},{"../stores/CardStore":239,"react":221}],232:[function(require,module,exports){
+},{"../stores/CardStore":240,"react":221}],233:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -40685,7 +40805,7 @@ module.exports = {
     CONTRA: 6
 };
 
-},{}],233:[function(require,module,exports){
+},{}],234:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -40694,7 +40814,7 @@ module.exports = {
     DATASET_RECEIVED: "DATASET_RECEIVED"
 };
 
-},{}],234:[function(require,module,exports){
+},{}],235:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -40705,7 +40825,7 @@ module.exports = {
     DS_STATE_READY: "DS_STATE_READY"
 };
 
-},{}],235:[function(require,module,exports){
+},{}],236:[function(require,module,exports){
 'use strict';
 
 function Card(timestamp, title, body, link, image) {
@@ -40724,7 +40844,7 @@ function Card(timestamp, title, body, link, image) {
 
 module.exports = Card;
 
-},{}],236:[function(require,module,exports){
+},{}],237:[function(require,module,exports){
 'use strict';
 
 var DatasetStatus = require('../constants/DatasetStatus');
@@ -40992,7 +41112,7 @@ function DataModel(id, datasetIds) {
 
 module.exports = DataModel;
 
-},{"../common/BudgetAppDispatcher":223,"../constants/AccountTypes":232,"../constants/ActionTypes":233,"../constants/DatasetStatus":234,"../stores/DatasetStore":242,"./DatasetUtilities":238}],237:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":223,"../constants/AccountTypes":233,"../constants/ActionTypes":234,"../constants/DatasetStatus":235,"../stores/DatasetStore":243,"./DatasetUtilities":239}],238:[function(require,module,exports){
 'use strict';
 
 var DatasetStatus = require('../constants/DatasetStatus');
@@ -41036,7 +41156,7 @@ function Dataset(timestamp, sourceId) {
 
 module.exports = Dataset;
 
-},{"../constants/DatasetStatus":234}],238:[function(require,module,exports){
+},{"../constants/DatasetStatus":235}],239:[function(require,module,exports){
 'use strict';
 
 var assign = require('object-assign');
@@ -41214,7 +41334,7 @@ var DatasetUtilities = {
 
 module.exports = DatasetUtilities;
 
-},{"../common/BudgetAppDispatcher":223,"../constants/AccountTypes":232,"../constants/ActionTypes":233,"../constants/DatasetStatus":234,"../stores/DatasetStore":242,"object-assign":7}],239:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":223,"../constants/AccountTypes":233,"../constants/ActionTypes":234,"../constants/DatasetStatus":235,"../stores/DatasetStore":243,"object-assign":7}],240:[function(require,module,exports){
 'use strict';
 
 var dispatcher = require('../common/BudgetAppDispatcher');
@@ -41272,7 +41392,7 @@ dispatcher.register(function (action) {
 
 module.exports = CardStore;
 
-},{"../common/BudgetAppDispatcher":223,"../constants/ActionTypes":233,"../data/Card":235,"events":2,"object-assign":7}],240:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":223,"../constants/ActionTypes":234,"../data/Card":236,"events":2,"object-assign":7}],241:[function(require,module,exports){
 'use strict';
 
 var dispatcher = require('../common/BudgetAppDispatcher');
@@ -41354,7 +41474,7 @@ dispatcher.register(function (action) {
 
 module.exports = ConfigStore;
 
-},{"../common/BudgetAppDispatcher":223,"../constants/ActionTypes":233,"events":2,"object-assign":7}],241:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":223,"../constants/ActionTypes":234,"events":2,"object-assign":7}],242:[function(require,module,exports){
 'use strict';
 
 var dispatcher = require('../common/BudgetAppDispatcher');
@@ -41419,7 +41539,7 @@ dispatcher.register(function (action) {
 
 module.exports = DataModelStore;
 
-},{"../common/BudgetAppDispatcher":223,"../constants/ActionTypes":233,"../data/DataModel":236,"events":2,"object-assign":7}],242:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":223,"../constants/ActionTypes":234,"../data/DataModel":237,"events":2,"object-assign":7}],243:[function(require,module,exports){
 'use strict';
 
 var dispatcher = require('../common/BudgetAppDispatcher');
@@ -41489,7 +41609,7 @@ DatasetStore.dispatchToken = dispatcher.register(function (action) {
 
 module.exports = DatasetStore;
 
-},{"../common/BudgetAppDispatcher":223,"../constants/ActionTypes":233,"../data/Dataset":237,"events":2,"object-assign":7}],243:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":223,"../constants/ActionTypes":234,"../data/Dataset":238,"events":2,"object-assign":7}],244:[function(require,module,exports){
 'use strict';
 
 var dispatcher = require('../common/BudgetAppDispatcher');
@@ -41647,4 +41767,4 @@ dispatcher.register(function (action) {
 module.exports = StateStore;
 /*path OR id, key */
 
-},{"../common/BudgetAppDispatcher":223,"../constants/ActionTypes":233,"events":2,"object-assign":7}]},{},[1]);
+},{"../common/BudgetAppDispatcher":223,"../constants/ActionTypes":234,"events":2,"object-assign":7}]},{},[1]);

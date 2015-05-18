@@ -83,6 +83,7 @@
                     <br>
                     <p><b>Image:</b></p>
                     @if ($card->image != null)
+                        <p>URL: {!! $card->image !!} </p>
                         <img src="{!! $card->image !!}" alt="Photo">
                     @else
                         <p>-- No Image --</p>

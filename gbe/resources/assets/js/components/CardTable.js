@@ -10,57 +10,79 @@ var CardTable = React.createClass({
         storeId: React.PropTypes.number.isRequired
     },
 
-    componentWillMount: function () {
-    },
-
-    componentDidMount: function () {
-        $(this.getDOMNode()).flexslider();
-    },
-
-    componentDidUpdate: function () {
-        $(this.getDOMNode()).flexslider();
-    },
-
     render: function() {
-        var cards = [];
-        for (var i=0; i<this.props.componentData["mycardset"].ids.length; ++i) {
-            var card = cardStore.getCard(this.props.componentData["mycardset"].ids[i]);
-            if (card !== undefined) cards.push(card);
-        }
-        var overlayStyle = {
-            zIndex:"100",
-            position:"absolute",
-            width:"50%",
-            top:110,
-            right:"10%",
-            background: "#666",
-            padding: "20px 30px 30px 30px",
-            color:"white"
-    };
-        var imgStyle={
-            zIndex:"1"
-        };
 
-        return (
-            <div className="slider" >
-                <div className="flexslider">
-                    <ul className="slides">
-                        {cards.map(function (item, index) {
+        console.log("Here we go: " + this.props.componentData["mycardset"].ids.length);
+
+        if (this.props.componentData["mycardset"] && this.props.componentData["mycardset"].ids.length > 0) {
+            let colClasses = [
+                "col-md-12",
+                "col-md-12",
+                "col-md-6 col-sm-12",
+                "col-md-4 col-sm-12",
+                "col-md-3 col-sm-6 col-xs-12"
+            ];
+
+            let maxColumns = Number(this.props.componentProps.maxColumns);
+            console.log("Max columns = " + maxColumns);
+            let colClass = colClasses[maxColumns];
+            let count = this.props.componentData["mycardset"].ids.length;
+            let rowCount = Math.floor(count/maxColumns);
+            let remainder = count%maxColumns;
+            let hasRemainder = false;
+            if (remainder > 0) {
+                ++rowCount;
+                hasRemainder = true;
+            }
+
+            let rows = [];
+            let cardIndex = 0;
+            for (let row=0; row<rowCount; ++row) {
+                let cMax = (row == rowCount-1 && hasRemainder)?remainder:maxColumns;
+                rows.push([]);
+                for (let column=0; column<cMax; ++column) {
+                    let card = cardStore.getCard(this.props.componentData["mycardset"].ids[cardIndex++]);
+                    rows[row].push(card);
+                }
+            }
+
+            var rowStyle = {
+                marginTop: 1
+            };
+            var columnStyle = {
+                background: "#ccc",
+                marginTop: 75,
+                paddingLeft:50,
+                paddingRight:5,
+                paddingTop:5,
+                paddingBottom:5,
+                border: "1px solid black"
+            };
+
+            var rowFunction = function (item, index) {
+                return (
+                    <div key={index} className="row" style={rowStyle}>
+                        {item.map(function (colItem, colIndex) {
                             return (
-                                <li key={index}>
-                                    <img src={item.image} style={imgStyle}/>
-                                    <div style={overlayStyle}>
-                                        <h2>{item.title}</h2>
+                                <div className={colClass} style={{paddingLeft:5, paddingRight:5}}>
+                                    <div key={colIndex} style={columnStyle}>
+                                        <h2>{colItem.title}</h2>
                                         <br/>
-                                        <span dangerouslySetInnerHTML={{__html: item.body}} />
+                                        <span dangerouslySetInnerHTML={{__html: colItem.body}} />
                                     </div>
-                                </li>
+                                </div>
                             )
                         })}
-                    </ul>
+                    </div>
+                )
+            };
+
+            return (
+                <div>
+                    {rows.map(rowFunction)}
                 </div>
-            </div>
-        );
+            )
+        }
     }
 });
 

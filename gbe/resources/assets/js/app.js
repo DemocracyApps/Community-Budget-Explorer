@@ -13,6 +13,7 @@ import MultiYearTable from './components/MultiYearTable';
 import SlideShow from './components/SlideShow';
 import BarchartExplorer from './components/BarchartExplorer';
 import Treemap from './components/SimpleTreemap';
+import CardTable from './components/CardTable';
 
 var reactComponents = {};
 reactComponents['SimpleCard'] = SimpleCard;
@@ -20,6 +21,7 @@ reactComponents['SlideShow'] = SlideShow;
 reactComponents['MultiYearTable'] = MultiYearTable;
 reactComponents['BarchartExplorer'] = BarchartExplorer;
 reactComponents['Treemap'] = Treemap;
+reactComponents['CardTable'] = CardTable;
 
 /*
  * The stores, one for card-related data, the other for financial datasets.

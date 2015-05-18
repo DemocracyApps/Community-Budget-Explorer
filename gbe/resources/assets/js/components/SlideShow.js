@@ -36,7 +36,8 @@ var SlideShow = React.createClass({
             background: "#666",
             padding: "20px 30px 30px 30px",
             color:"white"
-    };
+        };
+
         var imgStyle={
             zIndex:"1"
         };

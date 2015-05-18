@@ -19,6 +19,7 @@ class AshevilleSiteSeeder extends Seeder
         $barchartExplorerComponent = Component::where('name','=','BarchartExplorer')->first();
         $multiYearTableComponent = Component::where('name','=','MultiYearTable')->first();
         $treemapComponent = Component::where('name','=','Treemap')->first();
+        $cardTableComponent = Component::where('name','=','CardTable')->first();
 
         // Create the Asheville site
         $site = new Site();
@@ -117,7 +118,7 @@ class AshevilleSiteSeeder extends Seeder
         $page = new Page();
         $page->site = $site->id;
         $page->title = "Investigate What's Changed";
-        $page->short_name = "What's New";
+        $page->short_name = "New";
         $page->ordinal = 2;
         $page->show_in_menu = true;
         $page->description = "The second page of the site.";
@@ -128,7 +129,7 @@ class AshevilleSiteSeeder extends Seeder
         $page = new Page();
         $page->site = $site->id;
         $page->title = "Detailed Breakdown of Spending & Revenue";
-        $page->short_name = "Break It Down";
+        $page->short_name = "BreakDown";
         $page->ordinal = 3;
         $page->show_in_menu = true;
         $page->description = "The second page of the site.";
@@ -142,6 +143,9 @@ class AshevilleSiteSeeder extends Seeder
         $c->target="main";
         $c->save();
 
+        /*
+         * Resources Page
+         */
 
         $page = new Page();
         $page->site = $site->id;
@@ -150,8 +154,104 @@ class AshevilleSiteSeeder extends Seeder
         $page->ordinal = 4;
         $page->show_in_menu = true;
         $page->description = "The third page of the site.";
-        $page->layout = 1;
+        $layout = Layout::where('name','=','One-Column')->first();
+        $page->layout = $layout->id;
         $page->save();
+
+
+        // Create the cards for the resources table
+        $cardset = new CardSet();
+        $cardset->site = $site->id;
+        $cardset->name = 'Resources';
+        $cardset->save();
+
+        $c = new PageComponent();
+        $c->component = $cardTableComponent->id;
+        $c->page = $page->id;
+        $c->target="main";
+        $data = array();
+        $data['type'] = 'cardset';
+        $data['items'] = array("$cardset->id");
+        $dataBundle = array();
+        $dataBundle['mycardset'] = $data;
+        $c->setProperty('data', $dataBundle);
+        $c->setProperty('props', ["maxColumns" => "2"]);
+        $c->save();
+
+        $card = new Card();
+        $card->site = $site->id;
+        $card->card_set = $cardset->id;
+        $card->ordinal = 1;
+        $card->title = 'Budget Process';
+        $card->body = "Budget preparation affords departments the opportunity to reassess their goals and objectives and the strategies for accomplishing them. Even though the proposed budget is presented City Council in May and adopted in June, its preparation begins at least six months prior with projections of City revenues, expenditures, and overall financial capacity.
+
+Read more [about](http://www.google.com):
+* Financial forecasting
+* City Council Strategic Planning
+* Departmental Budget Development
+* City Manager Review
+* Budget Adoption
+* Budget Amendments and Revisions
+* Basis of Budgeting";
+        $card->save();
+
+        $card = new Card();
+        $card->site = $site->id;
+        $card->card_set = $cardset->id;
+        $card->ordinal = 2;
+        $card->title = 'Budget Calendar';
+        $card->body = "A body";
+        $card->save();
+
+        $card = new Card();
+        $card->site = $site->id;
+        $card->card_set = $cardset->id;
+        $card->ordinal = 3;
+        $card->title = 'Budget Structure';
+        $card->body = "A body";
+        $card->save();
+
+        $card = new Card();
+        $card->site = $site->id;
+        $card->card_set = $cardset->id;
+        $card->ordinal = 4;
+        $card->title = 'Organizational Structure';
+        $card->body = "A body";
+        $card->save();
+
+        $card = new Card();
+        $card->site = $site->id;
+        $card->card_set = $cardset->id;
+        $card->ordinal = 5;
+        $card->title = 'Budget Process';
+        $card->body = "A body";
+        $card->save();
+
+        $card = new Card();
+        $card->site = $site->id;
+        $card->card_set = $cardset->id;
+        $card->ordinal = 1;
+        $card->title = "City Manager's Message";
+        $card->body = "A body";
+        $card->save();
+
+        $card = new Card();
+        $card->site = $site->id;
+        $card->card_set = $cardset->id;
+        $card->ordinal = 6;
+        $card->title = 'Financial Policies';
+        $card->body = "A body";
+        $card->save();
+
+        $card = new Card();
+        $card->site = $site->id;
+        $card->card_set = $cardset->id;
+        $card->ordinal = 7;
+        $card->title = 'Comprehensive Annual Financial Reports (CAFR)';
+        $card->body = "A body";
+        $card->save();
+
+
 
         $page = new Page();
         $page->site = $site->id;
