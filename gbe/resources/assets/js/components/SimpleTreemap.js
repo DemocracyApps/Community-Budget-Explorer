@@ -33,6 +33,10 @@ var SimpleTreemap = React.createClass({
         };
     },
 
+    getInitialState: function() {
+        return {componentWidth:750};
+    },
+
     prepareLocalState: function (dm) {
         var accountType = stateStore.getValue(this.props.storeId, 'accountType');
         var newData = dm.checkData({
@@ -44,11 +48,13 @@ var SimpleTreemap = React.createClass({
     },
 
     componentDidMount: function () {
-        console.log("Got the width: " + this.getDOMNode().offsetWidth);
+        var widthDelta = Math.abs(this.getDOMNode().offsetWidth - this.state.componentWidth);
+        if (widthDelta > 10) this.setState({componentWidth:this.getDOMNode().offsetWidth});
     },
 
     componentDidUpdate: function() {
-        console.log("Got the width: " + this.getDOMNode().offsetWidth);
+        var widthDelta = Math.abs(this.getDOMNode().offsetWidth - this.state.componentWidth);
+        if (widthDelta > 10) this.setState({componentWidth:this.getDOMNode().offsetWidth});
     },
 
     componentWillMount: function () {
@@ -87,7 +93,7 @@ var SimpleTreemap = React.createClass({
     },
 
     clickHandler: function (context) {
-        alert("Yo! Index = " + context.index + ", label = " + context.label + ", value = " + context.value);
+        //alert("Yo! Index = " + context.index + ", label = " + context.label + ", value = " + context.value);
         var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
         var dm = dataModelStore.getModel(dataModelId);
         var newData = this.prepareLocalState(dm);
@@ -214,8 +220,8 @@ var SimpleTreemap = React.createClass({
 
                     <Treemap
                         data={treemapData}
-                        width={750}
-                        height={750}
+                        width={this.state.componentWidth}
+                        height={this.state.componentWidth}
                         textColor="#484848"
                         fontSize="10px"
                         title={title}

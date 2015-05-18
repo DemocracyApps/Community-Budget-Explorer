@@ -19131,6 +19131,8 @@ module.exports = React.createClass({
       'fill': props.textColor,
       'fontSize': props.fontSize
     };
+
+    // Pull out any event handlers that the user has provided
     var onClickHandler = undefined;
     if (this.props.hasOwnProperty('eventHandlers')) {
       if (this.props.eventHandlers.hasOwnProperty('onClick')) {
@@ -19138,22 +19140,25 @@ module.exports = React.createClass({
       }
     }
 
-    var t = ("translate(" + props.x + ", " + props.y + "  )");
-    var avgAlphaWidth = 12;
-    if (props.extraProperties.hasOwnProperty('averageCharacterWidth')) {
-      avgAlphaWidth = props.extraProperties.averageCharacterWidth;
+    // Modify the label if it isn't likely to fit in the rectangle
+    var avgCharWidth = 8;
+    if (props.extraProperties.hasOwnProperty('avgCharWidth')) {
+      avgCharWidth = props.extraProperties.avgCharWidth;
     }
 
     var label = props.label || "";
-    if (label.length*avgAlphaWidth > props.width) {
-      if (props.width/avgAlphaWidth < 6) {
+    if (label.length * avgCharWidth > props.width) {
+      if (props.width/avgCharWidth < 6) {
         label = "";
       }
       else {
-        var allowed = props.width/avgAlphaWidth - 3;
+        var allowed = props.width/avgCharWidth - 3;
         label = label.substring(0,allowed) + "...";
       }
     }
+
+    var t = ("translate(" + props.x + ", " + props.y + "  )");
+
     return (
       React.createElement("g", {transform: t}, 
         React.createElement("rect", {
@@ -40111,6 +40116,10 @@ var SimpleTreemap = _react2['default'].createClass({
         };
     },
 
+    getInitialState: function getInitialState() {
+        return { componentWidth: 750 };
+    },
+
     prepareLocalState: function prepareLocalState(dm) {
         var accountType = stateStore.getValue(this.props.storeId, 'accountType');
         var newData = dm.checkData({
@@ -40122,11 +40131,13 @@ var SimpleTreemap = _react2['default'].createClass({
     },
 
     componentDidMount: function componentDidMount() {
-        console.log('Got the width: ' + this.getDOMNode().offsetWidth);
+        var widthDelta = Math.abs(this.getDOMNode().offsetWidth - this.state.componentWidth);
+        if (widthDelta > 10) this.setState({ componentWidth: this.getDOMNode().offsetWidth });
     },
 
     componentDidUpdate: function componentDidUpdate() {
-        console.log('Got the width: ' + this.getDOMNode().offsetWidth);
+        var widthDelta = Math.abs(this.getDOMNode().offsetWidth - this.state.componentWidth);
+        if (widthDelta > 10) this.setState({ componentWidth: this.getDOMNode().offsetWidth });
     },
 
     componentWillMount: function componentWillMount() {
@@ -40296,8 +40307,8 @@ var SimpleTreemap = _react2['default'].createClass({
                 { className: 'row' },
                 _react2['default'].createElement(Treemap, {
                     data: treemapData,
-                    width: 750,
-                    height: 750,
+                    width: this.state.componentWidth,
+                    height: this.state.componentWidth,
                     textColor: '#484848',
                     fontSize: '10px',
                     title: title,
