@@ -8,6 +8,8 @@ var AccountTypes = require('../constants/AccountTypes');
 var dispatcher = require('../common/BudgetAppDispatcher');
 var ActionTypes = require('../constants/ActionTypes');
 var datasetUtilities = require('../data/DatasetUtilities');
+var MicroBarChart = require('react-micro-bar-chart');
+var Sparkline = require('react-sparkline');
 
 var ChangeExplorer = React.createClass({
 
@@ -201,11 +203,17 @@ var ChangeExplorer = React.createClass({
 
     computeChanges: function computeChanges (item, index) {
         let length = item.amount.length;
+        let useInfinity = false;
         if (length < 2) throw "Minimum of 2 datasets required for ChangeExplorer";
         let cur = item.amount[length-1], prev = item.amount[length-2];
         item.difference = cur-prev;
         if (Math.abs(prev) < 0.001) {
-            item.percent = String.fromCharCode(8734);
+            if (useInfinity) {
+                item.percent = String.fromCharCode(8734) + " %";
+            }
+            else {
+                item.percent = "New";
+            }
             item.percentSort = 10000 * Math.abs(item.difference);
         }
         else if (cur*prev < 0.) {
@@ -213,7 +221,7 @@ var ChangeExplorer = React.createClass({
             item.percentSort = 10000 * Math.abs(item.difference);
         }
         else {
-            let pct = Math.round(10000*(item.difference)/prev)/100;
+            let pct = Math.round(1000*(item.difference)/prev)/10;
             item.percent = (pct) + "%";
             item.percentSort = Math.abs(item.percent);
         }
@@ -235,23 +243,21 @@ var ChangeExplorer = React.createClass({
         let label = item.categories[0];
         if (currentLevel > 0) {
             for (let i=1; i<=currentLevel; ++i) {
-                label += ">"+item.categories[i];
+                label += " " + String.fromCharCode(183) + " "+item.categories[i];
             }
         }
+        let tdStyle={textAlign:"right"};
         return <tr key={index}>
             <td key="0">{label}</td>
-            <td key="1">{datasetUtilities.formatDollarAmount(item.amount[length-2])}</td>
-            <td key="2">{datasetUtilities.formatDollarAmount(item.amount[length-1])}</td>
-            <td key="3">{item.percent}</td>
-            <td key="4">{datasetUtilities.formatDollarAmount(item.difference)}</td>
+            <td>
+                <Sparkline data={item.amount} />
+            </td>
+            <td key="1" style={tdStyle}>{datasetUtilities.formatDollarAmount(item.amount[length-2])}</td>
+            <td key="2" style={tdStyle}>{datasetUtilities.formatDollarAmount(item.amount[length-1])}</td>
+            <td key="3" style={tdStyle}>{item.percent}</td>
+            <td key="4" style={tdStyle}>{datasetUtilities.formatDollarAmount(item.difference)}</td>
         </tr>
     },
-
-    //<th key="0">Account</th>
-    //<th key="1">{headers[dataLength-2]}</th>
-    //<th key="2">{headers[dataLength-1]}</th>
-    //<th key="3">Percentage Change</th>
-    //<th key="4">Actual Difference</th>
 
     render: function() {
         var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
@@ -265,16 +271,24 @@ var ChangeExplorer = React.createClass({
         }, false);
 
         if (newData == null) {
-            return <div> ChangeExplorer is loading ... </div>
+            let tst = [17,2,33,4,10];
+            return (
+                <div>
+                    ChangeExplorer is loading ...
+                    <br/>
+
+                    <Sparkline data={tst} />
+                </div>
+            )
         }
         else {
             var rows =  newData.data;
             var headers = newData.dataHeaders;
             let currentLevel = stateStore.getValue(this.props.storeId,'currentLevel');
             let dataLength = rows[0].amount.length;
-
             rows.map(this.computeChanges);
             rows = rows.sort(this.sortByAbsoluteDifference);
+            let thStyle={textAlign:"right"};
             return (
                 <div>
                     <br/>
@@ -286,10 +300,11 @@ var ChangeExplorer = React.createClass({
                         <thead>
                         <tr>
                             <th key="0">Account</th>
-                            <th key="1">{headers[dataLength-2]}</th>
-                            <th key="2">{headers[dataLength-1]}</th>
-                            <th key="3">Percentage Change</th>
-                            <th key="4">Actual Difference</th>
+                            <th key="1">History</th>
+                            <th key="2" style={thStyle}>{headers[dataLength-2]}</th>
+                            <th key="3" style={thStyle}>{headers[dataLength-1]}</th>
+                            <th key="4" style={thStyle}>Percentage Change</th>
+                            <th key="5" style={thStyle}>Actual Difference</th>
                         </tr>
                         </thead>
                         <tbody>

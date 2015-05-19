@@ -13,6 +13,8 @@
     "react": "^0.13.1",
     "react-classset": "0.0.2",
     "react-d3": "file:vendor/react-d3",
+    "react-micro-bar-chart": "^0.4.0",
+    "react-sparkline": "^1.0.1",
     "reactify": "^1.1.1",
     "source-map": "^0.4.2"
   },
