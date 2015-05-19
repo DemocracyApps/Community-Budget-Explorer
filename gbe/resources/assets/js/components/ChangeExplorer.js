@@ -8,7 +8,6 @@ var AccountTypes = require('../constants/AccountTypes');
 var dispatcher = require('../common/BudgetAppDispatcher');
 var ActionTypes = require('../constants/ActionTypes');
 var datasetUtilities = require('../data/DatasetUtilities');
-var MicroBarChart = require('react-micro-bar-chart');
 var Sparkline = require('react-sparkline');
 
 var ChangeExplorer = React.createClass({
@@ -19,15 +18,15 @@ var ChangeExplorer = React.createClass({
         storeId: React.PropTypes.number.isRequired
     },
 
-    getInitialState: function() {
-        return {showCategorySelector:false};
+    getInitialState: function () {
+        return {showCategorySelector: false};
     },
 
-    getDefaultProps: function() {
+    getDefaultProps: function () {
         return {
             accountTypes: [
-                { name: "Expense", value: AccountTypes.EXPENSE},
-                { name: "Revenue", value: AccountTypes.REVENUE}
+                {name: "Expense", value: AccountTypes.EXPENSE},
+                {name: "Revenue", value: AccountTypes.REVENUE}
             ],
             dataInitialization: {
                 hierarchy: ['Fund', 'Department', 'Division', 'Account'],
@@ -39,17 +38,18 @@ var ChangeExplorer = React.createClass({
 
     prepareLocalState: function (dm) {
         var accountType = stateStore.getValue(this.props.storeId, 'accountType');
+        var nLevels = stateStore.getValue(this.props.storeId, 'nLevels');
         var newData = dm.checkData({
-            accountTypes:[accountType],
+            accountTypes: [accountType],
             startPath: [],
-            nLevels: 1
+            nLevels: nLevels
         }, true);
-        this.setState({showCategorySelector:false});
+        this.setState({showCategorySelector: false});
         if (newData != null) {
-            let nLevels = newData.categories.length;
-            let currentLevel = stateStore.getValue(this.props.storeId,'currentLevel');
-            if (currentLevel < nLevels-1) {
-                this.setState({showCategorySelector:true});
+            let levelCount = newData.categories.length;
+            let currentLevel = stateStore.getValue(this.props.storeId, 'currentLevel');
+            if (currentLevel < levelCount - 1) {
+                this.setState({showCategorySelector: true});
             }
         }
     },
@@ -69,14 +69,15 @@ var ChangeExplorer = React.createClass({
             stateStore.setComponentState(this.props.storeId,
                 {
                     accountType: AccountTypes.REVENUE,
-                    dataModelId:  dm.id,
+                    dataModelId: dm.id,
                     currentLevel: 0,
-                    startPath: []
+                    startPath: [],
+                    nLevels: 1
                 });
         }
     },
 
-    componentWillReceiveProps: function() {
+    componentWillReceiveProps: function () {
         var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
         var dm = dataModelStore.getModel(dataModelId);
         this.prepareLocalState(dm);
@@ -86,10 +87,10 @@ var ChangeExplorer = React.createClass({
         var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
         var dm = dataModelStore.getModel(dataModelId);
         var selectedItem = stateStore.getValue(this.props.storeId, 'selectedItem');
-        return ( dm.dataChanged() || dm.commandsChanged({accountTypes:[selectedItem]}) );
+        return ( dm.dataChanged() || dm.commandsChanged({accountTypes: [selectedItem]}) );
     },
 
-    onAccountTypeChange: function(e) {
+    onAccountTypeChange: function (e) {
         dispatcher.dispatch({
             actionType: ActionTypes.COMPONENT_STATE_CHANGE,
             payload: {
@@ -104,7 +105,7 @@ var ChangeExplorer = React.createClass({
         });
     },
 
-    onCategoryChange: function(e) {
+    onCategoryChange: function (e) {
         if (e.target.value != '--') {
             let startPath = stateStore.getValue(this.props.storeId, 'startPath');
             startPath.push(e.target.value);
@@ -142,6 +143,10 @@ var ChangeExplorer = React.createClass({
                     {
                         name: 'currentLevel',
                         value: 0
+                    },
+                    {
+                        name: 'nLevels',
+                        value: 1
                     }
                 ]
             }
@@ -150,49 +155,93 @@ var ChangeExplorer = React.createClass({
 
     renderCategorySelector: function categorySelector(data, rows) {
         if (this.state.showCategorySelector) {
-            let currentLevel = stateStore.getValue(this.props.storeId,'currentLevel');
+            let currentLevel = stateStore.getValue(this.props.storeId, 'currentLevel');
             return (
                 <div className="form-group">
-                    <label>Select {data.categories[currentLevel]}</label>
+                    <label>Restrict To Single {data.categories[currentLevel]}</label>
                     <select className="form-control" onChange={this.onCategoryChange} value="--">
                         <option key="0" value="--">--</option>
-                        {rows.map(function(item, index) {
+                        {rows.map(function (item, index) {
                             return (
-                                <option key={index+1} value={item.categories[currentLevel]}>{item.categories[currentLevel]}</option>
+                                <option key={index+1} value={item.categories[currentLevel]}>
+                                    {item.categories[currentLevel]}
+                                </option>
                             )
                         })}
                     </select>
                 </div>
-            );
+            )
         }
+    },
+
+    onLevelChange: function onLevelChange(e) {
+        dispatcher.dispatch({
+            actionType: ActionTypes.COMPONENT_STATE_CHANGE,
+            payload: {
+                id: this.props.storeId,
+                changes: [
+                    {
+                        name: 'nLevels',
+                        value: Number(e.target.value)
+                    }
+                ]
+            }
+        });
+    },
+
+    renderLevelSelector: function renderLevelSelector(data) {
+        let nLevels = stateStore.getValue(this.props.storeId, 'nLevels');
+
+        return (
+            <div className="form-group">
+                <label>Select Level</label>
+                <select className="form-control" onChange={this.onLevelChange} value={nLevels}>
+                    {data.categories.map(function(item, index) {
+                        return (
+                            <option key={index} value={index+1}>{item}</option>
+                        )
+                    })}
+                </select>
+            </div>
+        )
     },
 
     interactionPanel: function interactionPanel(data, rows) {
         var accountType = stateStore.getValue(this.props.storeId, 'accountType');
         return (
-          <div className="row">
-              <div className="col-xs-6">
-                  {this.renderCategorySelector(data, rows)}
-              </div>
-              <div className="col-xs-1"></div>
-              <div className="col-xs-3">
-                  <br/>
-                  <select onChange={this.onAccountTypeChange} value={accountType}>
-                      {
-                          this.props.accountTypes.map(
-                              function (type, index) {
-                                  return <option key={index} value={type.value} > {type.name} </option>
+            <div>
+                <div className="row">
+                    <div className="col-xs-4">
+                        {this.renderLevelSelector(data, rows)}
+                    </div>
+                  <div className="col-xs-1"></div>
+                  <div className="col-xs-4">
+                      <div className="form-group">
+                          <label>Select Account Type</label>
+                          <select className="form-control" onChange={this.onAccountTypeChange} value={accountType}>
+                              {
+                                  this.props.accountTypes.map(
+                                      function (type, index) {
+                                          return <option key={index} value={type.value} > {type.name} </option>
+                                      }
+                                  )
                               }
-                          )
-                      }
-                  </select>
-              </div>
-              <div className="col-xs-1"></div>
-              <div className="col-xs-2">
-                  <br/>
-                  <button className="btn" onClick={this.doReset}>Reset</button>
-              </div>
-          </div>
+                          </select>
+                      </div>
+                  </div>
+                  <div className="col-xs-1"></div>
+                  <div className="col-xs-2">
+                      <button style={{float:"right"}} className="btn btn-primary" onClick={this.doReset}>Reset</button>
+                  </div>
+                </div>
+
+                <div className="row">
+                    <div className="col-xs-4">
+                        {this.renderCategorySelector(data, rows)}
+                    </div>
+                    <div className="col-xs-8"></div>
+                </div>
+            </div>
       )
     },
 
@@ -239,16 +288,16 @@ var ChangeExplorer = React.createClass({
 
     tableRow: function (item, index) {
         let length = item.amount.length;
-        let currentLevel = stateStore.getValue(this.props.storeId,'currentLevel');
         let label = item.categories[0];
-        if (currentLevel > 0) {
-            for (let i=1; i<=currentLevel; ++i) {
+        var nLevels = stateStore.getValue(this.props.storeId, 'nLevels');
+        if (nLevels > 1) {
+            for (let i=1; i<nLevels; ++i) {
                 label += " " + String.fromCharCode(183) + " "+item.categories[i];
             }
         }
         let tdStyle={textAlign:"right"};
         return <tr key={index}>
-            <td key="0">{label}</td>
+            <td key="0" style={{width:"40%"}}>{label}</td>
             <td>
                 <Sparkline data={item.amount} />
             </td>
@@ -264,10 +313,11 @@ var ChangeExplorer = React.createClass({
         var dm = dataModelStore.getModel(dataModelId);
         var accountType = stateStore.getValue(this.props.storeId, 'accountType');
         var startPath = stateStore.getValue(this.props.storeId, 'startPath');
+        var nLevels = stateStore.getValue(this.props.storeId, 'nLevels');
         var newData = dm.getData({
             accountTypes:[accountType],
             startPath: startPath,
-            nLevels: 1
+            nLevels: nLevels
         }, false);
 
         if (newData == null) {
@@ -275,9 +325,6 @@ var ChangeExplorer = React.createClass({
             return (
                 <div>
                     ChangeExplorer is loading ...
-                    <br/>
-
-                    <Sparkline data={tst} />
                 </div>
             )
         }
