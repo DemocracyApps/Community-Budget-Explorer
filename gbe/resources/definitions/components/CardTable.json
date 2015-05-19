@@ -12,7 +12,7 @@
   ],
   "props": {
     "maxColumns": {
-      "value": "maxColumns",
+      "value": "2",
       "configurable": true,
       "label": "Select max number of columns",
       "type":"select",

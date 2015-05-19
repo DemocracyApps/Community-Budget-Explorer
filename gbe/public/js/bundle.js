@@ -41,6 +41,10 @@ var _componentsCardTable = require('./components/CardTable');
 
 var _componentsCardTable2 = _interopRequireDefault(_componentsCardTable);
 
+var _componentsChangeExplorer = require('./components/ChangeExplorer');
+
+var _componentsChangeExplorer2 = _interopRequireDefault(_componentsChangeExplorer);
+
 var dispatcher = require('./common/BudgetAppDispatcher');
 var ActionTypes = require('./constants/ActionTypes');
 
@@ -51,6 +55,7 @@ reactComponents['MultiYearTable'] = _componentsMultiYearTable2['default'];
 reactComponents['BarchartExplorer'] = _componentsBarchartExplorer2['default'];
 reactComponents['Treemap'] = _componentsSimpleTreemap2['default'];
 reactComponents['CardTable'] = _componentsCardTable2['default'];
+reactComponents['ChangeExplorer'] = _componentsChangeExplorer2['default'];
 
 /*
  * The stores, one for card-related data, the other for financial datasets.
@@ -124,7 +129,7 @@ var props = {
 
 var layout = _react2['default'].render(_react2['default'].createElement(_componentsSite2['default'], props), document.getElementById('app'));
 
-},{"./common/BudgetAppDispatcher":223,"./components/BarchartExplorer":224,"./components/CardTable":226,"./components/MultiYearTable":227,"./components/SimpleCard":228,"./components/SimpleTreemap":229,"./components/Site":230,"./components/SlideShow":232,"./constants/ActionTypes":234,"./stores/CardStore":240,"./stores/ConfigStore":241,"./stores/DatasetStore":243,"./stores/StateStore":244,"react":221}],2:[function(require,module,exports){
+},{"./common/BudgetAppDispatcher":223,"./components/BarchartExplorer":224,"./components/CardTable":226,"./components/ChangeExplorer":227,"./components/MultiYearTable":228,"./components/SimpleCard":229,"./components/SimpleTreemap":230,"./components/Site":231,"./components/SlideShow":233,"./constants/ActionTypes":235,"./stores/CardStore":241,"./stores/ConfigStore":242,"./stores/DatasetStore":244,"./stores/StateStore":245,"react":221}],2:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -39297,7 +39302,7 @@ var ApiActions = {
 
 module.exports = ApiActions;
 
-},{"../common/BudgetAppDispatcher":223,"../constants/ActionTypes":234,"../stores/ConfigStore":241,"../stores/DatasetStore":243,"object-assign":7}],223:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":223,"../constants/ActionTypes":235,"../stores/ConfigStore":242,"../stores/DatasetStore":244,"object-assign":7}],223:[function(require,module,exports){
 'use strict';
 
 var FluxDispatcher = require('flux').Dispatcher;
@@ -39758,7 +39763,7 @@ var BarchartExplorer = _react2['default'].createClass({
 exports['default'] = BarchartExplorer;
 module.exports = exports['default'];
 
-},{"../common/ApiActions":222,"../common/BudgetAppDispatcher":223,"../constants/AccountTypes":233,"../constants/ActionTypes":234,"../data/DatasetUtilities":239,"../stores/DataModelStore":242,"../stores/DatasetStore":243,"../stores/StateStore":244,"react":221}],225:[function(require,module,exports){
+},{"../common/ApiActions":222,"../common/BudgetAppDispatcher":223,"../constants/AccountTypes":234,"../constants/ActionTypes":235,"../data/DatasetUtilities":240,"../stores/DataModelStore":243,"../stores/DatasetStore":244,"../stores/StateStore":245,"react":221}],225:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -39953,7 +39958,400 @@ var CardTable = _react2['default'].createClass({
 exports['default'] = CardTable;
 module.exports = exports['default'];
 
-},{"../stores/CardStore":240,"react":221}],227:[function(require,module,exports){
+},{"../stores/CardStore":241,"react":221}],227:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+    value: true
+});
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var datasetStore = require('../stores/DatasetStore');
+var stateStore = require('../stores/StateStore');
+var dataModelStore = require('../stores/DataModelStore');
+var apiActions = require('../common/ApiActions');
+var AccountTypes = require('../constants/AccountTypes');
+var dispatcher = require('../common/BudgetAppDispatcher');
+var ActionTypes = require('../constants/ActionTypes');
+var datasetUtilities = require('../data/DatasetUtilities');
+
+var ChangeExplorer = _react2['default'].createClass({
+    displayName: 'ChangeExplorer',
+
+    propTypes: {
+        componentData: _react2['default'].PropTypes.object.isRequired,
+        componentProps: _react2['default'].PropTypes.object.isRequired,
+        storeId: _react2['default'].PropTypes.number.isRequired
+    },
+
+    getInitialState: function getInitialState() {
+        return { showCategorySelector: false };
+    },
+
+    getDefaultProps: function getDefaultProps() {
+        return {
+            accountTypes: [{ name: 'Expense', value: AccountTypes.EXPENSE }, { name: 'Revenue', value: AccountTypes.REVENUE }],
+            dataInitialization: {
+                hierarchy: ['Fund', 'Department', 'Division', 'Account'],
+                accountTypes: [AccountTypes.EXPENSE, AccountTypes.REVENUE],
+                amountThreshold: 0.01
+            }
+        };
+    },
+
+    prepareLocalState: function prepareLocalState(dm) {
+        var accountType = stateStore.getValue(this.props.storeId, 'accountType');
+        var newData = dm.checkData({
+            accountTypes: [accountType],
+            startPath: [],
+            nLevels: 1
+        }, true);
+        this.setState({ showCategorySelector: false });
+        if (newData != null) {
+            var nLevels = newData.categories.length;
+            var currentLevel = stateStore.getValue(this.props.storeId, 'currentLevel');
+            if (currentLevel < nLevels - 1) {
+                this.setState({ showCategorySelector: true });
+            }
+        }
+    },
+
+    componentWillMount: function componentWillMount() {
+        // If this is the first time this component is mounting, we need to create the data model
+        // and do any other state initialization required.
+        var dataModelId = stateStore.getComponentStateValue(this.props.storeId, 'dataModelId');
+        var dm = null;
+        if (dataModelId == null) {
+            var ids = this.props.componentData['mydatasets'].ids;
+            ids.forEach(function (id) {
+                apiActions.requestDatasetIfNeeded(id);
+            });
+
+            dm = dataModelStore.createModel(ids, this.props.dataInitialization);
+            stateStore.setComponentState(this.props.storeId, {
+                accountType: AccountTypes.REVENUE,
+                dataModelId: dm.id,
+                currentLevel: 0,
+                startPath: []
+            });
+        }
+    },
+
+    componentWillReceiveProps: function componentWillReceiveProps() {
+        var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
+        var dm = dataModelStore.getModel(dataModelId);
+        this.prepareLocalState(dm);
+    },
+
+    shouldComponentUpdate: function shouldComponentUpdate(nextProps, nextState) {
+        var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
+        var dm = dataModelStore.getModel(dataModelId);
+        var selectedItem = stateStore.getValue(this.props.storeId, 'selectedItem');
+        return dm.dataChanged() || dm.commandsChanged({ accountTypes: [selectedItem] });
+    },
+
+    onAccountTypeChange: function onAccountTypeChange(e) {
+        dispatcher.dispatch({
+            actionType: ActionTypes.COMPONENT_STATE_CHANGE,
+            payload: {
+                id: this.props.storeId,
+                changes: [{
+                    name: 'accountType',
+                    value: Number(e.target.value)
+                }]
+            }
+        });
+    },
+
+    onCategoryChange: function onCategoryChange(e) {
+        if (e.target.value != '--') {
+            var startPath = stateStore.getValue(this.props.storeId, 'startPath');
+            startPath.push(e.target.value);
+            var currentLevel = stateStore.getValue(this.props.storeId, 'currentLevel');
+
+            dispatcher.dispatch({
+                actionType: ActionTypes.COMPONENT_STATE_CHANGE,
+                payload: {
+                    id: this.props.storeId,
+                    changes: [{
+                        name: 'startPath',
+                        value: startPath
+                    }, {
+                        name: 'currentLevel',
+                        value: ++currentLevel
+                    }]
+                }
+            });
+        }
+    },
+
+    doReset: function doReset(e) {
+        dispatcher.dispatch({
+            actionType: ActionTypes.COMPONENT_STATE_CHANGE,
+            payload: {
+                id: this.props.storeId,
+                changes: [{
+                    name: 'startPath',
+                    value: []
+                }, {
+                    name: 'currentLevel',
+                    value: 0
+                }]
+            }
+        });
+    },
+
+    renderCategorySelector: function categorySelector(data, rows) {
+        var _this = this;
+
+        if (this.state.showCategorySelector) {
+            var _ret = (function () {
+                var currentLevel = stateStore.getValue(_this.props.storeId, 'currentLevel');
+                return {
+                    v: _react2['default'].createElement(
+                        'div',
+                        { className: 'form-group' },
+                        _react2['default'].createElement(
+                            'label',
+                            null,
+                            'Select ',
+                            data.categories[currentLevel]
+                        ),
+                        _react2['default'].createElement(
+                            'select',
+                            { className: 'form-control', onChange: _this.onCategoryChange, value: '--' },
+                            _react2['default'].createElement(
+                                'option',
+                                { key: '0', value: '--' },
+                                '--'
+                            ),
+                            rows.map(function (item, index) {
+                                return _react2['default'].createElement(
+                                    'option',
+                                    { key: index + 1, value: item.categories[currentLevel] },
+                                    item.categories[currentLevel]
+                                );
+                            })
+                        )
+                    )
+                };
+            })();
+
+            if (typeof _ret === 'object') return _ret.v;
+        }
+    },
+
+    interactionPanel: function interactionPanel(data, rows) {
+        var accountType = stateStore.getValue(this.props.storeId, 'accountType');
+        return _react2['default'].createElement(
+            'div',
+            { className: 'row' },
+            _react2['default'].createElement(
+                'div',
+                { className: 'col-xs-6' },
+                this.renderCategorySelector(data, rows)
+            ),
+            _react2['default'].createElement('div', { className: 'col-xs-1' }),
+            _react2['default'].createElement(
+                'div',
+                { className: 'col-xs-3' },
+                _react2['default'].createElement('br', null),
+                _react2['default'].createElement(
+                    'select',
+                    { onChange: this.onAccountTypeChange, value: accountType },
+                    this.props.accountTypes.map(function (type, index) {
+                        return _react2['default'].createElement(
+                            'option',
+                            { key: index, value: type.value },
+                            ' ',
+                            type.name,
+                            ' '
+                        );
+                    })
+                )
+            ),
+            _react2['default'].createElement('div', { className: 'col-xs-1' }),
+            _react2['default'].createElement(
+                'div',
+                { className: 'col-xs-2' },
+                _react2['default'].createElement('br', null),
+                _react2['default'].createElement(
+                    'button',
+                    { className: 'btn', onClick: this.doReset },
+                    'Reset'
+                )
+            )
+        );
+    },
+
+    sortByAbsoluteDifference: function sortByAbsoluteDifference(item1, item2) {
+        var result = Math.abs(item2.reduce) - Math.abs(item1.reduce);
+        return result;
+    },
+
+    computeChanges: function computeChanges(item, index) {
+        var length = item.amount.length;
+        if (length < 2) throw 'Minimum of 2 datasets required for ChangeExplorer';
+        var cur = item.amount[length - 1],
+            prev = item.amount[length - 2];
+        item.difference = cur - prev;
+        if (Math.abs(prev) < 0.001) {
+            item.percent = String.fromCharCode(8734);
+            item.percentSort = 10000 * Math.abs(item.difference);
+        } else if (cur * prev < 0) {
+            item.percent = 'N/A';
+            item.percentSort = 10000 * Math.abs(item.difference);
+        } else {
+            var pct = Math.round(10000 * item.difference / prev) / 100;
+            item.percent = pct + '%';
+            item.percentSort = Math.abs(item.percent);
+        }
+    },
+
+    sortByAbsolutePercentage: function sortByAbsolutePercentage() {
+        return item2.percentSort - item1.percentSort;
+    },
+
+    sortByAbsoluteDifference: function sortByAbsoluteDifference(item1, item2) {
+        var result = Math.abs(item2.difference) - Math.abs(item1.difference);
+        return result;
+    },
+
+    tableRow: function tableRow(item, index) {
+        var length = item.amount.length;
+        var currentLevel = stateStore.getValue(this.props.storeId, 'currentLevel');
+        var label = item.categories[0];
+        if (currentLevel > 0) {
+            for (var i = 1; i <= currentLevel; ++i) {
+                label += '>' + item.categories[i];
+            }
+        }
+        return _react2['default'].createElement(
+            'tr',
+            { key: index },
+            _react2['default'].createElement(
+                'td',
+                { key: '0' },
+                label
+            ),
+            _react2['default'].createElement(
+                'td',
+                { key: '1' },
+                datasetUtilities.formatDollarAmount(item.amount[length - 2])
+            ),
+            _react2['default'].createElement(
+                'td',
+                { key: '2' },
+                datasetUtilities.formatDollarAmount(item.amount[length - 1])
+            ),
+            _react2['default'].createElement(
+                'td',
+                { key: '3' },
+                item.percent
+            ),
+            _react2['default'].createElement(
+                'td',
+                { key: '4' },
+                datasetUtilities.formatDollarAmount(item.difference)
+            )
+        );
+    },
+
+    //<th key="0">Account</th>
+    //<th key="1">{headers[dataLength-2]}</th>
+    //<th key="2">{headers[dataLength-1]}</th>
+    //<th key="3">Percentage Change</th>
+    //<th key="4">Actual Difference</th>
+
+    render: function render() {
+        var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
+        var dm = dataModelStore.getModel(dataModelId);
+        var accountType = stateStore.getValue(this.props.storeId, 'accountType');
+        var startPath = stateStore.getValue(this.props.storeId, 'startPath');
+        var newData = dm.getData({
+            accountTypes: [accountType],
+            startPath: startPath,
+            nLevels: 1
+        }, false);
+
+        if (newData == null) {
+            return _react2['default'].createElement(
+                'div',
+                null,
+                ' ChangeExplorer is loading ... '
+            );
+        } else {
+            var rows = newData.data;
+            var headers = newData.dataHeaders;
+            var currentLevel = stateStore.getValue(this.props.storeId, 'currentLevel');
+            var dataLength = rows[0].amount.length;
+
+            rows.map(this.computeChanges);
+            rows = rows.sort(this.sortByAbsoluteDifference);
+            return _react2['default'].createElement(
+                'div',
+                null,
+                _react2['default'].createElement('br', null),
+                _react2['default'].createElement('hr', null),
+                this.interactionPanel(newData, rows),
+                _react2['default'].createElement('br', null),
+                _react2['default'].createElement('hr', null),
+                _react2['default'].createElement(
+                    'table',
+                    { className: 'table' },
+                    _react2['default'].createElement(
+                        'thead',
+                        null,
+                        _react2['default'].createElement(
+                            'tr',
+                            null,
+                            _react2['default'].createElement(
+                                'th',
+                                { key: '0' },
+                                'Account'
+                            ),
+                            _react2['default'].createElement(
+                                'th',
+                                { key: '1' },
+                                headers[dataLength - 2]
+                            ),
+                            _react2['default'].createElement(
+                                'th',
+                                { key: '2' },
+                                headers[dataLength - 1]
+                            ),
+                            _react2['default'].createElement(
+                                'th',
+                                { key: '3' },
+                                'Percentage Change'
+                            ),
+                            _react2['default'].createElement(
+                                'th',
+                                { key: '4' },
+                                'Actual Difference'
+                            )
+                        )
+                    ),
+                    _react2['default'].createElement(
+                        'tbody',
+                        null,
+                        rows.map(this.tableRow)
+                    )
+                )
+            );
+        }
+    }
+});
+
+exports['default'] = ChangeExplorer;
+module.exports = exports['default'];
+
+},{"../common/ApiActions":222,"../common/BudgetAppDispatcher":223,"../constants/AccountTypes":234,"../constants/ActionTypes":235,"../data/DatasetUtilities":240,"../stores/DataModelStore":243,"../stores/DatasetStore":244,"../stores/StateStore":245,"react":221}],228:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -40139,7 +40537,7 @@ var MultiYearTable = _react2['default'].createClass({
 exports['default'] = MultiYearTable;
 module.exports = exports['default'];
 
-},{"../common/ApiActions":222,"../common/BudgetAppDispatcher":223,"../constants/AccountTypes":233,"../constants/ActionTypes":234,"../stores/DataModelStore":242,"../stores/DatasetStore":243,"../stores/StateStore":244,"react":221}],228:[function(require,module,exports){
+},{"../common/ApiActions":222,"../common/BudgetAppDispatcher":223,"../constants/AccountTypes":234,"../constants/ActionTypes":235,"../stores/DataModelStore":243,"../stores/DatasetStore":244,"../stores/StateStore":245,"react":221}],229:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -40191,7 +40589,7 @@ var SimpleCard = _react2['default'].createClass({
 exports['default'] = SimpleCard;
 module.exports = exports['default'];
 
-},{"../stores/CardStore":240,"react":221}],229:[function(require,module,exports){
+},{"../stores/CardStore":241,"react":221}],230:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -40444,7 +40842,7 @@ var SimpleTreemap = _react2['default'].createClass({
 exports['default'] = SimpleTreemap;
 module.exports = exports['default'];
 
-},{"../common/ApiActions":222,"../common/BudgetAppDispatcher":223,"../constants/AccountTypes":233,"../constants/ActionTypes":234,"../data/DatasetUtilities":239,"../stores/DataModelStore":242,"../stores/DatasetStore":243,"../stores/StateStore":244,"react":221,"react-d3":43}],230:[function(require,module,exports){
+},{"../common/ApiActions":222,"../common/BudgetAppDispatcher":223,"../constants/AccountTypes":234,"../constants/ActionTypes":235,"../data/DatasetUtilities":240,"../stores/DataModelStore":243,"../stores/DatasetStore":244,"../stores/StateStore":245,"react":221,"react-d3":43}],231:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -40633,7 +41031,7 @@ var Site = _react2['default'].createClass({
 exports['default'] = Site;
 module.exports = exports['default'];
 
-},{"../stores/ConfigStore":241,"../stores/DatasetStore":243,"../stores/StateStore":244,"./BootstrapLayout":225,"./SiteNavigation":231,"react":221}],231:[function(require,module,exports){
+},{"../stores/ConfigStore":242,"../stores/DatasetStore":244,"../stores/StateStore":245,"./BootstrapLayout":225,"./SiteNavigation":232,"react":221}],232:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -40702,7 +41100,7 @@ var SiteNavigation = _react2['default'].createClass({
 exports['default'] = SiteNavigation;
 module.exports = exports['default'];
 
-},{"../common/BudgetAppDispatcher":223,"../constants/ActionTypes":234,"../stores/ConfigStore":241,"../stores/StateStore":244,"react":221}],232:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":223,"../constants/ActionTypes":235,"../stores/ConfigStore":242,"../stores/StateStore":245,"react":221}],233:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -40793,7 +41191,7 @@ var SlideShow = _react2['default'].createClass({
 exports['default'] = SlideShow;
 module.exports = exports['default'];
 
-},{"../stores/CardStore":240,"react":221}],233:[function(require,module,exports){
+},{"../stores/CardStore":241,"react":221}],234:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -40806,7 +41204,7 @@ module.exports = {
     CONTRA: 6
 };
 
-},{}],234:[function(require,module,exports){
+},{}],235:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -40815,7 +41213,7 @@ module.exports = {
     DATASET_RECEIVED: "DATASET_RECEIVED"
 };
 
-},{}],235:[function(require,module,exports){
+},{}],236:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -40826,7 +41224,7 @@ module.exports = {
     DS_STATE_READY: "DS_STATE_READY"
 };
 
-},{}],236:[function(require,module,exports){
+},{}],237:[function(require,module,exports){
 'use strict';
 
 function Card(timestamp, title, body, link, image) {
@@ -40845,7 +41243,7 @@ function Card(timestamp, title, body, link, image) {
 
 module.exports = Card;
 
-},{}],237:[function(require,module,exports){
+},{}],238:[function(require,module,exports){
 'use strict';
 
 var DatasetStatus = require('../constants/DatasetStatus');
@@ -41113,7 +41511,7 @@ function DataModel(id, datasetIds) {
 
 module.exports = DataModel;
 
-},{"../common/BudgetAppDispatcher":223,"../constants/AccountTypes":233,"../constants/ActionTypes":234,"../constants/DatasetStatus":235,"../stores/DatasetStore":243,"./DatasetUtilities":239}],238:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":223,"../constants/AccountTypes":234,"../constants/ActionTypes":235,"../constants/DatasetStatus":236,"../stores/DatasetStore":244,"./DatasetUtilities":240}],239:[function(require,module,exports){
 'use strict';
 
 var DatasetStatus = require('../constants/DatasetStatus');
@@ -41157,7 +41555,7 @@ function Dataset(timestamp, sourceId) {
 
 module.exports = Dataset;
 
-},{"../constants/DatasetStatus":235}],239:[function(require,module,exports){
+},{"../constants/DatasetStatus":236}],240:[function(require,module,exports){
 'use strict';
 
 var assign = require('object-assign');
@@ -41335,7 +41733,7 @@ var DatasetUtilities = {
 
 module.exports = DatasetUtilities;
 
-},{"../common/BudgetAppDispatcher":223,"../constants/AccountTypes":233,"../constants/ActionTypes":234,"../constants/DatasetStatus":235,"../stores/DatasetStore":243,"object-assign":7}],240:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":223,"../constants/AccountTypes":234,"../constants/ActionTypes":235,"../constants/DatasetStatus":236,"../stores/DatasetStore":244,"object-assign":7}],241:[function(require,module,exports){
 'use strict';
 
 var dispatcher = require('../common/BudgetAppDispatcher');
@@ -41393,7 +41791,7 @@ dispatcher.register(function (action) {
 
 module.exports = CardStore;
 
-},{"../common/BudgetAppDispatcher":223,"../constants/ActionTypes":234,"../data/Card":236,"events":2,"object-assign":7}],241:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":223,"../constants/ActionTypes":235,"../data/Card":237,"events":2,"object-assign":7}],242:[function(require,module,exports){
 'use strict';
 
 var dispatcher = require('../common/BudgetAppDispatcher');
@@ -41475,7 +41873,7 @@ dispatcher.register(function (action) {
 
 module.exports = ConfigStore;
 
-},{"../common/BudgetAppDispatcher":223,"../constants/ActionTypes":234,"events":2,"object-assign":7}],242:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":223,"../constants/ActionTypes":235,"events":2,"object-assign":7}],243:[function(require,module,exports){
 'use strict';
 
 var dispatcher = require('../common/BudgetAppDispatcher');
@@ -41540,7 +41938,7 @@ dispatcher.register(function (action) {
 
 module.exports = DataModelStore;
 
-},{"../common/BudgetAppDispatcher":223,"../constants/ActionTypes":234,"../data/DataModel":237,"events":2,"object-assign":7}],243:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":223,"../constants/ActionTypes":235,"../data/DataModel":238,"events":2,"object-assign":7}],244:[function(require,module,exports){
 'use strict';
 
 var dispatcher = require('../common/BudgetAppDispatcher');
@@ -41610,7 +42008,7 @@ DatasetStore.dispatchToken = dispatcher.register(function (action) {
 
 module.exports = DatasetStore;
 
-},{"../common/BudgetAppDispatcher":223,"../constants/ActionTypes":234,"../data/Dataset":238,"events":2,"object-assign":7}],244:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":223,"../constants/ActionTypes":235,"../data/Dataset":239,"events":2,"object-assign":7}],245:[function(require,module,exports){
 'use strict';
 
 var dispatcher = require('../common/BudgetAppDispatcher');
@@ -41768,4 +42166,4 @@ dispatcher.register(function (action) {
 module.exports = StateStore;
 /*path OR id, key */
 
-},{"../common/BudgetAppDispatcher":223,"../constants/ActionTypes":234,"events":2,"object-assign":7}]},{},[1]);
+},{"../common/BudgetAppDispatcher":223,"../constants/ActionTypes":235,"events":2,"object-assign":7}]},{},[1]);

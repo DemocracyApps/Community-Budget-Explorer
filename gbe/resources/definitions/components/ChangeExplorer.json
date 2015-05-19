@@ -1,0 +1,18 @@
+{
+  "name":"ChangeExplorer",
+  "description": "Interactive component for exploring year-over-year changes. Takes 2+ datasets (with more, differences the last 2, but uses all for mini-barchart history).",
+  "data": [
+    {
+      "tag":"mydatasets",
+      "name":"Datasets for ChangeExplorer",
+      "description":"Add datasets in any order - sequencing is handled automatically.",
+      "type":"multidataset"
+    }
+  ],
+  "props": {
+
+  },
+  "state": {
+
+  }
+}
