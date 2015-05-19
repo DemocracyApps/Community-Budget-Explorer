@@ -50,13 +50,14 @@ var CardTable = React.createClass({
                 marginTop: 1
             };
             var columnStyle = {
-                background: "#ccc",
+                background: "#eee",
                 marginTop: 75,
                 paddingLeft:50,
                 paddingRight:5,
                 paddingTop:5,
-                paddingBottom:5,
-                border: "1px solid black"
+                paddingBottom:5
+                //,
+                //border: "1px solid black"
             };
 
             var rowFunction = function (item, index) {

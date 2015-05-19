@@ -31,6 +31,20 @@ class AshevilleSiteSeeder extends Seeder
         $site->published = true;
         $site->save();
 
+
+        $this->createHomePage($site, $slideShowComponent, $simpleCardComponent);
+
+        $this->createChangedPage($site);
+
+        $this->createBreakdownPage($site, $treemapComponent);
+
+        $this->createResourcesPage($site, $cardTableComponent);
+
+        $this->createAboutPage($site, $simpleCardComponent);
+    }
+
+    private function createHomePage($site, $slideShowComponent, $simpleCardComponent)
+    {
         $cardset = new CardSet();
         $cardset->site = $site->id;
         $cardset->name = 'Highlights';
@@ -114,7 +128,10 @@ class AshevilleSiteSeeder extends Seeder
         $c->component = $simpleCardComponent->id;
         $c->page = $page->id;
         $c->save();
+    }
 
+    private function createChangedPage($site)
+    {
         $page = new Page();
         $page->site = $site->id;
         $page->title = "Investigate What's Changed";
@@ -125,7 +142,10 @@ class AshevilleSiteSeeder extends Seeder
         $layout = Layout::where('name','=','One-Column')->first();
         $page->layout = $layout->id;
         $page->save();
+    }
 
+    private function createBreakdownPage($site, $treemapComponent)
+    {
         $page = new Page();
         $page->site = $site->id;
         $page->title = "Detailed Breakdown of Spending & Revenue";
@@ -142,6 +162,10 @@ class AshevilleSiteSeeder extends Seeder
         $c->page = $page->id;
         $c->target="main";
         $c->save();
+    }
+
+    private function createResourcesPage($site, $cardTableComponent)
+    {
 
         /*
          * Resources Page
@@ -200,7 +224,16 @@ Read more [about](http://www.google.com):
         $card->card_set = $cardset->id;
         $card->ordinal = 2;
         $card->title = 'Budget Calendar';
-        $card->body = "A body";
+        $picName = uniqid('pic') . '.png';
+        $path = public_path().'/img/cards/'.$picName;
+        \Image::make(public_path().'/img/init/2014budgetcalendar.png')->save($path);
+        $card->image = '/img/cards/'.$picName;
+
+        $card->body = "
+![alt text](".$card->image.")
+
+Full-size version [here](#).";
+
         $card->save();
 
         $card = new Card();
@@ -250,9 +283,10 @@ Read more [about](http://www.google.com):
         $card->title = 'Comprehensive Annual Financial Reports (CAFR)';
         $card->body = "A body";
         $card->save();
+    }
 
-
-
+    private function createAboutPage($site, $simpleCardComponent)
+    {
         $page = new Page();
         $page->site = $site->id;
         $page->title = "About This Site";
@@ -263,8 +297,5 @@ Read more [about](http://www.google.com):
         $layout = Layout::where('name','=','One-Column')->first();
         $page->layout = $layout->id;
         $page->save();
-
-
     }
-
 }
