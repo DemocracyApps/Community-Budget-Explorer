@@ -40067,10 +40067,6 @@ var ChangeExplorer = _react2['default'].createClass({
         storeId: _react2['default'].PropTypes.number.isRequired
     },
 
-    getInitialState: function getInitialState() {
-        return { showCategorySelector: false };
-    },
-
     getDefaultProps: function getDefaultProps() {
         return {
             accountTypes: [{ name: 'Expense', value: AccountTypes.EXPENSE }, { name: 'Revenue', value: AccountTypes.REVENUE }],
@@ -40084,20 +40080,13 @@ var ChangeExplorer = _react2['default'].createClass({
 
     prepareLocalState: function prepareLocalState(dm) {
         var accountType = stateStore.getValue(this.props.storeId, 'accountType');
-        var nLevels = stateStore.getValue(this.props.storeId, 'nLevels');
-        var newData = dm.checkData({
+        var selectedLevel = stateStore.getValue(this.props.storeId, 'selectedLevel');
+
+        return dm.checkData({
             accountTypes: [accountType],
             startPath: [],
-            nLevels: nLevels
+            nLevels: selectedLevel + 1
         }, true);
-        this.setState({ showCategorySelector: false });
-        if (newData != null) {
-            var levelCount = newData.categories.length;
-            var currentLevel = stateStore.getValue(this.props.storeId, 'currentLevel');
-            if (currentLevel < levelCount - 1) {
-                this.setState({ showCategorySelector: true });
-            }
-        }
     },
 
     componentWillMount: function componentWillMount() {
@@ -40113,11 +40102,9 @@ var ChangeExplorer = _react2['default'].createClass({
 
             dm = dataModelStore.createModel(ids, this.props.dataInitialization);
             stateStore.setComponentState(this.props.storeId, {
-                accountType: AccountTypes.REVENUE,
+                accountType: AccountTypes.EXPENSE,
                 dataModelId: dm.id,
-                currentLevel: 0,
-                startPath: [],
-                nLevels: 1
+                selectedLevel: 0
             });
         }
     },
@@ -40131,8 +40118,8 @@ var ChangeExplorer = _react2['default'].createClass({
     shouldComponentUpdate: function shouldComponentUpdate(nextProps, nextState) {
         var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
         var dm = dataModelStore.getModel(dataModelId);
-        var selectedItem = stateStore.getValue(this.props.storeId, 'selectedItem');
-        return dm.dataChanged() || dm.commandsChanged({ accountTypes: [selectedItem] });
+        var accountType = stateStore.getValue(this.props.storeId, 'accountType');
+        return dm.dataChanged() || dm.commandsChanged({ accountTypes: [accountType] });
     },
 
     onAccountTypeChange: function onAccountTypeChange(e) {
@@ -40148,85 +40135,17 @@ var ChangeExplorer = _react2['default'].createClass({
         });
     },
 
-    onCategoryChange: function onCategoryChange(e) {
-        if (e.target.value != '--') {
-            var startPath = stateStore.getValue(this.props.storeId, 'startPath');
-            startPath.push(e.target.value);
-            var currentLevel = stateStore.getValue(this.props.storeId, 'currentLevel');
-
-            dispatcher.dispatch({
-                actionType: ActionTypes.COMPONENT_STATE_CHANGE,
-                payload: {
-                    id: this.props.storeId,
-                    changes: [{
-                        name: 'startPath',
-                        value: startPath
-                    }, {
-                        name: 'currentLevel',
-                        value: ++currentLevel
-                    }]
-                }
-            });
-        }
-    },
-
     doReset: function doReset(e) {
         dispatcher.dispatch({
             actionType: ActionTypes.COMPONENT_STATE_CHANGE,
             payload: {
                 id: this.props.storeId,
                 changes: [{
-                    name: 'startPath',
-                    value: []
-                }, {
-                    name: 'currentLevel',
+                    name: 'selectedLevel',
                     value: 0
-                }, {
-                    name: 'nLevels',
-                    value: 1
                 }]
             }
         });
-    },
-
-    renderCategorySelector: function categorySelector(data, rows) {
-        var _this = this;
-
-        if (this.state.showCategorySelector) {
-            var _ret = (function () {
-                var currentLevel = stateStore.getValue(_this.props.storeId, 'currentLevel');
-                return {
-                    v: _react2['default'].createElement(
-                        'div',
-                        { className: 'form-group' },
-                        _react2['default'].createElement(
-                            'label',
-                            null,
-                            'Restrict To Single ',
-                            data.categories[currentLevel]
-                        ),
-                        _react2['default'].createElement(
-                            'select',
-                            { className: 'form-control', onChange: _this.onCategoryChange, value: '--' },
-                            _react2['default'].createElement(
-                                'option',
-                                { key: '0', value: '--' },
-                                '--'
-                            ),
-                            rows.map(function (item, index) {
-                                return _react2['default'].createElement(
-                                    'option',
-                                    { key: index + 1, value: item.categories[currentLevel] },
-                                    item.categories[currentLevel]
-                                );
-                            })
-                        )
-                    )
-                };
-            })();
-
-            if (typeof _ret === 'object') return _ret.v;
-        }
     },
 
     onLevelChange: function onLevelChange(e) {
@@ -40235,7 +40154,7 @@ var ChangeExplorer = _react2['default'].createClass({
             payload: {
                 id: this.props.storeId,
                 changes: [{
-                    name: 'nLevels',
+                    name: 'selectedLevel',
                     value: Number(e.target.value)
                 }]
             }
@@ -40243,7 +40162,7 @@ var ChangeExplorer = _react2['default'].createClass({
     },
 
     renderLevelSelector: function renderLevelSelector(data) {
-        var nLevels = stateStore.getValue(this.props.storeId, 'nLevels');
+        var selectedLevel = stateStore.getValue(this.props.storeId, 'selectedLevel');
 
         return _react2['default'].createElement(
             'div',
@@ -40255,11 +40174,11 @@ var ChangeExplorer = _react2['default'].createClass({
             ),
             _react2['default'].createElement(
                 'select',
-                { className: 'form-control', onChange: this.onLevelChange, value: nLevels },
+                { className: 'form-control', onChange: this.onLevelChange, value: selectedLevel },
                 data.categories.map(function (item, index) {
                     return _react2['default'].createElement(
                         'option',
-                        { key: index, value: index + 1 },
+                        { key: index, value: index },
                         item
                     );
                 })
@@ -40317,23 +40236,8 @@ var ChangeExplorer = _react2['default'].createClass({
                         'Reset'
                     )
                 )
-            ),
-            _react2['default'].createElement(
-                'div',
-                { className: 'row' },
-                _react2['default'].createElement(
-                    'div',
-                    { className: 'col-xs-4' },
-                    this.renderCategorySelector(data, rows)
-                ),
-                _react2['default'].createElement('div', { className: 'col-xs-8' })
             )
         );
-    },
-
-    sortByAbsoluteDifference: function sortByAbsoluteDifference(item1, item2) {
-        var result = Math.abs(item2.reduce) - Math.abs(item1.reduce);
-        return result;
     },
 
     computeChanges: function computeChanges(item, index) {
@@ -40350,7 +40254,7 @@ var ChangeExplorer = _react2['default'].createClass({
                 item.percent = 'New';
             }
             item.percentSort = 10000 * Math.abs(item.difference);
-        } else if (cur * prev < 0) {
+        } else if (cur < 0 || prev < 0) {
             item.percent = 'N/A';
             item.percentSort = 10000 * Math.abs(item.difference);
         } else {
@@ -40372,9 +40276,9 @@ var ChangeExplorer = _react2['default'].createClass({
     tableRow: function tableRow(item, index) {
         var length = item.amount.length;
         var label = item.categories[0];
-        var nLevels = stateStore.getValue(this.props.storeId, 'nLevels');
-        if (nLevels > 1) {
-            for (var i = 1; i < nLevels; ++i) {
+        var selectedLevel = stateStore.getValue(this.props.storeId, 'selectedLevel');
+        if (selectedLevel > 0) {
+            for (var i = 1; i <= selectedLevel; ++i) {
                 label += ' ' + String.fromCharCode(183) + ' ' + item.categories[i];
             }
         }
@@ -40384,7 +40288,7 @@ var ChangeExplorer = _react2['default'].createClass({
             { key: index },
             _react2['default'].createElement(
                 'td',
-                { key: '0', style: { width: '40%' } },
+                { key: '0', style: { width: '35%' } },
                 label
             ),
             _react2['default'].createElement(
@@ -40419,16 +40323,14 @@ var ChangeExplorer = _react2['default'].createClass({
         var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
         var dm = dataModelStore.getModel(dataModelId);
         var accountType = stateStore.getValue(this.props.storeId, 'accountType');
-        var startPath = stateStore.getValue(this.props.storeId, 'startPath');
-        var nLevels = stateStore.getValue(this.props.storeId, 'nLevels');
+        var selectedLevel = stateStore.getValue(this.props.storeId, 'selectedLevel');
         var newData = dm.getData({
             accountTypes: [accountType],
-            startPath: startPath,
-            nLevels: nLevels
+            startPath: [],
+            nLevels: selectedLevel + 1
         }, false);
 
         if (newData == null) {
-            var tst = [17, 2, 33, 4, 10];
             return _react2['default'].createElement(
                 'div',
                 null,
@@ -40462,12 +40364,16 @@ var ChangeExplorer = _react2['default'].createClass({
                             _react2['default'].createElement(
                                 'th',
                                 { key: '0' },
-                                'Account'
+                                'Category'
                             ),
                             _react2['default'].createElement(
                                 'th',
                                 { key: '1' },
-                                'History'
+                                'History',
+                                _react2['default'].createElement('br', null),
+                                headers[0],
+                                '-',
+                                headers[dataLength - 1]
                             ),
                             _react2['default'].createElement(
                                 'th',
@@ -40482,12 +40388,16 @@ var ChangeExplorer = _react2['default'].createClass({
                             _react2['default'].createElement(
                                 'th',
                                 { key: '4', style: thStyle },
-                                'Percentage Change'
+                                'Percentage',
+                                _react2['default'].createElement('br', null),
+                                'Change'
                             ),
                             _react2['default'].createElement(
                                 'th',
                                 { key: '5', style: thStyle },
-                                'Actual Difference'
+                                'Actual',
+                                _react2['default'].createElement('br', null),
+                                'Difference'
                             )
                         )
                     ),
@@ -41577,6 +41487,7 @@ function DataModel(id, datasetIds) {
                 }
             }
             console.log('startPath = ' + startPath + ',  startLevel = ' + startLevel);
+            console.log('nLevels = ' + nLevels);
 
             /* Filters
              * What want to do is include only those that

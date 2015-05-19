@@ -174,6 +174,7 @@ function DataModel(id, datasetIds, initialCommands = null) {
                 }
             }
             console.log("startPath = " + startPath + ",  startLevel = " + startLevel);
+            console.log("nLevels = " + nLevels);
 
             /* Filters
              * What want to do is include only those that
