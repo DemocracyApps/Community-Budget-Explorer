@@ -36,7 +36,7 @@ var SiteNavigation = React.createClass({
             return (
                 <li key={index} role="presentation">
                     <a  id="menuPage_{page.name}" href="#"
-                        onClick={selectPage}>{page.shortName}</a>
+                        onClick={selectPage}>{page.menuName}</a>
                 </li>
             )
         }.bind(this);
@@ -44,9 +44,11 @@ var SiteNavigation = React.createClass({
         var navProps = this.props.styleProps.navProps;
 
         return (
-            <ul className="nav nav-pills" style={navProps}>
-                {this.props.pages.map(menuItem)}
-            </ul>
+            <div id="navbar" className="navbar-collapse collapse">
+                <ul className="nav navbar-nav" style={navProps}>
+                    {this.props.pages.map(menuItem)}
+                </ul>
+            </div>
         );
     }
 });

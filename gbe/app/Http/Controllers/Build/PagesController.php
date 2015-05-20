@@ -55,12 +55,13 @@ class PagesController extends Controller {
      */
     public function store($slug, Request $request)
     {
-        $rules = ['title'=>'required', 'short_name'=>'required'];
+        $rules = ['title'=>'required', 'short_name'=>'required', 'menu_name'=>'required'];
         $this->validate($request, $rules);
 
         $site = Site::where('slug','=',$slug)->first();
         $this->page->title = $request->get('title');
         $this->page->short_name = $request->get('short_name');
+        $this->page->menu_name = $request->get('menu_name');
         if ($request->has('layout')) {
             $layout = $request->layout;
             if ($layout > 0) $this->page->layout = $layout;
@@ -134,13 +135,14 @@ class PagesController extends Controller {
 	 */
 	public function update($slug, $id, Request $request)
 	{
-        $rules = ['title'=>'required', 'short_name'=>'required'];
+        $rules = ['title'=>'required', 'short_name'=>'required', 'menu_name'=>'required'];
         $this->validate($request, $rules);
 
         $site = Site::where('slug','=',$slug)->first();
         $this->page = Page::find($id);
         $this->page->title = $request->get('title');
         $this->page->short_name = $request->get('short_name');
+        $this->page->menu_name = $request->get('menu_name');
         if ($request->has('layout')) {
             $layout = $request->layout;
             if ($layout > 0) $this->page->layout = $layout;

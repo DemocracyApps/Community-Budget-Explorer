@@ -46,6 +46,7 @@ class Site extends EloquentPropertiedObject
             $page->tableId = $item->id;
             $page->title = $item->title;
             $page->shortName = $item->short_name;
+            $page->menuName = $item->menu_name;
             $page->description = $item->description;
             $page->layout = $item->layout;
             $page->properties = $item->properties;

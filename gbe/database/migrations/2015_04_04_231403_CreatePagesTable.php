@@ -18,7 +18,8 @@ class CreatePagesTable extends Migration {
             $table->integer('site');
             $table->foreign('site')->references('id')->on('sites');
             $table->string('title');
-            $table->string('short_name');
+			$table->string('short_name'); // for URLs
+			$table->string('menu_name'); // to display in menus
             $table->string('description')->nullable();
             $table->integer('ordinal')->nullable();
             $table->boolean('show_in_menu')->default(true);

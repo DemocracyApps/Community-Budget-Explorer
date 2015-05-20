@@ -37,11 +37,9 @@ class AshevilleSiteSeeder extends Seeder
 
         $this->createChangedPage($site);
 
-        $this->createHistoryPage($site, $historyAreaChartComponent);
+        $this->createShowMePage($site, $treemapComponent);
 
-        $this->createBreakdownPage($site, $treemapComponent);
-
-        $this->createResourcesPage($site, $cardTableComponent);
+        $this->createDocMapPage($site, $cardTableComponent);
 
         $this->createAboutPage($site, $simpleCardComponent);
     }
@@ -97,7 +95,8 @@ class AshevilleSiteSeeder extends Seeder
         $page = new Page();
         $page->site = $site->id;
         $page->title = "Welcome to the 2015-16 Asheville Budget Explorer!";
-        $page->short_name = 'Home';
+        $page->short_name = 'Overview';
+        $page->menu_name = 'Overview';
         $page->ordinal = 1;
         $page->show_in_menu = true;
         $page->description = "The first page of the site.";
@@ -138,7 +137,8 @@ class AshevilleSiteSeeder extends Seeder
         $page = new Page();
         $page->site = $site->id;
         $page->title = "Investigate What's Changed";
-        $page->short_name = "New";
+        $page->short_name = "whatsnew";
+        $page->menu_name = "What's New?";
         $page->ordinal = 2;
         $page->show_in_menu = true;
         $page->description = "The second page of the site.";
@@ -147,26 +147,13 @@ class AshevilleSiteSeeder extends Seeder
         $page->save();
     }
 
-    private function createHistoryPage($site, $historyAreaChartComponent)
-    {
-        $page = new Page();
-        $page->site = $site->id;
-        $page->title = "See the History";
-        $page->short_name = "History";
-        $page->ordinal = 2;
-        $page->show_in_menu = true;
-        $page->description = "Another page of the site.";
-        $layout = Layout::where('name','=','One-Column')->first();
-        $page->layout = $layout->id;
-        $page->save();
-    }
-
-    private function createBreakdownPage($site, $treemapComponent)
+    private function createShowMePage($site, $treemapComponent)
     {
         $page = new Page();
         $page->site = $site->id;
         $page->title = "Detailed Breakdown of Spending & Revenue";
-        $page->short_name = "BreakDown";
+        $page->short_name = "showmoney";
+        $page->menu_name="Show Me The Money";
         $page->ordinal = 3;
         $page->show_in_menu = true;
         $page->description = "The second page of the site.";
@@ -181,17 +168,13 @@ class AshevilleSiteSeeder extends Seeder
         $c->save();
     }
 
-    private function createResourcesPage($site, $cardTableComponent)
+    private function createDocMapPage($site, $cardTableComponent)
     {
-
-        /*
-         * Resources Page
-         */
-
         $page = new Page();
         $page->site = $site->id;
-        $page->title = "Some Helpful Resources";
-        $page->short_name = 'Resources';
+        $page->title = "Explore the Budget Document";
+        $page->short_name = 'docmap';
+        $page->menu_name = "Budget Doc Breakdown";
         $page->ordinal = 4;
         $page->show_in_menu = true;
         $page->description = "The third page of the site.";
@@ -308,8 +291,9 @@ Full-size version [here](#).";
         $page->site = $site->id;
         $page->title = "About This Site";
         $page->short_name = "About";
+        $page->menu_name = "About";
         $page->ordinal = 5;
-        $page->show_in_menu = true;
+        $page->show_in_menu = false;
         $page->description = "The second page of the site.";
         $layout = Layout::where('name','=','One-Column')->first();
         $page->layout = $layout->id;

@@ -17,8 +17,15 @@
             <br>
         </div>
         <div class="form-group">
-            {!!  Form::label('short_name', 'Short Name (for menus): ')  !!}
+            {!!  Form::label('short_name', 'Short Name (for URLs - letters and numbers only): ')  !!}
             {!!  Form::text('short_name', $page->short_name, ['class' => 'form-control'])  !!}
+            <br>
+            <span class="error">{!!  $errors->first('short_name')  !!}</span>
+            <br>
+        </div>
+        <div class="form-group">
+            {!!  Form::label('menu_name', 'Menu Display Name: ')  !!}
+            {!!  Form::text('menu_name', $page->menu_name, ['class' => 'form-control'])  !!}
             <br>
             <span class="error">{!!  $errors->first('short_name')  !!}</span>
             <br>
