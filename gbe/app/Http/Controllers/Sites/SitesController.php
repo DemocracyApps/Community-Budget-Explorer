@@ -35,7 +35,7 @@ use Util;
 
 class SitesController extends Controller {
 
-	public function page($slug, $pageName, Request $request)
+	public function page($slug, $pageName=null, Request $request)
     {
         $siteData = Site::where('slug','=',$slug)->first();
         $government = GovernmentOrganization::where('id','=',$siteData->government)->first();
@@ -51,6 +51,7 @@ class SitesController extends Controller {
         $site->properties = $siteData->properties;
 
         $pages = $siteData->getPages();
+        if ($pageName==null) $pageName = $pages[0]->shortName;
 
         $jp = new JsonProcessor();
         // We need to generate unique IDs for each configuration object

@@ -97,6 +97,6 @@ var props = {
     configurationId: GBEVars.site[0].id,
     reactComponents: reactComponents
 };
-
+console.log("Sending with page 0 = " + pages[0]);
 var layout = React.render(<Site {...props}/>, document.getElementById('app'));
 

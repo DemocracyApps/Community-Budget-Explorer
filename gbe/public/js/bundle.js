@@ -131,7 +131,7 @@ var props = {
     configurationId: GBEVars.site[0].id,
     reactComponents: reactComponents
 };
-
+console.log('Sending with page 0 = ' + pages[0]);
 var layout = _react2['default'].render(_react2['default'].createElement(_componentsSite2['default'], props), document.getElementById('app'));
 
 },{"./common/BudgetAppDispatcher":225,"./components/BarchartExplorer":226,"./components/CardTable":228,"./components/ChangeExplorer":229,"./components/HistoryAreaChart":230,"./components/MultiYearTable":231,"./components/SimpleCard":232,"./components/SimpleTreemap":233,"./components/Site":234,"./components/SlideShow":236,"./constants/ActionTypes":238,"./stores/CardStore":244,"./stores/ConfigStore":245,"./stores/DatasetStore":247,"./stores/StateStore":248,"react":223}],2:[function(require,module,exports){
@@ -41304,6 +41304,9 @@ var _SiteNavigation = require('./SiteNavigation');
 
 var _SiteNavigation2 = _interopRequireDefault(_SiteNavigation);
 
+var dispatcher = require('../common/BudgetAppDispatcher');
+var ActionTypes = require('../constants/ActionTypes');
+
 var configStore = require('../stores/ConfigStore');
 var stateStore = require('../stores/StateStore');
 var datasetStore = require('../stores/DatasetStore');
@@ -41367,7 +41370,7 @@ var Site = _react2['default'].createClass({
 
         var currentPage = stateStore.getValue('site.currentPage');
         var page = configStore.getConfiguration('pages', currentPage);
-
+        console.log('Here are my pages: ' + JSON.stringify(this.props.pages));
         var layoutProps = {
             layout: page.layout,
             components: page.components,
@@ -41398,6 +41401,20 @@ var Site = _react2['default'].createClass({
 
         };
 
+        var goHome = (function () {
+            console.log('Go home');
+            console.log('To: ' + this.props.pages[0]);
+            dispatcher.dispatch({
+                actionType: ActionTypes.STATE_CHANGE,
+                payload: {
+                    changes: [{
+                        name: 'site.currentPage',
+                        value: this.props.pages[0]
+                    }]
+                }
+            });
+        }).bind(this);
+
         return _react2['default'].createElement(
             'div',
             null,
@@ -41427,7 +41444,7 @@ var Site = _react2['default'].createClass({
                             null,
                             _react2['default'].createElement(
                                 'a',
-                                { className: 'navbar-brand site-hdr-brand', href: '{this.props.site.baseUrl}' },
+                                { className: 'navbar-brand site-hdr-brand', href: '#', onClick: goHome },
                                 this.props.site.name
                             )
                         )
@@ -41471,7 +41488,7 @@ var Site = _react2['default'].createClass({
 exports['default'] = Site;
 module.exports = exports['default'];
 
-},{"../stores/ConfigStore":245,"../stores/DatasetStore":247,"../stores/StateStore":248,"./BootstrapLayout":227,"./SiteNavigation":235,"react":223}],235:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":225,"../constants/ActionTypes":238,"../stores/ConfigStore":245,"../stores/DatasetStore":247,"../stores/StateStore":248,"./BootstrapLayout":227,"./SiteNavigation":235,"react":223}],235:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {

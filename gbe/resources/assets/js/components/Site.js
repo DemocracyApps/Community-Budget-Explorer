@@ -2,6 +2,8 @@ import React from 'react';
 import BootstrapLayout from './BootstrapLayout';
 
 import SiteNavigation from './SiteNavigation';
+var dispatcher = require('../common/BudgetAppDispatcher');
+var ActionTypes = require('../constants/ActionTypes');
 
 var configStore = require('../stores/ConfigStore');
 var stateStore = require('../stores/StateStore');
@@ -64,7 +66,7 @@ var Site = React.createClass({
 
         var currentPage = stateStore.getValue('site.currentPage');
         var page = configStore.getConfiguration('pages', currentPage);
-
+console.log("Here are my pages: " + JSON.stringify(this.props.pages));
         var layoutProps = {
             layout: page.layout,
             components: page.components,
@@ -95,6 +97,22 @@ var Site = React.createClass({
 
         };
 
+        var goHome = function () {
+            console.log("Go home");
+            console.log("To: " + this.props.pages[0]);
+            dispatcher.dispatch({
+                actionType: ActionTypes.STATE_CHANGE,
+                payload: {
+                    changes: [
+                        {
+                            name: "site.currentPage",
+                            value: this.props.pages[0]
+                        }
+                    ]
+                }
+            });
+        }.bind(this);
+
         return (
             <div>
                 <nav className="navbar navbar-default navbar-fixed-top">
@@ -106,7 +124,7 @@ var Site = React.createClass({
                                 <span className="icon-bar"></span>
                                 <span className="icon-bar"></span>
                             </button>
-                            <h1><a className="navbar-brand site-hdr-brand" href="{this.props.site.baseUrl}">{this.props.site.name}</a></h1>
+                            <h1><a className="navbar-brand site-hdr-brand" href="#" onClick={goHome}>{this.props.site.name}</a></h1>
                         </div>
                         <SiteNavigation site={this.props.site} pages={this.props.pages} styleProps={siteHeaderStyles.siteNavigationStyles}/>
                     </div>

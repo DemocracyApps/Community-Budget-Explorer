@@ -16,5 +16,10 @@
  *  You should have received a copy of the GNU General Public License
  *  along with the GBE.  If not, see <http://www.gnu.org/licenses/>.
  */
+use Illuminate\Http\Request;
 
+Route::get('/', function ($slug, Request $request) {
+    $controller = app()->make('DemocracyApps\GB\Http\Controllers\Sites\SitesController');
+    return $controller->callAction('page', array('slug'=>$slug, 'pageName'=>null, 'request'=>$request));
+});
 Route::get('/{pageName}', 'Sites\SitesController@page');
