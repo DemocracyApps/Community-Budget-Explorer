@@ -22,7 +22,6 @@ elixir(function(mix) {
     mix.sass('app.scss', 'public/css', {includePaths: [paths.bootstrap + 'stylesheets/']})
         .styles([
             'public/css/app.css',
-            'resources/assets/css/local.css',
             './vendor/bower_components/FlexSlider/flexslider.css'
         ], './public/css/all.css', './')
         .browserify('app.js', null, null, browserifyOpts)
