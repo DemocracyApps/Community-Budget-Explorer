@@ -15,6 +15,7 @@ import BarchartExplorer from './components/BarchartExplorer';
 import Treemap from './components/SimpleTreemap';
 import CardTable from './components/CardTable';
 import ChangeExplorer from './components/ChangeExplorer';
+import HistoryAreaChart from './components/HistoryAreaChart';
 
 var reactComponents = {};
 reactComponents['SimpleCard'] = SimpleCard;
@@ -24,6 +25,7 @@ reactComponents['BarchartExplorer'] = BarchartExplorer;
 reactComponents['Treemap'] = Treemap;
 reactComponents['CardTable'] = CardTable;
 reactComponents['ChangeExplorer'] = ChangeExplorer;
+reactComponents['HistoryAreaChart'] = HistoryAreaChart;
 
 /*
  * The stores, one for card-related data, the other for financial datasets.

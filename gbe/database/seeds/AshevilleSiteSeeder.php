@@ -20,6 +20,7 @@ class AshevilleSiteSeeder extends Seeder
         $multiYearTableComponent = Component::where('name','=','MultiYearTable')->first();
         $treemapComponent = Component::where('name','=','Treemap')->first();
         $cardTableComponent = Component::where('name','=','CardTable')->first();
+        $historyAreaChartComponent = Component::where('name','=','HistoryAreaChart')->first();
 
         // Create the Asheville site
         $site = new Site();
@@ -35,6 +36,8 @@ class AshevilleSiteSeeder extends Seeder
         $this->createHomePage($site, $slideShowComponent, $simpleCardComponent);
 
         $this->createChangedPage($site);
+
+        $this->createHistoryPage($site, $historyAreaChartComponent);
 
         $this->createBreakdownPage($site, $treemapComponent);
 
@@ -139,6 +142,20 @@ class AshevilleSiteSeeder extends Seeder
         $page->ordinal = 2;
         $page->show_in_menu = true;
         $page->description = "The second page of the site.";
+        $layout = Layout::where('name','=','One-Column')->first();
+        $page->layout = $layout->id;
+        $page->save();
+    }
+
+    private function createHistoryPage($site, $historyAreaChartComponent)
+    {
+        $page = new Page();
+        $page->site = $site->id;
+        $page->title = "See the History";
+        $page->short_name = "History";
+        $page->ordinal = 2;
+        $page->show_in_menu = true;
+        $page->description = "Another page of the site.";
         $layout = Layout::where('name','=','One-Column')->first();
         $page->layout = $layout->id;
         $page->save();

@@ -87,6 +87,7 @@ function DataModel(id, datasetIds, initialCommands = null) {
                 amountThreshold:amountThreshold
             });
         }
+        console.log("this.dataChanged returning " + needUpdate);
         return needUpdate;
     };
 
@@ -127,6 +128,7 @@ function DataModel(id, datasetIds, initialCommands = null) {
             return {
                 categories:this.initializationParameters.hierarchy,
                 dataHeaders:headers,
+                periods:headers,
                 levelsDown: startLevel,
                 levelsAggregated: this.initializationParameters.hierarchy.length - nLevels - startLevel,
             };

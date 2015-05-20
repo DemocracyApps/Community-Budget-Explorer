@@ -45,6 +45,10 @@ var _componentsChangeExplorer = require('./components/ChangeExplorer');
 
 var _componentsChangeExplorer2 = _interopRequireDefault(_componentsChangeExplorer);
 
+var _componentsHistoryAreaChart = require('./components/HistoryAreaChart');
+
+var _componentsHistoryAreaChart2 = _interopRequireDefault(_componentsHistoryAreaChart);
+
 var dispatcher = require('./common/BudgetAppDispatcher');
 var ActionTypes = require('./constants/ActionTypes');
 
@@ -56,6 +60,7 @@ reactComponents['BarchartExplorer'] = _componentsBarchartExplorer2['default'];
 reactComponents['Treemap'] = _componentsSimpleTreemap2['default'];
 reactComponents['CardTable'] = _componentsCardTable2['default'];
 reactComponents['ChangeExplorer'] = _componentsChangeExplorer2['default'];
+reactComponents['HistoryAreaChart'] = _componentsHistoryAreaChart2['default'];
 
 /*
  * The stores, one for card-related data, the other for financial datasets.
@@ -129,7 +134,7 @@ var props = {
 
 var layout = _react2['default'].render(_react2['default'].createElement(_componentsSite2['default'], props), document.getElementById('app'));
 
-},{"./common/BudgetAppDispatcher":225,"./components/BarchartExplorer":226,"./components/CardTable":228,"./components/ChangeExplorer":229,"./components/MultiYearTable":230,"./components/SimpleCard":231,"./components/SimpleTreemap":232,"./components/Site":233,"./components/SlideShow":235,"./constants/ActionTypes":237,"./stores/CardStore":243,"./stores/ConfigStore":244,"./stores/DatasetStore":246,"./stores/StateStore":247,"react":223}],2:[function(require,module,exports){
+},{"./common/BudgetAppDispatcher":225,"./components/BarchartExplorer":226,"./components/CardTable":228,"./components/ChangeExplorer":229,"./components/HistoryAreaChart":230,"./components/MultiYearTable":231,"./components/SimpleCard":232,"./components/SimpleTreemap":233,"./components/Site":234,"./components/SlideShow":236,"./constants/ActionTypes":238,"./stores/CardStore":244,"./stores/ConfigStore":245,"./stores/DatasetStore":247,"./stores/StateStore":248,"react":223}],2:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -39379,7 +39384,7 @@ var ApiActions = {
 
 module.exports = ApiActions;
 
-},{"../common/BudgetAppDispatcher":225,"../constants/ActionTypes":237,"../stores/ConfigStore":244,"../stores/DatasetStore":246,"object-assign":7}],225:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":225,"../constants/ActionTypes":238,"../stores/ConfigStore":245,"../stores/DatasetStore":247,"object-assign":7}],225:[function(require,module,exports){
 'use strict';
 
 var FluxDispatcher = require('flux').Dispatcher;
@@ -39840,7 +39845,7 @@ var BarchartExplorer = _react2['default'].createClass({
 exports['default'] = BarchartExplorer;
 module.exports = exports['default'];
 
-},{"../common/ApiActions":224,"../common/BudgetAppDispatcher":225,"../constants/AccountTypes":236,"../constants/ActionTypes":237,"../data/DatasetUtilities":242,"../stores/DataModelStore":245,"../stores/DatasetStore":246,"../stores/StateStore":247,"react":223}],227:[function(require,module,exports){
+},{"../common/ApiActions":224,"../common/BudgetAppDispatcher":225,"../constants/AccountTypes":237,"../constants/ActionTypes":238,"../data/DatasetUtilities":243,"../stores/DataModelStore":246,"../stores/DatasetStore":247,"../stores/StateStore":248,"react":223}],227:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -39868,6 +39873,12 @@ var BootstrapLayout = _react2["default"].createClass({
     displayName: "BootstrapLayout",
 
     renderComponent: function renderComponent(component, index) {
+        console.log("Looking up component type " + component.componentName);
+        if (this.props.reactComponents[component.componentName]) {
+            console.log("Yes we have it");
+        } else {
+            console.log("no, we do not");
+        }
         var comp = this.props.reactComponents[component.componentName];
         var componentData = component.componentData.length == 0 ? {} : component.componentData;
         var componentProps = component.componentProps.length == 0 ? {} : component.componentProps;
@@ -40035,7 +40046,7 @@ var CardTable = _react2['default'].createClass({
 exports['default'] = CardTable;
 module.exports = exports['default'];
 
-},{"../stores/CardStore":243,"react":223}],229:[function(require,module,exports){
+},{"../stores/CardStore":244,"react":223}],229:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -40415,7 +40426,369 @@ var ChangeExplorer = _react2['default'].createClass({
 exports['default'] = ChangeExplorer;
 module.exports = exports['default'];
 
-},{"../common/ApiActions":224,"../common/BudgetAppDispatcher":225,"../constants/AccountTypes":236,"../constants/ActionTypes":237,"../data/DatasetUtilities":242,"../stores/DataModelStore":245,"../stores/DatasetStore":246,"../stores/StateStore":247,"react":223,"react-sparkline":67}],230:[function(require,module,exports){
+},{"../common/ApiActions":224,"../common/BudgetAppDispatcher":225,"../constants/AccountTypes":237,"../constants/ActionTypes":238,"../data/DatasetUtilities":243,"../stores/DataModelStore":246,"../stores/DatasetStore":247,"../stores/StateStore":248,"react":223,"react-sparkline":67}],230:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+    value: true
+});
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var datasetStore = require('../stores/DatasetStore');
+var stateStore = require('../stores/StateStore');
+var dataModelStore = require('../stores/DataModelStore');
+var apiActions = require('../common/ApiActions');
+var AccountTypes = require('../constants/AccountTypes');
+var dispatcher = require('../common/BudgetAppDispatcher');
+var ActionTypes = require('../constants/ActionTypes');
+var datasetUtilities = require('../data/DatasetUtilities');
+var Sparkline = require('react-sparkline');
+
+var HistoryAreaChart = _react2['default'].createClass({
+    displayName: 'HistoryAreaChart',
+
+    propTypes: {
+        componentData: _react2['default'].PropTypes.object.isRequired,
+        componentProps: _react2['default'].PropTypes.object.isRequired,
+        storeId: _react2['default'].PropTypes.number.isRequired
+    },
+
+    getDefaultProps: function getDefaultProps() {
+        return {
+            accountTypes: [{ name: 'Expense', value: AccountTypes.EXPENSE }, { name: 'Revenue', value: AccountTypes.REVENUE }],
+            dataInitialization: {
+                hierarchy: ['Fund', 'Department', 'Division', 'Account'],
+                accountTypes: [AccountTypes.EXPENSE, AccountTypes.REVENUE],
+                amountThreshold: 0.01
+            }
+        };
+    },
+
+    prepareLocalState: function prepareLocalState(dm) {
+        var accountType = stateStore.getValue(this.props.storeId, 'accountType');
+        var selectedLevel = stateStore.getValue(this.props.storeId, 'selectedLevel');
+
+        return dm.checkData({
+            accountTypes: [accountType],
+            startPath: [],
+            nLevels: selectedLevel + 1
+        }, true);
+    },
+
+    componentWillMount: function componentWillMount() {
+        // If this is the first time this component is mounting, we need to create the data model
+        // and do any other state initialization required.
+        var dataModelId = stateStore.getComponentStateValue(this.props.storeId, 'dataModelId');
+        var dm = null;
+        if (dataModelId == null) {
+            var ids = this.props.componentData['mydatasets'].ids;
+            ids.forEach(function (id) {
+                apiActions.requestDatasetIfNeeded(id);
+            });
+
+            dm = dataModelStore.createModel(ids, this.props.dataInitialization);
+            stateStore.setComponentState(this.props.storeId, {
+                accountType: AccountTypes.EXPENSE,
+                dataModelId: dm.id,
+                selectedLevel: 0
+            });
+        }
+    },
+
+    componentWillReceiveProps: function componentWillReceiveProps() {
+        var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
+        var dm = dataModelStore.getModel(dataModelId);
+        this.prepareLocalState(dm);
+    },
+
+    shouldComponentUpdate: function shouldComponentUpdate(nextProps, nextState) {
+        var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
+        var dm = dataModelStore.getModel(dataModelId);
+        var accountType = stateStore.getValue(this.props.storeId, 'accountType');
+        return dm.dataChanged() || dm.commandsChanged({ accountTypes: [accountType] });
+    },
+
+    onAccountTypeChange: function onAccountTypeChange(e) {
+        dispatcher.dispatch({
+            actionType: ActionTypes.COMPONENT_STATE_CHANGE,
+            payload: {
+                id: this.props.storeId,
+                changes: [{
+                    name: 'accountType',
+                    value: Number(e.target.value)
+                }]
+            }
+        });
+    },
+
+    doReset: function doReset(e) {
+        dispatcher.dispatch({
+            actionType: ActionTypes.COMPONENT_STATE_CHANGE,
+            payload: {
+                id: this.props.storeId,
+                changes: [{
+                    name: 'selectedLevel',
+                    value: 0
+                }]
+            }
+        });
+    },
+
+    onLevelChange: function onLevelChange(e) {
+        dispatcher.dispatch({
+            actionType: ActionTypes.COMPONENT_STATE_CHANGE,
+            payload: {
+                id: this.props.storeId,
+                changes: [{
+                    name: 'selectedLevel',
+                    value: Number(e.target.value)
+                }]
+            }
+        });
+    },
+
+    renderLevelSelector: function renderLevelSelector(data) {
+        var selectedLevel = stateStore.getValue(this.props.storeId, 'selectedLevel');
+
+        return _react2['default'].createElement(
+            'div',
+            { className: 'form-group' },
+            _react2['default'].createElement(
+                'label',
+                null,
+                'Select Level'
+            ),
+            _react2['default'].createElement(
+                'select',
+                { className: 'form-control', onChange: this.onLevelChange, value: selectedLevel },
+                data.categories.map(function (item, index) {
+                    return _react2['default'].createElement(
+                        'option',
+                        { key: index, value: index },
+                        item
+                    );
+                })
+            )
+        );
+    },
+
+    interactionPanel: function interactionPanel(data, rows) {
+        var accountType = stateStore.getValue(this.props.storeId, 'accountType');
+        return _react2['default'].createElement(
+            'div',
+            null,
+            _react2['default'].createElement(
+                'div',
+                { className: 'row' },
+                _react2['default'].createElement(
+                    'div',
+                    { className: 'col-xs-4' },
+                    this.renderLevelSelector(data, rows)
+                ),
+                _react2['default'].createElement('div', { className: 'col-xs-1' }),
+                _react2['default'].createElement(
+                    'div',
+                    { className: 'col-xs-4' },
+                    _react2['default'].createElement(
+                        'div',
+                        { className: 'form-group' },
+                        _react2['default'].createElement(
+                            'label',
+                            null,
+                            'Select Account Type'
+                        ),
+                        _react2['default'].createElement(
+                            'select',
+                            { className: 'form-control', onChange: this.onAccountTypeChange, value: accountType },
+                            this.props.accountTypes.map(function (type, index) {
+                                return _react2['default'].createElement(
+                                    'option',
+                                    { key: index, value: type.value },
+                                    ' ',
+                                    type.name,
+                                    ' '
+                                );
+                            })
+                        )
+                    )
+                ),
+                _react2['default'].createElement('div', { className: 'col-xs-1' }),
+                _react2['default'].createElement(
+                    'div',
+                    { className: 'col-xs-2' },
+                    _react2['default'].createElement(
+                        'button',
+                        { style: { float: 'right' }, className: 'btn btn-primary', onClick: this.doReset },
+                        'Reset'
+                    )
+                )
+            )
+        );
+    },
+
+    computeChanges: function computeChanges(item, index) {
+        var length = item.amount.length;
+        var useInfinity = false;
+        if (length < 2) throw 'Minimum of 2 datasets required for ChangeExplorer';
+        var cur = item.amount[length - 1],
+            prev = item.amount[length - 2];
+        item.difference = cur - prev;
+        if (Math.abs(prev) < 0.001) {
+            if (useInfinity) {
+                item.percent = String.fromCharCode(8734) + ' %';
+            } else {
+                item.percent = 'New';
+            }
+            item.percentSort = 10000 * Math.abs(item.difference);
+        } else if (cur < 0 || prev < 0) {
+            item.percent = 'N/A';
+            item.percentSort = 10000 * Math.abs(item.difference);
+        } else {
+            var pct = Math.round(1000 * item.difference / prev) / 10;
+            item.percent = pct + '%';
+            item.percentSort = Math.abs(item.percent);
+        }
+    },
+
+    sortByAbsolutePercentage: function sortByAbsolutePercentage() {
+        return item2.percentSort - item1.percentSort;
+    },
+
+    sortByAbsoluteDifference: function sortByAbsoluteDifference(item1, item2) {
+        var result = Math.abs(item2.difference) - Math.abs(item1.difference);
+        return result;
+    },
+
+    tableRow: function tableRow(item, index) {
+        var length = item.amount.length;
+        var label = item.categories[0];
+        var selectedLevel = stateStore.getValue(this.props.storeId, 'selectedLevel');
+        if (selectedLevel > 0) {
+            for (var i = 1; i <= selectedLevel; ++i) {
+                label += ' ' + String.fromCharCode(183) + ' ' + item.categories[i];
+            }
+        }
+        var tdStyle = { textAlign: 'right' };
+        return _react2['default'].createElement(
+            'tr',
+            { key: index },
+            _react2['default'].createElement(
+                'td',
+                { key: '0', style: { width: '35%' } },
+                label
+            ),
+            _react2['default'].createElement(
+                'td',
+                { key: '1' },
+                _react2['default'].createElement(Sparkline, { data: item.amount })
+            ),
+            item.amount.map(function (item, index) {
+                return _react2['default'].createElement(
+                    'td',
+                    { key: index + 2, style: tdStyle },
+                    datasetUtilities.formatDollarAmount(item)
+                );
+            })
+        );
+    },
+
+    render: function render() {
+        var _this = this;
+
+        var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
+        var dm = dataModelStore.getModel(dataModelId);
+        var accountType = stateStore.getValue(this.props.storeId, 'accountType');
+        var selectedLevel = stateStore.getValue(this.props.storeId, 'selectedLevel');
+        var newData = dm.getData({
+            accountTypes: [accountType],
+            startPath: [],
+            nLevels: selectedLevel + 1
+        }, false);
+
+        if (newData == null) {
+            return _react2['default'].createElement(
+                'div',
+                null,
+                'HistoryAreaChart is loading ...'
+            );
+        } else {
+            var rows;
+            var headers;
+
+            var _ret = (function () {
+                rows = newData.data;
+                headers = newData.dataHeaders;
+
+                var currentLevel = stateStore.getValue(_this.props.storeId, 'currentLevel');
+                var dataLength = rows[0].amount.length;
+                //rows.map(this.computeChanges);
+                //rows = rows.sort(this.sortByAbsoluteDifference);
+                var thStyle = { textAlign: 'right' };
+                return {
+                    v: _react2['default'].createElement(
+                        'div',
+                        null,
+                        _react2['default'].createElement('br', null),
+                        _react2['default'].createElement('hr', null),
+                        _this.interactionPanel(newData, rows),
+                        _react2['default'].createElement('br', null),
+                        _react2['default'].createElement('hr', null),
+                        _react2['default'].createElement(
+                            'table',
+                            { className: 'table' },
+                            _react2['default'].createElement(
+                                'thead',
+                                null,
+                                _react2['default'].createElement(
+                                    'tr',
+                                    null,
+                                    _react2['default'].createElement(
+                                        'th',
+                                        { key: '0' },
+                                        'Category'
+                                    ),
+                                    _react2['default'].createElement(
+                                        'th',
+                                        { key: '1' },
+                                        'History',
+                                        _react2['default'].createElement('br', null),
+                                        headers[0],
+                                        '-',
+                                        headers[dataLength - 1]
+                                    ),
+                                    headers.map(function (item, index) {
+                                        return _react2['default'].createElement(
+                                            'th',
+                                            { key: 2 + index, style: thStyle },
+                                            item
+                                        );
+                                    })
+                                )
+                            ),
+                            _react2['default'].createElement(
+                                'tbody',
+                                null,
+                                rows.map(_this.tableRow)
+                            )
+                        )
+                    )
+                };
+            })();
+
+            if (typeof _ret === 'object') return _ret.v;
+        }
+    }
+});
+
+exports['default'] = HistoryAreaChart;
+module.exports = exports['default'];
+
+},{"../common/ApiActions":224,"../common/BudgetAppDispatcher":225,"../constants/AccountTypes":237,"../constants/ActionTypes":238,"../data/DatasetUtilities":243,"../stores/DataModelStore":246,"../stores/DatasetStore":247,"../stores/StateStore":248,"react":223,"react-sparkline":67}],231:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -40601,7 +40974,7 @@ var MultiYearTable = _react2['default'].createClass({
 exports['default'] = MultiYearTable;
 module.exports = exports['default'];
 
-},{"../common/ApiActions":224,"../common/BudgetAppDispatcher":225,"../constants/AccountTypes":236,"../constants/ActionTypes":237,"../stores/DataModelStore":245,"../stores/DatasetStore":246,"../stores/StateStore":247,"react":223}],231:[function(require,module,exports){
+},{"../common/ApiActions":224,"../common/BudgetAppDispatcher":225,"../constants/AccountTypes":237,"../constants/ActionTypes":238,"../stores/DataModelStore":246,"../stores/DatasetStore":247,"../stores/StateStore":248,"react":223}],232:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -40653,7 +41026,7 @@ var SimpleCard = _react2['default'].createClass({
 exports['default'] = SimpleCard;
 module.exports = exports['default'];
 
-},{"../stores/CardStore":243,"react":223}],232:[function(require,module,exports){
+},{"../stores/CardStore":244,"react":223}],233:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -40906,7 +41279,7 @@ var SimpleTreemap = _react2['default'].createClass({
 exports['default'] = SimpleTreemap;
 module.exports = exports['default'];
 
-},{"../common/ApiActions":224,"../common/BudgetAppDispatcher":225,"../constants/AccountTypes":236,"../constants/ActionTypes":237,"../data/DatasetUtilities":242,"../stores/DataModelStore":245,"../stores/DatasetStore":246,"../stores/StateStore":247,"react":223,"react-d3":43}],233:[function(require,module,exports){
+},{"../common/ApiActions":224,"../common/BudgetAppDispatcher":225,"../constants/AccountTypes":237,"../constants/ActionTypes":238,"../data/DatasetUtilities":243,"../stores/DataModelStore":246,"../stores/DatasetStore":247,"../stores/StateStore":248,"react":223,"react-d3":43}],234:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -41095,7 +41468,7 @@ var Site = _react2['default'].createClass({
 exports['default'] = Site;
 module.exports = exports['default'];
 
-},{"../stores/ConfigStore":244,"../stores/DatasetStore":246,"../stores/StateStore":247,"./BootstrapLayout":227,"./SiteNavigation":234,"react":223}],234:[function(require,module,exports){
+},{"../stores/ConfigStore":245,"../stores/DatasetStore":247,"../stores/StateStore":248,"./BootstrapLayout":227,"./SiteNavigation":235,"react":223}],235:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -41164,7 +41537,7 @@ var SiteNavigation = _react2['default'].createClass({
 exports['default'] = SiteNavigation;
 module.exports = exports['default'];
 
-},{"../common/BudgetAppDispatcher":225,"../constants/ActionTypes":237,"../stores/ConfigStore":244,"../stores/StateStore":247,"react":223}],235:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":225,"../constants/ActionTypes":238,"../stores/ConfigStore":245,"../stores/StateStore":248,"react":223}],236:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -41255,7 +41628,7 @@ var SlideShow = _react2['default'].createClass({
 exports['default'] = SlideShow;
 module.exports = exports['default'];
 
-},{"../stores/CardStore":243,"react":223}],236:[function(require,module,exports){
+},{"../stores/CardStore":244,"react":223}],237:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -41268,7 +41641,7 @@ module.exports = {
     CONTRA: 6
 };
 
-},{}],237:[function(require,module,exports){
+},{}],238:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -41277,7 +41650,7 @@ module.exports = {
     DATASET_RECEIVED: "DATASET_RECEIVED"
 };
 
-},{}],238:[function(require,module,exports){
+},{}],239:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -41288,7 +41661,7 @@ module.exports = {
     DS_STATE_READY: "DS_STATE_READY"
 };
 
-},{}],239:[function(require,module,exports){
+},{}],240:[function(require,module,exports){
 'use strict';
 
 function Card(timestamp, title, body, link, image) {
@@ -41307,7 +41680,7 @@ function Card(timestamp, title, body, link, image) {
 
 module.exports = Card;
 
-},{}],240:[function(require,module,exports){
+},{}],241:[function(require,module,exports){
 'use strict';
 
 var DatasetStatus = require('../constants/DatasetStatus');
@@ -41400,6 +41773,7 @@ function DataModel(id, datasetIds) {
                 amountThreshold: amountThreshold
             });
         }
+        console.log('this.dataChanged returning ' + needUpdate);
         return needUpdate;
     };
 
@@ -41576,7 +41950,7 @@ function DataModel(id, datasetIds) {
 
 module.exports = DataModel;
 
-},{"../common/BudgetAppDispatcher":225,"../constants/AccountTypes":236,"../constants/ActionTypes":237,"../constants/DatasetStatus":238,"../stores/DatasetStore":246,"./DatasetUtilities":242}],241:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":225,"../constants/AccountTypes":237,"../constants/ActionTypes":238,"../constants/DatasetStatus":239,"../stores/DatasetStore":247,"./DatasetUtilities":243}],242:[function(require,module,exports){
 'use strict';
 
 var DatasetStatus = require('../constants/DatasetStatus');
@@ -41620,7 +41994,7 @@ function Dataset(timestamp, sourceId) {
 
 module.exports = Dataset;
 
-},{"../constants/DatasetStatus":238}],242:[function(require,module,exports){
+},{"../constants/DatasetStatus":239}],243:[function(require,module,exports){
 'use strict';
 
 var assign = require('object-assign');
@@ -41798,7 +42172,7 @@ var DatasetUtilities = {
 
 module.exports = DatasetUtilities;
 
-},{"../common/BudgetAppDispatcher":225,"../constants/AccountTypes":236,"../constants/ActionTypes":237,"../constants/DatasetStatus":238,"../stores/DatasetStore":246,"object-assign":7}],243:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":225,"../constants/AccountTypes":237,"../constants/ActionTypes":238,"../constants/DatasetStatus":239,"../stores/DatasetStore":247,"object-assign":7}],244:[function(require,module,exports){
 'use strict';
 
 var dispatcher = require('../common/BudgetAppDispatcher');
@@ -41856,7 +42230,7 @@ dispatcher.register(function (action) {
 
 module.exports = CardStore;
 
-},{"../common/BudgetAppDispatcher":225,"../constants/ActionTypes":237,"../data/Card":239,"events":2,"object-assign":7}],244:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":225,"../constants/ActionTypes":238,"../data/Card":240,"events":2,"object-assign":7}],245:[function(require,module,exports){
 'use strict';
 
 var dispatcher = require('../common/BudgetAppDispatcher');
@@ -41938,7 +42312,7 @@ dispatcher.register(function (action) {
 
 module.exports = ConfigStore;
 
-},{"../common/BudgetAppDispatcher":225,"../constants/ActionTypes":237,"events":2,"object-assign":7}],245:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":225,"../constants/ActionTypes":238,"events":2,"object-assign":7}],246:[function(require,module,exports){
 'use strict';
 
 var dispatcher = require('../common/BudgetAppDispatcher');
@@ -42003,7 +42377,7 @@ dispatcher.register(function (action) {
 
 module.exports = DataModelStore;
 
-},{"../common/BudgetAppDispatcher":225,"../constants/ActionTypes":237,"../data/DataModel":240,"events":2,"object-assign":7}],246:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":225,"../constants/ActionTypes":238,"../data/DataModel":241,"events":2,"object-assign":7}],247:[function(require,module,exports){
 'use strict';
 
 var dispatcher = require('../common/BudgetAppDispatcher');
@@ -42073,7 +42447,7 @@ DatasetStore.dispatchToken = dispatcher.register(function (action) {
 
 module.exports = DatasetStore;
 
-},{"../common/BudgetAppDispatcher":225,"../constants/ActionTypes":237,"../data/Dataset":241,"events":2,"object-assign":7}],247:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":225,"../constants/ActionTypes":238,"../data/Dataset":242,"events":2,"object-assign":7}],248:[function(require,module,exports){
 'use strict';
 
 var dispatcher = require('../common/BudgetAppDispatcher');
@@ -42231,4 +42605,4 @@ dispatcher.register(function (action) {
 module.exports = StateStore;
 /*path OR id, key */
 
-},{"../common/BudgetAppDispatcher":225,"../constants/ActionTypes":237,"events":2,"object-assign":7}]},{},[1]);
+},{"../common/BudgetAppDispatcher":225,"../constants/ActionTypes":238,"events":2,"object-assign":7}]},{},[1]);
