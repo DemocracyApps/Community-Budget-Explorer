@@ -40439,6 +40439,9 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
+var rd3 = require('react-d3');
+var AreaChart = rd3.AreaChart;
+
 var datasetStore = require('../stores/DatasetStore');
 var stateStore = require('../stores/StateStore');
 var dataModelStore = require('../stores/DataModelStore');
@@ -40631,27 +40634,25 @@ var HistoryAreaChart = _react2['default'].createClass({
         );
     },
 
-    computeChanges: function computeChanges(item, index) {
-        var length = item.amount.length;
-        var useInfinity = false;
-        if (length < 2) throw 'Minimum of 2 datasets required for ChangeExplorer';
-        var cur = item.amount[length - 1],
-            prev = item.amount[length - 2];
-        item.difference = cur - prev;
-        if (Math.abs(prev) < 0.001) {
-            if (useInfinity) {
-                item.percent = String.fromCharCode(8734) + ' %';
-            } else {
-                item.percent = 'New';
+    prepareData: function computeChanges(inData) {
+        var nYears = inData[0].amount.length;
+        var length = inData.length;
+        var outData = [];
+
+        for (var year = 0; year < nYears; ++year) {
+            outData.push({
+                name: inData.dataHeaders[year],
+                values: []
+            });
+        }
+        for (var i = 0; i < length; ++i) {
+            var item = inData[i];
+            for (var year = 0; year < nYears; ++year) {
+                outData[year].values.push({
+                    x: Number(inData.periods[year]),
+                    y: item.amount[year]
+                });
             }
-            item.percentSort = 10000 * Math.abs(item.difference);
-        } else if (cur < 0 || prev < 0) {
-            item.percent = 'N/A';
-            item.percentSort = 10000 * Math.abs(item.difference);
-        } else {
-            var pct = Math.round(1000 * item.difference / prev) / 10;
-            item.percent = pct + '%';
-            item.percentSort = Math.abs(item.percent);
         }
     },
 
@@ -40719,6 +40720,7 @@ var HistoryAreaChart = _react2['default'].createClass({
         } else {
             var rows;
             var headers;
+            var chartData;
 
             var _ret = (function () {
                 rows = newData.data;
@@ -40726,6 +40728,8 @@ var HistoryAreaChart = _react2['default'].createClass({
 
                 var currentLevel = stateStore.getValue(_this.props.storeId, 'currentLevel');
                 var dataLength = rows[0].amount.length;
+                chartData = prepareData(rows);
+
                 //rows.map(this.computeChanges);
                 //rows = rows.sort(this.sortByAbsoluteDifference);
                 var thStyle = { textAlign: 'right' };
@@ -40788,7 +40792,7 @@ var HistoryAreaChart = _react2['default'].createClass({
 exports['default'] = HistoryAreaChart;
 module.exports = exports['default'];
 
-},{"../common/ApiActions":224,"../common/BudgetAppDispatcher":225,"../constants/AccountTypes":237,"../constants/ActionTypes":238,"../data/DatasetUtilities":243,"../stores/DataModelStore":246,"../stores/DatasetStore":247,"../stores/StateStore":248,"react":223,"react-sparkline":67}],231:[function(require,module,exports){
+},{"../common/ApiActions":224,"../common/BudgetAppDispatcher":225,"../constants/AccountTypes":237,"../constants/ActionTypes":238,"../data/DatasetUtilities":243,"../stores/DataModelStore":246,"../stores/DatasetStore":247,"../stores/StateStore":248,"react":223,"react-d3":43,"react-sparkline":67}],231:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -41262,8 +41266,8 @@ var SimpleTreemap = _react2['default'].createClass({
                 { className: 'row' },
                 _react2['default'].createElement(Treemap, {
                     data: treemapData,
-                    width: this.state.componentWidth,
-                    height: this.state.componentWidth,
+                    width: this.state.componentWidth / 1.5,
+                    height: this.state.componentWidth / 1.5,
                     textColor: '#484848',
                     fontSize: '10px',
                     title: title,
@@ -41398,38 +41402,37 @@ var Site = _react2['default'].createClass({
             'div',
             null,
             _react2['default'].createElement(
-                'div',
-                { className: 'container site-header', style: this.m(siteHeaderStyles.headerStyle) },
+                'nav',
+                { className: 'navbar navbar-default navbar-fixed-top' },
                 _react2['default'].createElement(
                     'div',
-                    { className: 'row' },
+                    { className: 'container site-header', style: this.m(siteHeaderStyles.headerStyle) },
                     _react2['default'].createElement(
                         'div',
-                        { className: 'col-xs-6 site-hdr-brand' },
+                        { className: 'navbar-header' },
                         _react2['default'].createElement(
-                            'div',
-                            { className: 'site-brand', style: siteHeaderStyles.brandStyle },
+                            'button',
+                            { type: 'button', className: 'navbar-toggle collapsed', dataToggle: 'collapse', dataTarget: '#navbar', ariaExpanded: 'false', ariaControls: 'navbar' },
                             _react2['default'].createElement(
-                                'h1',
-                                { style: siteHeaderStyles.brandTitleStyle },
-                                _react2['default'].createElement(
-                                    'a',
-                                    { href: this.props.site.baseUrl },
-                                    this.props.site.name
-                                )
+                                'span',
+                                { className: 'sr-only' },
+                                'Toggle navigation'
+                            ),
+                            _react2['default'].createElement('span', { className: 'icon-bar' }),
+                            _react2['default'].createElement('span', { className: 'icon-bar' }),
+                            _react2['default'].createElement('span', { className: 'icon-bar' })
+                        ),
+                        _react2['default'].createElement(
+                            'h1',
+                            null,
+                            _react2['default'].createElement(
+                                'a',
+                                { className: 'navbar-brand site-hdr-brand', href: '{this.props.site.baseUrl}' },
+                                this.props.site.name
                             )
                         )
                     ),
-                    _react2['default'].createElement(
-                        'div',
-                        { className: 'col-xs-6 navigation site-navbar' },
-                        _react2['default'].createElement(_SiteNavigation2['default'], { site: this.props.site, pages: this.props.pages, styleProps: siteHeaderStyles.siteNavigationStyles })
-                    ),
-                    _react2['default'].createElement(
-                        'div',
-                        { className: 'col-xs-12', style: { padding: '0px', margin: '0px', border: '0px' } },
-                        _react2['default'].createElement('hr', { style: siteHeaderStyles.hrProps })
-                    )
+                    _react2['default'].createElement(_SiteNavigation2['default'], { site: this.props.site, pages: this.props.pages, styleProps: siteHeaderStyles.siteNavigationStyles })
                 )
             ),
             _react2['default'].createElement(
@@ -41519,7 +41522,7 @@ var SiteNavigation = _react2['default'].createClass({
                     'a',
                     { id: 'menuPage_{page.name}', href: '#',
                         onClick: selectPage },
-                    page.shortName
+                    page.menuName
                 )
             );
         }).bind(this);
@@ -41527,9 +41530,13 @@ var SiteNavigation = _react2['default'].createClass({
         var navProps = this.props.styleProps.navProps;
 
         return _react2['default'].createElement(
-            'ul',
-            { className: 'nav nav-pills', style: navProps },
-            this.props.pages.map(menuItem)
+            'div',
+            { id: 'navbar', className: 'navbar-collapse collapse' },
+            _react2['default'].createElement(
+                'ul',
+                { className: 'nav navbar-nav', style: navProps },
+                this.props.pages.map(menuItem)
+            )
         );
     }
 });
@@ -41815,6 +41822,7 @@ function DataModel(id, datasetIds) {
             return {
                 categories: this.initializationParameters.hierarchy,
                 dataHeaders: headers,
+                periods: headers,
                 levelsDown: startLevel,
                 levelsAggregated: this.initializationParameters.hierarchy.length - nLevels - startLevel };
         } else {
