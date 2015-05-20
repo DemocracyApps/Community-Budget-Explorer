@@ -97,23 +97,20 @@ var Site = React.createClass({
 
         return (
             <div>
-                <div className="container site-header" style={this.m(siteHeaderStyles.headerStyle)}>
-                    <div className="row">
-                        <div className="col-xs-6 site-hdr-brand">
-                            <div className="site-brand" style={siteHeaderStyles.brandStyle}>
-                                <h1 style={siteHeaderStyles.brandTitleStyle}>
-                                    <a href={this.props.site.baseUrl}>{this.props.site.name}</a>
-                                </h1>
-                            </div>
+                <nav className="navbar navbar-default navbar-fixed-top">
+                    <div className="container site-header" style={this.m(siteHeaderStyles.headerStyle)}>
+                        <div className="navbar-header">
+                            <button type="button" className="navbar-toggle collapsed" dataToggle="collapse" dataTarget="#navbar" ariaExpanded="false" ariaControls="navbar">
+                                <span className="sr-only">Toggle navigation</span>
+                                <span className="icon-bar"></span>
+                                <span className="icon-bar"></span>
+                                <span className="icon-bar"></span>
+                            </button>
+                            <h1><a className="navbar-brand site-hdr-brand" href="{this.props.site.baseUrl}">{this.props.site.name}</a></h1>
                         </div>
-                        <div className="col-xs-6 navigation site-navbar">
-                            <SiteNavigation site={this.props.site} pages={this.props.pages} styleProps={siteHeaderStyles.siteNavigationStyles}/>
-                        </div>
-                        <div className="col-xs-12" style={{padding: "0px", margin: "0px", border:"0px"}}>
-                            <hr style={siteHeaderStyles.hrProps}/>
-                        </div>
+                        <SiteNavigation site={this.props.site} pages={this.props.pages} styleProps={siteHeaderStyles.siteNavigationStyles}/>
                     </div>
-                </div>
+                </nav>
 
                 <div className="container site-body">
                     {this.pageTitle(page)}

@@ -220,8 +220,8 @@ var SimpleTreemap = React.createClass({
 
                     <Treemap
                         data={treemapData}
-                        width={this.state.componentWidth}
-                        height={this.state.componentWidth}
+                        width={this.state.componentWidth/1.5}
+                        height={this.state.componentWidth/1.5}
                         textColor="#484848"
                         fontSize="10px"
                         title={title}

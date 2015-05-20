@@ -1,0 +1,25 @@
+//
+// Variables
+// --------------------------------------------------
+
+//== Google Font Import
+//
+@import url(http://fonts.googleapis.com/css?family=Roboto:400,700,400italic,700italic);
+
+
+//== Typography
+//
+//## Font, line-height, and color for body text, headings, and more.
+
+$font-size-base:          16px;
+
+//** By default, this inherits from the `<body>`.
+$headings-font-family:    'Roboto', sans-serif;
+$headings-font-weight:    400;
+
+$font-size-h1:            floor(($font-size-base * 2));
+$font-size-h2:            floor(($font-size-base * 1.5));
+$font-size-h3:            ceil(($font-size-base * 1.25));
+$font-size-h4:            ceil(($font-size-base * 1.15));
+$font-size-h5:            $font-size-base;
+$font-size-h6:            ceil(($font-size-base * 0.85));
