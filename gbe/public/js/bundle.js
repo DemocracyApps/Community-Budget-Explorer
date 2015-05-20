@@ -41412,7 +41412,7 @@ var Site = _react2['default'].createClass({
                         { className: 'navbar-header' },
                         _react2['default'].createElement(
                             'button',
-                            { type: 'button', className: 'navbar-toggle collapsed', dataToggle: 'collapse', dataTarget: '#navbar', ariaExpanded: 'false', ariaControls: 'navbar' },
+                            { type: 'button', className: 'navbar-toggle collapsed', 'data-toggle': 'collapse', 'data-target': '#navbar', 'aria-expanded': 'false', 'aria-controls': 'navbar' },
                             _react2['default'].createElement(
                                 'span',
                                 { className: 'sr-only' },
