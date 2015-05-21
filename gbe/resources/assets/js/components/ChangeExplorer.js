@@ -8,8 +8,10 @@ var AccountTypes = require('../constants/AccountTypes');
 var dispatcher = require('../common/BudgetAppDispatcher');
 var ActionTypes = require('../constants/ActionTypes');
 var datasetUtilities = require('../data/DatasetUtilities');
-var Sparkline = require('react-sparkline');
 var CommonConstants = require('../constants/Common');
+
+var Sparkline = require('react-sparkline');
+var MicroBarChart = require('react-micro-bar-chart');
 
 var ChangeExplorer = React.createClass({
 
@@ -251,11 +253,13 @@ var ChangeExplorer = React.createClass({
                 label += " " + String.fromCharCode(183) + " "+item.categories[i];
             }
         }
+
+        // Note that Sparkline below can be replaced with MicroBarChart.
         let tdStyle={textAlign:"right"};
         return <tr key={index}>
             <td key="0" style={{width:"35%"}}>{label}</td>
             <td>
-                <Sparkline data={item.amount} />
+                <MicroBarChart data={item.amount} />
             </td>
             <td key="1" style={tdStyle}>{datasetUtilities.formatDollarAmount(item.amount[length-2])}</td>
             <td key="2" style={tdStyle}>{datasetUtilities.formatDollarAmount(item.amount[length-1])}</td>
