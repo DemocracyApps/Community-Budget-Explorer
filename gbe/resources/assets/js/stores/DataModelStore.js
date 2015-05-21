@@ -24,6 +24,10 @@ var DataModelStore = assign({}, EventEmitter.prototype, {
         return dm;
     },
 
+    deleteModel: function deleteModel(id) {
+        delete this._models[id];
+    },
+
     getModel: function getModel(id) {
         return this._models[id];
     },

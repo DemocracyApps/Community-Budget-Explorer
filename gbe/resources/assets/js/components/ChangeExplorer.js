@@ -9,6 +9,7 @@ var dispatcher = require('../common/BudgetAppDispatcher');
 var ActionTypes = require('../constants/ActionTypes');
 var datasetUtilities = require('../data/DatasetUtilities');
 var Sparkline = require('react-sparkline');
+var CommonConstants = require('../constants/Common');
 
 var ChangeExplorer = React.createClass({
 
@@ -28,12 +29,22 @@ var ChangeExplorer = React.createClass({
                 hierarchy: ['Fund', 'Department', 'Division', 'Account'],
                 accountTypes: [AccountTypes.EXPENSE, AccountTypes.REVENUE],
                 amountThreshold: 0.01
-            }
+            },
+            componentMode: CommonConstants.STANDALONE_COMPONENT
         };
     },
 
+    getAccountType: function() {
+        if (this.props.componentMode == CommonConstants.COMPOSED_COMPONENT) {
+            return this.props.accountType;
+        }
+        else {
+            return stateStore.getValue(this.props.storeId, 'accountType');
+        }
+    },
+
     prepareLocalState: function (dm) {
-        var accountType = stateStore.getValue(this.props.storeId, 'accountType');
+        var accountType = this.getAccountType();
         var selectedLevel = stateStore.getValue(this.props.storeId, 'selectedLevel');
 
         return dm.checkData({
@@ -46,10 +57,18 @@ var ChangeExplorer = React.createClass({
     componentWillMount: function () {
         // If this is the first time this component is mounting, we need to create the data model
         // and do any other state initialization required.
+        console.log("ChangeExplorer will mount");
         var dataModelId = stateStore.getComponentStateValue(this.props.storeId, 'dataModelId');
         let dm = null;
         if (dataModelId == null) {
-            var ids = this.props.componentData['mydatasets'].ids;
+            console.log("ChangeExplorer dataModelId is NULL!");
+            var ids;
+            if (this.props.hasOwnProperty('datasetIds')) {
+                ids = this.props.datasetIds;
+            }
+            else {
+                ids = this.props.componentData['mydatasets'].ids;
+            }
             ids.forEach(function (id) {
                 apiActions.requestDatasetIfNeeded(id);
             });
@@ -64,6 +83,12 @@ var ChangeExplorer = React.createClass({
         }
     },
 
+    componentWillUnmount: function () {
+        console.log("ChangeExplorer will unmount");
+        //var dataModelId = stateStore.getComponentStateValue(this.props.storeId, 'dataModelId');
+        //if (dataModelId != null) dataModelStore.deleteModel(dataModelId);
+    },
+
     componentWillReceiveProps: function () {
         var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
         var dm = dataModelStore.getModel(dataModelId);
@@ -73,7 +98,7 @@ var ChangeExplorer = React.createClass({
     shouldComponentUpdate: function (nextProps, nextState) {
         var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
         var dm = dataModelStore.getModel(dataModelId);
-        var accountType = stateStore.getValue(this.props.storeId, 'accountType');
+        var accountType = this.getAccountType;
         return ( dm.dataChanged() || dm.commandsChanged({accountTypes: [accountType]}) );
     },
 
@@ -124,19 +149,45 @@ var ChangeExplorer = React.createClass({
 
     renderLevelSelector: function renderLevelSelector(data) {
         let selectedLevel = stateStore.getValue(this.props.storeId, 'selectedLevel');
-
+        var selectLabelText = "Select Detail Level:" + String.fromCharCode(160)+String.fromCharCode(160);
+        var spacer = String.fromCharCode(160)+String.fromCharCode(160)+String.fromCharCode(160)+String.fromCharCode(160);
         return (
             <div className="form-group">
-                <label>Select Level</label>
-                <select className="form-control" onChange={this.onLevelChange} value={selectedLevel}>
-                    {data.categories.map(function(item, index) {
-                        return (
-                            <option key={index} value={index}>{item}</option>
-                        )
-                    })}
-                </select>
+                <form className="form-inline">
+                    <label>{selectLabelText}</label>
+                    <select className="form-control" onChange={this.onLevelChange} value={selectedLevel}>
+                        {data.categories.map(function(item, index) {
+                            return (
+                                <option key={index} value={index}>{item}</option>
+                            )
+                        })}
+                    </select>
+                    <span>{spacer}</span>
+                    <button className="btn btn-normal" onClick={this.doReset}>Reset</button>
+                </form>
             </div>
         )
+    },
+
+    renderAccountSelector() {
+        if (this.props.componentMode == CommonConstants.STANDALONE_COMPONENT) {
+            return (
+                <form className="form-inline">
+                <div className="form-group">
+                    <label>Select Account Type</label>
+                    <select className="form-control" onChange={this.onAccountTypeChange} value={accountType}>
+                        {
+                            this.props.accountTypes.map(
+                                function (type, index) {
+                                    return <option key={index} value={type.value}> {type.name} </option>
+                                }
+                            )
+                        }
+                    </select>
+                </div>
+                </form>
+            )
+        }
     },
 
     interactionPanel: function interactionPanel(data, rows) {
@@ -144,27 +195,11 @@ var ChangeExplorer = React.createClass({
         return (
             <div>
                 <div className="row">
-                    <div className="col-xs-4">
+                    <div className="col-xs-6">
                         {this.renderLevelSelector(data, rows)}
                     </div>
-                  <div className="col-xs-1"></div>
-                  <div className="col-xs-4">
-                      <div className="form-group">
-                          <label>Select Account Type</label>
-                          <select className="form-control" onChange={this.onAccountTypeChange} value={accountType}>
-                              {
-                                  this.props.accountTypes.map(
-                                      function (type, index) {
-                                          return <option key={index} value={type.value} > {type.name} </option>
-                                      }
-                                  )
-                              }
-                          </select>
-                      </div>
-                  </div>
-                  <div className="col-xs-1"></div>
-                  <div className="col-xs-2">
-                      <button style={{float:"right"}} className="btn btn-primary" onClick={this.doReset}>Reset</button>
+                  <div className="col-xs-6">
+                      {this.renderAccountSelector()}
                   </div>
                 </div>
             </div>
@@ -239,11 +274,13 @@ var ChangeExplorer = React.createClass({
             startPath: [],
             nLevels: selectedLevel+1
         }, false);
+        var dataNull = (newData == null);
+        console.log("Rendering ChangeExplorer: dataModelId = " + dataModelId + ", dataNull = " + dataNull);
 
         if (newData == null) {
             return (
                 <div>
-                    ChangeExplorer is loading ...
+                    <p>Data is loading ... Please be patient</p>
                 </div>
             )
         }
@@ -257,11 +294,8 @@ var ChangeExplorer = React.createClass({
             let thStyle={textAlign:"right"};
             return (
                 <div>
-                    <br/>
-                    <hr/>
                     {this.interactionPanel(newData, rows)}
-                    <br/>
-                    <hr/>
+
                     <table className="table">
                         <thead>
                         <tr>

@@ -40,6 +40,10 @@ var StateStore = assign({}, EventEmitter.prototype, {
         return id;
     },
 
+    unregisterComponent: function unregisterComponent (id) {
+        delete this.store.components[id];
+    },
+
     registerPage: function registerPage (type, name, initialState) {
 
     },

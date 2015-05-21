@@ -66,7 +66,7 @@ var Site = React.createClass({
 
         var currentPage = stateStore.getValue('site.currentPage');
         var page = configStore.getConfiguration('pages', currentPage);
-console.log("Here are my pages: " + JSON.stringify(this.props.pages));
+
         var layoutProps = {
             layout: page.layout,
             components: page.components,

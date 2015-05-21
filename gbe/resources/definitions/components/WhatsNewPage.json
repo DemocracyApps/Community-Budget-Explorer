@@ -1,0 +1,18 @@
+{
+  "name":"WhatsNewPage",
+  "description": "Container component for exploring year-over-year changes. Takes 2+ datasets.",
+  "data": [
+    {
+      "tag":"mydatasets",
+      "name":"Datasets for WhatsNewPage",
+      "description":"Add datasets in any order - sequencing is handled automatically.",
+      "type":"multidataset"
+    }
+  ],
+  "props": {
+
+  },
+  "state": {
+
+  }
+}

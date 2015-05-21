@@ -33,6 +33,10 @@ var ConfigStore = assign({}, EventEmitter.prototype, {
         this.storeConfiguration('components', storeId, component);
     },
 
+    unregisterComponent: function unregisterComponent(storeId) {
+        delete this.areas['components'].items[storeId];
+    },
+
     storeConfiguration: function (areaName, key, value) {
         if (!(this.areas.hasOwnProperty(areaName))) {
             throw "storeConfiguration called for non-existent area " + areaName;

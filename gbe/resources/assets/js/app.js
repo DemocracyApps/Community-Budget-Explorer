@@ -2,6 +2,7 @@ import React from 'react';
 import Site from './components/Site';
 var dispatcher = require('./common/BudgetAppDispatcher');
 var ActionTypes = require('./constants/ActionTypes');
+var idGenerator = require('./common/IdGenerator');
 
 /*
  * Since we don't know in advance which components will be used by the layout,
@@ -16,6 +17,7 @@ import Treemap from './components/SimpleTreemap';
 import CardTable from './components/CardTable';
 import ChangeExplorer from './components/ChangeExplorer';
 import HistoryAreaChart from './components/HistoryAreaChart';
+import WhatsNewPage from './components/WhatsNewPage';
 
 var reactComponents = {};
 reactComponents['SimpleCard'] = SimpleCard;
@@ -26,6 +28,7 @@ reactComponents['Treemap'] = Treemap;
 reactComponents['CardTable'] = CardTable;
 reactComponents['ChangeExplorer'] = ChangeExplorer;
 reactComponents['HistoryAreaChart'] = HistoryAreaChart;
+reactComponents['WhatsNewPage'] = WhatsNewPage;
 
 /*
  * The stores, one for card-related data, the other for financial datasets.
@@ -67,8 +70,9 @@ for (i=0; i<GBEVars.pages.length; ++i) {
     for (var key in page.components) {
         if (page.components.hasOwnProperty(key)) {
             page.components[key].forEach(function (c) {
-                c.storeId = stateStore.registerComponent('components', c.id, {}); // Should use a common ID generator, but no time right now
-                configStore.registerComponent(c.storeId, 'components', c.id, {});
+                let uniqId = idGenerator.generateId();
+                c.storeId = stateStore.registerComponent('components', uniqId, {}); // Should use a common ID generator, but no time right now
+                configStore.registerComponent(c.storeId, 'components', uniqId, {});
             });
         }
     }

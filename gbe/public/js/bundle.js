@@ -49,8 +49,13 @@ var _componentsHistoryAreaChart = require('./components/HistoryAreaChart');
 
 var _componentsHistoryAreaChart2 = _interopRequireDefault(_componentsHistoryAreaChart);
 
+var _componentsWhatsNewPage = require('./components/WhatsNewPage');
+
+var _componentsWhatsNewPage2 = _interopRequireDefault(_componentsWhatsNewPage);
+
 var dispatcher = require('./common/BudgetAppDispatcher');
 var ActionTypes = require('./constants/ActionTypes');
+var idGenerator = require('./common/IdGenerator');
 
 var reactComponents = {};
 reactComponents['SimpleCard'] = _componentsSimpleCard2['default'];
@@ -61,6 +66,7 @@ reactComponents['Treemap'] = _componentsSimpleTreemap2['default'];
 reactComponents['CardTable'] = _componentsCardTable2['default'];
 reactComponents['ChangeExplorer'] = _componentsChangeExplorer2['default'];
 reactComponents['HistoryAreaChart'] = _componentsHistoryAreaChart2['default'];
+reactComponents['WhatsNewPage'] = _componentsWhatsNewPage2['default'];
 
 /*
  * The stores, one for card-related data, the other for financial datasets.
@@ -102,8 +108,9 @@ for (i = 0; i < GBEVars.pages.length; ++i) {
     for (var key in page.components) {
         if (page.components.hasOwnProperty(key)) {
             page.components[key].forEach(function (c) {
-                c.storeId = stateStore.registerComponent('components', c.id, {}); // Should use a common ID generator, but no time right now
-                configStore.registerComponent(c.storeId, 'components', c.id, {});
+                var uniqId = idGenerator.generateId();
+                c.storeId = stateStore.registerComponent('components', uniqId, {}); // Should use a common ID generator, but no time right now
+                configStore.registerComponent(c.storeId, 'components', uniqId, {});
             });
         }
     }
@@ -134,7 +141,7 @@ var props = {
 console.log('Sending with page 0 = ' + pages[0]);
 var layout = _react2['default'].render(_react2['default'].createElement(_componentsSite2['default'], props), document.getElementById('app'));
 
-},{"./common/BudgetAppDispatcher":225,"./components/BarchartExplorer":226,"./components/CardTable":228,"./components/ChangeExplorer":229,"./components/HistoryAreaChart":230,"./components/MultiYearTable":231,"./components/SimpleCard":232,"./components/SimpleTreemap":233,"./components/Site":234,"./components/SlideShow":236,"./constants/ActionTypes":238,"./stores/CardStore":244,"./stores/ConfigStore":245,"./stores/DatasetStore":247,"./stores/StateStore":248,"react":223}],2:[function(require,module,exports){
+},{"./common/BudgetAppDispatcher":225,"./common/IdGenerator":226,"./components/BarchartExplorer":227,"./components/CardTable":229,"./components/ChangeExplorer":230,"./components/HistoryAreaChart":231,"./components/MultiYearTable":232,"./components/SimpleCard":233,"./components/SimpleTreemap":234,"./components/Site":235,"./components/SlideShow":237,"./components/WhatsNewPage":238,"./constants/ActionTypes":240,"./stores/CardStore":247,"./stores/ConfigStore":248,"./stores/DatasetStore":250,"./stores/StateStore":251,"react":223}],2:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -39384,7 +39391,7 @@ var ApiActions = {
 
 module.exports = ApiActions;
 
-},{"../common/BudgetAppDispatcher":225,"../constants/ActionTypes":238,"../stores/ConfigStore":245,"../stores/DatasetStore":247,"object-assign":7}],225:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":225,"../constants/ActionTypes":240,"../stores/ConfigStore":248,"../stores/DatasetStore":250,"object-assign":7}],225:[function(require,module,exports){
 'use strict';
 
 var FluxDispatcher = require('flux').Dispatcher;
@@ -39431,6 +39438,19 @@ var BudgetAppDispatcher = {
 module.exports = BudgetAppDispatcher;
 
 },{"flux":4}],226:[function(require,module,exports){
+"use strict";
+
+var IdGenerator = {
+    currentId: 109,
+
+    generateId: function generateId() {
+        return ++this.currentId;
+    }
+};
+
+module.exports = IdGenerator;
+
+},{}],227:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -39845,7 +39865,7 @@ var BarchartExplorer = _react2['default'].createClass({
 exports['default'] = BarchartExplorer;
 module.exports = exports['default'];
 
-},{"../common/ApiActions":224,"../common/BudgetAppDispatcher":225,"../constants/AccountTypes":237,"../constants/ActionTypes":238,"../data/DatasetUtilities":243,"../stores/DataModelStore":246,"../stores/DatasetStore":247,"../stores/StateStore":248,"react":223}],227:[function(require,module,exports){
+},{"../common/ApiActions":224,"../common/BudgetAppDispatcher":225,"../constants/AccountTypes":239,"../constants/ActionTypes":240,"../data/DatasetUtilities":246,"../stores/DataModelStore":249,"../stores/DatasetStore":250,"../stores/StateStore":251,"react":223}],228:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -39931,7 +39951,7 @@ var BootstrapLayout = _react2["default"].createClass({
 exports["default"] = BootstrapLayout;
 module.exports = exports["default"];
 
-},{"react":223}],228:[function(require,module,exports){
+},{"react":223}],229:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -40046,7 +40066,7 @@ var CardTable = _react2['default'].createClass({
 exports['default'] = CardTable;
 module.exports = exports['default'];
 
-},{"../stores/CardStore":244,"react":223}],229:[function(require,module,exports){
+},{"../stores/CardStore":247,"react":223}],230:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -40068,6 +40088,7 @@ var dispatcher = require('../common/BudgetAppDispatcher');
 var ActionTypes = require('../constants/ActionTypes');
 var datasetUtilities = require('../data/DatasetUtilities');
 var Sparkline = require('react-sparkline');
+var CommonConstants = require('../constants/Common');
 
 var ChangeExplorer = _react2['default'].createClass({
     displayName: 'ChangeExplorer',
@@ -40085,12 +40106,21 @@ var ChangeExplorer = _react2['default'].createClass({
                 hierarchy: ['Fund', 'Department', 'Division', 'Account'],
                 accountTypes: [AccountTypes.EXPENSE, AccountTypes.REVENUE],
                 amountThreshold: 0.01
-            }
+            },
+            componentMode: CommonConstants.STANDALONE_COMPONENT
         };
     },
 
+    getAccountType: function getAccountType() {
+        if (this.props.componentMode == CommonConstants.COMPOSED_COMPONENT) {
+            return this.props.accountType;
+        } else {
+            return stateStore.getValue(this.props.storeId, 'accountType');
+        }
+    },
+
     prepareLocalState: function prepareLocalState(dm) {
-        var accountType = stateStore.getValue(this.props.storeId, 'accountType');
+        var accountType = this.getAccountType();
         var selectedLevel = stateStore.getValue(this.props.storeId, 'selectedLevel');
 
         return dm.checkData({
@@ -40103,10 +40133,17 @@ var ChangeExplorer = _react2['default'].createClass({
     componentWillMount: function componentWillMount() {
         // If this is the first time this component is mounting, we need to create the data model
         // and do any other state initialization required.
+        console.log('ChangeExplorer will mount');
         var dataModelId = stateStore.getComponentStateValue(this.props.storeId, 'dataModelId');
         var dm = null;
         if (dataModelId == null) {
-            var ids = this.props.componentData['mydatasets'].ids;
+            console.log('ChangeExplorer dataModelId is NULL!');
+            var ids;
+            if (this.props.hasOwnProperty('datasetIds')) {
+                ids = this.props.datasetIds;
+            } else {
+                ids = this.props.componentData['mydatasets'].ids;
+            }
             ids.forEach(function (id) {
                 apiActions.requestDatasetIfNeeded(id);
             });
@@ -40120,6 +40157,12 @@ var ChangeExplorer = _react2['default'].createClass({
         }
     },
 
+    componentWillUnmount: function componentWillUnmount() {
+        console.log('ChangeExplorer will unmount');
+        //var dataModelId = stateStore.getComponentStateValue(this.props.storeId, 'dataModelId');
+        //if (dataModelId != null) dataModelStore.deleteModel(dataModelId);
+    },
+
     componentWillReceiveProps: function componentWillReceiveProps() {
         var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
         var dm = dataModelStore.getModel(dataModelId);
@@ -40129,7 +40172,7 @@ var ChangeExplorer = _react2['default'].createClass({
     shouldComponentUpdate: function shouldComponentUpdate(nextProps, nextState) {
         var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
         var dm = dataModelStore.getModel(dataModelId);
-        var accountType = stateStore.getValue(this.props.storeId, 'accountType');
+        var accountType = this.getAccountType;
         return dm.dataChanged() || dm.commandsChanged({ accountTypes: [accountType] });
     },
 
@@ -40174,27 +40217,73 @@ var ChangeExplorer = _react2['default'].createClass({
 
     renderLevelSelector: function renderLevelSelector(data) {
         var selectedLevel = stateStore.getValue(this.props.storeId, 'selectedLevel');
-
+        var selectLabelText = 'Select Detail Level:' + String.fromCharCode(160) + String.fromCharCode(160);
+        var spacer = String.fromCharCode(160) + String.fromCharCode(160) + String.fromCharCode(160) + String.fromCharCode(160);
         return _react2['default'].createElement(
             'div',
             { className: 'form-group' },
             _react2['default'].createElement(
-                'label',
-                null,
-                'Select Level'
-            ),
-            _react2['default'].createElement(
-                'select',
-                { className: 'form-control', onChange: this.onLevelChange, value: selectedLevel },
-                data.categories.map(function (item, index) {
-                    return _react2['default'].createElement(
-                        'option',
-                        { key: index, value: index },
-                        item
-                    );
-                })
+                'form',
+                { className: 'form-inline' },
+                _react2['default'].createElement(
+                    'label',
+                    null,
+                    selectLabelText
+                ),
+                _react2['default'].createElement(
+                    'select',
+                    { className: 'form-control', onChange: this.onLevelChange, value: selectedLevel },
+                    data.categories.map(function (item, index) {
+                        return _react2['default'].createElement(
+                            'option',
+                            { key: index, value: index },
+                            item
+                        );
+                    })
+                ),
+                _react2['default'].createElement(
+                    'span',
+                    null,
+                    spacer
+                ),
+                _react2['default'].createElement(
+                    'button',
+                    { className: 'btn btn-normal', onClick: this.doReset },
+                    'Reset'
+                )
             )
         );
+    },
+
+    renderAccountSelector: function renderAccountSelector() {
+        if (this.props.componentMode == CommonConstants.STANDALONE_COMPONENT) {
+            return _react2['default'].createElement(
+                'form',
+                { className: 'form-inline' },
+                _react2['default'].createElement(
+                    'div',
+                    { className: 'form-group' },
+                    _react2['default'].createElement(
+                        'label',
+                        null,
+                        'Select Account Type'
+                    ),
+                    _react2['default'].createElement(
+                        'select',
+                        { className: 'form-control', onChange: this.onAccountTypeChange, value: accountType },
+                        this.props.accountTypes.map(function (type, index) {
+                            return _react2['default'].createElement(
+                                'option',
+                                { key: index, value: type.value },
+                                ' ',
+                                type.name,
+                                ' '
+                            );
+                        })
+                    )
+                )
+            );
+        }
     },
 
     interactionPanel: function interactionPanel(data, rows) {
@@ -40207,45 +40296,13 @@ var ChangeExplorer = _react2['default'].createClass({
                 { className: 'row' },
                 _react2['default'].createElement(
                     'div',
-                    { className: 'col-xs-4' },
+                    { className: 'col-xs-6' },
                     this.renderLevelSelector(data, rows)
                 ),
-                _react2['default'].createElement('div', { className: 'col-xs-1' }),
                 _react2['default'].createElement(
                     'div',
-                    { className: 'col-xs-4' },
-                    _react2['default'].createElement(
-                        'div',
-                        { className: 'form-group' },
-                        _react2['default'].createElement(
-                            'label',
-                            null,
-                            'Select Account Type'
-                        ),
-                        _react2['default'].createElement(
-                            'select',
-                            { className: 'form-control', onChange: this.onAccountTypeChange, value: accountType },
-                            this.props.accountTypes.map(function (type, index) {
-                                return _react2['default'].createElement(
-                                    'option',
-                                    { key: index, value: type.value },
-                                    ' ',
-                                    type.name,
-                                    ' '
-                                );
-                            })
-                        )
-                    )
-                ),
-                _react2['default'].createElement('div', { className: 'col-xs-1' }),
-                _react2['default'].createElement(
-                    'div',
-                    { className: 'col-xs-2' },
-                    _react2['default'].createElement(
-                        'button',
-                        { style: { float: 'right' }, className: 'btn btn-primary', onClick: this.doReset },
-                        'Reset'
-                    )
+                    { className: 'col-xs-6' },
+                    this.renderAccountSelector()
                 )
             )
         );
@@ -40340,12 +40397,18 @@ var ChangeExplorer = _react2['default'].createClass({
             startPath: [],
             nLevels: selectedLevel + 1
         }, false);
+        var dataNull = newData == null;
+        console.log('Rendering ChangeExplorer: dataModelId = ' + dataModelId + ', dataNull = ' + dataNull);
 
         if (newData == null) {
             return _react2['default'].createElement(
                 'div',
                 null,
-                'ChangeExplorer is loading ...'
+                _react2['default'].createElement(
+                    'p',
+                    null,
+                    'Data is loading ... Please be patient'
+                )
             );
         } else {
             var rows = newData.data;
@@ -40358,11 +40421,7 @@ var ChangeExplorer = _react2['default'].createClass({
             return _react2['default'].createElement(
                 'div',
                 null,
-                _react2['default'].createElement('br', null),
-                _react2['default'].createElement('hr', null),
                 this.interactionPanel(newData, rows),
-                _react2['default'].createElement('br', null),
-                _react2['default'].createElement('hr', null),
                 _react2['default'].createElement(
                     'table',
                     { className: 'table' },
@@ -40426,7 +40485,7 @@ var ChangeExplorer = _react2['default'].createClass({
 exports['default'] = ChangeExplorer;
 module.exports = exports['default'];
 
-},{"../common/ApiActions":224,"../common/BudgetAppDispatcher":225,"../constants/AccountTypes":237,"../constants/ActionTypes":238,"../data/DatasetUtilities":243,"../stores/DataModelStore":246,"../stores/DatasetStore":247,"../stores/StateStore":248,"react":223,"react-sparkline":67}],230:[function(require,module,exports){
+},{"../common/ApiActions":224,"../common/BudgetAppDispatcher":225,"../constants/AccountTypes":239,"../constants/ActionTypes":240,"../constants/Common":241,"../data/DatasetUtilities":246,"../stores/DataModelStore":249,"../stores/DatasetStore":250,"../stores/StateStore":251,"react":223,"react-sparkline":67}],231:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -40792,7 +40851,7 @@ var HistoryAreaChart = _react2['default'].createClass({
 exports['default'] = HistoryAreaChart;
 module.exports = exports['default'];
 
-},{"../common/ApiActions":224,"../common/BudgetAppDispatcher":225,"../constants/AccountTypes":237,"../constants/ActionTypes":238,"../data/DatasetUtilities":243,"../stores/DataModelStore":246,"../stores/DatasetStore":247,"../stores/StateStore":248,"react":223,"react-d3":43,"react-sparkline":67}],231:[function(require,module,exports){
+},{"../common/ApiActions":224,"../common/BudgetAppDispatcher":225,"../constants/AccountTypes":239,"../constants/ActionTypes":240,"../data/DatasetUtilities":246,"../stores/DataModelStore":249,"../stores/DatasetStore":250,"../stores/StateStore":251,"react":223,"react-d3":43,"react-sparkline":67}],232:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -40978,7 +41037,7 @@ var MultiYearTable = _react2['default'].createClass({
 exports['default'] = MultiYearTable;
 module.exports = exports['default'];
 
-},{"../common/ApiActions":224,"../common/BudgetAppDispatcher":225,"../constants/AccountTypes":237,"../constants/ActionTypes":238,"../stores/DataModelStore":246,"../stores/DatasetStore":247,"../stores/StateStore":248,"react":223}],232:[function(require,module,exports){
+},{"../common/ApiActions":224,"../common/BudgetAppDispatcher":225,"../constants/AccountTypes":239,"../constants/ActionTypes":240,"../stores/DataModelStore":249,"../stores/DatasetStore":250,"../stores/StateStore":251,"react":223}],233:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -41030,7 +41089,7 @@ var SimpleCard = _react2['default'].createClass({
 exports['default'] = SimpleCard;
 module.exports = exports['default'];
 
-},{"../stores/CardStore":244,"react":223}],233:[function(require,module,exports){
+},{"../stores/CardStore":247,"react":223}],234:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -41283,7 +41342,7 @@ var SimpleTreemap = _react2['default'].createClass({
 exports['default'] = SimpleTreemap;
 module.exports = exports['default'];
 
-},{"../common/ApiActions":224,"../common/BudgetAppDispatcher":225,"../constants/AccountTypes":237,"../constants/ActionTypes":238,"../data/DatasetUtilities":243,"../stores/DataModelStore":246,"../stores/DatasetStore":247,"../stores/StateStore":248,"react":223,"react-d3":43}],234:[function(require,module,exports){
+},{"../common/ApiActions":224,"../common/BudgetAppDispatcher":225,"../constants/AccountTypes":239,"../constants/ActionTypes":240,"../data/DatasetUtilities":246,"../stores/DataModelStore":249,"../stores/DatasetStore":250,"../stores/StateStore":251,"react":223,"react-d3":43}],235:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -41370,7 +41429,7 @@ var Site = _react2['default'].createClass({
 
         var currentPage = stateStore.getValue('site.currentPage');
         var page = configStore.getConfiguration('pages', currentPage);
-        console.log('Here are my pages: ' + JSON.stringify(this.props.pages));
+
         var layoutProps = {
             layout: page.layout,
             components: page.components,
@@ -41488,7 +41547,7 @@ var Site = _react2['default'].createClass({
 exports['default'] = Site;
 module.exports = exports['default'];
 
-},{"../common/BudgetAppDispatcher":225,"../constants/ActionTypes":238,"../stores/ConfigStore":245,"../stores/DatasetStore":247,"../stores/StateStore":248,"./BootstrapLayout":227,"./SiteNavigation":235,"react":223}],235:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":225,"../constants/ActionTypes":240,"../stores/ConfigStore":248,"../stores/DatasetStore":250,"../stores/StateStore":251,"./BootstrapLayout":228,"./SiteNavigation":236,"react":223}],236:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -41561,7 +41620,7 @@ var SiteNavigation = _react2['default'].createClass({
 exports['default'] = SiteNavigation;
 module.exports = exports['default'];
 
-},{"../common/BudgetAppDispatcher":225,"../constants/ActionTypes":238,"../stores/ConfigStore":245,"../stores/StateStore":248,"react":223}],236:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":225,"../constants/ActionTypes":240,"../stores/ConfigStore":248,"../stores/StateStore":251,"react":223}],237:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -41652,7 +41711,227 @@ var SlideShow = _react2['default'].createClass({
 exports['default'] = SlideShow;
 module.exports = exports['default'];
 
-},{"../stores/CardStore":244,"react":223}],237:[function(require,module,exports){
+},{"../stores/CardStore":247,"react":223}],238:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+    value: true
+});
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _ChangeExplorer = require('./ChangeExplorer');
+
+var _ChangeExplorer2 = _interopRequireDefault(_ChangeExplorer);
+
+var datasetStore = require('../stores/DatasetStore');
+var stateStore = require('../stores/StateStore');
+var configStore = require('../stores/ConfigStore');
+var dataModelStore = require('../stores/DataModelStore');
+var apiActions = require('../common/ApiActions');
+var idGenerator = require('../common/IdGenerator');
+var AccountTypes = require('../constants/AccountTypes');
+var dispatcher = require('../common/BudgetAppDispatcher');
+var ActionTypes = require('../constants/ActionTypes');
+var CommonConstants = require('../constants/Common');
+
+var WhatsNewPage = _react2['default'].createClass({
+    displayName: 'WhatsNewPage',
+
+    propTypes: {
+        componentData: _react2['default'].PropTypes.object.isRequired,
+        componentProps: _react2['default'].PropTypes.object.isRequired,
+        storeId: _react2['default'].PropTypes.number.isRequired
+    },
+
+    getDefaultProps: function getDefaultProps() {
+        return {
+            accountTypes: [{ name: 'Expense', value: AccountTypes.EXPENSE }, { name: 'Revenue', value: AccountTypes.REVENUE }],
+            dataInitialization: {
+                hierarchy: ['Fund', 'Department', 'Division', 'Account'],
+                accountTypes: [AccountTypes.EXPENSE, AccountTypes.REVENUE],
+                amountThreshold: 0.01
+            }
+        };
+    },
+
+    componentWillMount: function componentWillMount() {
+        console.log('WhatsNewPage will mount');
+        // If this is the first time this component is mounting, we need to create the data model
+        // and do any other state initialization required.
+        var dataModelId = stateStore.getComponentStateValue(this.props.storeId, 'dataModelId');
+        var dm = null;
+        if (dataModelId == null) {
+            var ids = this.props.componentData['mydatasets'].ids;
+            ids.forEach(function (id) {
+                apiActions.requestDatasetIfNeeded(id);
+            });
+
+            dm = dataModelStore.createModel(ids, this.props.dataInitialization);
+            var subComponents = {
+                chart: {},
+                table: {}
+            };
+            subComponents.chart.id = idGenerator.generateId();
+            subComponents.chart.storeId = stateStore.registerComponent('components', subComponents.chart.id, {});
+            configStore.registerComponent(subComponents.chart.storeId, 'components', subComponents.chart.id, {});
+
+            subComponents.table.id = idGenerator.generateId();
+            subComponents.table.storeId = stateStore.registerComponent('components', subComponents.table.id, {});
+            configStore.registerComponent(subComponents.table.storeId, 'components', subComponents.table.id, {});
+
+            stateStore.setComponentState(this.props.storeId, {
+                accountType: AccountTypes.EXPENSE,
+                dataModelId: dm.id,
+                displayMode: 'chart',
+                subComponents: subComponents
+            });
+            // And we need to register 2 components
+        }
+    },
+
+    componentWillUnmount: function componentWillUnmount() {
+        console.log('WhatsNewPage will unmount');
+        //var subComponents = stateStore.getValue(this.props.storeId, 'subComponents');
+        //stateStore.unregisterComponent(subComponents.chart.storeId);
+        //stateStore.unregisterComponent(subComponents.table.storeId);
+        //configStore.unregisterComponent(subComponents.chart.storeId);
+        //configStore.unregisterComponent(subComponents.table.storeId);
+    },
+
+    onAccountTypeChange: function onAccountTypeChange(e) {
+        dispatcher.dispatch({
+            actionType: ActionTypes.COMPONENT_STATE_CHANGE,
+            payload: {
+                id: this.props.storeId,
+                changes: [{
+                    name: 'accountType',
+                    value: Number(e.target.value)
+                }]
+            }
+        });
+    },
+
+    changeMode: function changeMode(e) {
+        var currentMode = stateStore.getValue(this.props.storeId, 'displayMode');
+        var displayMode = currentMode == 'chart' ? 'table' : 'chart';
+
+        dispatcher.dispatch({
+            actionType: ActionTypes.COMPONENT_STATE_CHANGE,
+            payload: {
+                id: this.props.storeId,
+                changes: [{
+                    name: 'displayMode',
+                    value: displayMode
+                }]
+            }
+        });
+    },
+
+    optionsPanel: function interactionPanel() {
+        var accountType = stateStore.getValue(this.props.storeId, 'accountType');
+        var displayMode = stateStore.getValue(this.props.storeId, 'displayMode');
+        var modeButtonText = displayMode == 'chart' ? 'Table View' : 'Chart View';
+        var selectLabelText = 'Select Account Type:' + String.fromCharCode(160) + String.fromCharCode(160);
+        return _react2['default'].createElement(
+            'div',
+            null,
+            _react2['default'].createElement(
+                'div',
+                { className: 'row' },
+                _react2['default'].createElement(
+                    'div',
+                    { className: 'col-xs-4' },
+                    _react2['default'].createElement(
+                        'form',
+                        { className: 'form-inline' },
+                        _react2['default'].createElement(
+                            'div',
+                            { className: 'form-group' },
+                            _react2['default'].createElement(
+                                'label',
+                                null,
+                                selectLabelText,
+                                _react2['default'].createElement('span', { width: '30px' })
+                            ),
+                            _react2['default'].createElement(
+                                'select',
+                                { className: 'form-control', onChange: this.onAccountTypeChange, value: accountType },
+                                this.props.accountTypes.map(function (type, index) {
+                                    return _react2['default'].createElement(
+                                        'option',
+                                        { key: index, value: type.value },
+                                        ' ',
+                                        type.name,
+                                        ' '
+                                    );
+                                })
+                            )
+                        )
+                    )
+                ),
+                _react2['default'].createElement('div', { className: 'col-xs-6' }),
+                _react2['default'].createElement(
+                    'div',
+                    { className: 'col-xs-2' },
+                    _react2['default'].createElement(
+                        'button',
+                        { style: { float: 'right' }, className: 'btn btn-normal',
+                            onClick: this.changeMode },
+                        'Switch To ',
+                        modeButtonText
+                    )
+                )
+            )
+        );
+    },
+
+    renderCharts: function renderCharts() {
+        return _react2['default'].createElement(
+            'div',
+            null,
+            'I\'m a chart'
+        );
+    },
+
+    renderTable: function renderTable() {
+        var subComponents = stateStore.getValue(this.props.storeId, 'subComponents');
+        return _react2['default'].createElement(
+            'div',
+            null,
+            _react2['default'].createElement(_ChangeExplorer2['default'], { componentMode: CommonConstants.COMPOSED_COMPONENT,
+                datasetIds: this.props.componentData['mydatasets'].ids,
+                accountType: stateStore.getValue(this.props.storeId, 'accountType'),
+                storeId: subComponents.table.storeId,
+                componentData: {},
+                componentProps: {}
+            })
+        );
+    },
+
+    render: function render() {
+        var displayMode = stateStore.getValue(this.props.storeId, 'displayMode');
+        var renderFunction = displayMode == 'chart' ? this.renderCharts : this.renderTable;
+
+        return _react2['default'].createElement(
+            'div',
+            null,
+            _react2['default'].createElement('br', null),
+            this.optionsPanel(),
+            _react2['default'].createElement('br', null),
+            renderFunction()
+        );
+    }
+});
+
+exports['default'] = WhatsNewPage;
+module.exports = exports['default'];
+
+},{"../common/ApiActions":224,"../common/BudgetAppDispatcher":225,"../common/IdGenerator":226,"../constants/AccountTypes":239,"../constants/ActionTypes":240,"../constants/Common":241,"../stores/ConfigStore":248,"../stores/DataModelStore":249,"../stores/DatasetStore":250,"../stores/StateStore":251,"./ChangeExplorer":230,"react":223}],239:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -41665,7 +41944,7 @@ module.exports = {
     CONTRA: 6
 };
 
-},{}],238:[function(require,module,exports){
+},{}],240:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -41674,7 +41953,15 @@ module.exports = {
     DATASET_RECEIVED: "DATASET_RECEIVED"
 };
 
-},{}],239:[function(require,module,exports){
+},{}],241:[function(require,module,exports){
+"use strict";
+
+module.exports = {
+    STANDALONE_COMPONENT: 0,
+    COMPOSED_COMPONENT: 1
+};
+
+},{}],242:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -41685,7 +41972,7 @@ module.exports = {
     DS_STATE_READY: "DS_STATE_READY"
 };
 
-},{}],240:[function(require,module,exports){
+},{}],243:[function(require,module,exports){
 'use strict';
 
 function Card(timestamp, title, body, link, image) {
@@ -41704,7 +41991,7 @@ function Card(timestamp, title, body, link, image) {
 
 module.exports = Card;
 
-},{}],241:[function(require,module,exports){
+},{}],244:[function(require,module,exports){
 'use strict';
 
 var DatasetStatus = require('../constants/DatasetStatus');
@@ -41975,7 +42262,7 @@ function DataModel(id, datasetIds) {
 
 module.exports = DataModel;
 
-},{"../common/BudgetAppDispatcher":225,"../constants/AccountTypes":237,"../constants/ActionTypes":238,"../constants/DatasetStatus":239,"../stores/DatasetStore":247,"./DatasetUtilities":243}],242:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":225,"../constants/AccountTypes":239,"../constants/ActionTypes":240,"../constants/DatasetStatus":242,"../stores/DatasetStore":250,"./DatasetUtilities":246}],245:[function(require,module,exports){
 'use strict';
 
 var DatasetStatus = require('../constants/DatasetStatus');
@@ -42019,7 +42306,7 @@ function Dataset(timestamp, sourceId) {
 
 module.exports = Dataset;
 
-},{"../constants/DatasetStatus":239}],243:[function(require,module,exports){
+},{"../constants/DatasetStatus":242}],246:[function(require,module,exports){
 'use strict';
 
 var assign = require('object-assign');
@@ -42197,7 +42484,7 @@ var DatasetUtilities = {
 
 module.exports = DatasetUtilities;
 
-},{"../common/BudgetAppDispatcher":225,"../constants/AccountTypes":237,"../constants/ActionTypes":238,"../constants/DatasetStatus":239,"../stores/DatasetStore":247,"object-assign":7}],244:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":225,"../constants/AccountTypes":239,"../constants/ActionTypes":240,"../constants/DatasetStatus":242,"../stores/DatasetStore":250,"object-assign":7}],247:[function(require,module,exports){
 'use strict';
 
 var dispatcher = require('../common/BudgetAppDispatcher');
@@ -42255,7 +42542,7 @@ dispatcher.register(function (action) {
 
 module.exports = CardStore;
 
-},{"../common/BudgetAppDispatcher":225,"../constants/ActionTypes":238,"../data/Card":240,"events":2,"object-assign":7}],245:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":225,"../constants/ActionTypes":240,"../data/Card":243,"events":2,"object-assign":7}],248:[function(require,module,exports){
 'use strict';
 
 var dispatcher = require('../common/BudgetAppDispatcher');
@@ -42290,6 +42577,10 @@ var ConfigStore = assign({}, EventEmitter.prototype, {
             state: initialValue
         };
         this.storeConfiguration('components', storeId, component);
+    },
+
+    unregisterComponent: function unregisterComponent(storeId) {
+        delete this.areas['components'].items[storeId];
     },
 
     storeConfiguration: function storeConfiguration(areaName, key, value) {
@@ -42337,7 +42628,7 @@ dispatcher.register(function (action) {
 
 module.exports = ConfigStore;
 
-},{"../common/BudgetAppDispatcher":225,"../constants/ActionTypes":238,"events":2,"object-assign":7}],246:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":225,"../constants/ActionTypes":240,"events":2,"object-assign":7}],249:[function(require,module,exports){
 'use strict';
 
 var dispatcher = require('../common/BudgetAppDispatcher');
@@ -42364,6 +42655,10 @@ var DataModelStore = assign({}, EventEmitter.prototype, {
         }).bind(this));
         this._models[dm.id] = dm;
         return dm;
+    },
+
+    deleteModel: function deleteModel(id) {
+        delete this._models[id];
     },
 
     getModel: function getModel(id) {
@@ -42402,7 +42697,7 @@ dispatcher.register(function (action) {
 
 module.exports = DataModelStore;
 
-},{"../common/BudgetAppDispatcher":225,"../constants/ActionTypes":238,"../data/DataModel":241,"events":2,"object-assign":7}],247:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":225,"../constants/ActionTypes":240,"../data/DataModel":244,"events":2,"object-assign":7}],250:[function(require,module,exports){
 'use strict';
 
 var dispatcher = require('../common/BudgetAppDispatcher');
@@ -42472,7 +42767,7 @@ DatasetStore.dispatchToken = dispatcher.register(function (action) {
 
 module.exports = DatasetStore;
 
-},{"../common/BudgetAppDispatcher":225,"../constants/ActionTypes":238,"../data/Dataset":242,"events":2,"object-assign":7}],248:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":225,"../constants/ActionTypes":240,"../data/Dataset":245,"events":2,"object-assign":7}],251:[function(require,module,exports){
 'use strict';
 
 var dispatcher = require('../common/BudgetAppDispatcher');
@@ -42515,6 +42810,10 @@ var StateStore = assign({}, EventEmitter.prototype, {
         };
         this.store.components[id] = component;
         return id;
+    },
+
+    unregisterComponent: function unregisterComponent(id) {
+        delete this.store.components[id];
     },
 
     registerPage: function registerPage(type, name, initialState) {},
@@ -42630,4 +42929,4 @@ dispatcher.register(function (action) {
 module.exports = StateStore;
 /*path OR id, key */
 
-},{"../common/BudgetAppDispatcher":225,"../constants/ActionTypes":238,"events":2,"object-assign":7}]},{},[1]);
+},{"../common/BudgetAppDispatcher":225,"../constants/ActionTypes":240,"events":2,"object-assign":7}]},{},[1]);
