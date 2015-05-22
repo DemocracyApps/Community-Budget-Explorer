@@ -259,7 +259,7 @@ var ChangeExplorer = React.createClass({
         return <tr key={index}>
             <td key="0" style={{width:"35%"}}>{label}</td>
             <td>
-                <MicroBarChart data={item.amount} />
+                <Sparkline data={item.amount} />
             </td>
             <td key="1" style={tdStyle}>{datasetUtilities.formatDollarAmount(item.amount[length-2])}</td>
             <td key="2" style={tdStyle}>{datasetUtilities.formatDollarAmount(item.amount[length-1])}</td>

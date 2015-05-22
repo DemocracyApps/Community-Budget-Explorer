@@ -1,5 +1,6 @@
 import React from 'react';
 import ChangeExplorer from './ChangeExplorer';
+import VerticalBarChart from './VerticalBarChart';
 
 var datasetStore = require('../stores/DatasetStore');
 var stateStore = require('../stores/StateStore');
@@ -148,7 +149,30 @@ var WhatsNewPage = React.createClass({
     },
 
     renderCharts: function () {
-        return <div>I'm a chart</div>
+        var myData = [
+            {
+                name: "a1",
+                value: 18
+            },
+            {
+                name: "a2",
+                value: -12
+            },
+            {
+                name: "a3",
+                value: 2
+            },
+            {
+                name: "a4",
+                value: -8
+            }
+        ];
+        return (
+            <div>
+                <p>I'm a chart</p>
+                <VerticalBarChart width={400} height={400} data = {myData} />
+            </div>
+        )
     },
 
     renderTable: function () {

@@ -5,6 +5,7 @@
   },
   "description": "Government Budget Explorer",
   "dependencies": {
+    "d3": "^3.5.5",
     "flux": "^2.0.1",
     "gulp-sourcemaps": "^1.5.1",
     "keymirror": "^0.1.1",

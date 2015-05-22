@@ -85,3 +85,22 @@ div.presentation {
 div.component-div {
   padding:0px;
 }
+
+.bar.positive {
+  fill: steelblue;
+}
+
+.bar.negative {
+  fill: brown;
+}
+
+.axis text {
+  font: 10px sans-serif;
+}
+
+.axis path,
+.axis line {
+  fill: #000;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
