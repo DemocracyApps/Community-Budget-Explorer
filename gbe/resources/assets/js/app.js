@@ -1,5 +1,8 @@
+require('babelify/polyfill');
 import React from 'react';
+
 import Site from './components/Site';
+
 var dispatcher = require('./common/BudgetAppDispatcher');
 var ActionTypes = require('./constants/ActionTypes');
 var idGenerator = require('./common/IdGenerator');

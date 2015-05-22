@@ -1,5 +1,5 @@
 var elixir = require('laravel-elixir');
-
+require('babelify/polyfill');
 /*
  |--------------------------------------------------------------------------
  | Elixir Asset Management
@@ -32,6 +32,10 @@ elixir(function(mix) {
             './vendor/bower_components/jquery-cookie/jquery.cookie.js',
             './vendor/bower_components/FlexSlider/jquery.flexslider-min.js'
         ], './public/js/all.js', './')
+        .copy('./vendor/bower_components/FlexSlider/fonts/flexslider-icon.ttf',
+        './public/css/fonts/')
+        .copy('./vendor/bower_components/FlexSlider/fonts/flexslider-icon.woff',
+        './public/css/fonts/')
     ;
 });
 
