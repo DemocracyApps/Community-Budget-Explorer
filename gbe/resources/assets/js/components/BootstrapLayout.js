@@ -15,11 +15,8 @@ var BootstrapLayout = React.createClass({
 
     renderComponent: function (component, index) {
         console.log("Looking up component type " + component.componentName);
-        if (this.props.reactComponents[component.componentName]) {
-            console.log("Yes we have it");
-        }
-        else {
-            console.log("no, we do not");
+        if (! this.props.reactComponents[component.componentName]) {
+            console.log("BootstrapLayout - Unable to find component");
         }
         var comp = this.props.reactComponents[component.componentName];
         var componentData = (component.componentData.length == 0)?{}:component.componentData;

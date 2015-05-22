@@ -2,9 +2,9 @@ import d3 from 'd3';
 
 var d3Chart = {};
 
-d3Chart.create = function (el, props, data) {
+d3Chart.create = function (el, props, data, callbacks) {
     var margin = {top: 20, right: 10, bottom: 10, left: 10};
-
+console.log("In chart create with callbacks " + callbacks.id);
     var svg = d3.select(el).append('svg')
         .attr('class', 'd3')
         .attr('width', props.width)
@@ -12,18 +12,21 @@ d3Chart.create = function (el, props, data) {
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
         ;
 
-    this.update(el, data, props.width, props.height, margin);
+    this.update(el, data, props.width, props.height, margin, callbacks);
     return svg;
 };
 
-d3Chart.update = function(el, data, width, height, margin) {
+d3Chart.update = function(el, data, width, height, margin, callbacks) {
     var scales = d3Chart.computeScales(data, width, height, margin);
 
-    this.drawBars(el, scales, data, height);
+    this.drawBars(el, scales, data, height, callbacks);
 
 };
 
-d3Chart.drawBars = function(el, scales, data, height) {
+d3Chart.drawBars = function(el, scales, data, height, callbacks) {
+
+    var minValue = d3.min(data, function(d) { return d.value;});
+    var maxValue = d3.max(data, function(d) { return d.value;});
     var svg = d3.select(el).selectAll(".d3");
     svg.selectAll(".bar")
         .data(data)
@@ -41,11 +44,15 @@ d3Chart.drawBars = function(el, scales, data, height) {
             var w = Math.abs(scales.x(d.value) - scales.x(0));
             return w;
         })
-        .attr("height", scales.y.rangeBand());
+        .attr("height", scales.y.rangeBand())
+        .on('mouseover', callbacks.mouseOver)
+        .on('mouseout', callbacks.mouseOut);
 
     var xAxis = d3.svg.axis()
         .scale(scales.x)
-        .orient("top");
+        .orient("top")
+        .tickValues([minValue, maxValue])
+        .tickFormat(d3.format("<-$120,.0f"));
 
     svg.append("g")
         .attr("class", "x axis")

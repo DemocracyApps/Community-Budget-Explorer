@@ -36,7 +36,6 @@ var WhatsNewPage = React.createClass({
     },
 
     componentWillMount: function () {
-        console.log("WhatsNewPage will mount");
         // If this is the first time this component is mounting, we need to create the data model
         // and do any other state initialization required.
         var dataModelId = stateStore.getComponentStateValue(this.props.storeId, 'dataModelId');
@@ -67,18 +66,19 @@ var WhatsNewPage = React.createClass({
                     displayMode: "chart",
                     subComponents: subComponents
                 });
-            // And we need to register 2 components
 
         }
     },
 
+    shouldComponentUpdate: function (nextProps, nextState) {
+        var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
+        var dm = dataModelStore.getModel(dataModelId);
+        var accountType = this.getAccountType;
+        return ( dm.dataChanged() || dm.commandsChanged({accountTypes: [accountType]}) );
+    },
+
     componentWillUnmount: function() {
         console.log("WhatsNewPage will unmount");
-        //var subComponents = stateStore.getValue(this.props.storeId, 'subComponents');
-        //stateStore.unregisterComponent(subComponents.chart.storeId);
-        //stateStore.unregisterComponent(subComponents.table.storeId);
-        //configStore.unregisterComponent(subComponents.chart.storeId);
-        //configStore.unregisterComponent(subComponents.table.storeId);
     },
 
     onAccountTypeChange: function (e) {
@@ -148,31 +148,83 @@ var WhatsNewPage = React.createClass({
         )
     },
 
-    renderCharts: function () {
-        var myData = [
-            {
-                name: "a1",
-                value: 18
-            },
-            {
-                name: "a2",
-                value: -12
-            },
-            {
-                name: "a3",
-                value: 2
-            },
-            {
-                name: "a4",
-                value: -8
+    computeChanges: function computeChanges (item, index) {
+        let length = item.amount.length;
+        let useInfinity = false;
+        if (length < 2) throw "Minimum of 2 datasets required for ChangeExplorer";
+        let cur = item.amount[length-1], prev = item.amount[length-2];
+        item.difference = cur-prev;
+        if (Math.abs(prev) < 0.001) {
+            if (useInfinity) {
+                item.percent = String.fromCharCode(8734) + " %";
             }
-        ];
-        return (
-            <div>
-                <p>I'm a chart</p>
-                <VerticalBarChart width={400} height={400} data = {myData} />
-            </div>
-        )
+            else {
+                item.percent = "New";
+            }
+            item.percentSort = 10000 * Math.abs(item.difference);
+        }
+        else if (cur < 0. || prev < 0.) {
+            item.percent="N/A";
+            item.percentSort = 10000 * Math.abs(item.difference);
+        }
+        else {
+            let pct = Math.round(1000*(item.difference)/prev)/10;
+            item.percent = (pct) + "%";
+            item.percentSort = Math.abs(item.percent);
+        }
+    },
+
+    sortByAbsolutePercentage: function sortByAbsolutePercentage () {
+        return item2.percentSort - item1.percentSort;
+    },
+
+
+    sortByAbsoluteDifference: function sortByAbsoluteDifference(item1, item2) {
+        var result = Math.abs(item2.difference) - Math.abs(item1.difference);
+        return result;
+    },
+
+    renderCharts: function () {
+        var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
+        var dm = dataModelStore.getModel(dataModelId);
+        var accountType = stateStore.getValue(this.props.storeId, 'accountType');
+        console.log("Account type is now " + accountType);
+        var newData = dm.getData({
+            accountTypes:[accountType],
+            startPath: [],
+            nLevels: 4
+        }, false);
+        var dataNull = (newData == null);
+
+        if (dataNull) {
+            return (
+                <div>
+                    <p>Data is loading ... Please be patient</p>
+                </div>
+            )
+        }
+        else {
+            var rows = newData.data;
+            var headers = newData.dataHeaders;
+            let dataLength = rows[0].amount.length;
+            rows.map(this.computeChanges);
+            rows = rows.sort(this.sortByAbsoluteDifference).slice(0, 10);
+
+            var myData = [];
+            for (let i = 0; i < rows.length; ++i) {
+                let item = {
+                    name: rows[i].categories[rows[i].categories.length - 1],
+                    value: rows[i].difference
+                };
+                myData.push(item);
+            }
+            return (
+                <div>
+                    <p>I'm a chart</p>
+                    <VerticalBarChart width={400} height={400} data={myData}/>
+                </div>
+            )
+        }
     },
 
     renderTable: function () {

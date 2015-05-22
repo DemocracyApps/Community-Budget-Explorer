@@ -28,6 +28,7 @@ function DataModel(id, datasetIds, initialCommands = null) {
         this.status = DatasetStatus.DS_STATE_READY;
         this.readyCount = 0;
         for (let i=0; i<this.rawDatasets.length; ++i) {
+
             if (this.rawDatasets[i].isReady()) {
                 ++this.readyCount;
             }
@@ -256,6 +257,7 @@ function DataModel(id, datasetIds, initialCommands = null) {
             };
         }
         else {
+
             return null;
         }
     };

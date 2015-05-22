@@ -7,10 +7,10 @@ var assign = require('object-assign');
 var ApiActions = {
 
     requestDatasetIfNeeded: function requestDatasetIfNeeded (id) {
-        console.log("Requesting dataset " + id + " via api");
         var site = configStore.getConfiguration('common','site');
         var ds = datasetStore.getDataset(id);
         if (! ds.isReady() && ! ds.isRequested()) {
+            console.log("Requesting dataset " + id + " via api");
             var source = site.apiUrl + "/datasets/" + id;
             $.get(source, function (r) {
             }).done(this.receiveData).fail(this.receiveError);

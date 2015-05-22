@@ -59,11 +59,9 @@ var ChangeExplorer = React.createClass({
     componentWillMount: function () {
         // If this is the first time this component is mounting, we need to create the data model
         // and do any other state initialization required.
-        console.log("ChangeExplorer will mount");
         var dataModelId = stateStore.getComponentStateValue(this.props.storeId, 'dataModelId');
         let dm = null;
         if (dataModelId == null) {
-            console.log("ChangeExplorer dataModelId is NULL!");
             var ids;
             if (this.props.hasOwnProperty('datasetIds')) {
                 ids = this.props.datasetIds;

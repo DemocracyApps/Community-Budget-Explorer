@@ -42909,10 +42909,10 @@ var assign = require('object-assign');
 var ApiActions = {
 
     requestDatasetIfNeeded: function requestDatasetIfNeeded(id) {
-        console.log('Requesting dataset ' + id + ' via api');
         var site = configStore.getConfiguration('common', 'site');
         var ds = datasetStore.getDataset(id);
         if (!ds.isReady() && !ds.isRequested()) {
+            console.log('Requesting dataset ' + id + ' via api');
             var source = site.apiUrl + '/datasets/' + id;
             $.get(source, function (r) {}).done(this.receiveData).fail(this.receiveError);
             ds.setRequested();
@@ -43439,10 +43439,8 @@ var BootstrapLayout = _react2["default"].createClass({
 
     renderComponent: function renderComponent(component, index) {
         console.log("Looking up component type " + component.componentName);
-        if (this.props.reactComponents[component.componentName]) {
-            console.log("Yes we have it");
-        } else {
-            console.log("no, we do not");
+        if (!this.props.reactComponents[component.componentName]) {
+            console.log("BootstrapLayout - Unable to find component");
         }
         var comp = this.props.reactComponents[component.componentName];
         var componentData = component.componentData.length == 0 ? {} : component.componentData;
@@ -43680,11 +43678,9 @@ var ChangeExplorer = _react2['default'].createClass({
     componentWillMount: function componentWillMount() {
         // If this is the first time this component is mounting, we need to create the data model
         // and do any other state initialization required.
-        console.log('ChangeExplorer will mount');
         var dataModelId = stateStore.getComponentStateValue(this.props.storeId, 'dataModelId');
         var dm = null;
         if (dataModelId == null) {
-            console.log('ChangeExplorer dataModelId is NULL!');
             var ids;
             if (this.props.hasOwnProperty('datasetIds')) {
                 ids = this.props.datasetIds;
@@ -45288,10 +45284,24 @@ var VerticalBarChart = _react2['default'].createClass({
         height: _react2['default'].PropTypes.number.isRequired
     },
 
+    getInitialState: function getInitialState() {
+        return {
+            hoverMessage: 'Mouse over bars to see details'
+        };
+    },
+
     componentDidMount: function componentDidMount() {
-        var el = _react2['default'].findDOMNode(this);
-        console.log('I have width = ' + this.props.width);
-        var it = d3BarChart.create(el, { width: this.props.width, height: this.props.height }, this.props.data);
+        var el = _react2['default'].findDOMNode(this.refs.myChart);
+        var callbacks = {
+            id: 12,
+            mouseOver: (function (d) {
+                this.setState({ hoverMessage: JSON.stringify(d) });
+            }).bind(this),
+            mouseOut: (function (d) {
+                this.setState({ hoverMessage: 'Mouse over bars to see details' });
+            }).bind(this)
+        };
+        var it = d3BarChart.create(el, { width: this.props.width, height: this.props.height }, this.props.data, callbacks);
         window.it = it;
     },
 
@@ -45299,9 +45309,28 @@ var VerticalBarChart = _react2['default'].createClass({
 
     componentWillUnmount: function componentWillUnmount() {},
 
+    hoverMessage: function hoverMessage() {
+        if (this.state.hoverMessage != null) {
+            return _react2['default'].createElement(
+                'p',
+                null,
+                this.state.hoverMessage
+            );
+        }
+    },
+
     render: function render() {
 
-        return _react2['default'].createElement('div', { className: 'Chart' });
+        return _react2['default'].createElement(
+            'div',
+            null,
+            _react2['default'].createElement('div', { className: 'Chart', ref: 'myChart' }),
+            _react2['default'].createElement(
+                'div',
+                null,
+                this.hoverMessage()
+            )
+        );
     }
 });
 
@@ -45361,7 +45390,6 @@ var WhatsNewPage = _react2['default'].createClass({
     },
 
     componentWillMount: function componentWillMount() {
-        console.log('WhatsNewPage will mount');
         // If this is the first time this component is mounting, we need to create the data model
         // and do any other state initialization required.
         var dataModelId = stateStore.getComponentStateValue(this.props.storeId, 'dataModelId');
@@ -45391,17 +45419,18 @@ var WhatsNewPage = _react2['default'].createClass({
                 displayMode: 'chart',
                 subComponents: subComponents
             });
-            // And we need to register 2 components
         }
+    },
+
+    shouldComponentUpdate: function shouldComponentUpdate(nextProps, nextState) {
+        var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
+        var dm = dataModelStore.getModel(dataModelId);
+        var accountType = this.getAccountType;
+        return dm.dataChanged() || dm.commandsChanged({ accountTypes: [accountType] });
     },
 
     componentWillUnmount: function componentWillUnmount() {
         console.log('WhatsNewPage will unmount');
-        //var subComponents = stateStore.getValue(this.props.storeId, 'subComponents');
-        //stateStore.unregisterComponent(subComponents.chart.storeId);
-        //stateStore.unregisterComponent(subComponents.table.storeId);
-        //configStore.unregisterComponent(subComponents.chart.storeId);
-        //configStore.unregisterComponent(subComponents.table.storeId);
     },
 
     onAccountTypeChange: function onAccountTypeChange(e) {
@@ -45491,30 +45520,87 @@ var WhatsNewPage = _react2['default'].createClass({
         );
     },
 
+    computeChanges: function computeChanges(item, index) {
+        var length = item.amount.length;
+        var useInfinity = false;
+        if (length < 2) throw 'Minimum of 2 datasets required for ChangeExplorer';
+        var cur = item.amount[length - 1],
+            prev = item.amount[length - 2];
+        item.difference = cur - prev;
+        if (Math.abs(prev) < 0.001) {
+            if (useInfinity) {
+                item.percent = String.fromCharCode(8734) + ' %';
+            } else {
+                item.percent = 'New';
+            }
+            item.percentSort = 10000 * Math.abs(item.difference);
+        } else if (cur < 0 || prev < 0) {
+            item.percent = 'N/A';
+            item.percentSort = 10000 * Math.abs(item.difference);
+        } else {
+            var pct = Math.round(1000 * item.difference / prev) / 10;
+            item.percent = pct + '%';
+            item.percentSort = Math.abs(item.percent);
+        }
+    },
+
+    sortByAbsolutePercentage: function sortByAbsolutePercentage() {
+        return item2.percentSort - item1.percentSort;
+    },
+
+    sortByAbsoluteDifference: function sortByAbsoluteDifference(item1, item2) {
+        var result = Math.abs(item2.difference) - Math.abs(item1.difference);
+        return result;
+    },
+
     renderCharts: function renderCharts() {
-        var myData = [{
-            name: 'a1',
-            value: 18
-        }, {
-            name: 'a2',
-            value: -12
-        }, {
-            name: 'a3',
-            value: 2
-        }, {
-            name: 'a4',
-            value: -8
-        }];
-        return _react2['default'].createElement(
-            'div',
-            null,
-            _react2['default'].createElement(
-                'p',
+        var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
+        var dm = dataModelStore.getModel(dataModelId);
+        var accountType = stateStore.getValue(this.props.storeId, 'accountType');
+        console.log('Account type is now ' + accountType);
+        var newData = dm.getData({
+            accountTypes: [accountType],
+            startPath: [],
+            nLevels: 4
+        }, false);
+        var dataNull = newData == null;
+
+        if (dataNull) {
+            return _react2['default'].createElement(
+                'div',
                 null,
-                'I\'m a chart'
-            ),
-            _react2['default'].createElement(_VerticalBarChart2['default'], { width: 400, height: 400, data: myData })
-        );
+                _react2['default'].createElement(
+                    'p',
+                    null,
+                    'Data is loading ... Please be patient'
+                )
+            );
+        } else {
+            var rows = newData.data;
+            var headers = newData.dataHeaders;
+            var dataLength = rows[0].amount.length;
+            rows.map(this.computeChanges);
+            rows = rows.sort(this.sortByAbsoluteDifference).slice(0, 10);
+
+            var myData = [];
+            for (var i = 0; i < rows.length; ++i) {
+                var item = {
+                    name: rows[i].categories[rows[i].categories.length - 1],
+                    value: rows[i].difference
+                };
+                myData.push(item);
+            }
+            return _react2['default'].createElement(
+                'div',
+                null,
+                _react2['default'].createElement(
+                    'p',
+                    null,
+                    'I\'m a chart'
+                ),
+                _react2['default'].createElement(_VerticalBarChart2['default'], { width: 400, height: 400, data: myData })
+            );
+        }
     },
 
     renderTable: function renderTable() {
@@ -45565,41 +45651,45 @@ var _d32 = _interopRequireDefault(_d3);
 
 var d3Chart = {};
 
-d3Chart.create = function (el, props, data) {
+d3Chart.create = function (el, props, data, callbacks) {
     var margin = { top: 20, right: 10, bottom: 10, left: 10 };
-
+    console.log('In chart create with callbacks ' + callbacks.id);
     var svg = _d32['default'].select(el).append('svg').attr('class', 'd3').attr('width', props.width).attr('height', props.height).attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
-    this.update(el, data, props.width, props.height, margin);
+    this.update(el, data, props.width, props.height, margin, callbacks);
     return svg;
 };
 
-d3Chart.update = function (el, data, width, height, margin) {
+d3Chart.update = function (el, data, width, height, margin, callbacks) {
     var scales = d3Chart.computeScales(data, width, height, margin);
 
-    this.drawBars(el, scales, data, height);
+    this.drawBars(el, scales, data, height, callbacks);
 };
 
-d3Chart.drawBars = function (el, scales, data, height) {
+d3Chart.drawBars = function (el, scales, data, height, callbacks) {
+
+    var minValue = _d32['default'].min(data, function (d) {
+        return d.value;
+    });
+    var maxValue = _d32['default'].max(data, function (d) {
+        return d.value;
+    });
     var svg = _d32['default'].select(el).selectAll('.d3');
     svg.selectAll('.bar').data(data).enter().append('rect').attr('class', function (d) {
         return d.value < 0 ? 'bar negative' : 'bar positive';
     }).attr('x', function (d) {
         var x = scales.x(Math.min(0, d.value));
-        console.log('For ' + d.value + ', set x = ' + x);
         return x;
     }).attr('y', function (d) {
         var y = scales.y(d.name);
-        console.log('For ' + d.name + ' - ' + d.value + ', set y = ' + y);
         return y;
     }).attr('width', function (d) {
         var w = Math.abs(scales.x(d.value) - scales.x(0));
-        console.log('For ' + d.value + ', set width = ' + w);
         return w;
-    }).attr('height', scales.y.rangeBand());
+    }).attr('height', scales.y.rangeBand()).on('mouseover', callbacks.mouseOver).on('mouseout', callbacks.mouseOut);
 
-    var xAxis = _d32['default'].svg.axis().scale(scales.x).orient('top');
-    console.log('The type of the axis is ' + typeof xAxis);
+    var xAxis = _d32['default'].svg.axis().scale(scales.x).orient('top').tickValues([minValue, maxValue]).tickFormat(_d32['default'].format('<-$120,.0f'));
+
     svg.append('g').attr('class', 'x axis').call(xAxis);
     svg.append('g').attr('class', 'y axis').append('line').attr('x1', scales.x(0)).attr('x2', scales.x(0)).attr('y2', height);
 };
@@ -45612,7 +45702,6 @@ d3Chart.computeScales = function (data, width, height, margin) {
     var y = _d32['default'].scale.ordinal().domain(data.map(function (d) {
         return d.name;
     })).rangeRoundBands([margin.bottom, height - (margin.top + margin.bottom)], 0.5, 0.3);
-    //.rangeRoundBands([0,height], .1);
     return { x: x, y: y };
 };
 
@@ -45713,6 +45802,7 @@ function DataModel(id, datasetIds) {
         this.status = DatasetStatus.DS_STATE_READY;
         this.readyCount = 0;
         for (var i = 0; i < this.rawDatasets.length; ++i) {
+
             if (this.rawDatasets[i].isReady()) {
                 ++this.readyCount;
             }
@@ -45935,6 +46025,7 @@ function DataModel(id, datasetIds) {
                 data: data
             };
         } else {
+
             return null;
         }
     };

@@ -5876,6 +5876,7 @@ div.component-div {
 .axis line {
   fill: #000;
   stroke: #000;
+  stroke-width: 2;
   shape-rendering: crispEdges; }
 
 /*# sourceMappingURL=app.css.map */
