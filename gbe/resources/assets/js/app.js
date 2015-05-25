@@ -21,6 +21,7 @@ import CardTable from './components/CardTable';
 import ChangeExplorer from './components/ChangeExplorer';
 import HistoryAreaChart from './components/HistoryAreaChart';
 import WhatsNewPage from './components/WhatsNewPage';
+import ShowMePage from './components/ShowMePage';
 
 var reactComponents = {};
 reactComponents['SimpleCard'] = SimpleCard;
@@ -32,6 +33,7 @@ reactComponents['CardTable'] = CardTable;
 reactComponents['ChangeExplorer'] = ChangeExplorer;
 reactComponents['HistoryAreaChart'] = HistoryAreaChart;
 reactComponents['WhatsNewPage'] = WhatsNewPage;
+reactComponents['ShowMePage'] = ShowMePage;
 
 /*
  * The stores, one for card-related data, the other for financial datasets.

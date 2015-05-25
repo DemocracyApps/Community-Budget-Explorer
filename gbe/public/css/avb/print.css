@@ -1,0 +1,86 @@
+/*
+NOTE: THIS FILE IS GENERATED VIA SASS - DO NOT EDIT THIS DIRECTLY! 
+*/
+/*
+	File Overview:	Print Styles SCSS
+	Author:			Ivan DiLernia
+	Description:	Includes all styles for primary styles for the site.
+*/
+/*
+	File Overview:	Base scss definitions
+	Authors:		Michael Bester,
+					Ivan DiLernia, Roger Zhu
+*/
+/* Compass global imports */
+/* Configure for target Browser Set
+   Chrome, IE8+
+============================================*/
+/*
+*	Fonts
+*/
+/*
+*	Colors
+*/
+/*
+*	Page
+*/
+/* line 44, ../../scss/partials/_base.scss */
+html {
+  min-height: 100%;
+  position: relative;
+}
+
+/* line 49, ../../scss/partials/_base.scss */
+body {
+  color: #333333;
+  font-family: 'Strait', sans-serif;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background-image: url(/img/bg_avb.png);
+  height: 100%;
+}
+
+/* line 58, ../../scss/partials/_base.scss */
+p {
+  vertical-align: top;
+}
+
+/*
+* Tablet Portait + Landscape
+*/
+@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) {
+  /* line 66, ../../scss/partials/_base.scss */
+  body, html {
+    font-size: 12px;
+  }
+}
+@page {
+  size: landscape;
+}
+
+/* line 15, ../../scss/print.scss */
+.popover {
+  background: white !important;
+}
+
+/* line 20, ../../scss/print.scss */
+#zoombutton {
+  display: none;
+}
+
+/* line 24, ../../scss/print.scss */
+.overflows {
+  display: none;
+}
+
+/* line 29, ../../scss/print.scss */
+a:link:after, a:visited:after {
+  content: "";
+}
+
+/* line 33, ../../scss/print.scss */
+#avb-body {
+  margin-bottom: 20px;
+}
+

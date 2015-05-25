@@ -161,9 +161,10 @@ class SitesController extends Controller {
                 }
             }
         }
+
         // Putting site in an array to work around stupid issue in Jeff Way's PHPToJavaScriptTransformer
         // Stdclass objects are converted to JSON if they're in an array, but error out if not.
-        return view('sites.appPage', array('site'=>[$site], 'pages'=>$pages, 'data' => $data));
+        return view('sites.appPage', array('site'=>[$site], 'pages'=>$pages, 'data' => $data, 'doAvb'=>true));
     }
 
     private function buildCardObject(Card $storedCard)

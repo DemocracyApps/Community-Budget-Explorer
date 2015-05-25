@@ -22,6 +22,7 @@ class AshevilleSiteSeeder extends Seeder
         $cardTableComponent = Component::where('name','=','CardTable')->first();
         $historyAreaChartComponent = Component::where('name','=','HistoryAreaChart')->first();
         $whatsnewpageComponent = Component::where('name','=','WhatsNewPage')->first();
+        $showmepageComponent = Component::where('name','=','ShowMePage')->first();
 
         // Create the Asheville site
         $site = new Site();
@@ -38,7 +39,7 @@ class AshevilleSiteSeeder extends Seeder
 
         $this->createWhatsNewPage($site, $whatsnewpageComponent);
 
-        $this->createShowMePage($site, $treemapComponent);
+        $this->createShowMePage($site, $showmepageComponent);
 
         $this->createDocMapPage($site, $cardTableComponent);
 
@@ -155,12 +156,12 @@ class AshevilleSiteSeeder extends Seeder
 
     }
 
-    private function createShowMePage($site, $treemapComponent)
+    private function createShowMePage($site, $showmepageComponent)
     {
         $page = new Page();
         $page->site = $site->id;
         $page->title = "Detailed Breakdown of Spending & Revenue";
-        $page->short_name = "showmoney";
+        $page->short_name = "showme";
         $page->menu_name="Show Me The Money";
         $page->ordinal = 3;
         $page->show_in_menu = true;
@@ -170,7 +171,7 @@ class AshevilleSiteSeeder extends Seeder
         $page->save();
 
         $c = new PageComponent();
-        $c->component = $treemapComponent->id;
+        $c->component = $showmepageComponent->id;
         $c->page = $page->id;
         $c->target="main";
         $c->save();
