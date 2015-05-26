@@ -74,7 +74,6 @@ function initialize(incomingData){
         node : null
     };
     avb.navbar.initialize(incomingData);
-    console.log(params);
     initializeVisualizations(params, incomingData);
 }
 
@@ -121,20 +120,10 @@ function initializeVisualizations(params, incomingData) {
  */
 function loadData(incomingData) {
 
-    if (incomingData == null) {
-        // get datasets
-        // loads all jsons in data
-        $.each(avb.sections, function (i, url) {
-            console.log("Load data for " + url);
-            d3.js
-            avb.data[url] = JSON.parse($('#data-' + url).html());
-        });
-    }
-    else {
-        $.each(avb.sections, function (i, url) {
-            avb.data[url] = incomingData;
-        });
-    }
+    $.each(avb.sections, function (i, url) {
+        avb.data[url] = incomingData;
+    });
+
     // initialize root level
     avb.root = avb.data[avb.section];
 
@@ -144,7 +133,7 @@ function loadData(incomingData) {
     avb.firstYear = d3.min(avb.root.values, function (d) {
         return d.year
     });
-    console.log("First year = " + avb.firstYear);
+
     // determine newest year
     avb.lastYear = d3.max(avb.root.values, function (d) {
         return d.year

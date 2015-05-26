@@ -56072,7 +56072,6 @@ function initialize(incomingData) {
         node: null
     };
     avb.navbar.initialize(incomingData);
-    console.log(params);
     initializeVisualizations(params, incomingData);
 }
 
@@ -56117,19 +56116,10 @@ function initializeVisualizations(params, incomingData) {
  */
 function loadData(incomingData) {
 
-    if (incomingData == null) {
-        // get datasets
-        // loads all jsons in data
-        $.each(avb.sections, function (i, url) {
-            console.log('Load data for ' + url);
-            _d32['default'].js;
-            avb.data[url] = JSON.parse($('#data-' + url).html());
-        });
-    } else {
-        $.each(avb.sections, function (i, url) {
-            avb.data[url] = incomingData;
-        });
-    }
+    $.each(avb.sections, function (i, url) {
+        avb.data[url] = incomingData;
+    });
+
     // initialize root level
     avb.root = avb.data[avb.section];
 
@@ -56173,7 +56163,6 @@ function setMode(mode) {
     var $container = $('#avb-wrap');
     if (!$container) throw 'No damn container';
     mode = mode || 't';
-    console.log('Mode is ' + mode);
     avb.mode = mode;
     avb.navigation = avb.modes[mode].js;
 }

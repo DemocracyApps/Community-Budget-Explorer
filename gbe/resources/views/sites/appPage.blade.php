@@ -1,12 +1,6 @@
 @extends('templates.sites.default')
 
 @section('head')
-<script id="data-expenses" type="application/json">
-<?php require_once 'data/expenses.json';?>
-</script>
-<script id="data-revenues" type="application/json">
-<?php require_once 'data/revenues.json';?>
-</script>
 
     <script type="text/javascript" src="/js/lib/mustache/mustache.js"></script>
 
