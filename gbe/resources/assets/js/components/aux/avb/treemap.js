@@ -57,7 +57,6 @@ var avb_treemap = function () {
             transitioning;
         //width = 700;
         //height = 600;
-        console.log("Treemap width = " + width + ", height = " + height);
 
         // create svg 
         nav = d3.select($container.get(0)).append("svg")
@@ -562,11 +561,9 @@ var avb_treemap = function () {
         avb.currentNode.data = d;
         avb.currentNode.year = avb.yearIndex;
 
-        console.log("Now open the chart");
 
         // update chart and cards
         avb.chart.open(d, d.color, avb);
-        console.log("Now open the cards")
         avb.cards.open(d, avb);
 
         // prevent further events from happening while transitioning

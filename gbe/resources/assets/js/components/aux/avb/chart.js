@@ -46,7 +46,6 @@ var avb_chart = function() {
         // chart param initialization
         chart.width = $container.width();
         chart.height = $container.height();
-        console.log("Chart height = " + chart.height + ", width = " + chart.width);
         chart.xmargin = 50;
         chart.ymargin = 20;
         chart.showLegend = false;
@@ -153,7 +152,6 @@ var avb_chart = function() {
         // do a redraw in case function is called with no arguments
         var data = data || avb.currentNode.data;
         var color = color || avb.currentNode.color;
-console.log("Opening chart " + JSON.stringify(chart));
         // svg groups initalization
         if (chart.axes === undefined) {
             console.log("Dealing with undefined axes");
@@ -164,7 +162,6 @@ console.log("Opening chart " + JSON.stringify(chart));
             chart.axes = chart.append('g');
             chart.layerWindow = chart.append('g');
         }
-console.log("chart.grids = " + JSON.stringify(chart.grids));
         d3.selectAll(chart.grids.node().childNodes).remove();
         d3.selectAll(chart.axes.node().childNodes).remove();
 

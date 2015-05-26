@@ -66,7 +66,7 @@ Number.prototype.px = function () {
  *   Reads parameters from current url path and calls related
  *   initialization routines
  */
-function initialize(){
+function initialize(incomingData){
     //var urlComponents = window.location.pathname.substring(1).split('/');
     var params = {
         section : "expenses",
@@ -74,10 +74,9 @@ function initialize(){
         mode : "t",
         node : null
     };
-    console.log("Initializing the treemap!")
-    avb.navbar.initialize();
+    avb.navbar.initialize(incomingData);
     console.log(params);
-    initializeVisualizations(params);
+    initializeVisualizations(params, incomingData);
 }
 
 /*
@@ -85,7 +84,7 @@ function initialize(){
  *
  *  @param {obj} params - year, mode, section and node
  */
-function initializeVisualizations(params) {
+function initializeVisualizations(params, incomingData) {
 
     // get previosly set year
     var yearCookie = parseInt(jQuery.cookie('year'));
@@ -115,21 +114,28 @@ function initializeVisualizations(params) {
     // connect search actions
     $('#searchbox').keyup(avb.navbar.searchChange);
 
-    loadData();
+    loadData(incomingData);
 }
 
 /*
  *   Parses JSON files and calls visualization subroutines
  */
-function loadData() {
-    // get datasets
-    // loads all jsons in data
-    $.each(avb.sections, function (i, url) {
-        console.log("Load data for " + url);
-        d3.js
-        avb.data[url] = JSON.parse($('#data-' + url).html());
-    });
+function loadData(incomingData) {
 
+    if (incomingData == null) {
+        // get datasets
+        // loads all jsons in data
+        $.each(avb.sections, function (i, url) {
+            console.log("Load data for " + url);
+            d3.js
+            avb.data[url] = JSON.parse($('#data-' + url).html());
+        });
+    }
+    else {
+        $.each(avb.sections, function (i, url) {
+            avb.data[url] = incomingData;
+        });
+    }
     // initialize root level
     avb.root = avb.data[avb.section];
 
@@ -155,9 +161,7 @@ function loadData() {
 
 
     // navigation (treemap or table)
-    console.log("Start the treemap initialization");
     avb.navigation.initialize($(avb.modes[avb.mode].container), avb.root, avb);
-    console.log("Now open the navigation");
     avb.navigation.open(avb.root.hash, null, avb);
 
     console.log("UI Loaded.");

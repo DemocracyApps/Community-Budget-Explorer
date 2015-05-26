@@ -201,10 +201,6 @@ var WhatsNewPage = React.createClass({
             return (
                 <div>
                     <p>Data is loading ... Please be patient</p>
-                    <div>
-                        <AvbTreemap width={400} height={400} data={null}/>
-                    </div>
-
                 </div>
             )
         }
@@ -225,8 +221,7 @@ var WhatsNewPage = React.createClass({
             }
             return (
                 <div>
-                    <p>I'm a chart</p>
-                    <AvbTreemap width={400} height={400} data={myData}/>
+                    <AvbTreemap width={1200} height={600} data={newData}/>
                 </div>
             )
         }
