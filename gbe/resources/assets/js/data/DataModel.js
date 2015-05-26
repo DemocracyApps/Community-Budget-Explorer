@@ -37,6 +37,7 @@ function DataModel(id, datasetIds, initialCommands = null) {
                 needsUpdate = true;
             }
         }
+        console.log("checkready: readyCount = " + this.readyCount);
         if (this.readyCount < this.rawDatasets.length) {
             this.status = (this.readyCount == 0?DatasetStatus.DS_STATE_PENDING:DatasetStatus.DS_STATE_PARTIAL);
         }
@@ -140,6 +141,7 @@ function DataModel(id, datasetIds, initialCommands = null) {
     };
 
     this.getData = function getData (commands, partialOk=false) {
+        console.log("In getData with commands = " + JSON.stringify(commands));
         if (this.status == DatasetStatus.DS_STATE_READY ||
             (this.status == DatasetStatus.DS_STATE_PARTIAL && partialOk)) {
             this.currentCommands = commands;

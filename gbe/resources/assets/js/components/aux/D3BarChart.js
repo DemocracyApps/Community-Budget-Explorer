@@ -4,14 +4,12 @@ var d3Chart = {};
 
 d3Chart.create = function (el, props, data, callbacks) {
     var margin = {top: 20, right: 10, bottom: 10, left: 10};
-console.log("In chart create with callbacks " + callbacks.id);
     var svg = d3.select(el).append('svg')
         .attr('class', 'd3')
         .attr('width', props.width)
         .attr('height', props.height)
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
         ;
-
     this.update(el, data, props.width, props.height, margin, callbacks);
     return svg;
 };
@@ -44,6 +42,7 @@ d3Chart.drawBars = function(el, scales, data, height, callbacks) {
             var w = Math.abs(scales.x(d.value) - scales.x(0));
             return w;
         })
+        .text(function (d) { return d.name; })
         .attr("height", scales.y.rangeBand())
         .on('mouseover', callbacks.mouseOver)
         .on('mouseout', callbacks.mouseOut);

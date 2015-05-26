@@ -19,6 +19,7 @@ var VerticalBarChart = React.createClass({
 
     componentDidMount: function() {
         var el = React.findDOMNode(this.refs.myChart);
+        $(el).children().remove();
         var callbacks = {
             id: 12,
             mouseOver: function(d) {
@@ -28,12 +29,22 @@ var VerticalBarChart = React.createClass({
                 this.setState({hoverMessage: "Mouse over bars to see details"});
             }.bind(this)
         };
-        var it = d3BarChart.create(el, {width: this.props.width, height: this.props.height}, this.props.data, callbacks);
-        window.it = it;
+        d3BarChart.create(el, {width: this.props.width, height: this.props.height}, this.props.data, callbacks);
     },
 
     componentDidUpdate: function() {
-
+        var el = React.findDOMNode(this.refs.myChart);
+        $(el).children().remove();
+        var callbacks = {
+            id: 12,
+            mouseOver: function(d) {
+                this.setState({hoverMessage: JSON.stringify(d)});
+            }.bind(this),
+            mouseOut: function(d) {
+                this.setState({hoverMessage: "Mouse over bars to see details"});
+            }.bind(this)
+        };
+        d3BarChart.create(el, {width: this.props.width, height: this.props.height}, this.props.data, callbacks);
     },
 
     componentWillUnmount: function () {

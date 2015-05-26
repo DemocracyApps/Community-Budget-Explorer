@@ -14,7 +14,6 @@ import React from 'react';
 var BootstrapLayout = React.createClass({
 
     renderComponent: function (component, index) {
-        console.log("Looking up component type " + component.componentName);
         if (! this.props.reactComponents[component.componentName]) {
             console.log("BootstrapLayout - Unable to find component");
         }

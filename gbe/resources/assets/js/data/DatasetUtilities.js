@@ -171,6 +171,42 @@ var DatasetUtilities = {
         let val = prefix + x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 
         return val;
+    },
+
+    computeChanges: function computeChanges (item, index) {
+        let length = item.amount.length;
+        let useInfinity = false;
+        if (length < 2) throw "Minimum of 2 datasets required for ChangeExplorer";
+        let cur = item.amount[length-1], prev = item.amount[length-2];
+        item.difference = cur-prev;
+        if (Math.abs(prev) < 0.001) {
+            if (useInfinity) {
+                item.percent = String.fromCharCode(8734) + " %";
+            }
+            else {
+                item.percent = "New";
+            }
+            item.percentSort = 10000 * Math.abs(item.difference);
+        }
+        else if (cur < 0. || prev < 0.) {
+            item.percent="N/A";
+            item.percentSort = 10000 * Math.abs(item.difference);
+        }
+        else {
+            let pct = Math.round(1000*(item.difference)/prev)/10;
+            item.percent = (pct) + "%";
+            item.percentSort = Math.abs(item.percent);
+        }
+    },
+
+    sortByAbsolutePercentage: function sortByAbsolutePercentage () {
+        return item2.percentSort - item1.percentSort;
+    },
+
+
+    sortByAbsoluteDifference: function sortByAbsoluteDifference(item1, item2) {
+        var result = Math.abs(item2.difference) - Math.abs(item1.difference);
+        return result;
     }
 };
 

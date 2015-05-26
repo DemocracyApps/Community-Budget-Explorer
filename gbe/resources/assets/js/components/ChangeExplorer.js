@@ -206,42 +206,6 @@ var ChangeExplorer = React.createClass({
       )
     },
 
-    computeChanges: function computeChanges (item, index) {
-        let length = item.amount.length;
-        let useInfinity = false;
-        if (length < 2) throw "Minimum of 2 datasets required for ChangeExplorer";
-        let cur = item.amount[length-1], prev = item.amount[length-2];
-        item.difference = cur-prev;
-        if (Math.abs(prev) < 0.001) {
-            if (useInfinity) {
-                item.percent = String.fromCharCode(8734) + " %";
-            }
-            else {
-                item.percent = "New";
-            }
-            item.percentSort = 10000 * Math.abs(item.difference);
-        }
-        else if (cur < 0. || prev < 0.) {
-            item.percent="N/A";
-            item.percentSort = 10000 * Math.abs(item.difference);
-        }
-        else {
-            let pct = Math.round(1000*(item.difference)/prev)/10;
-            item.percent = (pct) + "%";
-            item.percentSort = Math.abs(item.percent);
-        }
-    },
-
-    sortByAbsolutePercentage: function sortByAbsolutePercentage () {
-        return item2.percentSort - item1.percentSort;
-    },
-
-
-    sortByAbsoluteDifference: function sortByAbsoluteDifference(item1, item2) {
-        var result = Math.abs(item2.difference) - Math.abs(item1.difference);
-        return result;
-    },
-
     tableRow: function (item, index) {
         let length = item.amount.length;
         let label = item.categories[0];
@@ -291,8 +255,8 @@ var ChangeExplorer = React.createClass({
             var headers = newData.dataHeaders;
             let currentLevel = stateStore.getValue(this.props.storeId,'currentLevel');
             let dataLength = rows[0].amount.length;
-            rows.map(this.computeChanges);
-            rows = rows.sort(this.sortByAbsoluteDifference);
+            rows.map(datasetUtilities.computeChanges);
+            rows = rows.sort(datasetUtilities.sortByAbsoluteDifference);
             let thStyle={textAlign:"right"};
             return (
                 <div>

@@ -53469,7 +53469,6 @@ var BootstrapLayout = _react2["default"].createClass({
     displayName: "BootstrapLayout",
 
     renderComponent: function renderComponent(component, index) {
-        console.log("Looking up component type " + component.componentName);
         if (!this.props.reactComponents[component.componentName]) {
             console.log("BootstrapLayout - Unable to find component");
         }
@@ -53882,39 +53881,6 @@ var ChangeExplorer = _react2['default'].createClass({
         );
     },
 
-    computeChanges: function computeChanges(item, index) {
-        var length = item.amount.length;
-        var useInfinity = false;
-        if (length < 2) throw 'Minimum of 2 datasets required for ChangeExplorer';
-        var cur = item.amount[length - 1],
-            prev = item.amount[length - 2];
-        item.difference = cur - prev;
-        if (Math.abs(prev) < 0.001) {
-            if (useInfinity) {
-                item.percent = String.fromCharCode(8734) + ' %';
-            } else {
-                item.percent = 'New';
-            }
-            item.percentSort = 10000 * Math.abs(item.difference);
-        } else if (cur < 0 || prev < 0) {
-            item.percent = 'N/A';
-            item.percentSort = 10000 * Math.abs(item.difference);
-        } else {
-            var pct = Math.round(1000 * item.difference / prev) / 10;
-            item.percent = pct + '%';
-            item.percentSort = Math.abs(item.percent);
-        }
-    },
-
-    sortByAbsolutePercentage: function sortByAbsolutePercentage() {
-        return item2.percentSort - item1.percentSort;
-    },
-
-    sortByAbsoluteDifference: function sortByAbsoluteDifference(item1, item2) {
-        var result = Math.abs(item2.difference) - Math.abs(item1.difference);
-        return result;
-    },
-
     tableRow: function tableRow(item, index) {
         var length = item.amount.length;
         var label = item.categories[0];
@@ -53991,8 +53957,8 @@ var ChangeExplorer = _react2['default'].createClass({
             var headers = newData.dataHeaders;
             var currentLevel = stateStore.getValue(this.props.storeId, 'currentLevel');
             var dataLength = rows[0].amount.length;
-            rows.map(this.computeChanges);
-            rows = rows.sort(this.sortByAbsoluteDifference);
+            rows.map(datasetUtilities.computeChanges);
+            rows = rows.sort(datasetUtilities.sortByAbsoluteDifference);
             var thStyle = { textAlign: 'right' };
             return _react2['default'].createElement(
                 'div',
@@ -55571,6 +55537,7 @@ var VerticalBarChart = _react2['default'].createClass({
 
     componentDidMount: function componentDidMount() {
         var el = _react2['default'].findDOMNode(this.refs.myChart);
+        $(el).children().remove();
         var callbacks = {
             id: 12,
             mouseOver: (function (d) {
@@ -55580,11 +55547,23 @@ var VerticalBarChart = _react2['default'].createClass({
                 this.setState({ hoverMessage: 'Mouse over bars to see details' });
             }).bind(this)
         };
-        var it = d3BarChart.create(el, { width: this.props.width, height: this.props.height }, this.props.data, callbacks);
-        window.it = it;
+        d3BarChart.create(el, { width: this.props.width, height: this.props.height }, this.props.data, callbacks);
     },
 
-    componentDidUpdate: function componentDidUpdate() {},
+    componentDidUpdate: function componentDidUpdate() {
+        var el = _react2['default'].findDOMNode(this.refs.myChart);
+        $(el).children().remove();
+        var callbacks = {
+            id: 12,
+            mouseOver: (function (d) {
+                this.setState({ hoverMessage: JSON.stringify(d) });
+            }).bind(this),
+            mouseOut: (function (d) {
+                this.setState({ hoverMessage: 'Mouse over bars to see details' });
+            }).bind(this)
+        };
+        d3BarChart.create(el, { width: this.props.width, height: this.props.height }, this.props.data, callbacks);
+    },
 
     componentWillUnmount: function componentWillUnmount() {},
 
@@ -55641,6 +55620,7 @@ var datasetStore = require('../stores/DatasetStore');
 var stateStore = require('../stores/StateStore');
 var configStore = require('../stores/ConfigStore');
 var dataModelStore = require('../stores/DataModelStore');
+var datasetUtilities = require('../data/DatasetUtilities');
 var apiActions = require('../common/ApiActions');
 var idGenerator = require('../common/IdGenerator');
 var AccountTypes = require('../constants/AccountTypes');
@@ -55696,20 +55676,31 @@ var WhatsNewPage = _react2['default'].createClass({
                 accountType: AccountTypes.EXPENSE,
                 dataModelId: dm.id,
                 displayMode: 'chart',
-                subComponents: subComponents
+                subComponents: subComponents,
+                areaList: null,
+                selectedLevel: 1,
+                selectedArea: -1
             });
         }
     },
 
     shouldComponentUpdate: function shouldComponentUpdate(nextProps, nextState) {
+        var areas = stateStore.getComponentStateValue(this.props.storeId, 'areaList');
+
         var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
         var dm = dataModelStore.getModel(dataModelId);
-        var accountType = this.getAccountType;
-        return dm.dataChanged() || dm.commandsChanged({ accountTypes: [accountType] });
-    },
+        var dataChanged = dm.dataChanged();
+        if (areas == null) return true;
 
-    componentWillUnmount: function componentWillUnmount() {
-        console.log('WhatsNewPage will unmount');
+        var selectedLevel = stateStore.getValue(this.props.storeId, 'selectedLevel');
+        var selectedArea = stateStore.getValue(this.props.storeId, 'selectedArea');
+        var startPath = [];
+        var addLevel = 1;
+        if (areas != null && selectedArea >= 0) {
+            startPath = [areas[selectedArea].name];
+            addLevel = 0;
+        }
+        return dataChanged || dm.commandsChanged({ startPath: startPath, nLevels: selectedLevel + addLevel });
     },
 
     onAccountTypeChange: function onAccountTypeChange(e) {
@@ -55717,10 +55708,7 @@ var WhatsNewPage = _react2['default'].createClass({
             actionType: ActionTypes.COMPONENT_STATE_CHANGE,
             payload: {
                 id: this.props.storeId,
-                changes: [{
-                    name: 'accountType',
-                    value: Number(e.target.value)
-                }]
+                changes: [{ name: 'accountType', value: Number(e.target.value) }]
             }
         });
     },
@@ -55733,19 +55721,59 @@ var WhatsNewPage = _react2['default'].createClass({
             actionType: ActionTypes.COMPONENT_STATE_CHANGE,
             payload: {
                 id: this.props.storeId,
-                changes: [{
-                    name: 'displayMode',
-                    value: displayMode
-                }]
+                changes: [{ name: 'displayMode', value: displayMode }]
+            }
+        });
+    },
+
+    leftPanel: function leftPanel(displayMode) {
+        if (displayMode != 'chart') {
+            var accountType = stateStore.getValue(this.props.storeId, 'accountType');
+            var selectLabelText = 'Account Type:' + String.fromCharCode(160) + String.fromCharCode(160);
+            return _react2['default'].createElement(
+                'form',
+                { className: 'form-inline' },
+                _react2['default'].createElement(
+                    'div',
+                    { className: 'form-group' },
+                    _react2['default'].createElement(
+                        'label',
+                        null,
+                        selectLabelText
+                    ),
+                    _react2['default'].createElement(
+                        'select',
+                        { className: 'form-control', onChange: this.onAccountTypeChange, value: accountType },
+                        this.props.accountTypes.map(function (type, index) {
+                            return _react2['default'].createElement(
+                                'option',
+                                { key: index, value: type.value },
+                                ' ',
+                                type.name,
+                                ' '
+                            );
+                        })
+                    )
+                )
+            );
+        }
+    },
+
+    detailLevel: function detailLevel(e) {
+        dispatcher.dispatch({
+            actionType: ActionTypes.COMPONENT_STATE_CHANGE,
+            payload: {
+                id: this.props.storeId,
+                changes: [{ name: 'selectedLevel', value: Number(e.target.value) }]
             }
         });
     },
 
     optionsPanel: function interactionPanel() {
-        var accountType = stateStore.getValue(this.props.storeId, 'accountType');
         var displayMode = stateStore.getValue(this.props.storeId, 'displayMode');
+        var selectedLevel = stateStore.getValue(this.props.storeId, 'selectedLevel');
         var modeButtonText = displayMode == 'chart' ? 'Table View' : 'Chart View';
-        var selectLabelText = 'Select Account Type:' + String.fromCharCode(160) + String.fromCharCode(160);
+        var spacer = String.fromCharCode(160) + String.fromCharCode(160) + String.fromCharCode(160) + String.fromCharCode(160);
         return _react2['default'].createElement(
             'div',
             null,
@@ -55754,36 +55782,58 @@ var WhatsNewPage = _react2['default'].createClass({
                 { className: 'row' },
                 _react2['default'].createElement(
                     'div',
-                    { className: 'col-xs-4' },
+                    { className: 'col-xs-3' },
+                    this.leftPanel(displayMode)
+                ),
+                _react2['default'].createElement(
+                    'div',
+                    { className: 'col-xs-6' },
                     _react2['default'].createElement(
-                        'form',
-                        { className: 'form-inline' },
+                        'div',
+                        { className: 'form-group' },
                         _react2['default'].createElement(
-                            'div',
-                            { className: 'form-group' },
+                            'form',
+                            { className: 'form-inline' },
                             _react2['default'].createElement(
                                 'label',
                                 null,
-                                selectLabelText,
-                                _react2['default'].createElement('span', { width: '30px' })
+                                'Detail Level:'
                             ),
                             _react2['default'].createElement(
-                                'select',
-                                { className: 'form-control', onChange: this.onAccountTypeChange, value: accountType },
-                                this.props.accountTypes.map(function (type, index) {
-                                    return _react2['default'].createElement(
-                                        'option',
-                                        { key: index, value: type.value },
-                                        ' ',
-                                        type.name,
-                                        ' '
-                                    );
-                                })
+                                'span',
+                                null,
+                                spacer
+                            ),
+                            _react2['default'].createElement(
+                                'label',
+                                { className: 'radio-inline' },
+                                _react2['default'].createElement('input', { value: '1', className: 'radio-inline',
+                                    checked: selectedLevel == 1,
+                                    name: 'detailLevel',
+                                    type: 'radio', onChange: this.detailLevel }),
+                                ' Department'
+                            ),
+                            _react2['default'].createElement(
+                                'label',
+                                { className: 'radio-inline' },
+                                _react2['default'].createElement('input', { value: '2', className: 'radio-inline',
+                                    checked: selectedLevel == 2,
+                                    name: 'detailLevel',
+                                    type: 'radio', onChange: this.detailLevel }),
+                                ' Division'
+                            ),
+                            _react2['default'].createElement(
+                                'label',
+                                { className: 'radio-inline' },
+                                _react2['default'].createElement('input', { value: '3', className: 'radio-inline',
+                                    checked: selectedLevel == 3,
+                                    name: 'detailLevel',
+                                    type: 'radio', onChange: this.detailLevel }),
+                                ' Account'
                             )
                         )
                     )
                 ),
-                _react2['default'].createElement('div', { className: 'col-xs-6' }),
                 _react2['default'].createElement(
                     'div',
                     { className: 'col-xs-2' },
@@ -55799,85 +55849,183 @@ var WhatsNewPage = _react2['default'].createClass({
         );
     },
 
-    computeChanges: function computeChanges(item, index) {
-        var length = item.amount.length;
-        var useInfinity = false;
-        if (length < 2) throw 'Minimum of 2 datasets required for ChangeExplorer';
-        var cur = item.amount[length - 1],
-            prev = item.amount[length - 2];
-        item.difference = cur - prev;
-        if (Math.abs(prev) < 0.001) {
-            if (useInfinity) {
-                item.percent = String.fromCharCode(8734) + ' %';
-            } else {
-                item.percent = 'New';
+    computeAreas: function computeAreas(rows) {
+        var ahash = {};
+        var nYears = rows[0].amount.length;
+        for (var i = 0; i < rows.length; ++i) {
+            var current = ahash[rows[i].categories[0]];
+            if (current == undefined) {
+                current = {
+                    name: rows[i].categories[0],
+                    value: 0
+                };
+                ahash[current.name] = current;
             }
-            item.percentSort = 10000 * Math.abs(item.difference);
-        } else if (cur < 0 || prev < 0) {
-            item.percent = 'N/A';
-            item.percentSort = 10000 * Math.abs(item.difference);
-        } else {
-            var pct = Math.round(1000 * item.difference / prev) / 10;
-            item.percent = pct + '%';
-            item.percentSort = Math.abs(item.percent);
+            current.value += rows[i].amount[nYears - 1];
         }
+        var areas = [];
+        for (var nm in ahash) {
+            if (ahash.hasOwnProperty(nm)) {
+                areas.push(ahash[nm]);
+            }
+        }
+        areas = areas.sort(function (a, b) {
+            return b.value - a.value;
+        });
+        return areas;
     },
 
-    sortByAbsolutePercentage: function sortByAbsolutePercentage() {
-        return item2.percentSort - item1.percentSort;
-    },
+    selectArea: function selectArea(e) {
 
-    sortByAbsoluteDifference: function sortByAbsoluteDifference(item1, item2) {
-        var result = Math.abs(item2.difference) - Math.abs(item1.difference);
-        return result;
+        console.log('Changing area to ' + e);
+        dispatcher.dispatch({
+            actionType: ActionTypes.COMPONENT_STATE_CHANGE,
+            payload: {
+                id: this.props.storeId,
+                changes: [{ name: 'selectedArea', value: Number(e) }]
+            }
+        });
     },
 
     renderCharts: function renderCharts() {
         var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
         var dm = dataModelStore.getModel(dataModelId);
         var accountType = stateStore.getValue(this.props.storeId, 'accountType');
-        console.log('Account type is now ' + accountType);
-        var newData = dm.getData({
-            accountTypes: [accountType],
-            startPath: [],
-            nLevels: 4
+        var selectedLevel = stateStore.getValue(this.props.storeId, 'selectedLevel');
+        var areas = stateStore.getComponentStateValue(this.props.storeId, 'areaList');
+
+        var selectedArea = stateStore.getValue(this.props.storeId, 'selectedArea');
+        console.log('Current selected area is ' + selectedArea);
+        var startPath = [];
+        var addLevel = 1;
+        if (areas != null && selectedArea >= 0) {
+            startPath = [areas[selectedArea].name];
+            addLevel = 0;
+        }
+        var revenueData = dm.getData({
+            accountTypes: [AccountTypes.REVENUE],
+            startPath: startPath,
+            nLevels: selectedLevel + addLevel
+        });
+        var expenseData = dm.getData({
+            accountTypes: [AccountTypes.EXPENSE],
+            startPath: startPath,
+            nLevels: selectedLevel + addLevel
         }, false);
-        var dataNull = newData == null;
+        var dataNull = expenseData == null;
 
         if (dataNull) {
             return _react2['default'].createElement(
                 'div',
-                null,
+                { style: { height: 600 } },
+                _react2['default'].createElement('br', null),
                 _react2['default'].createElement(
-                    'p',
-                    null,
-                    'Data is loading ... Please be patient'
+                    'div',
+                    { className: 'row' },
+                    _react2['default'].createElement('div', { className: 'col-xs-3' }),
+                    _react2['default'].createElement(
+                        'div',
+                        { className: 'col-xs-9' },
+                        _react2['default'].createElement(
+                            'p',
+                            null,
+                            'Data is loading ... Please be patient'
+                        )
+                    )
                 )
             );
         } else {
-            var rows = newData.data;
-            var headers = newData.dataHeaders;
-            var dataLength = rows[0].amount.length;
-            rows.map(this.computeChanges);
-            rows = rows.sort(this.sortByAbsoluteDifference).slice(0, 10);
-
-            var myData = [];
+            var rows = expenseData.data;
+            if (areas == null) {
+                areas = this.computeAreas(rows);
+                stateStore.setComponentState(this.props.storeId, { areaList: areas });
+            }
+            rows.map(datasetUtilities.computeChanges);
+            rows = rows.sort(datasetUtilities.sortByAbsoluteDifference).slice(0, 10);
+            var topExpenses = [];
             for (var i = 0; i < rows.length; ++i) {
                 var item = {
-                    name: rows[i].categories[rows[i].categories.length - 1],
+                    name: rows[i].categories[selectedLevel],
+                    categories: rows[i].categories.slice(0, selectedLevel + 1),
                     value: rows[i].difference
                 };
-                myData.push(item);
+                topExpenses.push(item);
             }
+            rows = revenueData.data;
+            rows.map(datasetUtilities.computeChanges);
+            rows = rows.sort(datasetUtilities.sortByAbsoluteDifference).slice(0, 10);
+            var topRevenues = [];
+            for (var i = 0; i < rows.length; ++i) {
+                var item = {
+                    name: rows[i].categories[selectedLevel],
+                    categories: rows[i].categories.slice(0, selectedLevel + 1),
+                    value: rows[i].difference
+                };
+                topRevenues.push(item);
+            }
+
             return _react2['default'].createElement(
                 'div',
-                null,
+                { className: 'row' },
                 _react2['default'].createElement(
-                    'p',
-                    null,
-                    'I\'m a chart'
+                    'div',
+                    { className: 'col-xs-3' },
+                    _react2['default'].createElement(
+                        'h2',
+                        null,
+                        'Service Area'
+                    ),
+                    _react2['default'].createElement('br', null),
+                    _react2['default'].createElement(
+                        'ul',
+                        { className: 'servicearea-selector' },
+                        _react2['default'].createElement(
+                            'li',
+                            null,
+                            _react2['default'].createElement(
+                                'a',
+                                { href: '#', id: -1, onClick: this.selectArea },
+                                'All Areas'
+                            )
+                        ),
+                        areas.map((function (item, index) {
+                            var spacer = String.fromCharCode(160);
+                            return _react2['default'].createElement(
+                                'li',
+                                null,
+                                _react2['default'].createElement(
+                                    'a',
+                                    { href: '#', id: index,
+                                        onClick: this.selectArea.bind(null, index) },
+                                    spacer,
+                                    ' ',
+                                    item.name
+                                )
+                            );
+                        }).bind(this))
+                    )
                 ),
-                _react2['default'].createElement(_VerticalBarChart2['default'], { width: 400, height: 400, data: myData })
+                _react2['default'].createElement(
+                    'div',
+                    { className: 'col-xs-4' },
+                    _react2['default'].createElement(
+                        'h2',
+                        null,
+                        'Top Expense Categories'
+                    ),
+                    _react2['default'].createElement(_VerticalBarChart2['default'], { width: 350, height: 600, data: topExpenses })
+                ),
+                _react2['default'].createElement('div', { className: 'col-xs-1' }),
+                _react2['default'].createElement(
+                    'div',
+                    { className: 'col-xs-4' },
+                    _react2['default'].createElement(
+                        'h2',
+                        null,
+                        'Top Revenue Categories'
+                    ),
+                    _react2['default'].createElement(_VerticalBarChart2['default'], { width: 350, height: 600, data: topRevenues })
+                )
             );
         }
     },
@@ -55915,7 +56063,7 @@ var WhatsNewPage = _react2['default'].createClass({
 exports['default'] = WhatsNewPage;
 module.exports = exports['default'];
 
-},{"../common/ApiActions":318,"../common/BudgetAppDispatcher":319,"../common/IdGenerator":320,"../constants/AccountTypes":345,"../constants/ActionTypes":346,"../constants/Common":347,"../stores/ConfigStore":354,"../stores/DataModelStore":355,"../stores/DatasetStore":356,"../stores/StateStore":357,"./ChangeExplorer":325,"./VerticalBarChart":334,"react":317}],336:[function(require,module,exports){
+},{"../common/ApiActions":318,"../common/BudgetAppDispatcher":319,"../common/IdGenerator":320,"../constants/AccountTypes":345,"../constants/ActionTypes":346,"../constants/Common":347,"../data/DatasetUtilities":352,"../stores/ConfigStore":354,"../stores/DataModelStore":355,"../stores/DatasetStore":356,"../stores/StateStore":357,"./ChangeExplorer":325,"./VerticalBarChart":334,"react":317}],336:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -55932,9 +56080,7 @@ var d3Chart = {};
 
 d3Chart.create = function (el, props, data, callbacks) {
     var margin = { top: 20, right: 10, bottom: 10, left: 10 };
-    console.log('In chart create with callbacks ' + callbacks.id);
     var svg = _d32['default'].select(el).append('svg').attr('class', 'd3').attr('width', props.width).attr('height', props.height).attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
-
     this.update(el, data, props.width, props.height, margin, callbacks);
     return svg;
 };
@@ -55965,6 +56111,8 @@ d3Chart.drawBars = function (el, scales, data, height, callbacks) {
     }).attr('width', function (d) {
         var w = Math.abs(scales.x(d.value) - scales.x(0));
         return w;
+    }).text(function (d) {
+        return d.name;
     }).attr('height', scales.y.rangeBand()).on('mouseover', callbacks.mouseOver).on('mouseout', callbacks.mouseOut);
 
     var xAxis = _d32['default'].svg.axis().scale(scales.x).orient('top').tickValues([minValue, maxValue]).tickFormat(_d32['default'].format('<-$120,.0f'));
@@ -56129,7 +56277,7 @@ function loadData(incomingData) {
     avb.firstYear = _d32['default'].min(avb.root.values, function (d) {
         return d.year;
     });
-    console.log('First year = ' + avb.firstYear);
+
     // determine newest year
     avb.lastYear = _d32['default'].max(avb.root.values, function (d) {
         return d.year;
@@ -58742,6 +58890,7 @@ function DataModel(id, datasetIds) {
                 needsUpdate = true;
             }
         }
+        console.log('checkready: readyCount = ' + this.readyCount);
         if (this.readyCount < this.rawDatasets.length) {
             this.status = this.readyCount == 0 ? DatasetStatus.DS_STATE_PENDING : DatasetStatus.DS_STATE_PARTIAL;
         }
@@ -58846,6 +58995,7 @@ function DataModel(id, datasetIds) {
     this.getData = function getData(commands) {
         var partialOk = arguments[1] === undefined ? false : arguments[1];
 
+        console.log('In getData with commands = ' + JSON.stringify(commands));
         if (this.status == DatasetStatus.DS_STATE_READY || this.status == DatasetStatus.DS_STATE_PARTIAL && partialOk) {
             this.currentCommands = commands;
 
@@ -59187,6 +59337,39 @@ var DatasetUtilities = {
         var val = prefix + x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
         return val;
+    },
+
+    computeChanges: function computeChanges(item, index) {
+        var length = item.amount.length;
+        var useInfinity = false;
+        if (length < 2) throw 'Minimum of 2 datasets required for ChangeExplorer';
+        var cur = item.amount[length - 1],
+            prev = item.amount[length - 2];
+        item.difference = cur - prev;
+        if (Math.abs(prev) < 0.001) {
+            if (useInfinity) {
+                item.percent = String.fromCharCode(8734) + ' %';
+            } else {
+                item.percent = 'New';
+            }
+            item.percentSort = 10000 * Math.abs(item.difference);
+        } else if (cur < 0 || prev < 0) {
+            item.percent = 'N/A';
+            item.percentSort = 10000 * Math.abs(item.difference);
+        } else {
+            var pct = Math.round(1000 * item.difference / prev) / 10;
+            item.percent = pct + '%';
+            item.percentSort = Math.abs(item.percent);
+        }
+    },
+
+    sortByAbsolutePercentage: function sortByAbsolutePercentage() {
+        return item2.percentSort - item1.percentSort;
+    },
+
+    sortByAbsoluteDifference: function sortByAbsoluteDifference(item1, item2) {
+        var result = Math.abs(item2.difference) - Math.abs(item1.difference);
+        return result;
     }
 };
 
