@@ -10,8 +10,10 @@
 
     <script type="text/javascript" src="/js/lib/mustache/mustache.js"></script>
 
-<link rel="stylesheet" type="text/css" href="/css/avb/global.css">
+<!--
 <link rel="stylesheet" type="text/css" href="/css/avb/page.css">
+-->
+<link rel="stylesheet" type="text/css" href="/css/avb/global.css">
 
 @stop
 @section('content')

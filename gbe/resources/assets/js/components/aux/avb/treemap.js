@@ -30,6 +30,7 @@ var utilities = require('./utilities');
 
 var avb_treemap = function () {
     var urlPushAllowed = false;
+    var localAvb = null;
     var nav, currentLevel,
         // holds rgb values for white
         white = {
@@ -51,6 +52,7 @@ var avb_treemap = function () {
     *   @param {node} data - root node that will become root level of treemap
     */
     var initialize = function ($container, data, avb) {
+        localAvb = avb;
         var width = $container.width(),
             height = $container.height();
         var height = height,
@@ -101,6 +103,7 @@ var avb_treemap = function () {
         *   @param {node} data - node where treemap should begin
         */
     var update = function (data, avb) {
+        localAvb = avb;
             // remove all old treemap elements
             nav.selectAll("g").remove();
 
@@ -456,7 +459,6 @@ var avb_treemap = function () {
 
     };
 
-    var localAvb = null;
 
     /*
     *   Displays node in treemap
@@ -509,6 +511,7 @@ var avb_treemap = function () {
      *   @param {state obj} event - object containing previous state
      */
     function popUrl(event) {
+        console.log("In popUrl");
         if (utilities.ie()) return;
 
         if (event.state === null) {

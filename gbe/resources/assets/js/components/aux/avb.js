@@ -139,7 +139,7 @@ function loadData(incomingData) {
     // initialize root level
     avb.root = avb.data[avb.section];
 
-    // inialize year variables based on data
+    // initialize year variables based on data
 
     // determine oldest year
     avb.firstYear = d3.min(avb.root.values, function (d) {
@@ -165,8 +165,6 @@ function loadData(incomingData) {
     // navigation (treemap or table)
     avb.navigation.initialize($(avb.modes[avb.mode].container), avb.root, avb);
     avb.navigation.open(avb.root.hash, null, avb);
-
-    console.log("UI Loaded.");
 }
 
 /*

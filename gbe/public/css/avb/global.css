@@ -1292,3 +1292,22 @@ p {
 p {
   margin: 0 0 10px;
 }
+
+
+/*APP STYLES*/
+#avb-menubar{
+  border-top: none !important;
+  margin-top: 40px;
+}
+
+#avb-menubar, #avb-body{
+  position: relative;
+}
+
+#avb-body{
+  z-index: 0;
+}
+
+#avb-menubar{
+  z-index: 1;
+}

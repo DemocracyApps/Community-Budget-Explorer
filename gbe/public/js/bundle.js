@@ -56132,7 +56132,7 @@ function loadData(incomingData) {
     // initialize root level
     avb.root = avb.data[avb.section];
 
-    // inialize year variables based on data
+    // initialize year variables based on data
 
     // determine oldest year
     avb.firstYear = _d32['default'].min(avb.root.values, function (d) {
@@ -56157,8 +56157,6 @@ function loadData(incomingData) {
     // navigation (treemap or table)
     avb.navigation.initialize($(avb.modes[avb.mode].container), avb.root, avb);
     avb.navigation.open(avb.root.hash, null, avb);
-
-    console.log('UI Loaded.');
 }
 
 /*
@@ -56396,7 +56394,6 @@ var avb_cards = (function () {
             // set card description if available
             cardstack[i].find(".card-desc").html(typeof deck[i].side === "string" ? deck[i].side : deck[i].side(data));
         });
-        console.log("Leaving cards update");
     };
 
     /*
@@ -57914,6 +57911,7 @@ var utilities = require("./utilities");
 
 var avb_treemap = (function () {
     var urlPushAllowed = false;
+    var localAvb = null;
     var nav,
         currentLevel,
 
@@ -57937,6 +57935,7 @@ var avb_treemap = (function () {
     *   @param {node} data - root node that will become root level of treemap
     */
     var initialize = function initialize($container, data, avb) {
+        localAvb = avb;
         var width = $container.width(),
             height = $container.height();
         var height = height,
@@ -57978,6 +57977,7 @@ var avb_treemap = (function () {
     *   @param {node} data - node where treemap should begin
     */
     var update = function update(data, avb) {
+        localAvb = avb;
         // remove all old treemap elements
         nav.selectAll("g").remove();
 
@@ -58300,8 +58300,6 @@ var avb_treemap = (function () {
         }
     };
 
-    var localAvb = null;
-
     /*
     *   Displays node in treemap
     *
@@ -58353,6 +58351,7 @@ var avb_treemap = (function () {
      *   @param {state obj} event - object containing previous state
      */
     function popUrl(event) {
+        console.log("In popUrl");
         if (utilities.ie()) return;
 
         if (event.state === null) {
