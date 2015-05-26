@@ -52810,7 +52810,8 @@ var AvbTreemap = _react2['default'].createClass({
     propTypes: {
         data: _react2['default'].PropTypes.object.isRequired,
         width: _react2['default'].PropTypes.number.isRequired,
-        height: _react2['default'].PropTypes.number.isRequired
+        height: _react2['default'].PropTypes.number.isRequired,
+        accountType: _react2['default'].PropTypes.string.isRequired
     },
 
     getInitialState: function getInitialState() {
@@ -52846,8 +52847,8 @@ var AvbTreemap = _react2['default'].createClass({
         };
 
         var tree = {
-            key: 'top',
-            hash: _blueimpMd52['default'].md5('top'),
+            key: this.props.accountType,
+            hash: _blueimpMd52['default'].md5(this.props.accountType),
             src: '',
             descr: '',
             url: '',
@@ -52900,6 +52901,10 @@ var AvbTreemap = _react2['default'].createClass({
 
     componentDidUpdate: function componentDidUpdate() {
         console.log('in componentDidUpdate');
+        if (this.props.data != null) {
+            var data = this.prepareData(this.props.data);
+        }
+        avbStuff.initialize(data);
     },
 
     componentWillUnmount: function componentWillUnmount() {},
@@ -54789,44 +54794,10 @@ var WhatsNewPage = _react2['default'].createClass({
         );
     },
 
-    computeChanges: function computeChanges(item, index) {
-        var length = item.amount.length;
-        var useInfinity = false;
-        if (length < 2) throw 'Minimum of 2 datasets required for ChangeExplorer';
-        var cur = item.amount[length - 1],
-            prev = item.amount[length - 2];
-        item.difference = cur - prev;
-        if (Math.abs(prev) < 0.001) {
-            if (useInfinity) {
-                item.percent = String.fromCharCode(8734) + ' %';
-            } else {
-                item.percent = 'New';
-            }
-            item.percentSort = 10000 * Math.abs(item.difference);
-        } else if (cur < 0 || prev < 0) {
-            item.percent = 'N/A';
-            item.percentSort = 10000 * Math.abs(item.difference);
-        } else {
-            var pct = Math.round(1000 * item.difference / prev) / 10;
-            item.percent = pct + '%';
-            item.percentSort = Math.abs(item.percent);
-        }
-    },
-
-    sortByAbsolutePercentage: function sortByAbsolutePercentage() {
-        return item2.percentSort - item1.percentSort;
-    },
-
-    sortByAbsoluteDifference: function sortByAbsoluteDifference(item1, item2) {
-        var result = Math.abs(item2.difference) - Math.abs(item1.difference);
-        return result;
-    },
-
     renderCharts: function renderCharts() {
         var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
         var dm = dataModelStore.getModel(dataModelId);
         var accountType = stateStore.getValue(this.props.storeId, 'accountType');
-        console.log('Account type is now ' + accountType);
         var newData = dm.getData({
             accountTypes: [accountType],
             startPath: [],
@@ -54845,24 +54816,12 @@ var WhatsNewPage = _react2['default'].createClass({
                 )
             );
         } else {
-            var rows = newData.data;
-            var headers = newData.dataHeaders;
-            var dataLength = rows[0].amount.length;
-            rows.map(this.computeChanges);
-            rows = rows.sort(this.sortByAbsoluteDifference).slice(0, 10);
-
-            var myData = [];
-            for (var i = 0; i < rows.length; ++i) {
-                var item = {
-                    name: rows[i].categories[rows[i].categories.length - 1],
-                    value: rows[i].difference
-                };
-                myData.push(item);
-            }
             return _react2['default'].createElement(
                 'div',
                 null,
-                _react2['default'].createElement(_AvbTreemap2['default'], { width: 1200, height: 600, data: newData })
+                _react2['default'].createElement(_AvbTreemap2['default'], { width: 1200, height: 600,
+                    data: newData,
+                    accountType: accountType == AccountTypes.EXPENSE ? 'Expenses' : 'Revenues' })
             );
         }
     },
@@ -56123,7 +56082,7 @@ function initialize(incomingData) {
  */
 function initializeVisualizations(params, incomingData) {
 
-    // get previosly set year
+    // get previously set year
     var yearCookie = parseInt(jQuery.cookie('year'));
     // use year listed in the params object
     if (params.year !== undefined && !isNaN(parseInt(params.year))) {
@@ -56193,6 +56152,8 @@ function loadData(incomingData) {
     // initialize cards
     avb.cards.initialize(statistics.stats.decks, avb.section);
 
+    // Possibly clean up child nodes of container:
+    $(avb.modes[avb.mode].container).children('svg').remove();
     // navigation (treemap or table)
     avb.navigation.initialize($(avb.modes[avb.mode].container), avb.root, avb);
     avb.navigation.open(avb.root.hash, null, avb);
@@ -56212,13 +56173,10 @@ function loadData(incomingData) {
 function setMode(mode) {
     var $container = $('#avb-wrap');
     if (!$container) throw 'No damn container';
-    console.log('Mode is ' + mode);
     mode = mode || 't';
-    console.log('  and now is ' + mode);
+    console.log('Mode is ' + mode);
     avb.mode = mode;
     avb.navigation = avb.modes[mode].js;
-    console.log('Template: ' + JSON.stringify(avb.modes[mode].template));
-    //$container.html(Mustache.render($(avb.modes[mode].template).html()));
 }
 
 /*
@@ -56375,9 +56333,9 @@ License:
     limitations under the License.
 */
 
-'use strict';
+"use strict";
 
-Object.defineProperty(exports, '__esModule', {
+Object.defineProperty(exports, "__esModule", {
     value: true
 });
 var avb_cards = (function () {
@@ -56393,14 +56351,16 @@ var avb_cards = (function () {
     */
     var initialize = function initialize(decks, section) {
         cardstack = [];
-        $cards = $('#cards');
+        $cards = $("#cards");
+        $cards.children(".card-row").remove();
+
         // each section has its own deck, or information to be shown
         // about each entry
         // eg. only expenses has personal contribution card
         deck = decks[section];
 
         var container,
-            rowHtml = '<div class="row-fluid card-row separator"> </div>';
+            rowHtml = "<div class=\"row-fluid card-row separator\"> </div>";
         // draw all cards in deck
         for (var i = 0; i < deck.length; i++) {
             // append new row every 2 cards
@@ -56408,7 +56368,7 @@ var avb_cards = (function () {
                 container = $(rowHtml).appendTo($cards);
             }
             // creates div for new card
-            var newcard = $('<div class="card-wrapper"></div>').appendTo(container);
+            var newcard = $("<div class=\"card-wrapper\"></div>").appendTo(container);
             // var newcard = drawCard(container, deck[i]);
             // remember card object for future updates
             cardstack.push(newcard);
@@ -56421,23 +56381,22 @@ var avb_cards = (function () {
     *   @param {node} data - node for which data has to be displayed
     */
     var update = function update(data) {
-        console.log('In cards update');
         // update all cards in deck
         $.each(deck, function (i, d) {
             // render template
 
-            if (typeof d.cardRenderer === 'function') {
+            if (typeof d.cardRenderer === "function") {
                 d.cardRenderer(data, cardstack[i]);
             } else {
-                cardstack[i].html(Mustache.render($('#card-template').html(), d));
+                cardstack[i].html(Mustache.render($("#card-template").html(), d));
             }
             // set value
-            cardstack[i].find('.card-value').html(deck[i].value(data));
+            cardstack[i].find(".card-value").html(deck[i].value(data));
 
             // set card description if available
-            cardstack[i].find('.card-desc').html(typeof deck[i].side === 'string' ? deck[i].side : deck[i].side(data));
+            cardstack[i].find(".card-desc").html(typeof deck[i].side === "string" ? deck[i].side : deck[i].side(data));
         });
-        console.log('Leaving cards update');
+        console.log("Leaving cards update");
     };
 
     /*
@@ -56456,8 +56415,8 @@ var avb_cards = (function () {
     };
 })();
 
-exports['default'] = avb_cards;
-module.exports = exports['default'];
+exports["default"] = avb_cards;
+module.exports = exports["default"];
 
 },{}],339:[function(require,module,exports){
 /*
@@ -56608,7 +56567,6 @@ var avb_chart = (function () {
         var color = color || avb.currentNode.color;
         // svg groups initalization
         if (chart.axes === undefined) {
-            console.log('Dealing with undefined axes');
             chart.grids = chart.append('g');
             chart.areagroup = chart.append('g');
             chart.layers = chart.append('g');
@@ -57984,10 +57942,10 @@ var avb_treemap = (function () {
         var height = height,
             formatNumber = d3.format(",d"),
             transitioning;
-        //width = 700;
-        //height = 600;
 
         // create svg
+        var tmp = d3.select($container.get(0));
+
         nav = d3.select($container.get(0)).append("svg").attr("width", width).attr("height", height).append("g").style("shape-rendering", "crispEdges");
 
         // initialize x and y scales

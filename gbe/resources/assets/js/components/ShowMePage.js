@@ -149,47 +149,10 @@ var WhatsNewPage = React.createClass({
         )
     },
 
-    computeChanges: function computeChanges (item, index) {
-        let length = item.amount.length;
-        let useInfinity = false;
-        if (length < 2) throw "Minimum of 2 datasets required for ChangeExplorer";
-        let cur = item.amount[length-1], prev = item.amount[length-2];
-        item.difference = cur-prev;
-        if (Math.abs(prev) < 0.001) {
-            if (useInfinity) {
-                item.percent = String.fromCharCode(8734) + " %";
-            }
-            else {
-                item.percent = "New";
-            }
-            item.percentSort = 10000 * Math.abs(item.difference);
-        }
-        else if (cur < 0. || prev < 0.) {
-            item.percent="N/A";
-            item.percentSort = 10000 * Math.abs(item.difference);
-        }
-        else {
-            let pct = Math.round(1000*(item.difference)/prev)/10;
-            item.percent = (pct) + "%";
-            item.percentSort = Math.abs(item.percent);
-        }
-    },
-
-    sortByAbsolutePercentage: function sortByAbsolutePercentage () {
-        return item2.percentSort - item1.percentSort;
-    },
-
-
-    sortByAbsoluteDifference: function sortByAbsoluteDifference(item1, item2) {
-        var result = Math.abs(item2.difference) - Math.abs(item1.difference);
-        return result;
-    },
-
     renderCharts: function () {
         var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
         var dm = dataModelStore.getModel(dataModelId);
         var accountType = stateStore.getValue(this.props.storeId, 'accountType');
-        console.log("Account type is now " + accountType);
         var newData = dm.getData({
             accountTypes:[accountType],
             startPath: [],
@@ -205,23 +168,11 @@ var WhatsNewPage = React.createClass({
             )
         }
         else {
-            var rows = newData.data;
-            var headers = newData.dataHeaders;
-            let dataLength = rows[0].amount.length;
-            rows.map(this.computeChanges);
-            rows = rows.sort(this.sortByAbsoluteDifference).slice(0, 10);
-
-            var myData = [];
-            for (let i = 0; i < rows.length; ++i) {
-                let item = {
-                    name: rows[i].categories[rows[i].categories.length - 1],
-                    value: rows[i].difference
-                };
-                myData.push(item);
-            }
             return (
                 <div>
-                    <AvbTreemap width={1200} height={600} data={newData}/>
+                    <AvbTreemap width={1200} height={600}
+                                data={newData}
+                                accountType={(accountType==AccountTypes.EXPENSE)?"Expenses":"Revenues"}/>
                 </div>
             )
         }

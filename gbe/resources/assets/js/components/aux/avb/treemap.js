@@ -56,10 +56,10 @@ var avb_treemap = function () {
         var height = height,
             formatNumber = d3.format(",d"),
             transitioning;
-        //width = 700;
-        //height = 600;
 
-        // create svg 
+        // create svg
+        var tmp = d3.select($container.get(0));
+
         nav = d3.select($container.get(0)).append("svg")
             .attr("width", width)
             .attr("height", height)

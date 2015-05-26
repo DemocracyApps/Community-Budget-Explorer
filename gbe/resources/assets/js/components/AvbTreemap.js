@@ -9,7 +9,8 @@ var AvbTreemap = React.createClass({
     propTypes: {
         data: React.PropTypes.object.isRequired,
         width: React.PropTypes.number.isRequired,
-        height: React.PropTypes.number.isRequired
+        height: React.PropTypes.number.isRequired,
+        accountType: React.PropTypes.string.isRequired
     },
 
     getInitialState: function() {
@@ -46,8 +47,8 @@ var AvbTreemap = React.createClass({
         };
 
         var tree = {
-            key: "top",
-            hash: md5.md5("top"),
+            key: this.props.accountType,
+            hash: md5.md5(this.props.accountType),
             src: "",
             descr: "",
             url:"",
@@ -101,6 +102,10 @@ var AvbTreemap = React.createClass({
 
     componentDidUpdate: function() {
         console.log("in componentDidUpdate");
+        if (this.props.data != null) {
+            var data = this.prepareData(this.props.data);
+        }
+        avbStuff.initialize(data);
     },
 
     componentWillUnmount: function () {

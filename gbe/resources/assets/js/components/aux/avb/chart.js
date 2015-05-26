@@ -154,7 +154,6 @@ var avb_chart = function() {
         var color = color || avb.currentNode.color;
         // svg groups initalization
         if (chart.axes === undefined) {
-            console.log("Dealing with undefined axes");
             chart.grids = chart.append('g');
             chart.areagroup = chart.append('g');
             chart.layers = chart.append('g');

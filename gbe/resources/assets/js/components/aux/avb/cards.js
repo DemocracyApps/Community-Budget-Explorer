@@ -42,6 +42,8 @@ var avb_cards = function () {
     var initialize = function(decks, section){
         cardstack = [];
         $cards = $("#cards");
+        $cards.children(".card-row").remove();
+
         // each section has its own deck, or information to be shown
         // about each entry
         // eg. only expenses has personal contribution card
@@ -69,7 +71,6 @@ var avb_cards = function () {
     *   @param {node} data - node for which data has to be displayed
     */
     var update = function (data) {
-console.log("In cards update");
         // update all cards in deck
         $.each(deck, function(i,d){
             // render template
@@ -86,7 +87,6 @@ console.log("In cards update");
             cardstack[i].find(".card-desc").html(
                 (typeof(deck[i].side) === 'string') ? deck[i].side : deck[i].side(data));
         });
-        console.log("Leaving cards update");
     };
 
     /*

@@ -86,7 +86,7 @@ function initialize(incomingData){
  */
 function initializeVisualizations(params, incomingData) {
 
-    // get previosly set year
+    // get previously set year
     var yearCookie = parseInt(jQuery.cookie('year'));
     // use year listed in the params object
     if (params.year !== undefined && !isNaN(parseInt(params.year))) {
@@ -160,6 +160,8 @@ function loadData(incomingData) {
     avb.cards.initialize(statistics.stats.decks, avb.section);
 
 
+    // Possibly clean up child nodes of container:
+    $(avb.modes[avb.mode].container).children("svg").remove();
     // navigation (treemap or table)
     avb.navigation.initialize($(avb.modes[avb.mode].container), avb.root, avb);
     avb.navigation.open(avb.root.hash, null, avb);
@@ -179,13 +181,10 @@ function loadData(incomingData) {
 function setMode(mode) {
     var $container = $('#avb-wrap');
     if (! $container) throw "No damn container";
-    console.log("Mode is " + mode);
     mode = mode || "t";
-    console.log("  and now is " + mode);
+    console.log("Mode is " + mode);
     avb.mode = mode;
     avb.navigation = avb.modes[mode].js;
-    console.log("Template: " + JSON.stringify(avb.modes[mode].template));
-    //$container.html(Mustache.render($(avb.modes[mode].template).html()));
 }
 
 /*
