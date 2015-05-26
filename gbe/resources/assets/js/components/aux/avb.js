@@ -19,7 +19,6 @@ avb.mode = null; // current mode (map, table etc.)
 avb.data = {}; // json data
 avb.currentNode = {}; // currently selected node
 
-console.log("Here are the DECKS: " + statistics.decks);
 // time variables
 
 // first datapoint
@@ -180,7 +179,6 @@ function setMode(mode) {
     var $container = $('#avb-wrap');
     if (! $container) throw "No damn container";
     mode = mode || "t";
-    console.log("Mode is " + mode);
     avb.mode = mode;
     avb.navigation = avb.modes[mode].js;
 }

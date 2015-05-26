@@ -6,6 +6,7 @@ import Site from './components/Site';
 var dispatcher = require('./common/BudgetAppDispatcher');
 var ActionTypes = require('./constants/ActionTypes');
 var idGenerator = require('./common/IdGenerator');
+var apiActions = require('./common/ApiActions');
 
 /*
  * Since we don't know in advance which components will be used by the layout,
@@ -97,6 +98,7 @@ while (GBEVars.data.length > 0) {
     }
     else if (datum.dataType == "dataset") {
         var ds = datasetStore.registerDataset(datum.id);
+        apiActions.requestDatasetIfNeeded(ds.sourceId);
     }
 }
 
@@ -106,6 +108,6 @@ var props = {
     configurationId: GBEVars.site[0].id,
     reactComponents: reactComponents
 };
-console.log("Sending with page 0 = " + pages[0]);
+
 var layout = React.render(<Site {...props}/>, document.getElementById('app'));
 

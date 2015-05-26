@@ -62,6 +62,7 @@ require('babelify/polyfill');
 var dispatcher = require('./common/BudgetAppDispatcher');
 var ActionTypes = require('./constants/ActionTypes');
 var idGenerator = require('./common/IdGenerator');
+var apiActions = require('./common/ApiActions');
 
 var reactComponents = {};
 reactComponents['SimpleCard'] = _componentsSimpleCard2['default'];
@@ -136,6 +137,7 @@ while (GBEVars.data.length > 0) {
         cardStore.storeCard(datum);
     } else if (datum.dataType == 'dataset') {
         var ds = datasetStore.registerDataset(datum.id);
+        apiActions.requestDatasetIfNeeded(ds.sourceId);
     }
 }
 
@@ -145,10 +147,10 @@ var props = {
     configurationId: GBEVars.site[0].id,
     reactComponents: reactComponents
 };
-console.log('Sending with page 0 = ' + pages[0]);
+
 var layout = _react2['default'].render(_react2['default'].createElement(_componentsSite2['default'], props), document.getElementById('app'));
 
-},{"./common/BudgetAppDispatcher":319,"./common/IdGenerator":320,"./components/BarchartExplorer":322,"./components/CardTable":324,"./components/ChangeExplorer":325,"./components/HistoryAreaChart":326,"./components/MultiYearTable":327,"./components/ShowMePage":328,"./components/SimpleCard":329,"./components/SimpleTreemap":330,"./components/Site":331,"./components/SlideShow":333,"./components/WhatsNewPage":335,"./constants/ActionTypes":346,"./stores/CardStore":353,"./stores/ConfigStore":354,"./stores/DatasetStore":356,"./stores/StateStore":357,"babelify/polyfill":91,"react":317}],2:[function(require,module,exports){
+},{"./common/ApiActions":318,"./common/BudgetAppDispatcher":319,"./common/IdGenerator":320,"./components/BarchartExplorer":322,"./components/CardTable":324,"./components/ChangeExplorer":325,"./components/HistoryAreaChart":326,"./components/MultiYearTable":327,"./components/ShowMePage":328,"./components/SimpleCard":329,"./components/SimpleTreemap":330,"./components/Site":331,"./components/SlideShow":333,"./components/WhatsNewPage":335,"./constants/ActionTypes":346,"./stores/CardStore":353,"./stores/ConfigStore":354,"./stores/DatasetStore":356,"./stores/StateStore":357,"babelify/polyfill":91,"react":317}],2:[function(require,module,exports){
 (function (global){
 "use strict";
 
@@ -56016,7 +56018,6 @@ avb.mode = null; // current mode (map, table etc.)
 avb.data = {}; // json data
 avb.currentNode = {}; // currently selected node
 
-console.log('Here are the DECKS: ' + statistics.decks);
 // time variables
 
 // first datapoint
