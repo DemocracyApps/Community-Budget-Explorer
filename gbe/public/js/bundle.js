@@ -54862,11 +54862,6 @@ var WhatsNewPage = _react2['default'].createClass({
             return _react2['default'].createElement(
                 'div',
                 null,
-                _react2['default'].createElement(
-                    'p',
-                    null,
-                    'I\'m a chart'
-                ),
                 _react2['default'].createElement(_AvbTreemap2['default'], { width: 1200, height: 600, data: newData })
             );
         }
@@ -57960,6 +57955,7 @@ Object.defineProperty(exports, "__esModule", {
 var utilities = require("./utilities");
 
 var avb_treemap = (function () {
+    var urlPushAllowed = false;
     var nav,
         currentLevel,
 
@@ -58143,9 +58139,11 @@ var avb_treemap = (function () {
             return utilities.applyTransparency(d.color, 0.8);
         });
 
+        var maxDrawLevel = 1;
         // recursively draw children rectangles
-        function addChilds(d, g) {
+        function addChilds(d, g, level) {
             // add child rectangles
+            ++level;
             g.selectAll(".child").data(function (d) {
                 return d.sub || [d];
             }).enter().append("g").attr("class", "child")
@@ -58153,15 +58151,15 @@ var avb_treemap = (function () {
             // propagate recursively to next depth
             .each(function () {
                 var group = d3.select(this);
-                if (d.sub !== undefined) {
+                if (level < maxDrawLevel && d.sub !== undefined) {
                     $.each(d.sub, function () {
-                        addChilds(this, group);
+                        addChilds(this, group, level);
                     });
                 }
             }).append("rect").call(rect);
         }
 
-        addChilds(d, g);
+        addChilds(d, g, 0);
 
         // IE popover action
         if (utilities.ie()) {
@@ -58378,6 +58376,7 @@ var avb_treemap = (function () {
      *
      */
     function pushUrl(section, year, mode, node) {
+        if (!urlPushAllowed) return;
         if (utilities.ie()) return;
         // format URL
         var url = "/" + section + "/" + year + "/" + mode + "/" + node;
