@@ -194,6 +194,7 @@ var DatasetUtilities = {
         }
         else {
             let pct = Math.round(1000*(item.difference)/prev)/10;
+            if (pct > 0) pct = "+" + pct;
             item.percent = (pct) + "%";
             item.percentSort = Math.abs(item.percent);
         }

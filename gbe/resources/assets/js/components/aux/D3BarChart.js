@@ -22,7 +22,6 @@ d3Chart.update = function(el, data, width, height, margin, callbacks) {
 };
 
 d3Chart.drawBars = function(el, scales, data, height, callbacks) {
-
     var minValue = d3.min(data, function(d) { return d.value;});
     var maxValue = d3.max(data, function(d) { return d.value;});
     var svg = d3.select(el).selectAll(".d3");
@@ -35,17 +34,29 @@ d3Chart.drawBars = function(el, scales, data, height, callbacks) {
             return x;
         })
         .attr("y", function(d) {
-            var y= scales.y(d.name);
+            var yval = d.categories.join('/');
+            var y= scales.y(yval);
             return y;
         })
         .attr("width", function(d) {
             var w = Math.abs(scales.x(d.value) - scales.x(0));
             return w;
         })
-        .text(function (d) { return d.name; })
         .attr("height", scales.y.rangeBand())
         .on('mouseover', callbacks.mouseOver)
         .on('mouseout', callbacks.mouseOut);
+
+    svg.selectAll(".bartext")
+        .data(data)
+        .enter().append('text')
+        .attr("class", function(d) { return (d.value < 0)?"bartext negative":"bartext positive"})
+        .text(function (d) { return d.name + "(" + d.percent + ")"; })
+        .attr("x", scales.x(0))
+        .attr("y", function(d) {
+            var yval = d.categories.join('/');
+                var y = scales.y(yval) + 1.5 * scales.y.rangeBand();
+                return y;
+        });
 
     var xAxis = d3.svg.axis()
         .scale(scales.x)
@@ -71,7 +82,7 @@ d3Chart.computeScales = function(data, width, height, margin) {
         .nice();
 
     var y = d3.scale.ordinal()
-        .domain(data.map(function(d) {return d.name;}))
+        .domain(data.map(function(d) {return d.categories.join('/');}))
         .rangeRoundBands([margin.bottom,height-(margin.top+margin.bottom)], .5, .3);
     return {x: x, y: y};
 };

@@ -217,8 +217,6 @@ var WhatsNewPage = React.createClass({
     },
 
     selectArea: function(e) {
-
-        console.log("Changing area to " + e);
         dispatcher.dispatch({
             actionType: ActionTypes.COMPONENT_STATE_CHANGE,
             payload: {
@@ -236,7 +234,6 @@ var WhatsNewPage = React.createClass({
         var areas = stateStore.getComponentStateValue(this.props.storeId, 'areaList');
 
         var selectedArea = stateStore.getValue(this.props.storeId, 'selectedArea');
-        console.log("Current selected area is " + selectedArea);
         var startPath = [];
         var addLevel = 1;
         if (areas != null && selectedArea >= 0) {
@@ -281,7 +278,8 @@ var WhatsNewPage = React.createClass({
                 let item = {
                     name: rows[i].categories[selectedLevel],
                     categories: rows[i].categories.slice(0,selectedLevel+1),
-                    value: rows[i].difference
+                    value: rows[i].difference,
+                    percent: rows[i].percent
                 };
                 topExpenses.push(item);
             }
@@ -293,7 +291,8 @@ var WhatsNewPage = React.createClass({
                 let item = {
                     name: rows[i].categories[selectedLevel],
                     categories: rows[i].categories.slice(0,selectedLevel+1),
-                    value: rows[i].difference
+                    value: rows[i].difference,
+                    percent: rows[i].percent
                 };
                 topRevenues.push(item);
             }
@@ -313,12 +312,12 @@ var WhatsNewPage = React.createClass({
                         </ul>
                     </div>
                     <div className="col-xs-4">
-                        <h2>Top Expense</h2>
+                        <h2>Top Spending Changes</h2>
                         <VerticalBarChart width={350} height={600} data={topExpenses}/>
                     </div>
                     <div className="col-xs-1"></div>
                     <div className="col-xs-4">
-                        <h2>Top Revenue</h2>
+                        <h2>Top Revenue Changes</h2>
                         <VerticalBarChart width={350} height={600}  data={topRevenues}/>
                     </div>
                 </div>
