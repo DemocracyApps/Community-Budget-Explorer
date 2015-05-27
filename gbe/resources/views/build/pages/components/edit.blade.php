@@ -120,9 +120,12 @@
         });
 
         function selectCardSet(tag) {
-            var value = $("#set_"+tag).val();
+            console.log("Working with cardsets " + JSON.stringify(GBEVars.cardSets));
+            console.log("selectCardSet tag = " + tag);
+            var value = $("#selectedSet_"+tag).val();
+            console.log("The value is " + value);
             var cardSet = GBEVars.cardSets[value];
-            var cardSelect = $("#card_"+tag);
+            var cardSelect = $("#selectedCard_"+tag);
             cardSelect.empty();
             for (var i=0; i<cardSet.cards.length; ++i) {
                 var card = cardSet.cards[i];
