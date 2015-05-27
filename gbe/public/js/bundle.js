@@ -55393,8 +55393,6 @@ var WhatsNewPage = _react2['default'].createClass({
     },
 
     selectArea: function selectArea(e) {
-
-        console.log('Changing area to ' + e);
         dispatcher.dispatch({
             actionType: ActionTypes.COMPONENT_STATE_CHANGE,
             payload: {
@@ -55412,7 +55410,6 @@ var WhatsNewPage = _react2['default'].createClass({
         var areas = stateStore.getComponentStateValue(this.props.storeId, 'areaList');
 
         var selectedArea = stateStore.getValue(this.props.storeId, 'selectedArea');
-        console.log('Current selected area is ' + selectedArea);
         var startPath = [];
         var addLevel = 1;
         if (areas != null && selectedArea >= 0) {
@@ -55452,6 +55449,20 @@ var WhatsNewPage = _react2['default'].createClass({
                 )
             );
         } else {
+            while (revenueData.data.length <= 1 && expenseData.data.length <= 1 && selectedLevel < 3) {
+                ++selectedLevel;
+                revenueData = dm.getData({
+                    accountTypes: [AccountTypes.REVENUE],
+                    startPath: startPath,
+                    nLevels: selectedLevel + addLevel
+                });
+                expenseData = dm.getData({
+                    accountTypes: [AccountTypes.EXPENSE],
+                    startPath: startPath,
+                    nLevels: selectedLevel + addLevel
+                }, false);
+            }
+
             var rows = expenseData.data;
             if (areas == null) {
                 areas = this.computeAreas(rows);
@@ -55614,7 +55625,6 @@ d3Chart.update = function (el, data, width, height, margin, callbacks) {
 };
 
 d3Chart.drawBars = function (el, scales, data, height, callbacks) {
-    console.log('in drawBars');
     var minValue = _d32['default'].min(data, function (d) {
         return d.value;
     });
@@ -55630,7 +55640,6 @@ d3Chart.drawBars = function (el, scales, data, height, callbacks) {
     }).attr('y', function (d) {
         var yval = d.categories.join('/');
         var y = scales.y(yval);
-        console.log('setY: ' + y + ' for ' + yval);
         return y;
     }).attr('width', function (d) {
         var w = Math.abs(scales.x(d.value) - scales.x(0));

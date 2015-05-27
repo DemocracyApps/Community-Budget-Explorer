@@ -266,6 +266,20 @@ var WhatsNewPage = React.createClass({
             )
         }
         else {
+            while (revenueData.data.length <= 1 && expenseData.data.length <= 1 && selectedLevel < 3) {
+                ++selectedLevel;
+                revenueData = dm.getData({
+                    accountTypes:[AccountTypes.REVENUE],
+                    startPath: startPath,
+                    nLevels: selectedLevel + addLevel
+                });
+                expenseData = dm.getData({
+                    accountTypes:[AccountTypes.EXPENSE],
+                    startPath: startPath,
+                    nLevels: selectedLevel + addLevel
+                }, false);
+            }
+
             var rows = expenseData.data;
             if (areas == null) {
                 areas = this.computeAreas(rows);
