@@ -53269,6 +53269,14 @@ var ChangeExplorer = _react2['default'].createClass({
         }
     },
 
+    getSelectedLevel: function getSelectedLevel() {
+        if (this.props.componentMode == CommonConstants.COMPOSED_COMPONENT) {
+            return this.props.selectedLevel;
+        } else {
+            return stateStore.getValue(this.props.storeId, 'selectedLevel');
+        }
+    },
+
     prepareLocalState: function prepareLocalState(dm) {
         var accountType = this.getAccountType();
         var selectedLevel = stateStore.getValue(this.props.storeId, 'selectedLevel');
@@ -53364,46 +53372,49 @@ var ChangeExplorer = _react2['default'].createClass({
     },
 
     renderLevelSelector: function renderLevelSelector(data) {
-        var selectedLevel = stateStore.getValue(this.props.storeId, 'selectedLevel');
-        var selectLabelText = 'Select Detail Level:' + String.fromCharCode(160) + String.fromCharCode(160);
-        var spacer = String.fromCharCode(160) + String.fromCharCode(160) + String.fromCharCode(160) + String.fromCharCode(160);
-        return _react2['default'].createElement(
-            'div',
-            { className: 'form-group' },
-            _react2['default'].createElement(
-                'form',
-                { className: 'form-inline' },
+        if (this.props.componentMode == CommonConstants.STANDALONE_COMPONENT) {
+            var selectedLevel = stateStore.getValue(this.props.storeId, 'selectedLevel');
+            var selectLabelText = 'Select Detail Level:' + String.fromCharCode(160) + String.fromCharCode(160);
+            var spacer = String.fromCharCode(160) + String.fromCharCode(160) + String.fromCharCode(160) + String.fromCharCode(160);
+            return _react2['default'].createElement(
+                'div',
+                { className: 'form-group' },
                 _react2['default'].createElement(
-                    'label',
-                    null,
-                    selectLabelText
-                ),
-                _react2['default'].createElement(
-                    'select',
-                    { className: 'form-control', onChange: this.onLevelChange, value: selectedLevel },
-                    data.categories.map(function (item, index) {
-                        return _react2['default'].createElement(
-                            'option',
-                            { key: index, value: index },
-                            item
-                        );
-                    })
-                ),
-                _react2['default'].createElement(
-                    'span',
-                    null,
-                    spacer
-                ),
-                _react2['default'].createElement(
-                    'button',
-                    { className: 'btn btn-normal', onClick: this.doReset },
-                    'Reset'
+                    'form',
+                    { className: 'form-inline' },
+                    _react2['default'].createElement(
+                        'label',
+                        null,
+                        selectLabelText
+                    ),
+                    _react2['default'].createElement(
+                        'select',
+                        { className: 'form-control', onChange: this.onLevelChange, value: selectedLevel },
+                        data.categories.map(function (item, index) {
+                            return _react2['default'].createElement(
+                                'option',
+                                { key: index, value: index },
+                                item
+                            );
+                        })
+                    ),
+                    _react2['default'].createElement(
+                        'span',
+                        null,
+                        spacer
+                    ),
+                    _react2['default'].createElement(
+                        'button',
+                        { className: 'btn btn-normal', onClick: this.doReset },
+                        'Reset'
+                    )
                 )
-            )
-        );
+            );
+        }
     },
 
     renderAccountSelector: function renderAccountSelector() {
+        var accountType = this.getAccountType();
         if (this.props.componentMode == CommonConstants.STANDALONE_COMPONENT) {
             return _react2['default'].createElement(
                 'form',
@@ -53459,7 +53470,7 @@ var ChangeExplorer = _react2['default'].createClass({
     tableRow: function tableRow(item, index) {
         var length = item.amount.length;
         var label = item.categories[0];
-        var selectedLevel = stateStore.getValue(this.props.storeId, 'selectedLevel');
+        var selectedLevel = this.getSelectedLevel();
         if (selectedLevel > 0) {
             for (var i = 1; i <= selectedLevel; ++i) {
                 label += ' ' + String.fromCharCode(183) + ' ' + item.categories[i];
@@ -53507,8 +53518,10 @@ var ChangeExplorer = _react2['default'].createClass({
     render: function render() {
         var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
         var dm = dataModelStore.getModel(dataModelId);
-        var accountType = stateStore.getValue(this.props.storeId, 'accountType');
-        var selectedLevel = stateStore.getValue(this.props.storeId, 'selectedLevel');
+        var accountType = this.getAccountType();
+        //var selectedLevel = stateStore.getValue(this.props.storeId, 'selectedLevel');
+        var selectedLevel = this.getSelectedLevel();
+        console.log('Current level = ' + selectedLevel);
         var newData = dm.getData({
             accountTypes: [accountType],
             startPath: [],
@@ -53884,7 +53897,7 @@ var HistoryTable = _react2['default'].createClass({
 
         var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
         var dm = dataModelStore.getModel(dataModelId);
-        var accountType = stateStore.getValue(this.props.storeId, 'accountType');
+        var accountType = this.getAccountType();
         var selectedLevel = stateStore.getValue(this.props.storeId, 'selectedLevel');
         var newData = dm.getData({
             accountTypes: [accountType],
@@ -55172,7 +55185,7 @@ var WhatsNewPage = _react2['default'].createClass({
             null,
             _react2['default'].createElement(
                 'div',
-                { className: 'row' },
+                { className: 'row panel panel-default' },
                 _react2['default'].createElement(
                     'div',
                     { className: 'col-xs-3' },
@@ -55371,10 +55384,10 @@ var WhatsNewPage = _react2['default'].createClass({
                     _react2['default'].createElement('br', null),
                     _react2['default'].createElement(
                         'ul',
-                        { className: 'servicearea-selector' },
+                        { className: 'servicearea-selector nav nav-pills nav-stacked' },
                         _react2['default'].createElement(
                             'li',
-                            null,
+                            { role: 'presentation', className: selectedArea == -1 ? 'active' : 'not-active' },
                             _react2['default'].createElement(
                                 'a',
                                 { href: '#', id: -1, onClick: this.selectArea },
@@ -55385,7 +55398,7 @@ var WhatsNewPage = _react2['default'].createClass({
                             var spacer = String.fromCharCode(160);
                             return _react2['default'].createElement(
                                 'li',
-                                null,
+                                { role: 'presentation', className: selectedArea == index ? 'active' : 'not-active' },
                                 _react2['default'].createElement(
                                     'a',
                                     { href: '#', id: index,
@@ -55404,7 +55417,7 @@ var WhatsNewPage = _react2['default'].createClass({
                     _react2['default'].createElement(
                         'h2',
                         null,
-                        'Top Expense Categories'
+                        'Top Expense'
                     ),
                     _react2['default'].createElement(_VerticalBarChart2['default'], { width: 350, height: 600, data: topExpenses })
                 ),
@@ -55415,7 +55428,7 @@ var WhatsNewPage = _react2['default'].createClass({
                     _react2['default'].createElement(
                         'h2',
                         null,
-                        'Top Revenue Categories'
+                        'Top Revenue'
                     ),
                     _react2['default'].createElement(_VerticalBarChart2['default'], { width: 350, height: 600, data: topRevenues })
                 )
@@ -55425,12 +55438,15 @@ var WhatsNewPage = _react2['default'].createClass({
 
     renderTable: function renderTable() {
         var subComponents = stateStore.getValue(this.props.storeId, 'subComponents');
+        var selectedLevel = stateStore.getValue(this.props.storeId, 'selectedLevel');
+
         return _react2['default'].createElement(
             'div',
             null,
             _react2['default'].createElement(_ChangeExplorer2['default'], { componentMode: CommonConstants.COMPOSED_COMPONENT,
                 datasetIds: this.props.componentData['mydatasets'].ids,
                 accountType: stateStore.getValue(this.props.storeId, 'accountType'),
+                selectedLevel: selectedLevel,
                 storeId: subComponents.table.storeId,
                 componentData: {},
                 componentProps: {}

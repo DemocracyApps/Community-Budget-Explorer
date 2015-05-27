@@ -151,7 +151,7 @@ var WhatsNewPage = React.createClass({
         var spacer = String.fromCharCode(160)+String.fromCharCode(160)+String.fromCharCode(160)+String.fromCharCode(160);
         return (
             <div>
-                <div className="row">
+                <div className="row panel panel-default">
                     <div className="col-xs-3">
                         {this.leftPanel(displayMode)}
                     </div>
@@ -303,22 +303,22 @@ var WhatsNewPage = React.createClass({
                     <div className="col-xs-3">
                         <h2>Service Area</h2>
                         <br/>
-                        <ul className="servicearea-selector">
-                            <li><a href="#" id={-1} onClick={this.selectArea}>All Areas</a></li>
+                        <ul className="servicearea-selector nav nav-pills nav-stacked">
+                            <li role="presentation" className={selectedArea==-1?"active":"not-active"}><a href="#" id={-1} onClick={this.selectArea}>All Areas</a></li>
                             {areas.map(function(item, index){
                                 var spacer = String.fromCharCode(160);
-                                return <li><a href="#" id={index}
+                                return <li role="presentation" className={selectedArea==index?"active":"not-active"}><a href="#" id={index}
                                               onClick={this.selectArea.bind(null, index)}>{spacer} {item.name}</a></li>
                             }.bind(this))}
                         </ul>
                     </div>
                     <div className="col-xs-4">
-                        <h2>Top Expense Categories</h2>
+                        <h2>Top Expense</h2>
                         <VerticalBarChart width={350} height={600} data={topExpenses}/>
                     </div>
                     <div className="col-xs-1"></div>
                     <div className="col-xs-4">
-                        <h2>Top Revenue Categories</h2>
+                        <h2>Top Revenue</h2>
                         <VerticalBarChart width={350} height={600}  data={topRevenues}/>
                     </div>
                 </div>
@@ -328,11 +328,14 @@ var WhatsNewPage = React.createClass({
 
     renderTable: function () {
         var subComponents = stateStore.getValue(this.props.storeId, 'subComponents');
+        var selectedLevel = stateStore.getValue(this.props.storeId, 'selectedLevel');
+
         return (
             <div>
                 <ChangeExplorer componentMode={CommonConstants.COMPOSED_COMPONENT}
                                 datasetIds={this.props.componentData['mydatasets'].ids}
                                 accountType={stateStore.getValue(this.props.storeId, 'accountType')}
+                                selectedLevel={selectedLevel}
                                 storeId={subComponents.table.storeId}
                                 componentData={{}}
                                 componentProps={{}}

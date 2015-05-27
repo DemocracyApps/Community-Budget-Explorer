@@ -45,6 +45,15 @@ var ChangeExplorer = React.createClass({
         }
     },
 
+    getSelectedLevel: function() {
+        if (this.props.componentMode == CommonConstants.COMPOSED_COMPONENT) {
+            return this.props.selectedLevel;
+        }
+        else {
+            return stateStore.getValue(this.props.storeId, 'selectedLevel');
+        }
+    },
+
     prepareLocalState: function (dm) {
         var accountType = this.getAccountType();
         var selectedLevel = stateStore.getValue(this.props.storeId, 'selectedLevel');
@@ -148,28 +157,31 @@ var ChangeExplorer = React.createClass({
     },
 
     renderLevelSelector: function renderLevelSelector(data) {
-        let selectedLevel = stateStore.getValue(this.props.storeId, 'selectedLevel');
-        var selectLabelText = "Select Detail Level:" + String.fromCharCode(160)+String.fromCharCode(160);
-        var spacer = String.fromCharCode(160)+String.fromCharCode(160)+String.fromCharCode(160)+String.fromCharCode(160);
-        return (
-            <div className="form-group">
-                <form className="form-inline">
-                    <label>{selectLabelText}</label>
-                    <select className="form-control" onChange={this.onLevelChange} value={selectedLevel}>
-                        {data.categories.map(function(item, index) {
-                            return (
-                                <option key={index} value={index}>{item}</option>
-                            )
-                        })}
-                    </select>
-                    <span>{spacer}</span>
-                    <button className="btn btn-normal" onClick={this.doReset}>Reset</button>
-                </form>
-            </div>
-        )
+        if (this.props.componentMode == CommonConstants.STANDALONE_COMPONENT) {
+            let selectedLevel = stateStore.getValue(this.props.storeId, 'selectedLevel');
+            var selectLabelText = "Select Detail Level:" + String.fromCharCode(160) + String.fromCharCode(160);
+            var spacer = String.fromCharCode(160) + String.fromCharCode(160) + String.fromCharCode(160) + String.fromCharCode(160);
+            return (
+                <div className="form-group">
+                    <form className="form-inline">
+                        <label>{selectLabelText}</label>
+                        <select className="form-control" onChange={this.onLevelChange} value={selectedLevel}>
+                            {data.categories.map(function (item, index) {
+                                return (
+                                    <option key={index} value={index}>{item}</option>
+                                )
+                            })}
+                        </select>
+                        <span>{spacer}</span>
+                        <button className="btn btn-normal" onClick={this.doReset}>Reset</button>
+                    </form>
+                </div>
+            )
+        }
     },
 
     renderAccountSelector() {
+        var accountType = this.getAccountType();
         if (this.props.componentMode == CommonConstants.STANDALONE_COMPONENT) {
             return (
                 <form className="form-inline">
@@ -209,7 +221,7 @@ var ChangeExplorer = React.createClass({
     tableRow: function (item, index) {
         let length = item.amount.length;
         let label = item.categories[0];
-        var selectedLevel = stateStore.getValue(this.props.storeId, 'selectedLevel');
+        var selectedLevel = this.getSelectedLevel();
         if (selectedLevel > 0) {
             for (let i=1; i<=selectedLevel; ++i) {
                 label += " " + String.fromCharCode(183) + " "+item.categories[i];
@@ -233,8 +245,10 @@ var ChangeExplorer = React.createClass({
     render: function() {
         var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
         var dm = dataModelStore.getModel(dataModelId);
-        var accountType = stateStore.getValue(this.props.storeId, 'accountType');
-        var selectedLevel = stateStore.getValue(this.props.storeId, 'selectedLevel');
+        var accountType = this.getAccountType();
+        //var selectedLevel = stateStore.getValue(this.props.storeId, 'selectedLevel');
+        var selectedLevel = this.getSelectedLevel();
+        console.log("Current level = " + selectedLevel);
         var newData = dm.getData({
             accountTypes:[accountType],
             startPath: [],

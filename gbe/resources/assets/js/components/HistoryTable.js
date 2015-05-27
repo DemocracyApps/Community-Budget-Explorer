@@ -234,7 +234,7 @@ var HistoryTable = React.createClass({
     render: function() {
         var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
         var dm = dataModelStore.getModel(dataModelId);
-        var accountType = stateStore.getValue(this.props.storeId, 'accountType');
+        var accountType = this.getAccountType();
         var selectedLevel = stateStore.getValue(this.props.storeId, 'selectedLevel');
         var newData = dm.getData({
             accountTypes:[accountType],
