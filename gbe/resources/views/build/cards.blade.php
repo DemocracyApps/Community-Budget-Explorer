@@ -71,7 +71,7 @@
                         <div class="col-sm-1"></div>
                         <div class="col-sm-3">
                             <a style="position:relative; bottom:-20px; right:20px;"
-                               href="/build/{!! $site->slug !!}/cards/{!! $card->id !!}/edit?cardSet={!! $cardset->id !!}"
+                               href="/build/{!! $site->slug !!}/cards/{!! $card->id !!}/edit?cardSet={!! $card->card_set !!}"
                                class="btn btn-primary">Edit</a>
                         </div>
                     </div>
