@@ -31,7 +31,7 @@ var SimpleCard = React.createClass({
                 <div style={cardStyle}>
                     <h1> {card.title} </h1>
 
-                    <span dangerouslySetInnerHTML={{__html: card.body}} />
+                    <span dangerouslySetInnerHTML={{__html: card.body[0]}} />
                 </div>
             );
         }

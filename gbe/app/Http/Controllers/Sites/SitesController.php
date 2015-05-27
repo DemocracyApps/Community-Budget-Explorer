@@ -35,6 +35,12 @@ use Util;
 
 class SitesController extends Controller {
 
+    private static function bodySections($body)
+    {
+        $bodies = explode('<!--br-->', $body);
+        return $bodies;
+    }
+
 	public function page($slug, $pageName=null, Request $request)
     {
         $siteData = Site::where('slug','=',$slug)->first();
@@ -113,7 +119,7 @@ class SitesController extends Controller {
                                         $storedCard = Card::find($cId);
                                         $card = $storedCard->asSimpleObject(['dataType' => 'card']);
                                         $card->body = $pd->text($card->body);
-                                        $cardStore[$cId] = $card;
+                                        $cardStore[$cId] = array($card);
                                     }
                                     $data[] = $card;
                                     $c->componentData[$key] = array('type'=> 'card', 'ids'=>array($card->id));
@@ -124,7 +130,11 @@ class SitesController extends Controller {
                                     foreach ($cards as $card) {
                                         if (! array_key_exists($card->id, $cardStore)) {
                                             $cardStore[$card->id] = $card->asSimpleObject(['dataType' => 'card']);
-                                            $cardStore[$card->id]->body = $pd->text($cardStore[$card->id]->body);
+                                            $bodies = self::bodySections($cardStore[$card->id]->body);
+                                            $cardStore[$card->id]->body = array();
+                                            foreach ($bodies as $body) {
+                                                $cardStore[$card->id]->body[] = $pd->text($body);
+                                            }
                                             $data[] = $cardStore[$card->id];
                                         }
                                         else {

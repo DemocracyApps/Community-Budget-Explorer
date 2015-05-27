@@ -127,7 +127,6 @@ class CardsController extends Controller {
             $this->card->body = $request->get('body');
         else
             $this->card->body = null;
-
         $this->card->card_set = $request->get('cardSet');
         $this->card->site = $site->id;
 

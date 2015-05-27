@@ -53130,90 +53130,157 @@ var CardTable = _react2['default'].createClass({
         storeId: _react2['default'].PropTypes.number.isRequired
     },
 
+    cardFunction: function cardFunction(card, index) {
+        if (card.body.length > 1) {
+            return _react2['default'].createElement(
+                'div',
+                { key: index, className: 'col-md-6 card' },
+                _react2['default'].createElement(
+                    'div',
+                    { className: 'row' },
+                    _react2['default'].createElement(
+                        'div',
+                        { className: 'col-md-12' },
+                        _react2['default'].createElement(
+                            'h4',
+                            null,
+                            card.title
+                        )
+                    ),
+                    _react2['default'].createElement(
+                        'div',
+                        { className: 'col-md-6' },
+                        _react2['default'].createElement('span', { dangerouslySetInnerHTML: { __html: card.body[0] } })
+                    ),
+                    _react2['default'].createElement(
+                        'div',
+                        { className: 'col-md-6' },
+                        _react2['default'].createElement('span', { dangerouslySetInnerHTML: { __html: card.body[1] } })
+                    ),
+                    _react2['default'].createElement(
+                        'div',
+                        { className: 'col-md-4' },
+                        _react2['default'].createElement(
+                            'a',
+                            { className: 'btn-sm btn-primary' },
+                            'Read More'
+                        )
+                    )
+                )
+            );
+        } else if (card.image != null) {
+            return _react2['default'].createElement(
+                'div',
+                { key: index, className: 'col-md-6 card' },
+                _react2['default'].createElement(
+                    'div',
+                    { className: 'row' },
+                    _react2['default'].createElement(
+                        'div',
+                        { className: 'col-md-12' },
+                        _react2['default'].createElement(
+                            'h4',
+                            null,
+                            card.title
+                        )
+                    ),
+                    _react2['default'].createElement(
+                        'div',
+                        { className: 'col-md-4' },
+                        _react2['default'].createElement(
+                            'a',
+                            { href: card.link, className: 'thumbnail' },
+                            _react2['default'].createElement('img', { src: card.image, alt: '...' })
+                        )
+                    ),
+                    _react2['default'].createElement(
+                        'div',
+                        { className: 'col-md-8' },
+                        _react2['default'].createElement('span', { dangerouslySetInnerHTML: { __html: card.body[0] } })
+                    ),
+                    _react2['default'].createElement(
+                        'div',
+                        { className: 'col-md-4' },
+                        _react2['default'].createElement(
+                            'a',
+                            { className: 'btn-sm btn-primary' },
+                            'Read More'
+                        )
+                    )
+                )
+            );
+        } else {
+            return _react2['default'].createElement(
+                'div',
+                { key: index, className: 'col-md-6 card' },
+                _react2['default'].createElement(
+                    'h4',
+                    null,
+                    card.title
+                ),
+                _react2['default'].createElement('span', { dangerouslySetInnerHTML: { __html: card.body[0] } })
+            );
+        }
+    },
+
     render: function render() {
-        var _this = this;
 
         console.log('Here we go: ' + this.props.componentData['mycardset'].ids.length);
 
         if (this.props.componentData['mycardset'] && this.props.componentData['mycardset'].ids.length > 0) {
-            var rowStyle;
-            var columnStyle;
-            var rowFunction;
+            var colClasses = ['col-md-12', 'col-md-12', 'col-md-6 col-sm-12', 'col-md-4 col-sm-12', 'col-md-3 col-sm-6 col-xs-12'];
 
-            var _ret = (function () {
-                var colClasses = ['col-md-12', 'col-md-12', 'col-md-6 col-sm-12', 'col-md-4 col-sm-12', 'col-md-3 col-sm-6 col-xs-12'];
+            var maxColumns = Number(this.props.componentProps.maxColumns);
+            console.log('Max columns = ' + maxColumns);
+            var colClass = colClasses[maxColumns];
+            var count = this.props.componentData['mycardset'].ids.length;
+            var rowCount = Math.floor(count / maxColumns);
+            var remainder = count % maxColumns;
+            var hasRemainder = false;
+            if (remainder > 0) {
+                ++rowCount;
+                hasRemainder = true;
+            }
 
-                var maxColumns = Number(_this.props.componentProps.maxColumns);
-                console.log('Max columns = ' + maxColumns);
-                var colClass = colClasses[maxColumns];
-                var count = _this.props.componentData['mycardset'].ids.length;
-                var rowCount = Math.floor(count / maxColumns);
-                var remainder = count % maxColumns;
-                var hasRemainder = false;
-                if (remainder > 0) {
-                    ++rowCount;
-                    hasRemainder = true;
+            var rows = [];
+            var cardIndex = 0;
+            for (var row = 0; row < rowCount; ++row) {
+                var cMax = row == rowCount - 1 && hasRemainder ? remainder : maxColumns;
+                rows.push([]);
+                for (var column = 0; column < cMax; ++column) {
+                    var card = cardStore.getCard(this.props.componentData['mycardset'].ids[cardIndex++]);
+                    rows[row].push(card);
                 }
+            }
 
-                var rows = [];
-                var cardIndex = 0;
-                for (var row = 0; row < rowCount; ++row) {
-                    var cMax = row == rowCount - 1 && hasRemainder ? remainder : maxColumns;
-                    rows.push([]);
-                    for (var column = 0; column < cMax; ++column) {
-                        var card = cardStore.getCard(_this.props.componentData['mycardset'].ids[cardIndex++]);
-                        rows[row].push(card);
-                    }
-                }
+            var rowStyle = {
+                marginTop: 1
+            };
+            var columnStyle = {
+                background: '#eee',
+                marginTop: 75,
+                paddingLeft: 50,
+                paddingRight: 5,
+                paddingTop: 5,
+                paddingBottom: 5
+                //,
+                //border: "1px solid black"
+            };
 
-                rowStyle = {
-                    marginTop: 1
-                };
-                columnStyle = {
-                    background: '#eee',
-                    marginTop: 75,
-                    paddingLeft: 50,
-                    paddingRight: 5,
-                    paddingTop: 5,
-                    paddingBottom: 5
-                    //,
-                    //border: "1px solid black"
-                };
+            // 3 cases: (a) 1 text section, (b) 2 text sections, (c) picture + 1 text section.
+            var rowFunction = function rowFunction(item, index) {
+                return _react2['default'].createElement(
+                    'div',
+                    { key: index, className: 'row card-table-row' },
+                    item.map(this.cardFunction.bind(this))
+                );
+            };
 
-                rowFunction = function rowFunction(item, index) {
-                    return _react2['default'].createElement(
-                        'div',
-                        { key: index, className: 'row', style: rowStyle },
-                        item.map(function (colItem, colIndex) {
-                            return _react2['default'].createElement(
-                                'div',
-                                { className: colClass, style: { paddingLeft: 5, paddingRight: 5 } },
-                                _react2['default'].createElement(
-                                    'div',
-                                    { key: colIndex, style: columnStyle },
-                                    _react2['default'].createElement(
-                                        'h2',
-                                        null,
-                                        colItem.title
-                                    ),
-                                    _react2['default'].createElement('br', null),
-                                    _react2['default'].createElement('span', { dangerouslySetInnerHTML: { __html: colItem.body } })
-                                )
-                            );
-                        })
-                    );
-                };
-
-                return {
-                    v: _react2['default'].createElement(
-                        'div',
-                        null,
-                        rows.map(rowFunction)
-                    )
-                };
-            })();
-
-            if (typeof _ret === 'object') return _ret.v;
+            return _react2['default'].createElement(
+                'div',
+                { className: 'card-table' },
+                rows.map(rowFunction.bind(this))
+            );
         }
     }
 });
@@ -54074,7 +54141,7 @@ var NavCards = _react2['default'].createClass({
                                 card.title,
                                 ' '
                             ),
-                            _react2['default'].createElement('span', { dangerouslySetInnerHTML: { __html: card.body } })
+                            _react2['default'].createElement('span', { dangerouslySetInnerHTML: { __html: card.body[0] } })
                         )
                     );
                 })
@@ -54387,7 +54454,7 @@ var SimpleCard = _react2['default'].createClass({
                     card.title,
                     ' '
                 ),
-                _react2['default'].createElement('span', { dangerouslySetInnerHTML: { __html: card.body } })
+                _react2['default'].createElement('span', { dangerouslySetInnerHTML: { __html: card.body[0] } })
             );
         }
     }
@@ -54715,7 +54782,7 @@ var Site = _react2['default'].createClass({
     pageTitle: function pageTitle(page) {
         if (page.title != undefined) {
             return _react2['default'].createElement(
-                'h2',
+                'span',
                 null,
                 page.title
             );
@@ -54743,94 +54810,55 @@ var Site = _react2['default'].createClass({
             reactComponents: this.props.reactComponents
         };
 
-        var siteHeaderStyles = {
-            headerStyle: {
-                minHeight: 50
-            },
-            brandTitleStyle: {
-                fontWeight: 'lighter',
-                fontSize: '1.75em'
-            },
-            siteNavigationStyles: {
-                navProps: {
-                    fontSize: '1em',
-                    fontWeight: '600',
-                    padding: '10px 0px 0px 0px',
-                    float: 'right'
-                }
-            },
-            hrProps: {
-                padding: '0px 0px 0px 0px',
-                margin: '0px 0px 0px 0px',
-                border: '0px 0px 0px 0px'
+        var pageDescription = function pageDescription(page) {
+            if (page.description != null) {
+                return _react2['default'].createElement(
+                    'div',
+                    null,
+                    _react2['default'].createElement(
+                        'p',
+                        null,
+                        page.description
+                    ),
+                    _react2['default'].createElement('hr', null)
+                );
             }
-
         };
-
-        var goHome = (function () {
-            console.log('Go home');
-            console.log('To: ' + this.props.pages[0]);
-            dispatcher.dispatch({
-                actionType: ActionTypes.STATE_CHANGE,
-                payload: {
-                    changes: [{
-                        name: 'site.currentPage',
-                        value: this.props.pages[0]
-                    }]
-                }
-            });
-        }).bind(this);
+        //if we want fixed top, add class 'navbar-fixed-top' to the 'nav' element
 
         return _react2['default'].createElement(
             'div',
-            null,
+            { className: 'container' },
+            _react2['default'].createElement(_SiteNavigation2['default'], { site: this.props.site, pages: this.props.pages }),
             _react2['default'].createElement(
-                'nav',
-                { className: 'navbar navbar-default navbar-fixed-top' },
+                'div',
+                { className: 'container-fluid' },
                 _react2['default'].createElement(
                     'div',
-                    { className: 'container site-header', style: this.m(siteHeaderStyles.headerStyle) },
+                    { className: 'row' },
                     _react2['default'].createElement(
                         'div',
-                        { className: 'navbar-header' },
+                        { className: 'col-xs-12' },
                         _react2['default'].createElement(
-                            'button',
-                            { type: 'button', className: 'navbar-toggle collapsed', 'data-toggle': 'collapse', 'data-target': '#navbar', 'aria-expanded': 'false', 'aria-controls': 'navbar' },
-                            _react2['default'].createElement(
-                                'span',
-                                { className: 'sr-only' },
-                                'Toggle navigation'
-                            ),
-                            _react2['default'].createElement('span', { className: 'icon-bar' }),
-                            _react2['default'].createElement('span', { className: 'icon-bar' }),
-                            _react2['default'].createElement('span', { className: 'icon-bar' })
+                            'h3',
+                            { style: { marginTop: 5 } },
+                            this.pageTitle(page)
                         ),
-                        _react2['default'].createElement(
-                            'h1',
-                            null,
-                            _react2['default'].createElement(
-                                'a',
-                                { className: 'navbar-brand site-hdr-brand', href: '#', onClick: goHome },
-                                this.props.site.name
-                            )
-                        )
-                    ),
-                    _react2['default'].createElement(_SiteNavigation2['default'], { site: this.props.site, pages: this.props.pages, styleProps: siteHeaderStyles.siteNavigationStyles })
+                        pageDescription(page)
+                    )
                 )
             ),
             _react2['default'].createElement(
                 'div',
-                { className: 'container site-body' },
-                this.pageTitle(page),
+                { className: 'container-fluid site-body' },
                 _react2['default'].createElement(_BootstrapLayout2['default'], layoutProps)
             ),
             _react2['default'].createElement(
                 'div',
-                { className: 'container site-footer' },
+                { className: 'container-fluid site-footer' },
                 _react2['default'].createElement(
                     'div',
                     { className: 'row' },
-                    _react2['default'].createElement('hr', null),
                     _react2['default'].createElement(
                         'div',
                         { className: 'col-xs-12' },
@@ -54880,10 +54908,24 @@ var SiteNavigation = _react2['default'].createClass({
         pages: _react2['default'].PropTypes.array.isRequired
     },
 
+    goHome: (function () {
+        console.log('Go home');
+        console.log('To: ' + this.props.pages[0]);
+        dispatcher.dispatch({
+            actionType: ActionTypes.STATE_CHANGE,
+            payload: {
+                changes: [{
+                    name: 'site.currentPage',
+                    value: this.props.pages[0]
+                }]
+            }
+        });
+    }).bind(undefined),
+
     render: function render() {
 
-        var menuItem = (function (pageId, index) {
-
+        var navItem = (function (pageId, index) {
+            var currentPage = stateStore.getValue('site.currentPage');
             var page = configStore.getConfiguration('pages', pageId);
 
             var selectPage = function selectPage(e) {
@@ -54897,10 +54939,10 @@ var SiteNavigation = _react2['default'].createClass({
                     }
                 });
             };
-
+            var itemClass = page.id == currentPage ? 'active' : '';
             return _react2['default'].createElement(
                 'li',
-                { key: index, role: 'presentation' },
+                { key: index, className: itemClass },
                 _react2['default'].createElement(
                     'a',
                     { id: 'menuPage_{page.name}', href: '#',
@@ -54910,15 +54952,46 @@ var SiteNavigation = _react2['default'].createClass({
             );
         }).bind(this);
 
-        var navProps = this.props.styleProps.navProps;
-
         return _react2['default'].createElement(
-            'div',
-            { id: 'navbar', className: 'navbar-collapse collapse' },
+            'nav',
+            { className: 'navbar navbar-default' },
             _react2['default'].createElement(
-                'ul',
-                { className: 'nav navbar-nav', style: navProps },
-                this.props.pages.map(menuItem)
+                'div',
+                { className: 'container-fluid' },
+                _react2['default'].createElement(
+                    'div',
+                    { className: 'navbar-header' },
+                    _react2['default'].createElement(
+                        'button',
+                        { type: 'button', 'class': 'navbar-toggle collapsed', 'data-toggle': 'collapse', 'data-target': '#navbar', 'aria-expanded': 'false', 'aria-controls': 'navbar' },
+                        _react2['default'].createElement(
+                            'span',
+                            { className: 'sr-only' },
+                            'Toggle navigation'
+                        ),
+                        _react2['default'].createElement('span', { className: 'icon-bar' }),
+                        _react2['default'].createElement('span', { className: 'icon-bar' }),
+                        _react2['default'].createElement('span', { className: 'icon-bar' })
+                    ),
+                    _react2['default'].createElement(
+                        'a',
+                        { className: 'navbar-brand', href: '#', onClick: this.goHome },
+                        _react2['default'].createElement(
+                            'span',
+                            { style: { fontWeight: '600' } },
+                            this.props.site.name
+                        )
+                    )
+                ),
+                _react2['default'].createElement(
+                    'div',
+                    { id: 'navbar', className: 'navbar-collapse collapse' },
+                    _react2['default'].createElement(
+                        'ul',
+                        { className: 'nav navbar-nav' },
+                        this.props.pages.map(navItem)
+                    )
+                )
             )
         );
     }
@@ -55005,7 +55078,7 @@ var SlideShow = _react2['default'].createClass({
                                     item.title
                                 ),
                                 _react2['default'].createElement('br', null),
-                                _react2['default'].createElement('span', { dangerouslySetInnerHTML: { __html: item.body } })
+                                _react2['default'].createElement('span', { dangerouslySetInnerHTML: { __html: item.body[0] } })
                             )
                         );
                     })

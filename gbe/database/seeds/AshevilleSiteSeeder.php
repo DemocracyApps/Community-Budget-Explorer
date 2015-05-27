@@ -138,7 +138,7 @@ class AshevilleSiteSeeder extends Seeder
         $page->menu_name = 'Overview';
         $page->ordinal = 1;
         $page->show_in_menu = true;
-        $page->description = "The first page of the site.";
+        $page->description = null;
         $layout = Layout::where('name','=','DefaultHome')->first();
         $page->layout = $layout->id;
         $page->save();
@@ -177,7 +177,7 @@ class AshevilleSiteSeeder extends Seeder
         $page->menu_name = "What's New?";
         $page->ordinal = 2;
         $page->show_in_menu = true;
-        $page->description = "The second page of the site.";
+        $page->description = null;
         $layout = Layout::where('name','=','One-Column')->first();
         $page->layout = $layout->id;
         $page->save();
@@ -199,7 +199,7 @@ class AshevilleSiteSeeder extends Seeder
         $page->menu_name="Show Me The Money";
         $page->ordinal = 3;
         $page->show_in_menu = true;
-        $page->description = "The second page of the site.";
+        $page->description = null;
         $layout = Layout::where('name','=','One-Column')->first();
         $page->layout = $layout->id;
         $page->save();
@@ -215,12 +215,12 @@ class AshevilleSiteSeeder extends Seeder
     {
         $page = new Page();
         $page->site = $site->id;
-        $page->title = "Explore the Budget Document";
+        $page->title = "Budget Document Breakdown";
         $page->short_name = 'docmap';
         $page->menu_name = "Budget Doc Breakdown";
         $page->ordinal = 4;
         $page->show_in_menu = true;
-        $page->description = "The third page of the site.";
+        $page->description = "Explore the document by clicking in the sections below.";
         $layout = Layout::where('name','=','One-Column')->first();
         $page->layout = $layout->id;
         $page->save();
@@ -229,7 +229,7 @@ class AshevilleSiteSeeder extends Seeder
         // Create the cards for the resources table
         $cardset = new CardSet();
         $cardset->site = $site->id;
-        $cardset->name = 'Resources';
+        $cardset->name = 'Budget Breakdown';
         $cardset->save();
 
         $c = new PageComponent();
@@ -251,7 +251,7 @@ class AshevilleSiteSeeder extends Seeder
         $card->ordinal = 1;
         $card->title = 'Budget Process';
         $card->body = "Budget preparation affords departments the opportunity to reassess their goals and objectives and the strategies for accomplishing them. Even though the proposed budget is presented City Council in May and adopted in June, its preparation begins at least six months prior with projections of City revenues, expenditures, and overall financial capacity.
-
+<!--br-->
 Read more [about](http://www.google.com):
 * Financial forecasting
 * City Council Strategic Planning
@@ -273,7 +273,7 @@ Read more [about](http://www.google.com):
         $card->image = '/img/cards/'.$picName;
 
         $card->body = "
-![alt text](".$card->image.")
+Check out the full process for building out this budget.
 
 Full-size version [here](#).";
 

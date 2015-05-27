@@ -71,12 +71,7 @@ li.menu {
 }
 
 /* STYLES TO MAKE IT NICER LOOKING */
-a{
-  color: #2472eb;
-}
-ul, p, li, th, td, input, a {
-  font-size: 110%;
-}
+
 div.presentation {
   font-size: 110%;
 }
@@ -100,6 +95,29 @@ div.component-div {
 .axis line {
   fill: #000;
   stroke: #000;
-  stroke-width:2;
+  stroke-width:1;
   shape-rendering: crispEdges;
+}
+
+.card-table-header > div{
+  color: #666;
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 20px;
+}
+.card-table h4{
+  margin-top: 0px;
+}
+
+.card-table .card-table-header{
+  margin-top: 20px;
+}
+.card-table .inner{
+  padding-bottom: 30px;
+}
+.card-table-row{
+  margin-right: 15px;
+  margin-left: 15px;
+}
+.card{
+  padding-bottom: 40px;
 }

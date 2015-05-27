@@ -53,7 +53,7 @@ var SlideShow = React.createClass({
                                     <div style={overlayStyle}>
                                         <h2>{item.title}</h2>
                                         <br/>
-                                        <span dangerouslySetInnerHTML={{__html: item.body}} />
+                                        <span dangerouslySetInnerHTML={{__html: item.body[0]}} />
                                     </div>
                                 </li>
                             )

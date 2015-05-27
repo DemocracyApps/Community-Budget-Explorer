@@ -10,6 +10,60 @@ var CardTable = React.createClass({
         storeId: React.PropTypes.number.isRequired
     },
 
+    cardFunction: function(card, index) {
+        if (card.body.length > 1) {
+            return (
+                <div key={index} className="col-md-6 card">
+                    <div className="row">
+                        <div className="col-md-12">
+                            <h4>{card.title}</h4>
+                        </div>
+                        <div className="col-md-6">
+                            <span dangerouslySetInnerHTML={{__html: card.body[0]}} />
+                        </div>
+                        <div className="col-md-6">
+                            <span dangerouslySetInnerHTML={{__html: card.body[1]}} />
+                        </div>
+                        <div className="col-md-4">
+                            <a className="btn-sm btn-primary">Read More</a>
+                        </div>
+                    </div>
+                </div>
+            )
+        }
+        else if (card.image != null) {
+            return (
+                <div key={index} className="col-md-6 card">
+                    <div className="row">
+                        <div className="col-md-12">
+                            <h4>{card.title}</h4>
+                        </div>
+                        <div className="col-md-4">
+                            <a href={card.link} className="thumbnail">
+                                <img src={card.image} alt="..."/>
+                            </a>
+                        </div>
+                        <div className="col-md-8">
+                            <span dangerouslySetInnerHTML={{__html: card.body[0]}} />
+                        </div>
+                        <div className="col-md-4">
+                            <a className="btn-sm btn-primary">Read More</a>
+                        </div>
+                    </div>
+                </div>
+            )
+        }
+        else {
+            return (
+                <div key={index} className="col-md-6 card">
+                    <h4>{card.title}</h4>
+                    <span dangerouslySetInnerHTML={{__html: card.body[0]}} />
+                </div>
+            )
+        }
+
+    },
+
     render: function() {
 
         console.log("Here we go: " + this.props.componentData["mycardset"].ids.length);
@@ -60,27 +114,18 @@ var CardTable = React.createClass({
                 //border: "1px solid black"
             };
 
+// 3 cases: (a) 1 text section, (b) 2 text sections, (c) picture + 1 text section.
             var rowFunction = function (item, index) {
                 return (
-                    <div key={index} className="row" style={rowStyle}>
-                        {item.map(function (colItem, colIndex) {
-                            return (
-                                <div className={colClass} style={{paddingLeft:5, paddingRight:5}}>
-                                    <div key={colIndex} style={columnStyle}>
-                                        <h2>{colItem.title}</h2>
-                                        <br/>
-                                        <span dangerouslySetInnerHTML={{__html: colItem.body}} />
-                                    </div>
-                                </div>
-                            )
-                        })}
+                    <div key={index} className="row card-table-row">
+                        {item.map(this.cardFunction.bind(this))}
                     </div>
                 )
             };
 
             return (
-                <div>
-                    {rows.map(rowFunction)}
+                <div className="card-table">
+                    {rows.map(rowFunction.bind(this))}
                 </div>
             )
         }

@@ -48,7 +48,7 @@ var Site = React.createClass({
 
     pageTitle: function(page) {
         if (page.title != undefined) {
-                return <h2>{page.title}</h2>
+            return <span>{page.title}</span>
         }
     },
 
@@ -73,71 +73,32 @@ var Site = React.createClass({
             reactComponents:this.props.reactComponents
         };
 
-        var siteHeaderStyles = {
-            headerStyle: {
-                minHeight: 50
-            },
-            brandTitleStyle: {
-                fontWeight: "lighter",
-                fontSize: "1.75em"
-            },
-            siteNavigationStyles: {
-                navProps: {
-                    fontSize: "1em",
-                    fontWeight: "600",
-                    padding: "10px 0px 0px 0px",
-                    float: "right"
-                }
-            },
-            hrProps: {
-                padding: "0px 0px 0px 0px",
-                margin: "0px 0px 0px 0px",
-                border: "0px 0px 0px 0px"
+        var pageDescription = function (page) {
+            if (page.description != null) {
+                return <div><p>{page.description}</p><hr/></div>
             }
-
         };
-
-        var goHome = function () {
-            console.log("Go home");
-            console.log("To: " + this.props.pages[0]);
-            dispatcher.dispatch({
-                actionType: ActionTypes.STATE_CHANGE,
-                payload: {
-                    changes: [
-                        {
-                            name: "site.currentPage",
-                            value: this.props.pages[0]
-                        }
-                    ]
-                }
-            });
-        }.bind(this);
+        //if we want fixed top, add class 'navbar-fixed-top' to the 'nav' element
 
         return (
-            <div>
-                <nav className="navbar navbar-default navbar-fixed-top">
-                    <div className="container site-header" style={this.m(siteHeaderStyles.headerStyle)}>
-                        <div className="navbar-header">
-                            <button type="button" className="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-                                <span className="sr-only">Toggle navigation</span>
-                                <span className="icon-bar"></span>
-                                <span className="icon-bar"></span>
-                                <span className="icon-bar"></span>
-                            </button>
-                            <h1><a className="navbar-brand site-hdr-brand" href="#" onClick={goHome}>{this.props.site.name}</a></h1>
-                        </div>
-                        <SiteNavigation site={this.props.site} pages={this.props.pages} styleProps={siteHeaderStyles.siteNavigationStyles}/>
-                    </div>
-                </nav>
+            <div className="container">
 
-                <div className="container site-body">
-                    {this.pageTitle(page)}
+                <SiteNavigation site={this.props.site} pages={this.props.pages}/>
+
+                <div className="container-fluid">
+                    <div className="row">
+                        <div className="col-xs-12">
+                            <h3 style={{marginTop:5}}>{this.pageTitle(page)}</h3>
+                            {pageDescription(page)}
+                        </div>
+                    </div>
+                </div>
+                <div className="container-fluid site-body">
                     <BootstrapLayout {...layoutProps}/>
                 </div>
 
-                <div className="container site-footer">
+                <div className="container-fluid site-footer">
                     <div className="row">
-                        <hr/>
                         <div className="col-xs-12" >
                             <span style={{float: "right"}}>Powered by <a href="http://democracyapps.us" target="_blank">DemocracyApps</a></span>
                         </div>

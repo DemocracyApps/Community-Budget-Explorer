@@ -59,7 +59,7 @@ var NavCards = React.createClass({
                             <div className="col-xs-4" style={cardStyle}>
                                 <h1> {card.title} </h1>
 
-                                <span dangerouslySetInnerHTML={{__html: card.body}}/>
+                                <span dangerouslySetInnerHTML={{__html: card.body[0]}}/>
                             </div>
                             </a>
                         )
