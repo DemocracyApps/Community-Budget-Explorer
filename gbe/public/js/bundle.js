@@ -21,17 +21,9 @@ var _componentsSimpleCard = require('./components/SimpleCard');
 
 var _componentsSimpleCard2 = _interopRequireDefault(_componentsSimpleCard);
 
-var _componentsMultiYearTable = require('./components/MultiYearTable');
-
-var _componentsMultiYearTable2 = _interopRequireDefault(_componentsMultiYearTable);
-
 var _componentsSlideShow = require('./components/SlideShow');
 
 var _componentsSlideShow2 = _interopRequireDefault(_componentsSlideShow);
-
-var _componentsBarchartExplorer = require('./components/BarchartExplorer');
-
-var _componentsBarchartExplorer2 = _interopRequireDefault(_componentsBarchartExplorer);
 
 var _componentsSimpleTreemap = require('./components/SimpleTreemap');
 
@@ -45,9 +37,9 @@ var _componentsChangeExplorer = require('./components/ChangeExplorer');
 
 var _componentsChangeExplorer2 = _interopRequireDefault(_componentsChangeExplorer);
 
-var _componentsHistoryAreaChart = require('./components/HistoryAreaChart');
+var _componentsHistoryTable = require('./components/HistoryTable');
 
-var _componentsHistoryAreaChart2 = _interopRequireDefault(_componentsHistoryAreaChart);
+var _componentsHistoryTable2 = _interopRequireDefault(_componentsHistoryTable);
 
 var _componentsWhatsNewPage = require('./components/WhatsNewPage');
 
@@ -67,12 +59,10 @@ var apiActions = require('./common/ApiActions');
 var reactComponents = {};
 reactComponents['SimpleCard'] = _componentsSimpleCard2['default'];
 reactComponents['SlideShow'] = _componentsSlideShow2['default'];
-reactComponents['MultiYearTable'] = _componentsMultiYearTable2['default'];
-reactComponents['BarchartExplorer'] = _componentsBarchartExplorer2['default'];
 reactComponents['Treemap'] = _componentsSimpleTreemap2['default'];
 reactComponents['CardTable'] = _componentsCardTable2['default'];
 reactComponents['ChangeExplorer'] = _componentsChangeExplorer2['default'];
-reactComponents['HistoryAreaChart'] = _componentsHistoryAreaChart2['default'];
+reactComponents['HistoryTable'] = _componentsHistoryTable2['default'];
 reactComponents['WhatsNewPage'] = _componentsWhatsNewPage2['default'];
 reactComponents['ShowMePage'] = _componentsShowMePage2['default'];
 
@@ -150,7 +140,7 @@ var props = {
 
 var layout = _react2['default'].render(_react2['default'].createElement(_componentsSite2['default'], props), document.getElementById('app'));
 
-},{"./common/ApiActions":318,"./common/BudgetAppDispatcher":319,"./common/IdGenerator":320,"./components/BarchartExplorer":322,"./components/CardTable":324,"./components/ChangeExplorer":325,"./components/HistoryAreaChart":326,"./components/MultiYearTable":327,"./components/ShowMePage":328,"./components/SimpleCard":329,"./components/SimpleTreemap":330,"./components/Site":331,"./components/SlideShow":333,"./components/WhatsNewPage":335,"./constants/ActionTypes":346,"./stores/CardStore":353,"./stores/ConfigStore":354,"./stores/DatasetStore":356,"./stores/StateStore":357,"babelify/polyfill":91,"react":317}],2:[function(require,module,exports){
+},{"./common/ApiActions":318,"./common/BudgetAppDispatcher":319,"./common/IdGenerator":320,"./components/CardTable":323,"./components/ChangeExplorer":324,"./components/HistoryTable":325,"./components/ShowMePage":326,"./components/SimpleCard":327,"./components/SimpleTreemap":328,"./components/Site":329,"./components/SlideShow":331,"./components/WhatsNewPage":333,"./constants/ActionTypes":344,"./stores/CardStore":351,"./stores/ConfigStore":352,"./stores/DatasetStore":354,"./stores/StateStore":355,"babelify/polyfill":91,"react":317}],2:[function(require,module,exports){
 (function (global){
 "use strict";
 
@@ -52723,7 +52713,7 @@ var ApiActions = {
 
 module.exports = ApiActions;
 
-},{"../common/BudgetAppDispatcher":319,"../constants/ActionTypes":346,"../stores/ConfigStore":354,"../stores/DatasetStore":356,"object-assign":99}],319:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":319,"../constants/ActionTypes":344,"../stores/ConfigStore":352,"../stores/DatasetStore":354,"object-assign":99}],319:[function(require,module,exports){
 'use strict';
 
 var FluxDispatcher = require('flux').Dispatcher;
@@ -53026,422 +53016,7 @@ exports['default'] = AvbTreemap;
 module.exports = exports['default'];
 /* entry title */ /* layer chart legend */ /*  info cards */ /*  chart */ /*  treemap */
 
-},{"./aux/D3BarChart":336,"./aux/avb.js":337,"blueimp-md5":92,"d3":95,"react":317}],322:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-    value: true
-});
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _react = require('react');
-
-var _react2 = _interopRequireDefault(_react);
-
-var datasetStore = require('../stores/DatasetStore');
-var stateStore = require('../stores/StateStore');
-var dataModelStore = require('../stores/DataModelStore');
-var apiActions = require('../common/ApiActions');
-var AccountTypes = require('../constants/AccountTypes');
-var dispatcher = require('../common/BudgetAppDispatcher');
-var ActionTypes = require('../constants/ActionTypes');
-var datasetUtilities = require('../data/DatasetUtilities');
-
-var BarchartExplorer = _react2['default'].createClass({
-    displayName: 'BarchartExplorer',
-
-    propTypes: {
-        componentData: _react2['default'].PropTypes.object.isRequired,
-        componentProps: _react2['default'].PropTypes.object.isRequired,
-        storeId: _react2['default'].PropTypes.number.isRequired
-    },
-
-    getInitialState: function getInitialState() {
-        return { showCategorySelector: false };
-    },
-
-    getDefaultProps: function getDefaultProps() {
-        return {
-            accountTypes: [{ name: 'Expense', value: AccountTypes.EXPENSE }, { name: 'Revenue', value: AccountTypes.REVENUE }],
-            dataInitialization: {
-                hierarchy: ['Fund', 'Department', 'Division', 'Account'],
-                accountTypes: [AccountTypes.EXPENSE, AccountTypes.REVENUE],
-                amountThreshold: 0.01
-            }
-        };
-    },
-
-    prepareLocalState: function prepareLocalState(dm) {
-        var accountType = stateStore.getValue(this.props.storeId, 'accountType');
-        var newData = dm.checkData({
-            accountTypes: [accountType],
-            startPath: [],
-            nLevels: 1,
-            reduce: this.props.componentProps.reduce
-        }, true);
-        this.setState({ showCategorySelector: false });
-        if (newData != null) {
-            var nLevels = newData.categories.length;
-            var currentLevel = stateStore.getValue(this.props.storeId, 'currentLevel');
-            if (currentLevel < nLevels - 1) {
-                this.setState({ showCategorySelector: true });
-            }
-        }
-    },
-
-    componentWillMount: function componentWillMount() {
-        // If this is the first time this component is mounting, we need to create the data model
-        // and do any other state initialization required.
-        var dataModelId = stateStore.getComponentStateValue(this.props.storeId, 'dataModelId');
-        var dm = null;
-        if (dataModelId == null) {
-            var ids = this.props.componentData['mydatasets'].ids;
-            ids.forEach(function (id) {
-                apiActions.requestDatasetIfNeeded(id);
-            });
-
-            dm = dataModelStore.createModel(ids, this.props.dataInitialization);
-            stateStore.setComponentState(this.props.storeId, {
-                accountType: AccountTypes.REVENUE,
-                dataModelId: dm.id,
-                currentLevel: 0,
-                startPath: []
-            });
-        }
-    },
-
-    componentWillReceiveProps: function componentWillReceiveProps() {
-        var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
-        var dm = dataModelStore.getModel(dataModelId);
-        this.prepareLocalState(dm);
-    },
-
-    shouldComponentUpdate: function shouldComponentUpdate(nextProps, nextState) {
-        var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
-        var dm = dataModelStore.getModel(dataModelId);
-        var selectedItem = stateStore.getValue(this.props.storeId, 'selectedItem');
-        return dm.dataChanged() || dm.commandsChanged({ accountTypes: [selectedItem] });
-    },
-
-    onAccountTypeChange: function onAccountTypeChange(e) {
-        dispatcher.dispatch({
-            actionType: ActionTypes.COMPONENT_STATE_CHANGE,
-            payload: {
-                id: this.props.storeId,
-                changes: [{
-                    name: 'accountType',
-                    value: Number(e.target.value)
-                }]
-            }
-        });
-    },
-
-    onCategoryChange: function onCategoryChange(e) {
-        if (e.target.value != '--') {
-            var startPath = stateStore.getValue(this.props.storeId, 'startPath');
-            startPath.push(e.target.value);
-            var currentLevel = stateStore.getValue(this.props.storeId, 'currentLevel');
-
-            dispatcher.dispatch({
-                actionType: ActionTypes.COMPONENT_STATE_CHANGE,
-                payload: {
-                    id: this.props.storeId,
-                    changes: [{
-                        name: 'startPath',
-                        value: startPath
-                    }, {
-                        name: 'currentLevel',
-                        value: ++currentLevel
-                    }]
-                }
-            });
-        }
-    },
-
-    doReset: function doReset(e) {
-        dispatcher.dispatch({
-            actionType: ActionTypes.COMPONENT_STATE_CHANGE,
-            payload: {
-                id: this.props.storeId,
-                changes: [{
-                    name: 'startPath',
-                    value: []
-                }, {
-                    name: 'currentLevel',
-                    value: 0
-                }]
-            }
-        });
-    },
-
-    renderCategorySelector: function categorySelector(data, rows) {
-        var _this = this;
-
-        if (this.state.showCategorySelector) {
-            var _ret = (function () {
-                var currentLevel = stateStore.getValue(_this.props.storeId, 'currentLevel');
-                return {
-                    v: _react2['default'].createElement(
-                        'div',
-                        { className: 'form-group' },
-                        _react2['default'].createElement(
-                            'label',
-                            null,
-                            'Select ',
-                            data.categories[currentLevel]
-                        ),
-                        _react2['default'].createElement(
-                            'select',
-                            { className: 'form-control', onChange: _this.onCategoryChange, value: '--' },
-                            _react2['default'].createElement(
-                                'option',
-                                { key: '0', value: '--' },
-                                '--'
-                            ),
-                            rows.map(function (item, index) {
-                                return _react2['default'].createElement(
-                                    'option',
-                                    { key: index + 1, value: item.categories[currentLevel] },
-                                    item.categories[currentLevel]
-                                );
-                            })
-                        )
-                    )
-                };
-            })();
-
-            if (typeof _ret === 'object') return _ret.v;
-        }
-    },
-
-    interactionPanel: function interactionPanel(data, rows) {
-        var accountType = stateStore.getValue(this.props.storeId, 'accountType');
-        return _react2['default'].createElement(
-            'div',
-            { className: 'row' },
-            _react2['default'].createElement(
-                'div',
-                { className: 'col-xs-6' },
-                this.renderCategorySelector(data, rows)
-            ),
-            _react2['default'].createElement('div', { className: 'col-xs-1' }),
-            _react2['default'].createElement(
-                'div',
-                { className: 'col-xs-3' },
-                _react2['default'].createElement('br', null),
-                _react2['default'].createElement(
-                    'select',
-                    { onChange: this.onAccountTypeChange, value: accountType },
-                    this.props.accountTypes.map(function (type, index) {
-                        return _react2['default'].createElement(
-                            'option',
-                            { key: index, value: type.value },
-                            ' ',
-                            type.name,
-                            ' '
-                        );
-                    })
-                )
-            ),
-            _react2['default'].createElement('div', { className: 'col-xs-1' }),
-            _react2['default'].createElement(
-                'div',
-                { className: 'col-xs-2' },
-                _react2['default'].createElement('br', null),
-                _react2['default'].createElement(
-                    'button',
-                    { className: 'btn', onClick: this.doReset },
-                    'Reset'
-                )
-            )
-        );
-    },
-
-    tableRow: function tableRow(item, index) {
-        return _react2['default'].createElement(
-            'tr',
-            { key: index },
-            _react2['default'].createElement(
-                'td',
-                { key: '0' },
-                item.categories[stateStore.getValue(this.props.storeId, 'currentLevel')]
-            ),
-            _react2['default'].createElement(
-                'td',
-                { key: '2' },
-                datasetUtilities.formatDollarAmount(item.amount[0])
-            ),
-            _react2['default'].createElement(
-                'td',
-                { key: '3' },
-                datasetUtilities.formatDollarAmount(item.amount[1])
-            ),
-            _react2['default'].createElement(
-                'td',
-                { key: '1' },
-                datasetUtilities.formatDollarAmount(item.reduce)
-            )
-        );
-    },
-
-    sortByAbsoluteDifference: function sortByAbsoluteDifference(item1, item2) {
-        var result = Math.abs(item2.reduce) - Math.abs(item1.reduce);
-        return result;
-    },
-
-    bars: function bars(item, index) {
-        var color = item.reduce < 0 ? 'Tomato' : 'CornflowerBlue';
-        var textColor = 'Black';
-        var dollarSign = '$';
-        var currentValue = datasetUtilities.formatDollarAmount(Math.round(item.amount[1]));
-        if (item.amount[1] < 0) dollarSign = '-$';
-        var currentLevel = stateStore.getValue(this.props.storeId, 'currentLevel');
-        var label = item.categories[currentLevel] + ' (' + currentValue + ')';
-        var diff = datasetUtilities.formatDollarAmount(Math.round(item.reduce));
-        return _react2['default'].createElement(
-            'g',
-            { key: index, transform: 'translate(' + item.x1 + ',' + item.y + ')' },
-            _react2['default'].createElement('rect', { strokeWidth: '2', height: '19', width: item.width, fill: color }),
-            _react2['default'].createElement(
-                'text',
-                { x: '5', y: '-3', fontFamily: 'Strait', fontSize: '12', stroke: textColor },
-                label
-            ),
-            _react2['default'].createElement(
-                'text',
-                { x: '5', y: '15', fontFamily: 'Strait', fontSize: '12', stroke: textColor },
-                diff
-            )
-        );
-    },
-
-    render: function render() {
-        var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
-        var dm = dataModelStore.getModel(dataModelId);
-        var accountType = stateStore.getValue(this.props.storeId, 'accountType');
-        var startPath = stateStore.getValue(this.props.storeId, 'startPath');
-        var newData = dm.getData({
-            accountTypes: [accountType],
-            startPath: startPath,
-            nLevels: 1,
-            reduce: this.props.componentProps.reduce
-        }, false);
-
-        if (newData == null) {
-            return _react2['default'].createElement(
-                'div',
-                null,
-                ' BarchartExplorer loading ... '
-            );
-        } else {
-            var rows = newData.data.sort(this.sortByAbsoluteDifference);
-            var headers = newData.dataHeaders;
-            var currentLevel = stateStore.getValue(this.props.storeId, 'currentLevel');
-
-            var chartWidth = 700,
-                chartHeight = 500; // We need to get these from enclosing div - how do we do that?
-
-            var minValue = 10000000,
-                maxValue = -10000000;
-            for (var i = 0; i < rows.length; ++i) {
-                minValue = Math.min(minValue, rows[i].reduce);
-                maxValue = Math.max(maxValue, rows[i].reduce);
-            }
-            if (minValue > 0) minValue = 0;
-            if (maxValue < 0) maxValue = 0;
-
-            var xborder = 150,
-                yborder = 5;
-            var offset = -minValue;
-            var scale = (chartWidth - 2 * xborder) / (maxValue - minValue);
-            console.log('offset = ' + offset + ',  scale = ' + scale);
-            for (var i = 0; i < rows.length; ++i) {
-                rows[i].x = Math.round(scale * (rows[i].reduce + offset)) + xborder;
-                if (rows[i].reduce < 0) {
-                    rows[i].x1 = Math.round(scale * (rows[i].reduce + offset)) + xborder;
-                    rows[i].x2 = Math.round(scale * (0 + offset)) + xborder;
-                } else {
-                    rows[i].x1 = Math.round(scale * (0 + offset)) + xborder;
-                    rows[i].x2 = Math.round(scale * (rows[i].reduce + offset)) + xborder;
-                }
-                rows[i].y = yborder + i * 40 + 10;
-                rows[i].width = rows[i].x2 - rows[i].x1;
-                console.log('Reduce=' + Math.round(rows[i].reduce) + ', x1/x2 = ' + rows[i].x1 + '/' + rows[i].x2 + ', width = ' + rows[i].width);
-            }
-            var screenZero = Math.round(scale * offset) + xborder;
-            var yAxis = {
-                x1: screenZero,
-                y1: yborder - 2,
-                x2: screenZero,
-                y2: chartHeight - (yborder + 20)
-            };
-            return _react2['default'].createElement(
-                'div',
-                null,
-                _react2['default'].createElement('br', null),
-                _react2['default'].createElement('hr', null),
-                this.interactionPanel(newData, rows),
-                _react2['default'].createElement('br', null),
-                _react2['default'].createElement(
-                    'div',
-                    null,
-                    _react2['default'].createElement(
-                        'svg',
-                        { className: 'chart span12', id: 'chart', width: '700', height: '470' },
-                        rows.map(this.bars),
-                        _react2['default'].createElement('line', { x1: yAxis.x1, y1: yAxis.y1, x2: yAxis.x2, y2: yAxis.y2,
-                            stroke: 'rgb(255,0,0)', strokeWidth: '2' })
-                    )
-                ),
-                _react2['default'].createElement('br', null),
-                _react2['default'].createElement('hr', null),
-                _react2['default'].createElement(
-                    'table',
-                    { className: 'table' },
-                    _react2['default'].createElement(
-                        'thead',
-                        null,
-                        _react2['default'].createElement(
-                            'tr',
-                            null,
-                            _react2['default'].createElement(
-                                'th',
-                                { key: '0' },
-                                'Account'
-                            ),
-                            _react2['default'].createElement(
-                                'th',
-                                { key: '2' },
-                                headers[0]
-                            ),
-                            _react2['default'].createElement(
-                                'th',
-                                { key: '3' },
-                                headers[1]
-                            ),
-                            _react2['default'].createElement(
-                                'th',
-                                { key: '1' },
-                                'Difference'
-                            )
-                        )
-                    ),
-                    _react2['default'].createElement(
-                        'tbody',
-                        null,
-                        rows.map(this.tableRow)
-                    )
-                )
-            );
-        }
-    }
-});
-
-exports['default'] = BarchartExplorer;
-module.exports = exports['default'];
-
-},{"../common/ApiActions":318,"../common/BudgetAppDispatcher":319,"../constants/AccountTypes":345,"../constants/ActionTypes":346,"../data/DatasetUtilities":352,"../stores/DataModelStore":355,"../stores/DatasetStore":356,"../stores/StateStore":357,"react":317}],323:[function(require,module,exports){
+},{"./aux/D3BarChart":334,"./aux/avb.js":335,"blueimp-md5":92,"d3":95,"react":317}],322:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -53524,7 +53099,7 @@ var BootstrapLayout = _react2["default"].createClass({
 exports["default"] = BootstrapLayout;
 module.exports = exports["default"];
 
-},{"react":317}],324:[function(require,module,exports){
+},{"react":317}],323:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -53639,7 +53214,7 @@ var CardTable = _react2['default'].createClass({
 exports['default'] = CardTable;
 module.exports = exports['default'];
 
-},{"../stores/CardStore":353,"react":317}],325:[function(require,module,exports){
+},{"../stores/CardStore":351,"react":317}],324:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -54027,7 +53602,7 @@ var ChangeExplorer = _react2['default'].createClass({
 exports['default'] = ChangeExplorer;
 module.exports = exports['default'];
 
-},{"../common/ApiActions":318,"../common/BudgetAppDispatcher":319,"../constants/AccountTypes":345,"../constants/ActionTypes":346,"../constants/Common":347,"../data/DatasetUtilities":352,"../stores/DataModelStore":355,"../stores/DatasetStore":356,"../stores/StateStore":357,"react":317,"react-micro-bar-chart":159,"react-sparkline":161}],326:[function(require,module,exports){
+},{"../common/ApiActions":318,"../common/BudgetAppDispatcher":319,"../constants/AccountTypes":343,"../constants/ActionTypes":344,"../constants/Common":345,"../data/DatasetUtilities":350,"../stores/DataModelStore":353,"../stores/DatasetStore":354,"../stores/StateStore":355,"react":317,"react-micro-bar-chart":159,"react-sparkline":161}],325:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -54040,9 +53615,6 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-var rd3 = require('react-d3');
-var AreaChart = rd3.AreaChart;
-
 var datasetStore = require('../stores/DatasetStore');
 var stateStore = require('../stores/StateStore');
 var dataModelStore = require('../stores/DataModelStore');
@@ -54051,10 +53623,13 @@ var AccountTypes = require('../constants/AccountTypes');
 var dispatcher = require('../common/BudgetAppDispatcher');
 var ActionTypes = require('../constants/ActionTypes');
 var datasetUtilities = require('../data/DatasetUtilities');
-var Sparkline = require('react-sparkline');
+var CommonConstants = require('../constants/Common');
 
-var HistoryAreaChart = _react2['default'].createClass({
-    displayName: 'HistoryAreaChart',
+var Sparkline = require('react-sparkline');
+var MicroBarChart = require('react-micro-bar-chart');
+
+var HistoryTable = _react2['default'].createClass({
+    displayName: 'HistoryTable',
 
     propTypes: {
         componentData: _react2['default'].PropTypes.object.isRequired,
@@ -54069,12 +53644,21 @@ var HistoryAreaChart = _react2['default'].createClass({
                 hierarchy: ['Fund', 'Department', 'Division', 'Account'],
                 accountTypes: [AccountTypes.EXPENSE, AccountTypes.REVENUE],
                 amountThreshold: 0.01
-            }
+            },
+            componentMode: CommonConstants.STANDALONE_COMPONENT
         };
     },
 
+    getAccountType: function getAccountType() {
+        if (this.props.componentMode == CommonConstants.COMPOSED_COMPONENT) {
+            return this.props.accountType;
+        } else {
+            return stateStore.getValue(this.props.storeId, 'accountType');
+        }
+    },
+
     prepareLocalState: function prepareLocalState(dm) {
-        var accountType = stateStore.getValue(this.props.storeId, 'accountType');
+        var accountType = this.getAccountType();
         var selectedLevel = stateStore.getValue(this.props.storeId, 'selectedLevel');
 
         return dm.checkData({
@@ -54090,7 +53674,12 @@ var HistoryAreaChart = _react2['default'].createClass({
         var dataModelId = stateStore.getComponentStateValue(this.props.storeId, 'dataModelId');
         var dm = null;
         if (dataModelId == null) {
-            var ids = this.props.componentData['mydatasets'].ids;
+            var ids;
+            if (this.props.hasOwnProperty('datasetIds')) {
+                ids = this.props.datasetIds;
+            } else {
+                ids = this.props.componentData['mydatasets'].ids;
+            }
             ids.forEach(function (id) {
                 apiActions.requestDatasetIfNeeded(id);
             });
@@ -54104,6 +53693,12 @@ var HistoryAreaChart = _react2['default'].createClass({
         }
     },
 
+    componentWillUnmount: function componentWillUnmount() {
+        console.log('ChangeExplorer will unmount');
+        //var dataModelId = stateStore.getComponentStateValue(this.props.storeId, 'dataModelId');
+        //if (dataModelId != null) dataModelStore.deleteModel(dataModelId);
+    },
+
     componentWillReceiveProps: function componentWillReceiveProps() {
         var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
         var dm = dataModelStore.getModel(dataModelId);
@@ -54113,7 +53708,7 @@ var HistoryAreaChart = _react2['default'].createClass({
     shouldComponentUpdate: function shouldComponentUpdate(nextProps, nextState) {
         var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
         var dm = dataModelStore.getModel(dataModelId);
-        var accountType = stateStore.getValue(this.props.storeId, 'accountType');
+        var accountType = this.getAccountType;
         return dm.dataChanged() || dm.commandsChanged({ accountTypes: [accountType] });
     },
 
@@ -54158,27 +53753,73 @@ var HistoryAreaChart = _react2['default'].createClass({
 
     renderLevelSelector: function renderLevelSelector(data) {
         var selectedLevel = stateStore.getValue(this.props.storeId, 'selectedLevel');
-
+        var selectLabelText = 'Select Detail Level:' + String.fromCharCode(160) + String.fromCharCode(160);
+        var spacer = String.fromCharCode(160) + String.fromCharCode(160) + String.fromCharCode(160) + String.fromCharCode(160);
         return _react2['default'].createElement(
             'div',
             { className: 'form-group' },
             _react2['default'].createElement(
-                'label',
-                null,
-                'Select Level'
-            ),
-            _react2['default'].createElement(
-                'select',
-                { className: 'form-control', onChange: this.onLevelChange, value: selectedLevel },
-                data.categories.map(function (item, index) {
-                    return _react2['default'].createElement(
-                        'option',
-                        { key: index, value: index },
-                        item
-                    );
-                })
+                'form',
+                { className: 'form-inline' },
+                _react2['default'].createElement(
+                    'label',
+                    null,
+                    selectLabelText
+                ),
+                _react2['default'].createElement(
+                    'select',
+                    { className: 'form-control', onChange: this.onLevelChange, value: selectedLevel },
+                    data.categories.map(function (item, index) {
+                        return _react2['default'].createElement(
+                            'option',
+                            { key: index, value: index },
+                            item
+                        );
+                    })
+                ),
+                _react2['default'].createElement(
+                    'span',
+                    null,
+                    spacer
+                ),
+                _react2['default'].createElement(
+                    'button',
+                    { className: 'btn btn-normal', onClick: this.doReset },
+                    'Reset'
+                )
             )
         );
+    },
+
+    renderAccountSelector: function renderAccountSelector() {
+        if (this.props.componentMode == CommonConstants.STANDALONE_COMPONENT) {
+            return _react2['default'].createElement(
+                'form',
+                { className: 'form-inline' },
+                _react2['default'].createElement(
+                    'div',
+                    { className: 'form-group' },
+                    _react2['default'].createElement(
+                        'label',
+                        null,
+                        'Select Account Type'
+                    ),
+                    _react2['default'].createElement(
+                        'select',
+                        { className: 'form-control', onChange: this.onAccountTypeChange, value: accountType },
+                        this.props.accountTypes.map(function (type, index) {
+                            return _react2['default'].createElement(
+                                'option',
+                                { key: index, value: type.value },
+                                ' ',
+                                type.name,
+                                ' '
+                            );
+                        })
+                    )
+                )
+            );
+        }
     },
 
     interactionPanel: function interactionPanel(data, rows) {
@@ -54191,79 +53832,16 @@ var HistoryAreaChart = _react2['default'].createClass({
                 { className: 'row' },
                 _react2['default'].createElement(
                     'div',
-                    { className: 'col-xs-4' },
+                    { className: 'col-xs-6' },
                     this.renderLevelSelector(data, rows)
                 ),
-                _react2['default'].createElement('div', { className: 'col-xs-1' }),
                 _react2['default'].createElement(
                     'div',
-                    { className: 'col-xs-4' },
-                    _react2['default'].createElement(
-                        'div',
-                        { className: 'form-group' },
-                        _react2['default'].createElement(
-                            'label',
-                            null,
-                            'Select Account Type'
-                        ),
-                        _react2['default'].createElement(
-                            'select',
-                            { className: 'form-control', onChange: this.onAccountTypeChange, value: accountType },
-                            this.props.accountTypes.map(function (type, index) {
-                                return _react2['default'].createElement(
-                                    'option',
-                                    { key: index, value: type.value },
-                                    ' ',
-                                    type.name,
-                                    ' '
-                                );
-                            })
-                        )
-                    )
-                ),
-                _react2['default'].createElement('div', { className: 'col-xs-1' }),
-                _react2['default'].createElement(
-                    'div',
-                    { className: 'col-xs-2' },
-                    _react2['default'].createElement(
-                        'button',
-                        { style: { float: 'right' }, className: 'btn btn-primary', onClick: this.doReset },
-                        'Reset'
-                    )
+                    { className: 'col-xs-6' },
+                    this.renderAccountSelector()
                 )
             )
         );
-    },
-
-    prepareData: function computeChanges(inData) {
-        var nYears = inData[0].amount.length;
-        var length = inData.length;
-        var outData = [];
-
-        for (var year = 0; year < nYears; ++year) {
-            outData.push({
-                name: inData.dataHeaders[year],
-                values: []
-            });
-        }
-        for (var i = 0; i < length; ++i) {
-            var item = inData[i];
-            for (var year = 0; year < nYears; ++year) {
-                outData[year].values.push({
-                    x: Number(inData.periods[year]),
-                    y: item.amount[year]
-                });
-            }
-        }
-    },
-
-    sortByAbsolutePercentage: function sortByAbsolutePercentage() {
-        return item2.percentSort - item1.percentSort;
-    },
-
-    sortByAbsoluteDifference: function sortByAbsoluteDifference(item1, item2) {
-        var result = Math.abs(item2.difference) - Math.abs(item1.difference);
-        return result;
     },
 
     tableRow: function tableRow(item, index) {
@@ -54275,6 +53853,8 @@ var HistoryAreaChart = _react2['default'].createClass({
                 label += ' ' + String.fromCharCode(183) + ' ' + item.categories[i];
             }
         }
+
+        // Note that Sparkline below can be replaced with MicroBarChart.
         var tdStyle = { textAlign: 'right' };
         return _react2['default'].createElement(
             'tr',
@@ -54286,13 +53866,13 @@ var HistoryAreaChart = _react2['default'].createClass({
             ),
             _react2['default'].createElement(
                 'td',
-                { key: '1' },
+                null,
                 _react2['default'].createElement(Sparkline, { data: item.amount })
             ),
             item.amount.map(function (item, index) {
                 return _react2['default'].createElement(
                     'td',
-                    { key: index + 2, style: tdStyle },
+                    { key: index + 1, style: tdStyle },
                     datasetUtilities.formatDollarAmount(item)
                 );
             })
@@ -54311,17 +53891,22 @@ var HistoryAreaChart = _react2['default'].createClass({
             startPath: [],
             nLevels: selectedLevel + 1
         }, false);
+        var dataNull = newData == null;
+        console.log('Rendering HistoryTable: dataModelId = ' + dataModelId + ', dataNull = ' + dataNull);
 
         if (newData == null) {
             return _react2['default'].createElement(
                 'div',
                 null,
-                'HistoryAreaChart is loading ...'
+                _react2['default'].createElement(
+                    'p',
+                    null,
+                    'Data is loading ... Please be patient'
+                )
             );
         } else {
             var rows;
             var headers;
-            var chartData;
 
             var _ret = (function () {
                 rows = newData.data;
@@ -54329,20 +53914,14 @@ var HistoryAreaChart = _react2['default'].createClass({
 
                 var currentLevel = stateStore.getValue(_this.props.storeId, 'currentLevel');
                 var dataLength = rows[0].amount.length;
-                chartData = prepareData(rows);
-
-                //rows.map(this.computeChanges);
-                //rows = rows.sort(this.sortByAbsoluteDifference);
+                rows.map(datasetUtilities.computeChanges);
+                rows = rows.sort(datasetUtilities.sortByAbsoluteDifference);
                 var thStyle = { textAlign: 'right' };
                 return {
                     v: _react2['default'].createElement(
                         'div',
                         null,
-                        _react2['default'].createElement('br', null),
-                        _react2['default'].createElement('hr', null),
                         _this.interactionPanel(newData, rows),
-                        _react2['default'].createElement('br', null),
-                        _react2['default'].createElement('hr', null),
                         _react2['default'].createElement(
                             'table',
                             { className: 'table' },
@@ -54369,7 +53948,7 @@ var HistoryAreaChart = _react2['default'].createClass({
                                     headers.map(function (item, index) {
                                         return _react2['default'].createElement(
                                             'th',
-                                            { key: 2 + index, style: thStyle },
+                                            { key: index + 2, style: thStyle },
                                             item
                                         );
                                     })
@@ -54390,10 +53969,10 @@ var HistoryAreaChart = _react2['default'].createClass({
     }
 });
 
-exports['default'] = HistoryAreaChart;
+exports['default'] = HistoryTable;
 module.exports = exports['default'];
 
-},{"../common/ApiActions":318,"../common/BudgetAppDispatcher":319,"../constants/AccountTypes":345,"../constants/ActionTypes":346,"../data/DatasetUtilities":352,"../stores/DataModelStore":355,"../stores/DatasetStore":356,"../stores/StateStore":357,"react":317,"react-d3":135,"react-sparkline":161}],327:[function(require,module,exports){
+},{"../common/ApiActions":318,"../common/BudgetAppDispatcher":319,"../constants/AccountTypes":343,"../constants/ActionTypes":344,"../constants/Common":345,"../data/DatasetUtilities":350,"../stores/DataModelStore":353,"../stores/DatasetStore":354,"../stores/StateStore":355,"react":317,"react-micro-bar-chart":159,"react-sparkline":161}],326:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -54406,195 +53985,9 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-var datasetStore = require('../stores/DatasetStore');
-var stateStore = require('../stores/StateStore');
-var dataModelStore = require('../stores/DataModelStore');
-var apiActions = require('../common/ApiActions');
-var AccountTypes = require('../constants/AccountTypes');
-var dispatcher = require('../common/BudgetAppDispatcher');
-var ActionTypes = require('../constants/ActionTypes');
+var _HistoryTable = require('./HistoryTable');
 
-var MultiYearTable = _react2['default'].createClass({
-    displayName: 'MultiYearTable',
-
-    propTypes: {
-        componentData: _react2['default'].PropTypes.object.isRequired,
-        componentProps: _react2['default'].PropTypes.object.isRequired,
-        storeId: _react2['default'].PropTypes.number.isRequired
-    },
-
-    // These should really be put in config store.
-    getDefaultProps: function getDefaultProps() {
-        return {
-            accountTypes: [{ name: 'Expense', value: AccountTypes.EXPENSE }, { name: 'Revenue', value: AccountTypes.REVENUE }],
-            dataInitialization: {
-                hierarchy: ['Fund', 'Department', 'Division', 'Account'],
-                accountTypes: [AccountTypes.EXPENSE, AccountTypes.REVENUE],
-                amountThreshold: 0.01
-            }
-        };
-    },
-
-    componentWillMount: function componentWillMount() {
-        // If this is the first time this component is mounting, we need to create the data model
-        // and do any other state initialization required.
-        var dataModelId = stateStore.getComponentStateValue(this.props.storeId, 'dataModelId');
-        console.log('MultiYear Table storeID = ' + this.props.storeId + ', dataModelId = ' + dataModelId);
-        if (dataModelId == null) {
-            var ids = this.props.componentData['alldata'].ids;
-            ids.forEach(function (id) {
-                apiActions.requestDatasetIfNeeded(id);
-            });
-
-            var dm = dataModelStore.createModel(ids, this.props.dataInitialization);
-            stateStore.setComponentState(this.props.storeId, {
-                selectedItem: AccountTypes.REVENUE,
-                dataModelId: dm.id
-            });
-            console.log('Created MYT dataModelId: ' + dm.id);
-        }
-    },
-
-    shouldComponentUpdate: function shouldComponentUpdate(nextProps, nextState) {
-        var dataModelId = stateStore.getComponentStateValue(this.props.storeId, 'dataModelId');
-        var dm = dataModelStore.getModel(dataModelId);
-        var selectedItem = stateStore.getComponentStateValue(this.props.storeId, 'selectedItem');
-        console.log('In MYT shouldComponentUpdate returning ' + (dm.dataChanged() || dm.commandsChanged({ accountTypes: [selectedItem] })));
-
-        return dm.dataChanged() || dm.commandsChanged({ accountTypes: [selectedItem] });
-    },
-
-    onSelectChange: function onSelectChange(e) {
-        dispatcher.dispatch({
-            actionType: ActionTypes.COMPONENT_STATE_CHANGE,
-            payload: {
-                id: this.props.storeId,
-                name: 'selectedItem',
-                value: Number(e.target.value)
-            }
-        });
-    },
-
-    dollarsWithCommas: function dollarsWithCommas(x) {
-        var prefix = '$';
-        if (x < 0) prefix = '-$';
-        x = Math.abs(x);
-        var val = prefix + x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-
-        return val;
-    },
-
-    tableColumn: function tableColumn(value, index) {
-        return _react2['default'].createElement(
-            'td',
-            { key: index + 1 },
-            this.dollarsWithCommas(value)
-        );
-    },
-
-    tableRow: function tableRow(item, index) {
-        return _react2['default'].createElement(
-            'tr',
-            { key: index },
-            _react2['default'].createElement(
-                'td',
-                { key: '0' },
-                item.categories[item.categories.length - 1],
-                ' '
-            ),
-            item.amount.map(this.tableColumn)
-        );
-    },
-
-    columnHeader: function columnHeader(header, index) {
-        return _react2['default'].createElement(
-            'th',
-            { key: index + 1 },
-            header
-        );
-    },
-
-    render: function render() {
-        var dataModelId = stateStore.getComponentStateValue(this.props.storeId, 'dataModelId');
-        var dm = dataModelStore.getModel(dataModelId);
-        var selectedItem = stateStore.getComponentStateValue(this.props.storeId, 'selectedItem');
-        console.log('MYT calling getData');
-        var newData = dm.getData({ accountTypes: [selectedItem] }, true);
-
-        if (newData == null) {
-            return _react2['default'].createElement(
-                'div',
-                null,
-                ' Multiyear table loading ...'
-            );
-        } else {
-            var rows = newData.data;
-            var headers = newData.dataHeaders;
-
-            return _react2['default'].createElement(
-                'div',
-                null,
-                _react2['default'].createElement(
-                    'select',
-                    { onChange: this.onSelectChange, value: selectedItem },
-                    this.props.accountTypes.map(function (type, index) {
-                        return _react2['default'].createElement(
-                            'option',
-                            { key: index, value: type.value },
-                            ' ',
-                            type.name,
-                            ' '
-                        );
-                    })
-                ),
-                _react2['default'].createElement('br', null),
-                _react2['default'].createElement(
-                    'table',
-                    { className: 'table' },
-                    _react2['default'].createElement(
-                        'thead',
-                        null,
-                        _react2['default'].createElement(
-                            'tr',
-                            null,
-                            _react2['default'].createElement(
-                                'th',
-                                { key: '0' },
-                                'Account'
-                            ),
-                            headers.map(this.columnHeader)
-                        )
-                    ),
-                    _react2['default'].createElement(
-                        'tbody',
-                        null,
-                        rows.map(this.tableRow)
-                    )
-                )
-            );
-        }
-    }
-});
-
-exports['default'] = MultiYearTable;
-module.exports = exports['default'];
-
-},{"../common/ApiActions":318,"../common/BudgetAppDispatcher":319,"../constants/AccountTypes":345,"../constants/ActionTypes":346,"../stores/DataModelStore":355,"../stores/DatasetStore":356,"../stores/StateStore":357,"react":317}],328:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-    value: true
-});
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _react = require('react');
-
-var _react2 = _interopRequireDefault(_react);
-
-var _ChangeExplorer = require('./ChangeExplorer');
-
-var _ChangeExplorer2 = _interopRequireDefault(_ChangeExplorer);
+var _HistoryTable2 = _interopRequireDefault(_HistoryTable);
 
 var _AvbTreemap = require('./AvbTreemap');
 
@@ -54799,7 +54192,7 @@ var WhatsNewPage = _react2['default'].createClass({
         return _react2['default'].createElement(
             'div',
             null,
-            _react2['default'].createElement(_ChangeExplorer2['default'], { componentMode: CommonConstants.COMPOSED_COMPONENT,
+            _react2['default'].createElement(_HistoryTable2['default'], { componentMode: CommonConstants.COMPOSED_COMPONENT,
                 datasetIds: this.props.componentData['mydatasets'].ids,
                 accountType: stateStore.getValue(this.props.storeId, 'accountType'),
                 storeId: subComponents.table.storeId,
@@ -54827,7 +54220,7 @@ var WhatsNewPage = _react2['default'].createClass({
 exports['default'] = WhatsNewPage;
 module.exports = exports['default'];
 
-},{"../common/ApiActions":318,"../common/BudgetAppDispatcher":319,"../common/IdGenerator":320,"../constants/AccountTypes":345,"../constants/ActionTypes":346,"../constants/Common":347,"../stores/ConfigStore":354,"../stores/DataModelStore":355,"../stores/DatasetStore":356,"../stores/StateStore":357,"./AvbTreemap":321,"./ChangeExplorer":325,"react":317}],329:[function(require,module,exports){
+},{"../common/ApiActions":318,"../common/BudgetAppDispatcher":319,"../common/IdGenerator":320,"../constants/AccountTypes":343,"../constants/ActionTypes":344,"../constants/Common":345,"../stores/ConfigStore":352,"../stores/DataModelStore":353,"../stores/DatasetStore":354,"../stores/StateStore":355,"./AvbTreemap":321,"./HistoryTable":325,"react":317}],327:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -54879,7 +54272,7 @@ var SimpleCard = _react2['default'].createClass({
 exports['default'] = SimpleCard;
 module.exports = exports['default'];
 
-},{"../stores/CardStore":353,"react":317}],330:[function(require,module,exports){
+},{"../stores/CardStore":351,"react":317}],328:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -55132,7 +54525,7 @@ var SimpleTreemap = _react2['default'].createClass({
 exports['default'] = SimpleTreemap;
 module.exports = exports['default'];
 
-},{"../common/ApiActions":318,"../common/BudgetAppDispatcher":319,"../constants/AccountTypes":345,"../constants/ActionTypes":346,"../data/DatasetUtilities":352,"../stores/DataModelStore":355,"../stores/DatasetStore":356,"../stores/StateStore":357,"react":317,"react-d3":135}],331:[function(require,module,exports){
+},{"../common/ApiActions":318,"../common/BudgetAppDispatcher":319,"../constants/AccountTypes":343,"../constants/ActionTypes":344,"../data/DatasetUtilities":350,"../stores/DataModelStore":353,"../stores/DatasetStore":354,"../stores/StateStore":355,"react":317,"react-d3":135}],329:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -55337,7 +54730,7 @@ var Site = _react2['default'].createClass({
 exports['default'] = Site;
 module.exports = exports['default'];
 
-},{"../common/BudgetAppDispatcher":319,"../constants/ActionTypes":346,"../stores/ConfigStore":354,"../stores/DatasetStore":356,"../stores/StateStore":357,"./BootstrapLayout":323,"./SiteNavigation":332,"react":317}],332:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":319,"../constants/ActionTypes":344,"../stores/ConfigStore":352,"../stores/DatasetStore":354,"../stores/StateStore":355,"./BootstrapLayout":322,"./SiteNavigation":330,"react":317}],330:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -55410,7 +54803,7 @@ var SiteNavigation = _react2['default'].createClass({
 exports['default'] = SiteNavigation;
 module.exports = exports['default'];
 
-},{"../common/BudgetAppDispatcher":319,"../constants/ActionTypes":346,"../stores/ConfigStore":354,"../stores/StateStore":357,"react":317}],333:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":319,"../constants/ActionTypes":344,"../stores/ConfigStore":352,"../stores/StateStore":355,"react":317}],331:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -55501,7 +54894,7 @@ var SlideShow = _react2['default'].createClass({
 exports['default'] = SlideShow;
 module.exports = exports['default'];
 
-},{"../stores/CardStore":353,"react":317}],334:[function(require,module,exports){
+},{"../stores/CardStore":351,"react":317}],332:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -55595,7 +54988,7 @@ var VerticalBarChart = _react2['default'].createClass({
 exports['default'] = VerticalBarChart;
 module.exports = exports['default'];
 
-},{"./aux/D3BarChart":336,"d3":95,"react":317}],335:[function(require,module,exports){
+},{"./aux/D3BarChart":334,"d3":95,"react":317}],333:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -56063,7 +55456,7 @@ var WhatsNewPage = _react2['default'].createClass({
 exports['default'] = WhatsNewPage;
 module.exports = exports['default'];
 
-},{"../common/ApiActions":318,"../common/BudgetAppDispatcher":319,"../common/IdGenerator":320,"../constants/AccountTypes":345,"../constants/ActionTypes":346,"../constants/Common":347,"../data/DatasetUtilities":352,"../stores/ConfigStore":354,"../stores/DataModelStore":355,"../stores/DatasetStore":356,"../stores/StateStore":357,"./ChangeExplorer":325,"./VerticalBarChart":334,"react":317}],336:[function(require,module,exports){
+},{"../common/ApiActions":318,"../common/BudgetAppDispatcher":319,"../common/IdGenerator":320,"../constants/AccountTypes":343,"../constants/ActionTypes":344,"../constants/Common":345,"../data/DatasetUtilities":350,"../stores/ConfigStore":352,"../stores/DataModelStore":353,"../stores/DatasetStore":354,"../stores/StateStore":355,"./ChangeExplorer":324,"./VerticalBarChart":332,"react":317}],334:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -56135,7 +55528,7 @@ d3Chart.computeScales = function (data, width, height, margin) {
 exports['default'] = d3Chart;
 module.exports = exports['default'];
 
-},{"d3":95}],337:[function(require,module,exports){
+},{"d3":95}],335:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -56437,7 +55830,7 @@ exports['default'] = {
 };
 module.exports = exports['default'];
 
-},{"./avb/cards":338,"./avb/chart":339,"./avb/navbar":340,"./avb/statistics":341,"./avb/table":342,"./avb/treemap":343,"d3":95}],338:[function(require,module,exports){
+},{"./avb/cards":336,"./avb/chart":337,"./avb/navbar":338,"./avb/statistics":339,"./avb/table":340,"./avb/treemap":341,"d3":95}],336:[function(require,module,exports){
 /*
 File: cards.js
 
@@ -56553,7 +55946,7 @@ var avb_cards = (function () {
 exports["default"] = avb_cards;
 module.exports = exports["default"];
 
-},{}],339:[function(require,module,exports){
+},{}],337:[function(require,module,exports){
 /*
 File: chart.js
 
@@ -57142,7 +56535,7 @@ var avb_chart = (function () {
 exports['default'] = avb_chart;
 module.exports = exports['default'];
 
-},{"./utilities":344}],340:[function(require,module,exports){
+},{"./utilities":342}],338:[function(require,module,exports){
 /*
 File: navbar.js
 
@@ -57349,7 +56742,7 @@ var avb_navbar = (function () {
 exports['default'] = avb_navbar;
 module.exports = exports['default'];
 
-},{}],341:[function(require,module,exports){
+},{}],339:[function(require,module,exports){
 /*
 File: statistics.js
 
@@ -57571,7 +56964,7 @@ exports["default"] = {
 };
 module.exports = exports["default"];
 
-},{"./utilities":344}],342:[function(require,module,exports){
+},{"./utilities":342}],340:[function(require,module,exports){
 /*
 File: table.js
 
@@ -58011,7 +57404,7 @@ var avb_table = (function () {
 exports["default"] = avb_table;
 module.exports = exports["default"];
 
-},{}],343:[function(require,module,exports){
+},{}],341:[function(require,module,exports){
 /*
 File: treemap.js
 
@@ -58630,7 +58023,7 @@ var avb_treemap = (function () {
 exports["default"] = avb_treemap;
 module.exports = exports["default"];
 
-},{"./utilities":344}],344:[function(require,module,exports){
+},{"./utilities":342}],342:[function(require,module,exports){
 
 /*
  *   Detects IE browsers
@@ -58787,7 +58180,7 @@ exports['default'] = {
 };
 module.exports = exports['default'];
 
-},{}],345:[function(require,module,exports){
+},{}],343:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -58800,7 +58193,7 @@ module.exports = {
     CONTRA: 6
 };
 
-},{}],346:[function(require,module,exports){
+},{}],344:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -58809,7 +58202,7 @@ module.exports = {
     DATASET_RECEIVED: "DATASET_RECEIVED"
 };
 
-},{}],347:[function(require,module,exports){
+},{}],345:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -58817,7 +58210,7 @@ module.exports = {
     COMPOSED_COMPONENT: 1
 };
 
-},{}],348:[function(require,module,exports){
+},{}],346:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -58828,7 +58221,7 @@ module.exports = {
     DS_STATE_READY: "DS_STATE_READY"
 };
 
-},{}],349:[function(require,module,exports){
+},{}],347:[function(require,module,exports){
 'use strict';
 
 function Card(timestamp, title, body, link, image) {
@@ -58847,7 +58240,7 @@ function Card(timestamp, title, body, link, image) {
 
 module.exports = Card;
 
-},{}],350:[function(require,module,exports){
+},{}],348:[function(require,module,exports){
 'use strict';
 
 var DatasetStatus = require('../constants/DatasetStatus');
@@ -59120,7 +58513,7 @@ function DataModel(id, datasetIds) {
 
 module.exports = DataModel;
 
-},{"../common/BudgetAppDispatcher":319,"../constants/AccountTypes":345,"../constants/ActionTypes":346,"../constants/DatasetStatus":348,"../stores/DatasetStore":356,"./DatasetUtilities":352}],351:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":319,"../constants/AccountTypes":343,"../constants/ActionTypes":344,"../constants/DatasetStatus":346,"../stores/DatasetStore":354,"./DatasetUtilities":350}],349:[function(require,module,exports){
 'use strict';
 
 var DatasetStatus = require('../constants/DatasetStatus');
@@ -59164,7 +58557,7 @@ function Dataset(timestamp, sourceId) {
 
 module.exports = Dataset;
 
-},{"../constants/DatasetStatus":348}],352:[function(require,module,exports){
+},{"../constants/DatasetStatus":346}],350:[function(require,module,exports){
 'use strict';
 
 var assign = require('object-assign');
@@ -59375,7 +58768,7 @@ var DatasetUtilities = {
 
 module.exports = DatasetUtilities;
 
-},{"../common/BudgetAppDispatcher":319,"../constants/AccountTypes":345,"../constants/ActionTypes":346,"../constants/DatasetStatus":348,"../stores/DatasetStore":356,"object-assign":99}],353:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":319,"../constants/AccountTypes":343,"../constants/ActionTypes":344,"../constants/DatasetStatus":346,"../stores/DatasetStore":354,"object-assign":99}],351:[function(require,module,exports){
 'use strict';
 
 var dispatcher = require('../common/BudgetAppDispatcher');
@@ -59433,7 +58826,7 @@ dispatcher.register(function (action) {
 
 module.exports = CardStore;
 
-},{"../common/BudgetAppDispatcher":319,"../constants/ActionTypes":346,"../data/Card":349,"events":93,"object-assign":99}],354:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":319,"../constants/ActionTypes":344,"../data/Card":347,"events":93,"object-assign":99}],352:[function(require,module,exports){
 'use strict';
 
 var dispatcher = require('../common/BudgetAppDispatcher');
@@ -59519,7 +58912,7 @@ dispatcher.register(function (action) {
 
 module.exports = ConfigStore;
 
-},{"../common/BudgetAppDispatcher":319,"../constants/ActionTypes":346,"events":93,"object-assign":99}],355:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":319,"../constants/ActionTypes":344,"events":93,"object-assign":99}],353:[function(require,module,exports){
 'use strict';
 
 var dispatcher = require('../common/BudgetAppDispatcher');
@@ -59588,7 +58981,7 @@ dispatcher.register(function (action) {
 
 module.exports = DataModelStore;
 
-},{"../common/BudgetAppDispatcher":319,"../constants/ActionTypes":346,"../data/DataModel":350,"events":93,"object-assign":99}],356:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":319,"../constants/ActionTypes":344,"../data/DataModel":348,"events":93,"object-assign":99}],354:[function(require,module,exports){
 'use strict';
 
 var dispatcher = require('../common/BudgetAppDispatcher');
@@ -59658,7 +59051,7 @@ DatasetStore.dispatchToken = dispatcher.register(function (action) {
 
 module.exports = DatasetStore;
 
-},{"../common/BudgetAppDispatcher":319,"../constants/ActionTypes":346,"../data/Dataset":351,"events":93,"object-assign":99}],357:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":319,"../constants/ActionTypes":344,"../data/Dataset":349,"events":93,"object-assign":99}],355:[function(require,module,exports){
 'use strict';
 
 var dispatcher = require('../common/BudgetAppDispatcher');
@@ -59820,4 +59213,4 @@ dispatcher.register(function (action) {
 module.exports = StateStore;
 /*path OR id, key */
 
-},{"../common/BudgetAppDispatcher":319,"../constants/ActionTypes":346,"events":93,"object-assign":99}]},{},[1]);
+},{"../common/BudgetAppDispatcher":319,"../constants/ActionTypes":344,"events":93,"object-assign":99}]},{},[1]);

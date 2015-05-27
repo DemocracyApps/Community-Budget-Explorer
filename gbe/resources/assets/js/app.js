@@ -14,25 +14,21 @@ var apiActions = require('./common/ApiActions');
  * them wherever needed. I would like to find a better way to do this, though ...
  */
 import SimpleCard from './components/SimpleCard';
-import MultiYearTable from './components/MultiYearTable';
 import SlideShow from './components/SlideShow';
-import BarchartExplorer from './components/BarchartExplorer';
 import Treemap from './components/SimpleTreemap';
 import CardTable from './components/CardTable';
 import ChangeExplorer from './components/ChangeExplorer';
-import HistoryAreaChart from './components/HistoryAreaChart';
+import HistoryTable from './components/HistoryTable';
 import WhatsNewPage from './components/WhatsNewPage';
 import ShowMePage from './components/ShowMePage';
 
 var reactComponents = {};
 reactComponents['SimpleCard'] = SimpleCard;
 reactComponents['SlideShow'] = SlideShow;
-reactComponents['MultiYearTable'] = MultiYearTable;
-reactComponents['BarchartExplorer'] = BarchartExplorer;
 reactComponents['Treemap'] = Treemap;
 reactComponents['CardTable'] = CardTable;
 reactComponents['ChangeExplorer'] = ChangeExplorer;
-reactComponents['HistoryAreaChart'] = HistoryAreaChart;
+reactComponents['HistoryTable'] = HistoryTable;
 reactComponents['WhatsNewPage'] = WhatsNewPage;
 reactComponents['ShowMePage'] = ShowMePage;
 

@@ -1,10 +1,10 @@
 {
-  "name":"HistoryAreaChart",
-  "description": "Area chart of budget numbers over time. Takes 2+ datasets.",
+  "name":"HistoryTable",
+  "description": "Interactive table component for exploring multi-year data. Takes 2+ datasets.",
   "data": [
     {
       "tag":"mydatasets",
-      "name":"Datasets for HistoryAreaChart",
+      "name":"Datasets for HistoryTable",
       "description":"Add datasets in any order - sequencing is handled automatically.",
       "type":"multidataset"
     }

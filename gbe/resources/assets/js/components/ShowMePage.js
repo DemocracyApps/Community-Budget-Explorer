@@ -1,5 +1,5 @@
 import React from 'react';
-import ChangeExplorer from './ChangeExplorer';
+import HistoryTable from './HistoryTable';
 import AvbTreemap from './AvbTreemap';
 
 
@@ -182,7 +182,7 @@ var WhatsNewPage = React.createClass({
         var subComponents = stateStore.getValue(this.props.storeId, 'subComponents');
         return (
             <div>
-                <ChangeExplorer componentMode={CommonConstants.COMPOSED_COMPONENT}
+                <HistoryTable componentMode={CommonConstants.COMPOSED_COMPONENT}
                                 datasetIds={this.props.componentData['mydatasets'].ids}
                                 accountType={stateStore.getValue(this.props.storeId, 'accountType')}
                                 storeId={subComponents.table.storeId}
