@@ -290,6 +290,7 @@ var WhatsNewPage = React.createClass({
             var topExpenses = [];
             for (let i = 0; i < rows.length; ++i) {
                 let item = {
+                    show: true,
                     name: rows[i].categories[selectedLevel],
                     categories: rows[i].categories.slice(0,selectedLevel+1),
                     value: rows[i].difference,
@@ -297,18 +298,39 @@ var WhatsNewPage = React.createClass({
                 };
                 topExpenses.push(item);
             }
+            if (rows.length < 10) {
+                for (let i=0; i<10-rows.length; ++i) {
+                    topExpenses.push({
+                        show: false,
+                        name: "Filler+i",
+                        categories: ["Filler"+i],
+                        value: 0.0
+                    });
+                }
+            }
             rows = revenueData.data;
             rows.map(datasetUtilities.computeChanges);
             rows = rows.sort(datasetUtilities.sortByAbsoluteDifference).slice(0, 10);
             var topRevenues = [];
             for (let i = 0; i < rows.length; ++i) {
                 let item = {
+                    show:true,
                     name: rows[i].categories[selectedLevel],
                     categories: rows[i].categories.slice(0,selectedLevel+1),
                     value: rows[i].difference,
                     percent: rows[i].percent
                 };
                 topRevenues.push(item);
+            }
+            if (rows.length < 10) {
+                for (let i=0; i<10-rows.length; ++i) {
+                    topRevenues.push({
+                        show: false,
+                        name: "Filler+i",
+                        categories: ["Filler"+i],
+                        value: 0.0
+                    });
+                }
             }
 
             return (

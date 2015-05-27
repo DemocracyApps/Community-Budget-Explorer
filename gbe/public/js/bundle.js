@@ -55473,6 +55473,7 @@ var WhatsNewPage = _react2['default'].createClass({
             var topExpenses = [];
             for (var i = 0; i < rows.length; ++i) {
                 var item = {
+                    show: true,
                     name: rows[i].categories[selectedLevel],
                     categories: rows[i].categories.slice(0, selectedLevel + 1),
                     value: rows[i].difference,
@@ -55480,18 +55481,39 @@ var WhatsNewPage = _react2['default'].createClass({
                 };
                 topExpenses.push(item);
             }
+            if (rows.length < 10) {
+                for (var i = 0; i < 10 - rows.length; ++i) {
+                    topExpenses.push({
+                        show: false,
+                        name: 'Filler+i',
+                        categories: ['Filler' + i],
+                        value: 0
+                    });
+                }
+            }
             rows = revenueData.data;
             rows.map(datasetUtilities.computeChanges);
             rows = rows.sort(datasetUtilities.sortByAbsoluteDifference).slice(0, 10);
             var topRevenues = [];
             for (var i = 0; i < rows.length; ++i) {
                 var item = {
+                    show: true,
                     name: rows[i].categories[selectedLevel],
                     categories: rows[i].categories.slice(0, selectedLevel + 1),
                     value: rows[i].difference,
                     percent: rows[i].percent
                 };
                 topRevenues.push(item);
+            }
+            if (rows.length < 10) {
+                for (var i = 0; i < 10 - rows.length; ++i) {
+                    topRevenues.push({
+                        show: false,
+                        name: 'Filler+i',
+                        categories: ['Filler' + i],
+                        value: 0
+                    });
+                }
             }
 
             return _react2['default'].createElement(
@@ -55643,13 +55665,14 @@ d3Chart.drawBars = function (el, scales, data, height, callbacks) {
         return y;
     }).attr('width', function (d) {
         var w = Math.abs(scales.x(d.value) - scales.x(0));
+        if (!d.show) w = 0;
         return w;
     }).attr('height', scales.y.rangeBand()).on('mouseover', callbacks.mouseOver).on('mouseout', callbacks.mouseOut);
 
     svg.selectAll('.bartext').data(data).enter().append('text').attr('class', function (d) {
         return d.value < 0 ? 'bartext negative' : 'bartext positive';
     }).text(function (d) {
-        return d.name + '(' + d.percent + ')';
+        if (!d.show) return '';return d.name + '(' + d.percent + ')';
     }).attr('x', scales.x(0)).attr('y', function (d) {
         var yval = d.categories.join('/');
         var y = scales.y(yval) + 1.5 * scales.y.rangeBand();

@@ -40,6 +40,7 @@ d3Chart.drawBars = function(el, scales, data, height, callbacks) {
         })
         .attr("width", function(d) {
             var w = Math.abs(scales.x(d.value) - scales.x(0));
+            if (!d.show) w=0;
             return w;
         })
         .attr("height", scales.y.rangeBand())
@@ -50,7 +51,7 @@ d3Chart.drawBars = function(el, scales, data, height, callbacks) {
         .data(data)
         .enter().append('text')
         .attr("class", function(d) { return (d.value < 0)?"bartext negative":"bartext positive"})
-        .text(function (d) { return d.name + "(" + d.percent + ")"; })
+        .text(function (d) { if (!d.show) return ""; return d.name + "(" + d.percent + ")"; })
         .attr("x", scales.x(0))
         .attr("y", function(d) {
             var yval = d.categories.join('/');
