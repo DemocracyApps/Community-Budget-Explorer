@@ -21,6 +21,10 @@ var _componentsSimpleCard = require('./components/SimpleCard');
 
 var _componentsSimpleCard2 = _interopRequireDefault(_componentsSimpleCard);
 
+var _componentsNavCards = require('./components/NavCards');
+
+var _componentsNavCards2 = _interopRequireDefault(_componentsNavCards);
+
 var _componentsSlideShow = require('./components/SlideShow');
 
 var _componentsSlideShow2 = _interopRequireDefault(_componentsSlideShow);
@@ -58,6 +62,7 @@ var apiActions = require('./common/ApiActions');
 
 var reactComponents = {};
 reactComponents['SimpleCard'] = _componentsSimpleCard2['default'];
+reactComponents['NavCards'] = _componentsNavCards2['default'];
 reactComponents['SlideShow'] = _componentsSlideShow2['default'];
 reactComponents['Treemap'] = _componentsSimpleTreemap2['default'];
 reactComponents['CardTable'] = _componentsCardTable2['default'];
@@ -79,6 +84,7 @@ var datasetStore = require('./stores/DatasetStore');
  */
 configStore.createSection('common');
 configStore.createSection('pages');
+configStore.createSection('pagesByShortName');
 configStore.createSection('components');
 
 /*****************************************************
@@ -113,6 +119,7 @@ for (i = 0; i < GBEVars.pages.length; ++i) {
         }
     }
     configStore.storeConfiguration('pages', page.id, page);
+    configStore.storeConfiguration('pagesByShortName', page.shortName, page);
     pages.push(page.id);
 }
 
@@ -140,7 +147,7 @@ var props = {
 
 var layout = _react2['default'].render(_react2['default'].createElement(_componentsSite2['default'], props), document.getElementById('app'));
 
-},{"./common/ApiActions":318,"./common/BudgetAppDispatcher":319,"./common/IdGenerator":320,"./components/CardTable":323,"./components/ChangeExplorer":324,"./components/HistoryTable":325,"./components/ShowMePage":326,"./components/SimpleCard":327,"./components/SimpleTreemap":328,"./components/Site":329,"./components/SlideShow":331,"./components/WhatsNewPage":333,"./constants/ActionTypes":344,"./stores/CardStore":351,"./stores/ConfigStore":352,"./stores/DatasetStore":354,"./stores/StateStore":355,"babelify/polyfill":91,"react":317}],2:[function(require,module,exports){
+},{"./common/ApiActions":318,"./common/BudgetAppDispatcher":319,"./common/IdGenerator":320,"./components/CardTable":323,"./components/ChangeExplorer":324,"./components/HistoryTable":325,"./components/NavCards":326,"./components/ShowMePage":327,"./components/SimpleCard":328,"./components/SimpleTreemap":329,"./components/Site":330,"./components/SlideShow":332,"./components/WhatsNewPage":334,"./constants/ActionTypes":345,"./stores/CardStore":352,"./stores/ConfigStore":353,"./stores/DatasetStore":355,"./stores/StateStore":356,"babelify/polyfill":91,"react":317}],2:[function(require,module,exports){
 (function (global){
 "use strict";
 
@@ -52713,7 +52720,7 @@ var ApiActions = {
 
 module.exports = ApiActions;
 
-},{"../common/BudgetAppDispatcher":319,"../constants/ActionTypes":344,"../stores/ConfigStore":352,"../stores/DatasetStore":354,"object-assign":99}],319:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":319,"../constants/ActionTypes":345,"../stores/ConfigStore":353,"../stores/DatasetStore":355,"object-assign":99}],319:[function(require,module,exports){
 'use strict';
 
 var FluxDispatcher = require('flux').Dispatcher;
@@ -53016,7 +53023,7 @@ exports['default'] = AvbTreemap;
 module.exports = exports['default'];
 /* entry title */ /* layer chart legend */ /*  info cards */ /*  chart */ /*  treemap */
 
-},{"./aux/D3BarChart":334,"./aux/avb.js":335,"blueimp-md5":92,"d3":95,"react":317}],322:[function(require,module,exports){
+},{"./aux/D3BarChart":335,"./aux/avb.js":336,"blueimp-md5":92,"d3":95,"react":317}],322:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -53214,7 +53221,7 @@ var CardTable = _react2['default'].createClass({
 exports['default'] = CardTable;
 module.exports = exports['default'];
 
-},{"../stores/CardStore":351,"react":317}],324:[function(require,module,exports){
+},{"../stores/CardStore":352,"react":317}],324:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -53615,7 +53622,7 @@ var ChangeExplorer = _react2['default'].createClass({
 exports['default'] = ChangeExplorer;
 module.exports = exports['default'];
 
-},{"../common/ApiActions":318,"../common/BudgetAppDispatcher":319,"../constants/AccountTypes":343,"../constants/ActionTypes":344,"../constants/Common":345,"../data/DatasetUtilities":350,"../stores/DataModelStore":353,"../stores/DatasetStore":354,"../stores/StateStore":355,"react":317,"react-micro-bar-chart":159,"react-sparkline":161}],325:[function(require,module,exports){
+},{"../common/ApiActions":318,"../common/BudgetAppDispatcher":319,"../constants/AccountTypes":344,"../constants/ActionTypes":345,"../constants/Common":346,"../data/DatasetUtilities":351,"../stores/DataModelStore":354,"../stores/DatasetStore":355,"../stores/StateStore":356,"react":317,"react-micro-bar-chart":159,"react-sparkline":161}],325:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -53985,7 +53992,101 @@ var HistoryTable = _react2['default'].createClass({
 exports['default'] = HistoryTable;
 module.exports = exports['default'];
 
-},{"../common/ApiActions":318,"../common/BudgetAppDispatcher":319,"../constants/AccountTypes":343,"../constants/ActionTypes":344,"../constants/Common":345,"../data/DatasetUtilities":350,"../stores/DataModelStore":353,"../stores/DatasetStore":354,"../stores/StateStore":355,"react":317,"react-micro-bar-chart":159,"react-sparkline":161}],326:[function(require,module,exports){
+},{"../common/ApiActions":318,"../common/BudgetAppDispatcher":319,"../constants/AccountTypes":344,"../constants/ActionTypes":345,"../constants/Common":346,"../data/DatasetUtilities":351,"../stores/DataModelStore":354,"../stores/DatasetStore":355,"../stores/StateStore":356,"react":317,"react-micro-bar-chart":159,"react-sparkline":161}],326:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+    value: true
+});
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var cardStore = require('../stores/CardStore');
+var configStore = require('../stores/ConfigStore');
+var dispatcher = require('../common/BudgetAppDispatcher');
+var ActionTypes = require('../constants/ActionTypes');
+
+var NavCards = _react2['default'].createClass({
+    displayName: 'NavCards',
+
+    propTypes: {
+        componentData: _react2['default'].PropTypes.object.isRequired,
+        componentProps: _react2['default'].PropTypes.object.isRequired,
+        storeId: _react2['default'].PropTypes.number.isRequired
+    },
+
+    render: function render() {
+        var cards = [];
+        for (var i = 0; i < this.props.componentData['mycardset'].ids.length; ++i) {
+            var card = cardStore.getCard(this.props.componentData['mycardset'].ids[i]);
+            if (card !== undefined) cards.push(card);
+        }
+        if (cards.length != 3) throw 'NavCards currently only set for 3 cards';
+        var colors = ['#7DA8CC', '#A4CC56', '#41A7BF', '#A58A6A', '#E56B41', '#856AC6', '#F08B27'];
+
+        var gotoPage = function gotoPage(pageName) {
+            console.log('Go to page ' + pageName);
+            var page = configStore.getConfiguration('pagesByShortName', pageName);
+            dispatcher.dispatch({
+                actionType: ActionTypes.STATE_CHANGE,
+                payload: {
+                    changes: [{
+                        name: 'site.currentPage',
+                        value: page.id
+                    }]
+                }
+            });
+        };
+
+        if (card == undefined) {
+            return _react2['default'].createElement(
+                'div',
+                null,
+                'NavCards loading ... '
+            );
+        } else {
+            return _react2['default'].createElement(
+                'div',
+                { className: 'row' },
+                cards.map(function (card, index) {
+                    var cardStyle = {
+                        color: 'white !important',
+                        display: 'block',
+                        padding: 30,
+                        position: 'relative',
+                        background: colors[index],
+                        height: 200
+                    };
+                    return _react2['default'].createElement(
+                        'a',
+                        { href: '#', onClick: gotoPage.bind(null, card.link) },
+                        _react2['default'].createElement(
+                            'div',
+                            { className: 'col-xs-4', style: cardStyle },
+                            _react2['default'].createElement(
+                                'h1',
+                                null,
+                                ' ',
+                                card.title,
+                                ' '
+                            ),
+                            _react2['default'].createElement('span', { dangerouslySetInnerHTML: { __html: card.body } })
+                        )
+                    );
+                })
+            );
+        }
+    }
+});
+
+exports['default'] = NavCards;
+module.exports = exports['default'];
+
+},{"../common/BudgetAppDispatcher":319,"../constants/ActionTypes":345,"../stores/CardStore":352,"../stores/ConfigStore":353,"react":317}],327:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -54233,7 +54334,7 @@ var WhatsNewPage = _react2['default'].createClass({
 exports['default'] = WhatsNewPage;
 module.exports = exports['default'];
 
-},{"../common/ApiActions":318,"../common/BudgetAppDispatcher":319,"../common/IdGenerator":320,"../constants/AccountTypes":343,"../constants/ActionTypes":344,"../constants/Common":345,"../stores/ConfigStore":352,"../stores/DataModelStore":353,"../stores/DatasetStore":354,"../stores/StateStore":355,"./AvbTreemap":321,"./HistoryTable":325,"react":317}],327:[function(require,module,exports){
+},{"../common/ApiActions":318,"../common/BudgetAppDispatcher":319,"../common/IdGenerator":320,"../constants/AccountTypes":344,"../constants/ActionTypes":345,"../constants/Common":346,"../stores/ConfigStore":353,"../stores/DataModelStore":354,"../stores/DatasetStore":355,"../stores/StateStore":356,"./AvbTreemap":321,"./HistoryTable":325,"react":317}],328:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -54259,6 +54360,16 @@ var SimpleCard = _react2['default'].createClass({
 
     render: function render() {
         var card = cardStore.getCard(this.props.componentData['mycard'].ids[0]);
+
+        var cardStyle = {
+            color: 'white !important',
+            display: 'block',
+            padding: '30px 0px',
+            position: 'relative',
+            background: '#7DA8CC',
+            height: 300
+        };
+
         if (card == undefined) {
             return _react2['default'].createElement(
                 'div',
@@ -54268,7 +54379,7 @@ var SimpleCard = _react2['default'].createClass({
         } else {
             return _react2['default'].createElement(
                 'div',
-                null,
+                { style: cardStyle },
                 _react2['default'].createElement(
                     'h1',
                     null,
@@ -54285,7 +54396,7 @@ var SimpleCard = _react2['default'].createClass({
 exports['default'] = SimpleCard;
 module.exports = exports['default'];
 
-},{"../stores/CardStore":351,"react":317}],328:[function(require,module,exports){
+},{"../stores/CardStore":352,"react":317}],329:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -54538,7 +54649,7 @@ var SimpleTreemap = _react2['default'].createClass({
 exports['default'] = SimpleTreemap;
 module.exports = exports['default'];
 
-},{"../common/ApiActions":318,"../common/BudgetAppDispatcher":319,"../constants/AccountTypes":343,"../constants/ActionTypes":344,"../data/DatasetUtilities":350,"../stores/DataModelStore":353,"../stores/DatasetStore":354,"../stores/StateStore":355,"react":317,"react-d3":135}],329:[function(require,module,exports){
+},{"../common/ApiActions":318,"../common/BudgetAppDispatcher":319,"../constants/AccountTypes":344,"../constants/ActionTypes":345,"../data/DatasetUtilities":351,"../stores/DataModelStore":354,"../stores/DatasetStore":355,"../stores/StateStore":356,"react":317,"react-d3":135}],330:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -54743,7 +54854,7 @@ var Site = _react2['default'].createClass({
 exports['default'] = Site;
 module.exports = exports['default'];
 
-},{"../common/BudgetAppDispatcher":319,"../constants/ActionTypes":344,"../stores/ConfigStore":352,"../stores/DatasetStore":354,"../stores/StateStore":355,"./BootstrapLayout":322,"./SiteNavigation":330,"react":317}],330:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":319,"../constants/ActionTypes":345,"../stores/ConfigStore":353,"../stores/DatasetStore":355,"../stores/StateStore":356,"./BootstrapLayout":322,"./SiteNavigation":331,"react":317}],331:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -54816,7 +54927,7 @@ var SiteNavigation = _react2['default'].createClass({
 exports['default'] = SiteNavigation;
 module.exports = exports['default'];
 
-},{"../common/BudgetAppDispatcher":319,"../constants/ActionTypes":344,"../stores/ConfigStore":352,"../stores/StateStore":355,"react":317}],331:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":319,"../constants/ActionTypes":345,"../stores/ConfigStore":353,"../stores/StateStore":356,"react":317}],332:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -54907,7 +55018,7 @@ var SlideShow = _react2['default'].createClass({
 exports['default'] = SlideShow;
 module.exports = exports['default'];
 
-},{"../stores/CardStore":351,"react":317}],332:[function(require,module,exports){
+},{"../stores/CardStore":352,"react":317}],333:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -55001,7 +55112,7 @@ var VerticalBarChart = _react2['default'].createClass({
 exports['default'] = VerticalBarChart;
 module.exports = exports['default'];
 
-},{"./aux/D3BarChart":334,"d3":95,"react":317}],333:[function(require,module,exports){
+},{"./aux/D3BarChart":335,"d3":95,"react":317}],334:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -55472,7 +55583,7 @@ var WhatsNewPage = _react2['default'].createClass({
 exports['default'] = WhatsNewPage;
 module.exports = exports['default'];
 
-},{"../common/ApiActions":318,"../common/BudgetAppDispatcher":319,"../common/IdGenerator":320,"../constants/AccountTypes":343,"../constants/ActionTypes":344,"../constants/Common":345,"../data/DatasetUtilities":350,"../stores/ConfigStore":352,"../stores/DataModelStore":353,"../stores/DatasetStore":354,"../stores/StateStore":355,"./ChangeExplorer":324,"./VerticalBarChart":332,"react":317}],334:[function(require,module,exports){
+},{"../common/ApiActions":318,"../common/BudgetAppDispatcher":319,"../common/IdGenerator":320,"../constants/AccountTypes":344,"../constants/ActionTypes":345,"../constants/Common":346,"../data/DatasetUtilities":351,"../stores/ConfigStore":353,"../stores/DataModelStore":354,"../stores/DatasetStore":355,"../stores/StateStore":356,"./ChangeExplorer":324,"./VerticalBarChart":333,"react":317}],335:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -55544,7 +55655,7 @@ d3Chart.computeScales = function (data, width, height, margin) {
 exports['default'] = d3Chart;
 module.exports = exports['default'];
 
-},{"d3":95}],335:[function(require,module,exports){
+},{"d3":95}],336:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -55846,7 +55957,7 @@ exports['default'] = {
 };
 module.exports = exports['default'];
 
-},{"./avb/cards":336,"./avb/chart":337,"./avb/navbar":338,"./avb/statistics":339,"./avb/table":340,"./avb/treemap":341,"d3":95}],336:[function(require,module,exports){
+},{"./avb/cards":337,"./avb/chart":338,"./avb/navbar":339,"./avb/statistics":340,"./avb/table":341,"./avb/treemap":342,"d3":95}],337:[function(require,module,exports){
 /*
 File: cards.js
 
@@ -55962,7 +56073,7 @@ var avb_cards = (function () {
 exports["default"] = avb_cards;
 module.exports = exports["default"];
 
-},{}],337:[function(require,module,exports){
+},{}],338:[function(require,module,exports){
 /*
 File: chart.js
 
@@ -56551,7 +56662,7 @@ var avb_chart = (function () {
 exports['default'] = avb_chart;
 module.exports = exports['default'];
 
-},{"./utilities":342}],338:[function(require,module,exports){
+},{"./utilities":343}],339:[function(require,module,exports){
 /*
 File: navbar.js
 
@@ -56758,7 +56869,7 @@ var avb_navbar = (function () {
 exports['default'] = avb_navbar;
 module.exports = exports['default'];
 
-},{}],339:[function(require,module,exports){
+},{}],340:[function(require,module,exports){
 /*
 File: statistics.js
 
@@ -56980,7 +57091,7 @@ exports["default"] = {
 };
 module.exports = exports["default"];
 
-},{"./utilities":342}],340:[function(require,module,exports){
+},{"./utilities":343}],341:[function(require,module,exports){
 /*
 File: table.js
 
@@ -57420,7 +57531,7 @@ var avb_table = (function () {
 exports["default"] = avb_table;
 module.exports = exports["default"];
 
-},{}],341:[function(require,module,exports){
+},{}],342:[function(require,module,exports){
 /*
 File: treemap.js
 
@@ -58039,7 +58150,7 @@ var avb_treemap = (function () {
 exports["default"] = avb_treemap;
 module.exports = exports["default"];
 
-},{"./utilities":342}],342:[function(require,module,exports){
+},{"./utilities":343}],343:[function(require,module,exports){
 
 /*
  *   Detects IE browsers
@@ -58196,7 +58307,7 @@ exports['default'] = {
 };
 module.exports = exports['default'];
 
-},{}],343:[function(require,module,exports){
+},{}],344:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -58209,7 +58320,7 @@ module.exports = {
     CONTRA: 6
 };
 
-},{}],344:[function(require,module,exports){
+},{}],345:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -58218,7 +58329,7 @@ module.exports = {
     DATASET_RECEIVED: "DATASET_RECEIVED"
 };
 
-},{}],345:[function(require,module,exports){
+},{}],346:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -58226,7 +58337,7 @@ module.exports = {
     COMPOSED_COMPONENT: 1
 };
 
-},{}],346:[function(require,module,exports){
+},{}],347:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -58237,7 +58348,7 @@ module.exports = {
     DS_STATE_READY: "DS_STATE_READY"
 };
 
-},{}],347:[function(require,module,exports){
+},{}],348:[function(require,module,exports){
 'use strict';
 
 function Card(timestamp, title, body, link, image) {
@@ -58256,7 +58367,7 @@ function Card(timestamp, title, body, link, image) {
 
 module.exports = Card;
 
-},{}],348:[function(require,module,exports){
+},{}],349:[function(require,module,exports){
 'use strict';
 
 var DatasetStatus = require('../constants/DatasetStatus');
@@ -58529,7 +58640,7 @@ function DataModel(id, datasetIds) {
 
 module.exports = DataModel;
 
-},{"../common/BudgetAppDispatcher":319,"../constants/AccountTypes":343,"../constants/ActionTypes":344,"../constants/DatasetStatus":346,"../stores/DatasetStore":354,"./DatasetUtilities":350}],349:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":319,"../constants/AccountTypes":344,"../constants/ActionTypes":345,"../constants/DatasetStatus":347,"../stores/DatasetStore":355,"./DatasetUtilities":351}],350:[function(require,module,exports){
 'use strict';
 
 var DatasetStatus = require('../constants/DatasetStatus');
@@ -58573,7 +58684,7 @@ function Dataset(timestamp, sourceId) {
 
 module.exports = Dataset;
 
-},{"../constants/DatasetStatus":346}],350:[function(require,module,exports){
+},{"../constants/DatasetStatus":347}],351:[function(require,module,exports){
 'use strict';
 
 var assign = require('object-assign');
@@ -58784,7 +58895,7 @@ var DatasetUtilities = {
 
 module.exports = DatasetUtilities;
 
-},{"../common/BudgetAppDispatcher":319,"../constants/AccountTypes":343,"../constants/ActionTypes":344,"../constants/DatasetStatus":346,"../stores/DatasetStore":354,"object-assign":99}],351:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":319,"../constants/AccountTypes":344,"../constants/ActionTypes":345,"../constants/DatasetStatus":347,"../stores/DatasetStore":355,"object-assign":99}],352:[function(require,module,exports){
 'use strict';
 
 var dispatcher = require('../common/BudgetAppDispatcher');
@@ -58842,7 +58953,7 @@ dispatcher.register(function (action) {
 
 module.exports = CardStore;
 
-},{"../common/BudgetAppDispatcher":319,"../constants/ActionTypes":344,"../data/Card":347,"events":93,"object-assign":99}],352:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":319,"../constants/ActionTypes":345,"../data/Card":348,"events":93,"object-assign":99}],353:[function(require,module,exports){
 'use strict';
 
 var dispatcher = require('../common/BudgetAppDispatcher');
@@ -58928,7 +59039,7 @@ dispatcher.register(function (action) {
 
 module.exports = ConfigStore;
 
-},{"../common/BudgetAppDispatcher":319,"../constants/ActionTypes":344,"events":93,"object-assign":99}],353:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":319,"../constants/ActionTypes":345,"events":93,"object-assign":99}],354:[function(require,module,exports){
 'use strict';
 
 var dispatcher = require('../common/BudgetAppDispatcher');
@@ -58997,7 +59108,7 @@ dispatcher.register(function (action) {
 
 module.exports = DataModelStore;
 
-},{"../common/BudgetAppDispatcher":319,"../constants/ActionTypes":344,"../data/DataModel":348,"events":93,"object-assign":99}],354:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":319,"../constants/ActionTypes":345,"../data/DataModel":349,"events":93,"object-assign":99}],355:[function(require,module,exports){
 'use strict';
 
 var dispatcher = require('../common/BudgetAppDispatcher');
@@ -59067,7 +59178,7 @@ DatasetStore.dispatchToken = dispatcher.register(function (action) {
 
 module.exports = DatasetStore;
 
-},{"../common/BudgetAppDispatcher":319,"../constants/ActionTypes":344,"../data/Dataset":349,"events":93,"object-assign":99}],355:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":319,"../constants/ActionTypes":345,"../data/Dataset":350,"events":93,"object-assign":99}],356:[function(require,module,exports){
 'use strict';
 
 var dispatcher = require('../common/BudgetAppDispatcher');
@@ -59229,4 +59340,4 @@ dispatcher.register(function (action) {
 module.exports = StateStore;
 /*path OR id, key */
 
-},{"../common/BudgetAppDispatcher":319,"../constants/ActionTypes":344,"events":93,"object-assign":99}]},{},[1]);
+},{"../common/BudgetAppDispatcher":319,"../constants/ActionTypes":345,"events":93,"object-assign":99}]},{},[1]);

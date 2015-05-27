@@ -23,6 +23,7 @@ class AshevilleSiteSeeder extends Seeder
         $historyAreaChartComponent = Component::where('name','=','HistoryAreaChart')->first();
         $whatsnewpageComponent = Component::where('name','=','WhatsNewPage')->first();
         $showmepageComponent = Component::where('name','=','ShowMePage')->first();
+        $navCardsComponent = Component::where('name','=','NavCards')->first();
 
         // Create the Asheville site
         $site = new Site();
@@ -35,7 +36,7 @@ class AshevilleSiteSeeder extends Seeder
         $site->save();
 
 
-        $this->createHomePage($site, $slideShowComponent, $simpleCardComponent);
+        $this->createHomePage($site, $slideShowComponent, $navCardsComponent);
 
         $this->createWhatsNewPage($site, $whatsnewpageComponent);
 
@@ -46,7 +47,7 @@ class AshevilleSiteSeeder extends Seeder
         $this->createAboutPage($site, $simpleCardComponent);
     }
 
-    private function createHomePage($site, $slideShowComponent, $simpleCardComponent)
+    private function createHomePage($site, $slideShowComponent, $navCardsComponent)
     {
         $cardset = new CardSet();
         $cardset->site = $site->id;
@@ -92,6 +93,42 @@ class AshevilleSiteSeeder extends Seeder
         $card->save();
 
         /*
+         * Now set up the navigation cards
+         */
+        $cardset2 = new CardSet();
+        $cardset2->site = $site->id;
+        $cardset2->name = 'NavCards';
+        $cardset2->save();
+
+        $card = new Card();
+        $card->site = $site->id;
+        $card->card_set = $cardset2->id;
+        $card->ordinal = 1;
+        $card->link = "whatsnew";
+        $card->title = "What's New?";
+        $card->body = "Discover what's changed since last year";
+        $card->save();
+
+        $card = new Card();
+        $card->site = $site->id;
+        $card->card_set = $cardset2->id;
+        $card->ordinal = 1;
+        $card->link = "showme";
+        $card->title = "Show Me The Money";
+        $card->body = "Explore the sources and uses of public funds";
+        $card->save();
+
+        $card = new Card();
+        $card->site = $site->id;
+        $card->card_set = $cardset2->id;
+        $card->ordinal = 1;
+        $card->link = "docmap";
+        $card->title = "Budget Doc Breakdown";
+        $card->body = "Navigate the City's budget document";
+        $card->save();
+
+
+        /*
          * Set up the home page
          */
         $page = new Page();
@@ -119,18 +156,15 @@ class AshevilleSiteSeeder extends Seeder
         $c->save();
 
         $c = new PageComponent();
-        $c->component = $simpleCardComponent->id;
+        $c->component = $navCardsComponent->id;
         $c->page = $page->id;
-        $c->save();
-
-        $c = new PageComponent();
-        $c->component = $simpleCardComponent->id;
-        $c->page = $page->id;
-        $c->save();
-
-        $c = new PageComponent();
-        $c->component = $simpleCardComponent->id;
-        $c->page = $page->id;
+        $c->target="Bottom";
+        $data = array();
+        $data['type'] = 'cardset';
+        $data['items'] = array("$cardset2->id");
+        $dataBundle = array();
+        $dataBundle['mycardset'] = $data;
+        $c->setProperty('data', $dataBundle);
         $c->save();
     }
 

@@ -1,0 +1,13 @@
+{
+  "name":"NavCards",
+  "description": "Set of cards for navigation",
+  "props": {},
+  "data": [
+    {
+      "tag":"mycardset",
+      "name":"NavCards Card Set",
+      "description":"Pick a card set - the cards in it will be shown sequentially.",
+      "type":"cardset"
+    }
+  ]
+}

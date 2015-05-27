@@ -14,6 +14,7 @@ var apiActions = require('./common/ApiActions');
  * them wherever needed. I would like to find a better way to do this, though ...
  */
 import SimpleCard from './components/SimpleCard';
+import NavCards from './components/NavCards';
 import SlideShow from './components/SlideShow';
 import Treemap from './components/SimpleTreemap';
 import CardTable from './components/CardTable';
@@ -24,6 +25,7 @@ import ShowMePage from './components/ShowMePage';
 
 var reactComponents = {};
 reactComponents['SimpleCard'] = SimpleCard;
+reactComponents['NavCards'] = NavCards;
 reactComponents['SlideShow'] = SlideShow;
 reactComponents['Treemap'] = Treemap;
 reactComponents['CardTable'] = CardTable;
@@ -45,6 +47,7 @@ var datasetStore = require('./stores/DatasetStore');
  */
 configStore.createSection('common');
 configStore.createSection('pages');
+configStore.createSection('pagesByShortName');
 configStore.createSection('components');
 
 /*****************************************************
@@ -79,6 +82,7 @@ for (i=0; i<GBEVars.pages.length; ++i) {
         }
     }
     configStore.storeConfiguration('pages', page.id, page);
+    configStore.storeConfiguration('pagesByShortName', page.shortName, page);
     pages.push(page.id);
 }
 

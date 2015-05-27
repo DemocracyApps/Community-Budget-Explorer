@@ -10,14 +10,25 @@ var SimpleCard = React.createClass({
         storeId: React.PropTypes.number.isRequired
     },
 
+
     render: function() {
         var card = cardStore.getCard(this.props.componentData['mycard'].ids[0]);
+
+        var cardStyle = {
+            color: "white !important",
+            display:"block",
+            padding: "30px 0px",
+            position:"relative",
+            background:"#7DA8CC",
+            height: 300
+        };
+
         if (card == undefined) {
             return <div >SimpleCard loading ... </div>
         }
         else {
             return (
-                <div>
+                <div style={cardStyle}>
                     <h1> {card.title} </h1>
 
                     <span dangerouslySetInnerHTML={{__html: card.body}} />

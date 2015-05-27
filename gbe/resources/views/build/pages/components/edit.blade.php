@@ -120,10 +120,7 @@
         });
 
         function selectCardSet(tag) {
-            console.log("Working with cardsets " + JSON.stringify(GBEVars.cardSets));
-            console.log("selectCardSet tag = " + tag);
             var value = $("#selectedSet_"+tag).val();
-            console.log("The value is " + value);
             var cardSet = GBEVars.cardSets[value];
             var cardSelect = $("#selectedCard_"+tag);
             cardSelect.empty();
