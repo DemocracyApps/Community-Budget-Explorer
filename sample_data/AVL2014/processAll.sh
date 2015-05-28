@@ -8,9 +8,13 @@
 ../../gbe/artisan gb:process --instructions=null.json data/segment-function.csv canonical/cat_function.csv
 ../../gbe/artisan gb:process --instructions=null.json data/segment-grants.csv canonical/cat_grants.csv
 
+#2015 Budget
+
+../../gbe/artisan gb:process --instructions=avl_budget.json data/2014AdoptedBudget.csv canonical/2015AdoptedBudget_processed.csv
+
 #2014 Budget
 
-../../gbe/artisan gb:process --instructions=avl_budget.json data/2014AdoptedBudget.csv canonical/2014AdoptedBudget_processed.csv
+../../gbe/artisan gb:process --instructions=avl_prev_budget.json data/2014AdoptedBudget.csv canonical/2014AdoptedBudget_processed.csv
 
 # 2010
 ../../gbe/artisan gb:process --instructions avl_actual.json data/general_fund_2010.csv canonical/general_fund_2010_processed.csv
