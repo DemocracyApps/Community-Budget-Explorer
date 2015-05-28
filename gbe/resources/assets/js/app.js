@@ -38,7 +38,7 @@ reactComponents['ShowMePage'] = ShowMePage;
 var configStore = require('./stores/ConfigStore');
 var stateStore = require('./stores/StateStore');
 var cardStore = require('./stores/CardStore');
-var datasetStore = require('./stores/DatasetStore');
+var datasetStore = require('./stores/DataSetStore');
 
 /*
  * Let's set up a couple standard sections in the configuration store
