@@ -116,33 +116,25 @@ var WhatsNewPage = React.createClass({
     },
 
     leftPanel: function leftPanel(displayMode) {
-        if (displayMode == 'chart') {
-            return (
-                <div className="col-xs-4">
-                </div>
-            )
-        }
-        else {
-            var spacer = String.fromCharCode(160)+String.fromCharCode(160)+String.fromCharCode(160);
-            var yes="btn btn-xs btn-primary", no= "btn btn-xs btn-normal";
-            var yesStyle={marginTop:4, marginBottom:2, color:"white"};
-            var noStyle={color:"black", marginTop:4, marginBottom:2};
+        var spacer = String.fromCharCode(160)+String.fromCharCode(160)+String.fromCharCode(160);
+        var yes="btn btn-xs btn-primary", no= "btn btn-xs btn-normal";
+        var yesStyle={marginTop:4, marginBottom:2, color:"white"};
+        var noStyle={color:"black", marginTop:4, marginBottom:2};
 
-            var accountType = stateStore.getValue(this.props.storeId, 'accountType');
-            return (
-                <div className="col-xs-4">
-                    <b style={{marginTop:4, fontSize:"small"}}>Account Type:</b>
-                    <span>{spacer}</span>
-                    <button style={(accountType==AccountTypes.EXPENSE)?yesStyle:noStyle}
-                            className={(accountType==AccountTypes.EXPENSE)?yes:no}
-                            onClick={this.onAccountTypeChange.bind(null, AccountTypes.EXPENSE)}>Spending</button>
-                    <span>{spacer}</span>
-                    <button style={(accountType==AccountTypes.REVENUE)?yesStyle:noStyle}
-                            className={(accountType==AccountTypes.REVENUE)?yes:no}
-                            onClick={this.onAccountTypeChange.bind(null, AccountTypes.REVENUE)}>Revenue</button>
-                </div>
-            )
-        }
+        var accountType = stateStore.getValue(this.props.storeId, 'accountType');
+        return (
+            <div className="col-xs-4">
+                <b style={{marginTop:4, fontSize:"small"}}>Account Type:</b>
+                <span>{spacer}</span>
+                <button style={(accountType==AccountTypes.EXPENSE)?yesStyle:noStyle}
+                        className={(accountType==AccountTypes.EXPENSE)?yes:no}
+                        onClick={this.onAccountTypeChange.bind(null, AccountTypes.EXPENSE)}>Spending</button>
+                <span>{spacer}</span>
+                <button style={(accountType==AccountTypes.REVENUE)?yesStyle:noStyle}
+                        className={(accountType==AccountTypes.REVENUE)?yes:no}
+                        onClick={this.onAccountTypeChange.bind(null, AccountTypes.REVENUE)}>Revenue</button>
+            </div>
+        )
     },
 
     modeButtons: function() {
@@ -272,17 +264,12 @@ var WhatsNewPage = React.createClass({
             startPath = [areas[selectedArea].name];
             addLevel = 0;
         }
-        var revenueData = dm.getData({
-            accountTypes:[AccountTypes.REVENUE],
-            startPath: startPath,
-            nLevels: selectedLevel + addLevel
-        });
-        var expenseData = dm.getData({
-            accountTypes:[AccountTypes.EXPENSE],
+        var currentData = dm.getData({
+            accountTypes:[accountType],
             startPath: startPath,
             nLevels: selectedLevel + addLevel
         }, false);
-        var dataNull = (expenseData == null);
+        var dataNull = (currentData == null);
 
         if (dataNull) {
             return (
@@ -297,28 +284,23 @@ var WhatsNewPage = React.createClass({
             )
         }
         else {
-            while (revenueData.data.length <= 1 && expenseData.data.length <= 1 && selectedLevel < 3) {
+            while (currentData.data.length <= 1 && selectedLevel < 3) {
                 ++selectedLevel;
-                revenueData = dm.getData({
-                    accountTypes:[AccountTypes.REVENUE],
-                    startPath: startPath,
-                    nLevels: selectedLevel + addLevel
-                });
-                expenseData = dm.getData({
+                currentData = dm.getData({
                     accountTypes:[AccountTypes.EXPENSE],
                     startPath: startPath,
                     nLevels: selectedLevel + addLevel
                 }, false);
             }
 
-            var rows = expenseData.data;
+            var rows = currentData.data;
             if (areas == null) {
                 areas = this.computeAreas(rows);
                 stateStore.setComponentState(this.props.storeId, {areaList: areas});
             }
             rows.map(datasetUtilities.computeChanges);
             rows = rows.sort(datasetUtilities.sortByAbsoluteDifference).slice(0, 10);
-            var topExpenses = [];
+            var topDifferences = [];
             for (let i = 0; i < rows.length; ++i) {
                 let item = {
                     show: true,
@@ -327,35 +309,11 @@ var WhatsNewPage = React.createClass({
                     value: rows[i].difference,
                     percent: rows[i].percent
                 };
-                topExpenses.push(item);
+                topDifferences.push(item);
             }
             if (rows.length < 10) {
                 for (let i=0; i<10-rows.length; ++i) {
-                    topExpenses.push({
-                        show: false,
-                        name: "Filler+i",
-                        categories: ["Filler"+i],
-                        value: 0.0
-                    });
-                }
-            }
-            rows = revenueData.data;
-            rows.map(datasetUtilities.computeChanges);
-            rows = rows.sort(datasetUtilities.sortByAbsoluteDifference).slice(0, 10);
-            var topRevenues = [];
-            for (let i = 0; i < rows.length; ++i) {
-                let item = {
-                    show:true,
-                    name: rows[i].categories[selectedLevel],
-                    categories: rows[i].categories.slice(0,selectedLevel+1),
-                    value: rows[i].difference,
-                    percent: rows[i].percent
-                };
-                topRevenues.push(item);
-            }
-            if (rows.length < 10) {
-                for (let i=0; i<10-rows.length; ++i) {
-                    topRevenues.push({
+                    topDifferences.push({
                         show: false,
                         name: "Filler+i",
                         categories: ["Filler"+i],
@@ -364,9 +322,19 @@ var WhatsNewPage = React.createClass({
                 }
             }
 
+            var w = window.innerWidth;
+            w = 100 * Math.trunc(w/100);
+
+            var h = window.innerHeight;
+            h = 100 * Math.round(h/100);
+            if (h < 500) h = 500;
+            w /= 12;
+            w *= 8;
+            if (w < 300) w = 300;
+            var txt = (accountType==AccountTypes.EXPENSE)?'Top Spending Changes':'Top Revenue Changes';
             return (
                 <div className = "row">
-                    <div className="col-xs-3">
+                    <div className="col-md-3 col-sm-3">
                         <h2>Service Area</h2>
                         <br/>
                         <ul className="servicearea-selector nav nav-pills nav-stacked">
@@ -378,14 +346,9 @@ var WhatsNewPage = React.createClass({
                             }.bind(this))}
                         </ul>
                     </div>
-                    <div className="col-xs-4">
-                        <h2>Top Spending Changes</h2>
-                        <VerticalBarChart width={350} height={600} data={topExpenses}/>
-                    </div>
-                    <div className="col-xs-1"></div>
-                    <div className="col-xs-4">
-                        <h2>Top Revenue Changes</h2>
-                        <VerticalBarChart width={350} height={600}  data={topRevenues}/>
+                    <div className="col-md-9 col-sm-9">
+                        <h2>{txt}</h2>
+                        <VerticalBarChart width={w} height={600} data={topDifferences}/>
                     </div>
                 </div>
             )

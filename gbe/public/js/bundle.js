@@ -55570,50 +55570,46 @@ var WhatsNewPage = _react2['default'].createClass({
     },
 
     leftPanel: function leftPanel(displayMode) {
-        if (displayMode == 'chart') {
-            return _react2['default'].createElement('div', { className: 'col-xs-4' });
-        } else {
-            var spacer = String.fromCharCode(160) + String.fromCharCode(160) + String.fromCharCode(160);
-            var yes = 'btn btn-xs btn-primary',
-                no = 'btn btn-xs btn-normal';
-            var yesStyle = { marginTop: 4, marginBottom: 2, color: 'white' };
-            var noStyle = { color: 'black', marginTop: 4, marginBottom: 2 };
+        var spacer = String.fromCharCode(160) + String.fromCharCode(160) + String.fromCharCode(160);
+        var yes = 'btn btn-xs btn-primary',
+            no = 'btn btn-xs btn-normal';
+        var yesStyle = { marginTop: 4, marginBottom: 2, color: 'white' };
+        var noStyle = { color: 'black', marginTop: 4, marginBottom: 2 };
 
-            var accountType = stateStore.getValue(this.props.storeId, 'accountType');
-            return _react2['default'].createElement(
-                'div',
-                { className: 'col-xs-4' },
-                _react2['default'].createElement(
-                    'b',
-                    { style: { marginTop: 4, fontSize: 'small' } },
-                    'Account Type:'
-                ),
-                _react2['default'].createElement(
-                    'span',
-                    null,
-                    spacer
-                ),
-                _react2['default'].createElement(
-                    'button',
-                    { style: accountType == AccountTypes.EXPENSE ? yesStyle : noStyle,
-                        className: accountType == AccountTypes.EXPENSE ? yes : no,
-                        onClick: this.onAccountTypeChange.bind(null, AccountTypes.EXPENSE) },
-                    'Spending'
-                ),
-                _react2['default'].createElement(
-                    'span',
-                    null,
-                    spacer
-                ),
-                _react2['default'].createElement(
-                    'button',
-                    { style: accountType == AccountTypes.REVENUE ? yesStyle : noStyle,
-                        className: accountType == AccountTypes.REVENUE ? yes : no,
-                        onClick: this.onAccountTypeChange.bind(null, AccountTypes.REVENUE) },
-                    'Revenue'
-                )
-            );
-        }
+        var accountType = stateStore.getValue(this.props.storeId, 'accountType');
+        return _react2['default'].createElement(
+            'div',
+            { className: 'col-xs-4' },
+            _react2['default'].createElement(
+                'b',
+                { style: { marginTop: 4, fontSize: 'small' } },
+                'Account Type:'
+            ),
+            _react2['default'].createElement(
+                'span',
+                null,
+                spacer
+            ),
+            _react2['default'].createElement(
+                'button',
+                { style: accountType == AccountTypes.EXPENSE ? yesStyle : noStyle,
+                    className: accountType == AccountTypes.EXPENSE ? yes : no,
+                    onClick: this.onAccountTypeChange.bind(null, AccountTypes.EXPENSE) },
+                'Spending'
+            ),
+            _react2['default'].createElement(
+                'span',
+                null,
+                spacer
+            ),
+            _react2['default'].createElement(
+                'button',
+                { style: accountType == AccountTypes.REVENUE ? yesStyle : noStyle,
+                    className: accountType == AccountTypes.REVENUE ? yes : no,
+                    onClick: this.onAccountTypeChange.bind(null, AccountTypes.REVENUE) },
+                'Revenue'
+            )
+        );
     },
 
     modeButtons: function modeButtons() {
@@ -55798,17 +55794,12 @@ var WhatsNewPage = _react2['default'].createClass({
             startPath = [areas[selectedArea].name];
             addLevel = 0;
         }
-        var revenueData = dm.getData({
-            accountTypes: [AccountTypes.REVENUE],
-            startPath: startPath,
-            nLevels: selectedLevel + addLevel
-        });
-        var expenseData = dm.getData({
-            accountTypes: [AccountTypes.EXPENSE],
+        var currentData = dm.getData({
+            accountTypes: [accountType],
             startPath: startPath,
             nLevels: selectedLevel + addLevel
         }, false);
-        var dataNull = expenseData == null;
+        var dataNull = currentData == null;
 
         if (dataNull) {
             return _react2['default'].createElement(
@@ -55830,28 +55821,23 @@ var WhatsNewPage = _react2['default'].createClass({
                 )
             );
         } else {
-            while (revenueData.data.length <= 1 && expenseData.data.length <= 1 && selectedLevel < 3) {
+            while (currentData.data.length <= 1 && selectedLevel < 3) {
                 ++selectedLevel;
-                revenueData = dm.getData({
-                    accountTypes: [AccountTypes.REVENUE],
-                    startPath: startPath,
-                    nLevels: selectedLevel + addLevel
-                });
-                expenseData = dm.getData({
+                currentData = dm.getData({
                     accountTypes: [AccountTypes.EXPENSE],
                     startPath: startPath,
                     nLevels: selectedLevel + addLevel
                 }, false);
             }
 
-            var rows = expenseData.data;
+            var rows = currentData.data;
             if (areas == null) {
                 areas = this.computeAreas(rows);
                 stateStore.setComponentState(this.props.storeId, { areaList: areas });
             }
             rows.map(datasetUtilities.computeChanges);
             rows = rows.sort(datasetUtilities.sortByAbsoluteDifference).slice(0, 10);
-            var topExpenses = [];
+            var topDifferences = [];
             for (var i = 0; i < rows.length; ++i) {
                 var item = {
                     show: true,
@@ -55860,35 +55846,11 @@ var WhatsNewPage = _react2['default'].createClass({
                     value: rows[i].difference,
                     percent: rows[i].percent
                 };
-                topExpenses.push(item);
+                topDifferences.push(item);
             }
             if (rows.length < 10) {
                 for (var i = 0; i < 10 - rows.length; ++i) {
-                    topExpenses.push({
-                        show: false,
-                        name: 'Filler+i',
-                        categories: ['Filler' + i],
-                        value: 0
-                    });
-                }
-            }
-            rows = revenueData.data;
-            rows.map(datasetUtilities.computeChanges);
-            rows = rows.sort(datasetUtilities.sortByAbsoluteDifference).slice(0, 10);
-            var topRevenues = [];
-            for (var i = 0; i < rows.length; ++i) {
-                var item = {
-                    show: true,
-                    name: rows[i].categories[selectedLevel],
-                    categories: rows[i].categories.slice(0, selectedLevel + 1),
-                    value: rows[i].difference,
-                    percent: rows[i].percent
-                };
-                topRevenues.push(item);
-            }
-            if (rows.length < 10) {
-                for (var i = 0; i < 10 - rows.length; ++i) {
-                    topRevenues.push({
+                    topDifferences.push({
                         show: false,
                         name: 'Filler+i',
                         categories: ['Filler' + i],
@@ -55897,12 +55859,24 @@ var WhatsNewPage = _react2['default'].createClass({
                 }
             }
 
+            var w = window.innerWidth;
+            w = 100 * Math.trunc(w / 100);
+
+            var h = window.innerHeight;
+            h = 100 * Math.round(h / 100);
+            console.log('The window width is ' + w + ', height is ' + h);
+            if (h < 500) h = 500;
+            w /= 12;
+            w *= 8;
+            console.log('Now using width of ' + w);
+            if (w < 300) w = 300;
+            var txt = accountType == AccountTypes.EXPENSE ? 'Top Spending Changes' : 'Top Revenue Changes';
             return _react2['default'].createElement(
                 'div',
                 { className: 'row' },
                 _react2['default'].createElement(
                     'div',
-                    { className: 'col-xs-3' },
+                    { className: 'col-md-3 col-sm-3' },
                     _react2['default'].createElement(
                         'h2',
                         null,
@@ -55940,24 +55914,13 @@ var WhatsNewPage = _react2['default'].createClass({
                 ),
                 _react2['default'].createElement(
                     'div',
-                    { className: 'col-xs-4' },
+                    { className: 'col-md-9 col-sm-9' },
                     _react2['default'].createElement(
                         'h2',
                         null,
-                        'Top Spending Changes'
+                        txt
                     ),
-                    _react2['default'].createElement(_VerticalBarChart2['default'], { width: 350, height: 600, data: topExpenses })
-                ),
-                _react2['default'].createElement('div', { className: 'col-xs-1' }),
-                _react2['default'].createElement(
-                    'div',
-                    { className: 'col-xs-4' },
-                    _react2['default'].createElement(
-                        'h2',
-                        null,
-                        'Top Revenue Changes'
-                    ),
-                    _react2['default'].createElement(_VerticalBarChart2['default'], { width: 350, height: 600, data: topRevenues })
+                    _react2['default'].createElement(_VerticalBarChart2['default'], { width: w, height: 600, data: topDifferences })
                 )
             );
         }
@@ -56013,7 +55976,7 @@ var _d32 = _interopRequireDefault(_d3);
 var d3Chart = {};
 
 d3Chart.create = function (el, props, data, callbacks) {
-    var margin = { top: 20, right: 10, bottom: 10, left: 10 };
+    var margin = { top: 20, right: 35, bottom: 10, left: 25 };
     var svg = _d32['default'].select(el).append('svg').attr('class', 'd3').attr('width', props.width).attr('height', props.height).attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
     this.update(el, data, props.width, props.height, margin, callbacks);
     return svg;
@@ -56025,13 +55988,29 @@ d3Chart.update = function (el, data, width, height, margin, callbacks) {
     this.drawBars(el, scales, data, height, callbacks);
 };
 
+d3Chart.rescale = function (value) {
+    // round up to nearest 1000
+    var tmp = Math.trunc(Math.abs(value) / 1000);
+    tmp = (tmp + 1) * 1000;
+    return value < 0 ? -tmp : tmp;
+};
+
+d3Chart.computeExtent = function (data) {
+    var extent = _d32['default'].extent(data, function (d) {
+        return d.value;
+    });
+    if (extent[0] > 0) extent[0] = 0;
+    if (Math.abs(extent[0]) > extent[1]) extent[1] = Math.abs(extent[0]);
+    extent[0] = this.rescale(extent[0]);
+    extent[1] = this.rescale(extent[1]);
+    return extent;
+};
+
 d3Chart.drawBars = function (el, scales, data, height, callbacks) {
-    var minValue = _d32['default'].min(data, function (d) {
-        return d.value;
-    });
-    var maxValue = _d32['default'].max(data, function (d) {
-        return d.value;
-    });
+    var extent = this.computeExtent(data);
+    var minValue = extent[0];
+    var maxValue = extent[1];
+    if (minValue > 0) minValue = 0;
     var svg = _d32['default'].select(el).selectAll('.d3');
     svg.selectAll('.bar').data(data).enter().append('rect').attr('class', function (d) {
         return d.value < 0 ? 'bar negative' : 'bar positive';
@@ -56047,12 +56026,12 @@ d3Chart.drawBars = function (el, scales, data, height, callbacks) {
         if (!d.show) w = 0;
         return w;
     }).attr('height', scales.y.rangeBand()).on('mouseover', callbacks.mouseOver).on('mouseout', callbacks.mouseOut);
-
+    var txtX = 0.0075 * maxValue;
     svg.selectAll('.bartext').data(data).enter().append('text').attr('class', function (d) {
         return d.value < 0 ? 'bartext negative' : 'bartext positive';
     }).text(function (d) {
         if (!d.show) return '';return d.name + '(' + d.percent + ')';
-    }).attr('x', scales.x(0)).attr('y', function (d) {
+    }).attr('x', scales.x(txtX)).attr('y', function (d) {
         var yval = d.categories.join('/');
         var y = scales.y(yval) + 1.5 * scales.y.rangeBand();
         return y;
@@ -56065,9 +56044,10 @@ d3Chart.drawBars = function (el, scales, data, height, callbacks) {
 };
 
 d3Chart.computeScales = function (data, width, height, margin) {
-    var x = _d32['default'].scale.linear().domain(_d32['default'].extent(data, function (d) {
-        return d.value;
-    })).range([margin.left, width - (margin.right + margin.left)]).nice();
+    var extent = this.computeExtent(data);
+    if (extent[0] > 0) extent[0] = 0;
+    if (Math.abs(extent[0]) > extent[1]) extent[1] = Math.abs(extent[0]);
+    var x = _d32['default'].scale.linear().domain(extent).range([margin.left, width - (margin.right + margin.left)]).nice();
 
     var y = _d32['default'].scale.ordinal().domain(data.map(function (d) {
         return d.categories.join('/');
