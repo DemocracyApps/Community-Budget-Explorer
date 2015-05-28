@@ -18,9 +18,6 @@ If you are using Vagrant, the following commands will install and start an insta
     cd gbe
     cp .env.example .env
     composer update
-    cd /var/www/gbe/vendor/react-d3
-    npm install
-    cd /var/www/gbe
     npm install
     bower install
     ./artisan migrate --seed
