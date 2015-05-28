@@ -21,7 +21,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 	# 	vagrant up --provider=digital_ocean
     config.vm.provider :digital_ocean do |provider, override|
     	override.vm.box = "digital_ocean"
-		override.ssh.private_key_path = "~/.ssh/id_do_rsa"
+		override.ssh.private_key_path = "~/.ssh/id_do_avlgbe_rsa"
 
 		# args[0]: specifies Apache User
 		override.vm.provision :shell, :path => "setup/install.sh", :args => ["www-data"]
@@ -30,7 +30,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 		override.vm.network :private_network, ip: "192.168.33.27", disabled: true
 
 		# These are the DigitalOcean provider values 
-		provider.token = ENV["DIGITAL_OCEAN_ACCESS_TOKEN"]
+		provider.token = ENV["DO_AVLGBE_ACCESS_TOKEN"]
 		provider.image = "12.04.5 x64"
 		provider.region = "nyc2"
 	end

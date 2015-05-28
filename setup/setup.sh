@@ -5,9 +5,6 @@ echo -e "\nSetting up GBE environment\n"
 json_repo="https://github.com/DemocracyApps/JSON.minify.git"
 json_dir="JSON.minify"
 
-reactd3_repo="https://github.com/DemocracyApps/react-d3.git"
-reactd3_dir="react-d3"
-
 if cd /var/www/gbe/vendor; then
     echo "Vendor directory exists"
 else
@@ -19,13 +16,6 @@ if cd $json_dir; then
     git pull
 else
     git clone $json_repo $json_dir
-fi
-
-cd /var/www/gbe/vendor
-if cd $reactd3_dir; then
-    git pull
-else
-    git clone $reactd3_repo $reactd3_dir
 fi
 
 if [ ! -e "/var/www/gbe/.env" ];
