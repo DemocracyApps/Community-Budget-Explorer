@@ -15,5 +15,8 @@
         "flexslider.css"
       ]
     }
+  },
+  "resolutions": {
+    "jquery": "~2.1.3"
   }
 }
