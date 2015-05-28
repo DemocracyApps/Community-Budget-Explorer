@@ -37,12 +37,30 @@ d3Chart.computeExtent = function(data) {
     return extent;
 };
 
-d3Chart.drawBars = function(el, scales, data, height, callbacks) {
+d3Chart.drawBars = function(el, scales, data, height) {
     var extent = this.computeExtent(data);
     var minValue = extent[0];
     var maxValue = extent[1];
     if (minValue > 0.) minValue = 0.;
+
+    var tooltip = d3.select('body').append('div').attr('class', 'bartooltip');
+
+    tooltip.append('div')
+        .attr('class', 'barlabel');
+    tooltip.select('.label').html("<p>This is the default text in case it matters.</p>");
+
     var svg = d3.select(el).selectAll(".d3");
+
+    var mouseOver = function(d) {
+        tooltip.select('.barlabel').html("<p>"+d.name+"</p>");
+        tooltip.style('top', (d3.event.pageY + 30) + 'px')
+            .style('left', (d3.event.pageX + 20) + 'px');
+        tooltip.style('display', 'block');
+    };
+    var mouseOut = function(d) {
+        tooltip.style('display', 'none');
+    };
+
     svg.selectAll(".bar")
         .data(data)
         .enter().append('rect')
@@ -62,8 +80,8 @@ d3Chart.drawBars = function(el, scales, data, height, callbacks) {
             return w;
         })
         .attr("height", scales.y.rangeBand())
-        .on('mouseover', callbacks.mouseOver)
-        .on('mouseout', callbacks.mouseOut);
+        .on('mouseover', mouseOver)
+        .on('mouseout', mouseOut);
     var txtX = .0075 * maxValue;
     svg.selectAll(".bartext")
         .data(data)

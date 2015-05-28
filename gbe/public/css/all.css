@@ -6172,8 +6172,25 @@ div.component-div {
 .card {
   padding-bottom: 40px; }
 
+/* Move the controls closer to the pics */
 .flexslider {
   margin: 0 0 10px; }
+
+/* Bar chart tooltip */
+.bartooltip {
+  background: #eee;
+  box-shadow: 0 0 5px #999999;
+  color: #333;
+  display: block;
+  font-size: 12px;
+  left: 0px;
+  padding: 10px;
+  position: absolute;
+  text-align: center;
+  top: 0px;
+  width: 150px;
+  height: 100px;
+  z-index: 10; }
 
 /*# sourceMappingURL=app.css.map */
 /*# sourceMappingURL=all.css.map */

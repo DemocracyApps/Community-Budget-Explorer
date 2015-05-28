@@ -55372,65 +55372,26 @@ var VerticalBarChart = _react2['default'].createClass({
         height: _react2['default'].PropTypes.number.isRequired
     },
 
-    getInitialState: function getInitialState() {
-        return {
-            hoverMessage: 'Mouse over bars to see details'
-        };
-    },
-
     componentDidMount: function componentDidMount() {
         var el = _react2['default'].findDOMNode(this.refs.myChart);
         $(el).children().remove();
-        var callbacks = {
-            id: 12,
-            mouseOver: (function (d) {
-                this.setState({ hoverMessage: JSON.stringify(d) });
-            }).bind(this),
-            mouseOut: (function (d) {
-                this.setState({ hoverMessage: 'Mouse over bars to see details' });
-            }).bind(this)
-        };
-        d3BarChart.create(el, { width: this.props.width, height: this.props.height }, this.props.data, callbacks);
+        d3BarChart.create(el, { width: this.props.width, height: this.props.height }, this.props.data);
     },
 
     componentDidUpdate: function componentDidUpdate() {
         var el = _react2['default'].findDOMNode(this.refs.myChart);
         $(el).children().remove();
-        var callbacks = {
-            id: 12,
-            mouseOver: (function (d) {
-                this.setState({ hoverMessage: JSON.stringify(d) });
-            }).bind(this),
-            mouseOut: (function (d) {
-                this.setState({ hoverMessage: 'Mouse over bars to see details' });
-            }).bind(this)
-        };
-        d3BarChart.create(el, { width: this.props.width, height: this.props.height }, this.props.data, callbacks);
+        d3BarChart.create(el, { width: this.props.width, height: this.props.height }, this.props.data);
     },
 
     componentWillUnmount: function componentWillUnmount() {},
-
-    hoverMessage: function hoverMessage() {
-        if (this.state.hoverMessage != null) {
-            return _react2['default'].createElement(
-                'p',
-                null,
-                this.state.hoverMessage
-            );
-        }
-    },
 
     render: function render() {
 
         return _react2['default'].createElement(
             'div',
             null,
-            _react2['default'].createElement('div', { className: 'Chart', ref: 'myChart' }),
-            _react2['default'].createElement(
-                'div',
-                null,
-                this.hoverMessage()
-            )
+            _react2['default'].createElement('div', { className: 'Chart', ref: 'myChart' })
         );
     }
 });
@@ -55864,11 +55825,9 @@ var WhatsNewPage = _react2['default'].createClass({
 
             var h = window.innerHeight;
             h = 100 * Math.round(h / 100);
-            console.log('The window width is ' + w + ', height is ' + h);
             if (h < 500) h = 500;
             w /= 12;
             w *= 8;
-            console.log('Now using width of ' + w);
             if (w < 300) w = 300;
             var txt = accountType == AccountTypes.EXPENSE ? 'Top Spending Changes' : 'Top Revenue Changes';
             return _react2['default'].createElement(
@@ -56006,12 +55965,29 @@ d3Chart.computeExtent = function (data) {
     return extent;
 };
 
-d3Chart.drawBars = function (el, scales, data, height, callbacks) {
+d3Chart.drawBars = function (el, scales, data, height) {
     var extent = this.computeExtent(data);
     var minValue = extent[0];
     var maxValue = extent[1];
     if (minValue > 0) minValue = 0;
+
+    var tooltip = _d32['default'].select('body').append('div').attr('class', 'bartooltip');
+
+    tooltip.append('div').attr('class', 'barlabel');
+    tooltip.select('.label').html('<p>This is the default text in case it matters.</p>');
+
     var svg = _d32['default'].select(el).selectAll('.d3');
+
+    var mouseOver = function mouseOver(d) {
+        tooltip.select('.barlabel').html('<p>' + d.name + '</p>');
+        tooltip.style('top', _d32['default'].event.pageY + 30 + 'px').style('left', _d32['default'].event.pageX + 5 + 'px');
+        tooltip.style('display', 'block');
+        console.log('I am at x = ' + _d32['default'].event.pageX + ', y = ' + _d32['default'].event.pageY);
+    };
+    var mouseOut = function mouseOut(d) {
+        tooltip.style('display', 'none');
+    };
+
     svg.selectAll('.bar').data(data).enter().append('rect').attr('class', function (d) {
         return d.value < 0 ? 'bar negative' : 'bar positive';
     }).attr('x', function (d) {
@@ -56025,7 +56001,7 @@ d3Chart.drawBars = function (el, scales, data, height, callbacks) {
         var w = Math.abs(scales.x(d.value) - scales.x(0));
         if (!d.show) w = 0;
         return w;
-    }).attr('height', scales.y.rangeBand()).on('mouseover', callbacks.mouseOver).on('mouseout', callbacks.mouseOut);
+    }).attr('height', scales.y.rangeBand()).on('mouseover', mouseOver).on('mouseout', mouseOut);
     var txtX = 0.0075 * maxValue;
     svg.selectAll('.bartext').data(data).enter().append('text').attr('class', function (d) {
         return d.value < 0 ? 'bartext negative' : 'bartext positive';
