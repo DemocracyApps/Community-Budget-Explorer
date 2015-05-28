@@ -211,7 +211,7 @@ var WhatsNewPage = React.createClass({
 
         return (
             <div>
-                <div className="row panel panel-default">
+                <div className="row ">
                     {this.leftPanel(displayMode)}
                     {this.middleButtons()}
 
