@@ -8,6 +8,7 @@ var Dataset = require('../data/Dataset');
 
 var DS_CHANGE_EVENT = 'ds_change';
 
+
 var DatasetStore = assign({}, EventEmitter.prototype, {
 
     timestamp: 1, // Let's components optimize whether they need to redraw
