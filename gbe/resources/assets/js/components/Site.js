@@ -96,7 +96,7 @@ var Site = React.createClass({
                 <div className="container-fluid site-body">
                     <BootstrapLayout {...layoutProps}/>
                 </div>
-
+                <div style={{minHeight:70}}></div>
                 <div className="container-fluid site-footer">
                     <div className="row">
                         <div className="col-xs-12" >

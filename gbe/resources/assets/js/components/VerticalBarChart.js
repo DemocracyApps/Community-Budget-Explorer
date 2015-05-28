@@ -24,7 +24,7 @@ var VerticalBarChart = React.createClass({
     },
 
     componentWillUnmount: function () {
-
+        $(".bar-tooltip").remove();
     },
 
 

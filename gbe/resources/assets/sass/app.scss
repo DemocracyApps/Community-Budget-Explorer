@@ -133,19 +133,23 @@ div.component-div {
 }
 
 /* Bar chart tooltip */
-.bartooltip {
+.bar-tooltip {
   background: #eee;
   box-shadow: 0 0 5px #999999;
   color: #333;
-  display: block;
+  display: none;
   font-size: 12px;
   left: 0px;
   padding: 10px;
   position: absolute;
-  text-align: center;
+  text-align: left;
   top: 0px;
-  width: 150px;
-  height: 100px;
+  width: 250px;
+  height: 150px;
   z-index: 10;
+}
+
+.bar-text {
+  font-size: 12px;
 }
 

@@ -55106,6 +55106,7 @@ var Site = _react2['default'].createClass({
                 { className: 'container-fluid site-body' },
                 _react2['default'].createElement(_BootstrapLayout2['default'], layoutProps)
             ),
+            _react2['default'].createElement('div', { style: { minHeight: 70 } }),
             _react2['default'].createElement(
                 'div',
                 { className: 'container-fluid site-footer' },
@@ -55384,7 +55385,9 @@ var VerticalBarChart = _react2['default'].createClass({
         d3BarChart.create(el, { width: this.props.width, height: this.props.height }, this.props.data);
     },
 
-    componentWillUnmount: function componentWillUnmount() {},
+    componentWillUnmount: function componentWillUnmount() {
+        $('.bar-tooltip').remove();
+    },
 
     render: function render() {
 
@@ -55805,7 +55808,8 @@ var WhatsNewPage = _react2['default'].createClass({
                     name: rows[i].categories[selectedLevel],
                     categories: rows[i].categories.slice(0, selectedLevel + 1),
                     value: rows[i].difference,
-                    percent: rows[i].percent
+                    percent: rows[i].percent,
+                    history: rows[i].amount
                 };
                 topDifferences.push(item);
             }
@@ -55932,6 +55936,8 @@ var _d3 = require('d3');
 
 var _d32 = _interopRequireDefault(_d3);
 
+var datasetUtilities = require('../../data/DatasetUtilities');
+
 var d3Chart = {};
 
 d3Chart.create = function (el, props, data, callbacks) {
@@ -55971,18 +55977,22 @@ d3Chart.drawBars = function (el, scales, data, height) {
     var maxValue = extent[1];
     if (minValue > 0) minValue = 0;
 
-    var tooltip = _d32['default'].select('body').append('div').attr('class', 'bartooltip');
+    var tooltip = _d32['default'].select('body').append('div').attr('class', 'bar-tooltip');
 
-    tooltip.append('div').attr('class', 'barlabel');
-    tooltip.select('.label').html('<p>This is the default text in case it matters.</p>');
+    tooltip.append('div').attr('class', 'bar-text');
+
+    tooltip.select('.bar-text').html('<p>This is the default text in case it matters.</p>');
 
     var svg = _d32['default'].select(el).selectAll('.d3');
 
     var mouseOver = function mouseOver(d) {
-        tooltip.select('.barlabel').html('<p>' + d.name + '</p>');
-        tooltip.style('top', _d32['default'].event.pageY + 30 + 'px').style('left', _d32['default'].event.pageX + 5 + 'px');
+        var name = d.categories.join(' &gt ');
+        var diff = datasetUtilities.formatDollarAmount(d.value);
+        var cur = datasetUtilities.formatDollarAmount(d.history[d.history.length - 1]);
+        var prev = datasetUtilities.formatDollarAmount(d.history[d.history.length - 2]);
+        tooltip.select('.bar-text').html('<p><b>' + name + '</b></p>' + '<table><tbody>' + '<tr>' + '<td><b>Difference:</b></td><td>' + diff + ' (' + d.percent + ')</td>' + '</tr>' + '<tr>' + '<td><b>Current Amount:</b></td><td>' + cur + '</td>' + '</tr>' + '<tr>' + '<td><b>Previous Amount:</b></td><td>' + prev + '</td>' + '</tr>' + '</tbody></table>');
+        tooltip.style('top', _d32['default'].event.pageY + 10 + 'px').style('left', _d32['default'].event.pageX + 20 + 'px');
         tooltip.style('display', 'block');
-        console.log('I am at x = ' + _d32['default'].event.pageX + ', y = ' + _d32['default'].event.pageY);
     };
     var mouseOut = function mouseOut(d) {
         tooltip.style('display', 'none');
@@ -56034,7 +56044,7 @@ d3Chart.computeScales = function (data, width, height, margin) {
 exports['default'] = d3Chart;
 module.exports = exports['default'];
 
-},{"d3":95}],336:[function(require,module,exports){
+},{"../../data/DatasetUtilities":351,"d3":95}],336:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {

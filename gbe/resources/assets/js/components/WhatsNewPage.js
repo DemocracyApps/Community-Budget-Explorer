@@ -307,7 +307,8 @@ var WhatsNewPage = React.createClass({
                     name: rows[i].categories[selectedLevel],
                     categories: rows[i].categories.slice(0,selectedLevel+1),
                     value: rows[i].difference,
-                    percent: rows[i].percent
+                    percent: rows[i].percent,
+                    history: rows[i].amount
                 };
                 topDifferences.push(item);
             }

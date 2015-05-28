@@ -1,4 +1,5 @@
 import d3 from 'd3';
+var datasetUtilities = require('../../data/DatasetUtilities');
 
 var d3Chart = {};
 
@@ -43,17 +44,34 @@ d3Chart.drawBars = function(el, scales, data, height) {
     var maxValue = extent[1];
     if (minValue > 0.) minValue = 0.;
 
-    var tooltip = d3.select('body').append('div').attr('class', 'bartooltip');
+    var tooltip = d3.select('body').append('div').attr('class', 'bar-tooltip');
 
-    tooltip.append('div')
-        .attr('class', 'barlabel');
-    tooltip.select('.label').html("<p>This is the default text in case it matters.</p>");
+    tooltip.append('div').attr('class', 'bar-text');
+
+    tooltip.select('.bar-text').html("<p>This is the default text in case it matters.</p>");
 
     var svg = d3.select(el).selectAll(".d3");
 
     var mouseOver = function(d) {
-        tooltip.select('.barlabel').html("<p>"+d.name+"</p>");
-        tooltip.style('top', (d3.event.pageY + 30) + 'px')
+        var name = d.categories.join(" &gt ");
+        var diff = datasetUtilities.formatDollarAmount(d.value);
+        var cur  = datasetUtilities.formatDollarAmount(d.history[d.history.length-1]);
+        var prev = datasetUtilities.formatDollarAmount(d.history[d.history.length-2]);
+        tooltip.select('.bar-text').html(
+            "<p><b>"+name+"</b></p>" +
+            "<table><tbody>" +
+            "<tr>" +
+            "<td><b>Difference:</b></td><td>" + diff + " (" + d.percent + ")</td>" +
+            "</tr>" +
+            "<tr>" +
+            "<td><b>Current Amount:</b></td><td>" + cur + "</td>" +
+            "</tr>" +
+            "<tr>" +
+            "<td><b>Previous Amount:</b></td><td>" + prev + "</td>" +
+            "</tr>" +
+            "</tbody></table>"
+        );
+        tooltip.style('top', (d3.event.pageY) + 'px')
             .style('left', (d3.event.pageX + 20) + 'px');
         tooltip.style('display', 'block');
     };
