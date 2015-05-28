@@ -52890,20 +52890,18 @@ var AvbTreemap = _react2['default'].createClass({
     },
 
     componentDidMount: function componentDidMount() {
-        console.log('In componentDidMount!');
         var el = _react2['default'].findDOMNode(this.refs.myChart);
         if (this.props.data != null) {
             var data = this.prepareData(this.props.data);
         }
-        avbStuff.initialize(data);
+        avbStuff.initialize(data, this.props.year);
     },
 
     componentDidUpdate: function componentDidUpdate() {
-        console.log('in componentDidUpdate');
         if (this.props.data != null) {
             var data = this.prepareData(this.props.data);
         }
-        avbStuff.initialize(data);
+        avbStuff.initialize(data, this.props.year);
     },
 
     componentWillUnmount: function componentWillUnmount() {},
@@ -53744,9 +53742,17 @@ var HistoryTable = _react2['default'].createClass({
         }
     },
 
+    getSelectedLevel: function getSelectedLevel() {
+        if (this.props.componentMode == CommonConstants.COMPOSED_COMPONENT) {
+            return this.props.selectedLevel;
+        } else {
+            return stateStore.getValue(this.props.storeId, 'selectedLevel');
+        }
+    },
+
     prepareLocalState: function prepareLocalState(dm) {
         var accountType = this.getAccountType();
-        var selectedLevel = stateStore.getValue(this.props.storeId, 'selectedLevel');
+        var selectedLevel = this.getSelectedLevel();
 
         return dm.checkData({
             accountTypes: [accountType],
@@ -53775,7 +53781,7 @@ var HistoryTable = _react2['default'].createClass({
             stateStore.setComponentState(this.props.storeId, {
                 accountType: AccountTypes.EXPENSE,
                 dataModelId: dm.id,
-                selectedLevel: 0
+                selectedLevel: 1
             });
         }
     },
@@ -53819,7 +53825,7 @@ var HistoryTable = _react2['default'].createClass({
                 id: this.props.storeId,
                 changes: [{
                     name: 'selectedLevel',
-                    value: 0
+                    value: 1
                 }]
             }
         });
@@ -53839,43 +53845,45 @@ var HistoryTable = _react2['default'].createClass({
     },
 
     renderLevelSelector: function renderLevelSelector(data) {
-        var selectedLevel = stateStore.getValue(this.props.storeId, 'selectedLevel');
-        var selectLabelText = 'Select Detail Level:' + String.fromCharCode(160) + String.fromCharCode(160);
-        var spacer = String.fromCharCode(160) + String.fromCharCode(160) + String.fromCharCode(160) + String.fromCharCode(160);
-        return _react2['default'].createElement(
-            'div',
-            { className: 'form-group' },
-            _react2['default'].createElement(
-                'form',
-                { className: 'form-inline' },
+        if (this.props.componentMode == CommonConstants.STANDALONE_COMPONENT) {
+            var selectedLevel = this.getSelectedLevel();
+            var selectLabelText = 'Select Detail Level:' + String.fromCharCode(160) + String.fromCharCode(160);
+            var spacer = String.fromCharCode(160) + String.fromCharCode(160) + String.fromCharCode(160) + String.fromCharCode(160);
+            return _react2['default'].createElement(
+                'div',
+                { className: 'form-group' },
                 _react2['default'].createElement(
-                    'label',
-                    null,
-                    selectLabelText
-                ),
-                _react2['default'].createElement(
-                    'select',
-                    { className: 'form-control', onChange: this.onLevelChange, value: selectedLevel },
-                    data.categories.map(function (item, index) {
-                        return _react2['default'].createElement(
-                            'option',
-                            { key: index, value: index },
-                            item
-                        );
-                    })
-                ),
-                _react2['default'].createElement(
-                    'span',
-                    null,
-                    spacer
-                ),
-                _react2['default'].createElement(
-                    'button',
-                    { className: 'btn btn-normal', onClick: this.doReset },
-                    'Reset'
+                    'form',
+                    { className: 'form-inline' },
+                    _react2['default'].createElement(
+                        'label',
+                        null,
+                        selectLabelText
+                    ),
+                    _react2['default'].createElement(
+                        'select',
+                        { className: 'form-control', onChange: this.onLevelChange, value: selectedLevel },
+                        data.categories.map(function (item, index) {
+                            return _react2['default'].createElement(
+                                'option',
+                                { key: index, value: index },
+                                item
+                            );
+                        })
+                    ),
+                    _react2['default'].createElement(
+                        'span',
+                        null,
+                        spacer
+                    ),
+                    _react2['default'].createElement(
+                        'button',
+                        { className: 'btn btn-normal', onClick: this.doReset },
+                        'Reset'
+                    )
                 )
-            )
-        );
+            );
+        }
     },
 
     renderAccountSelector: function renderAccountSelector() {
@@ -53934,7 +53942,7 @@ var HistoryTable = _react2['default'].createClass({
     tableRow: function tableRow(item, index) {
         var length = item.amount.length;
         var label = item.categories[0];
-        var selectedLevel = stateStore.getValue(this.props.storeId, 'selectedLevel');
+        var selectedLevel = this.getSelectedLevel();
         if (selectedLevel > 0) {
             for (var i = 1; i <= selectedLevel; ++i) {
                 label += ' ' + String.fromCharCode(183) + ' ' + item.categories[i];
@@ -53972,7 +53980,7 @@ var HistoryTable = _react2['default'].createClass({
         var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
         var dm = dataModelStore.getModel(dataModelId);
         var accountType = this.getAccountType();
-        var selectedLevel = stateStore.getValue(this.props.storeId, 'selectedLevel');
+        var selectedLevel = this.getSelectedLevel();
         var newData = dm.getData({
             accountTypes: [accountType],
             startPath: [],
@@ -54001,8 +54009,8 @@ var HistoryTable = _react2['default'].createClass({
 
                 var currentLevel = stateStore.getValue(_this.props.storeId, 'currentLevel');
                 var dataLength = rows[0].amount.length;
-                rows.map(datasetUtilities.computeChanges);
-                rows = rows.sort(datasetUtilities.sortByAbsoluteDifference);
+                //rows.map(datasetUtilities.computeChanges);
+                //rows = rows.sort(datasetUtilities.sortByAbsoluteDifference);
                 var thStyle = { textAlign: 'right' };
                 return {
                     v: _react2['default'].createElement(
@@ -54233,6 +54241,8 @@ var WhatsNewPage = _react2['default'].createClass({
                 accountType: AccountTypes.EXPENSE,
                 dataModelId: dm.id,
                 displayMode: 'chart',
+                selectedLevel: 1,
+                currentYear: -1,
                 subComponents: subComponents
             });
         }
@@ -54249,15 +54259,12 @@ var WhatsNewPage = _react2['default'].createClass({
         console.log('WhatsNewPage will unmount');
     },
 
-    onAccountTypeChange: function onAccountTypeChange(e) {
+    onAccountTypeChange: function onAccountTypeChange(type) {
         dispatcher.dispatch({
             actionType: ActionTypes.COMPONENT_STATE_CHANGE,
             payload: {
                 id: this.props.storeId,
-                changes: [{
-                    name: 'accountType',
-                    value: Number(e.target.value)
-                }]
+                changes: [{ name: 'accountType', value: Number(type) }]
             }
         });
     },
@@ -54278,68 +54285,303 @@ var WhatsNewPage = _react2['default'].createClass({
         });
     },
 
+    leftPanel: function leftPanel(displayMode) {
+        var spacer = String.fromCharCode(160) + String.fromCharCode(160) + String.fromCharCode(160);
+        var yes = 'btn btn-xs btn-primary',
+            no = 'btn btn-xs btn-normal';
+        var yesStyle = { marginTop: 4, marginBottom: 2, color: 'white' };
+        var noStyle = { color: 'black', marginTop: 4, marginBottom: 2 };
+
+        var accountType = stateStore.getValue(this.props.storeId, 'accountType');
+        return _react2['default'].createElement(
+            'div',
+            { className: 'col-xs-4' },
+            _react2['default'].createElement(
+                'b',
+                { style: { marginTop: 4, fontSize: 'small' } },
+                'Account Type:'
+            ),
+            _react2['default'].createElement(
+                'span',
+                null,
+                spacer
+            ),
+            _react2['default'].createElement(
+                'button',
+                { style: accountType == AccountTypes.EXPENSE ? yesStyle : noStyle,
+                    className: accountType == AccountTypes.EXPENSE ? yes : no,
+                    onClick: this.onAccountTypeChange.bind(null, AccountTypes.EXPENSE) },
+                'Spending'
+            ),
+            _react2['default'].createElement(
+                'span',
+                null,
+                spacer
+            ),
+            _react2['default'].createElement(
+                'button',
+                { style: accountType == AccountTypes.REVENUE ? yesStyle : noStyle,
+                    className: accountType == AccountTypes.REVENUE ? yes : no,
+                    onClick: this.onAccountTypeChange.bind(null, AccountTypes.REVENUE) },
+                'Revenue'
+            )
+        );
+    },
+
+    detailLevel: function detailLevel(which) {
+        dispatcher.dispatch({
+            actionType: ActionTypes.COMPONENT_STATE_CHANGE,
+            payload: {
+                id: this.props.storeId,
+                changes: [{ name: 'selectedLevel', value: Number(which) }]
+            }
+        });
+    },
+
+    onYearChange: function onYearChange(e) {
+        dispatcher.dispatch({
+            actionType: ActionTypes.COMPONENT_STATE_CHANGE,
+            payload: {
+                id: this.props.storeId,
+                changes: [{ name: 'currentYear', value: Number(e.target.value) }]
+            }
+        });
+    },
+
+    middleButtons: function middleButtons(displayMode) {
+        if (displayMode == 'chart') {
+            var spacer = String.fromCharCode(160) + String.fromCharCode(160) + String.fromCharCode(160);
+            var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
+            var dm = dataModelStore.getModel(dataModelId);
+            var accountType = stateStore.getValue(this.props.storeId, 'accountType');
+            var currentYear = stateStore.getValue(this.props.storeId, 'currentYear');
+            var newData = dm.checkData({
+                accountTypes: [accountType],
+                startPath: [],
+                nLevels: 4
+            }, false);
+            var headers = newData == null ? ['-'] : newData.periods;
+            if (currentYear < 0 && newData != null) currentYear = newData.periods.length - 1;
+            return _react2['default'].createElement(
+                'div',
+                { className: 'col-xs-5' },
+                _react2['default'].createElement(
+                    'form',
+                    { className: 'form-inline' },
+                    _react2['default'].createElement(
+                        'div',
+                        { className: 'form-group' },
+                        _react2['default'].createElement(
+                            'label',
+                            { style: { marginTop: 4, fontSize: 'small' } },
+                            'Year:',
+                            _react2['default'].createElement(
+                                'span',
+                                null,
+                                spacer
+                            )
+                        ),
+                        _react2['default'].createElement(
+                            'select',
+                            { style: { fontSize: 'small' }, className: 'form-control', onChange: this.onYearChange, value: currentYear },
+                            headers.map(function (item, index) {
+                                return _react2['default'].createElement(
+                                    'option',
+                                    { key: index, value: index },
+                                    item
+                                );
+                            })
+                        )
+                    )
+                )
+            );
+        } else {
+            var level = stateStore.getValue(this.props.storeId, 'selectedLevel');
+            var spacer = String.fromCharCode(160) + String.fromCharCode(160) + String.fromCharCode(160);
+            var yes = 'btn btn-xs btn-primary',
+                no = 'btn btn-xs btn-normal';
+            var yesStyle = { marginTop: 4, marginBottom: 2, color: 'white' },
+                noStyle = {
+                marginTop: 4,
+                marginBottom: 2,
+                color: 'black'
+            };
+            return _react2['default'].createElement(
+                'div',
+                { className: 'col-xs-5' },
+                _react2['default'].createElement(
+                    'b',
+                    { style: { marginTop: 4, fontSize: 'small' } },
+                    'Detail Level:'
+                ),
+                _react2['default'].createElement(
+                    'span',
+                    null,
+                    spacer
+                ),
+                _react2['default'].createElement(
+                    'button',
+                    { style: level == 1 ? yesStyle : noStyle, className: level == 1 ? yes : no,
+                        onClick: this.detailLevel.bind(null, 1) },
+                    'Department'
+                ),
+                _react2['default'].createElement(
+                    'span',
+                    null,
+                    spacer
+                ),
+                _react2['default'].createElement(
+                    'button',
+                    { style: level == 2 ? yesStyle : noStyle, className: level == 2 ? yes : no,
+                        onClick: this.detailLevel.bind(null, 2) },
+                    'Division'
+                ),
+                _react2['default'].createElement(
+                    'span',
+                    null,
+                    spacer
+                ),
+                _react2['default'].createElement(
+                    'button',
+                    { style: level == 3 ? yesStyle : noStyle, className: level == 3 ? yes : no,
+                        onClick: this.detailLevel.bind(null, 3) },
+                    'Account'
+                )
+            );
+        }
+    },
+
+    modeButtons: function modeButtons(displayMode) {
+        var spacer = String.fromCharCode(160) + String.fromCharCode(160) + String.fromCharCode(160);
+        var yes = 'btn btn-xs btn-primary',
+            no = 'btn btn-xs btn-normal';
+        var yesStyle = { marginTop: 4, marginBottom: 2, float: 'right', color: 'white' };
+        var noStyle = { float: 'right', color: 'black', marginTop: 4, marginBottom: 2 };
+        if (displayMode == 'chart') {
+            return _react2['default'].createElement(
+                'div',
+                { className: 'col-xs-3' },
+                _react2['default'].createElement(
+                    'button',
+                    { style: noStyle, className: no,
+                        onClick: this.changeMode },
+                    'Table View'
+                ),
+                _react2['default'].createElement(
+                    'span',
+                    { style: { float: 'right' } },
+                    spacer
+                ),
+                _react2['default'].createElement(
+                    'button',
+                    { style: yesStyle, className: yes,
+                        onClick: this.changeMode },
+                    'Chart View'
+                )
+            );
+        } else {
+            return _react2['default'].createElement(
+                'div',
+                { className: 'col-xs-3' },
+                _react2['default'].createElement(
+                    'button',
+                    { style: yesStyle, className: yes,
+                        onClick: this.changeMode },
+                    'Table View'
+                ),
+                _react2['default'].createElement(
+                    'span',
+                    { style: { float: 'right' } },
+                    spacer
+                ),
+                _react2['default'].createElement(
+                    'button',
+                    { style: noStyle, className: no,
+                        onClick: this.changeMode },
+                    'Chart View'
+                )
+            );
+        }
+    },
+
     optionsPanel: function interactionPanel() {
         var accountType = stateStore.getValue(this.props.storeId, 'accountType');
         var displayMode = stateStore.getValue(this.props.storeId, 'displayMode');
         var modeButtonText = displayMode == 'chart' ? 'Table View' : 'Chart View';
         var selectLabelText = 'Select Account Type:' + String.fromCharCode(160) + String.fromCharCode(160);
-        return _react2['default'].createElement(
-            'div',
-            null,
-            _react2['default'].createElement(
+        if (true) {
+            return _react2['default'].createElement(
                 'div',
-                { className: 'row' },
+                null,
                 _react2['default'].createElement(
                     'div',
-                    { className: 'col-xs-4' },
+                    { className: 'row panel panel-default' },
+                    this.leftPanel(displayMode),
+                    this.middleButtons(displayMode),
+                    this.modeButtons(displayMode)
+                )
+            );
+        } else {
+            return _react2['default'].createElement(
+                'div',
+                null,
+                _react2['default'].createElement(
+                    'div',
+                    { className: 'row' },
                     _react2['default'].createElement(
-                        'form',
-                        { className: 'form-inline' },
+                        'div',
+                        { className: 'col-xs-4' },
                         _react2['default'].createElement(
-                            'div',
-                            { className: 'form-group' },
+                            'form',
+                            { className: 'form-inline' },
                             _react2['default'].createElement(
-                                'label',
-                                null,
-                                selectLabelText,
-                                _react2['default'].createElement('span', { width: '30px' })
-                            ),
-                            _react2['default'].createElement(
-                                'select',
-                                { className: 'form-control', onChange: this.onAccountTypeChange, value: accountType },
-                                this.props.accountTypes.map(function (type, index) {
-                                    return _react2['default'].createElement(
-                                        'option',
-                                        { key: index, value: type.value },
-                                        ' ',
-                                        type.name,
-                                        ' '
-                                    );
-                                })
+                                'div',
+                                { className: 'form-group' },
+                                _react2['default'].createElement(
+                                    'label',
+                                    null,
+                                    selectLabelText,
+                                    _react2['default'].createElement('span', { width: '30px' })
+                                ),
+                                _react2['default'].createElement(
+                                    'select',
+                                    { className: 'form-control', onChange: this.onAccountTypeChange,
+                                        value: accountType },
+                                    this.props.accountTypes.map(function (type, index) {
+                                        return _react2['default'].createElement(
+                                            'option',
+                                            { key: index, value: type.value },
+                                            ' ',
+                                            type.name,
+                                            ' '
+                                        );
+                                    })
+                                )
                             )
                         )
-                    )
-                ),
-                _react2['default'].createElement('div', { className: 'col-xs-6' }),
-                _react2['default'].createElement(
-                    'div',
-                    { className: 'col-xs-2' },
+                    ),
+                    _react2['default'].createElement('div', { className: 'col-xs-6' }),
                     _react2['default'].createElement(
-                        'button',
-                        { style: { float: 'right' }, className: 'btn btn-normal',
-                            onClick: this.changeMode },
-                        'Switch To ',
-                        modeButtonText
+                        'div',
+                        { className: 'col-xs-2' },
+                        _react2['default'].createElement(
+                            'button',
+                            { style: { float: 'right' }, className: 'btn btn-normal',
+                                onClick: this.changeMode },
+                            'Switch To ',
+                            modeButtonText
+                        )
                     )
                 )
-            )
-        );
+            );
+        }
     },
 
     renderCharts: function renderCharts() {
         var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
         var dm = dataModelStore.getModel(dataModelId);
         var accountType = stateStore.getValue(this.props.storeId, 'accountType');
+        var currentYear = stateStore.getValue(this.props.storeId, 'currentYear');
         var newData = dm.getData({
             accountTypes: [accountType],
             startPath: [],
@@ -54350,25 +54592,37 @@ var WhatsNewPage = _react2['default'].createClass({
         if (dataNull) {
             return _react2['default'].createElement(
                 'div',
-                null,
+                { style: { height: 600 } },
                 _react2['default'].createElement(
-                    'p',
-                    null,
-                    'Data is loading ... Please be patient'
+                    'div',
+                    { className: 'row' },
+                    _react2['default'].createElement('div', { className: 'col-xs-3' }),
+                    _react2['default'].createElement(
+                        'div',
+                        { className: 'col-xs-9' },
+                        _react2['default'].createElement(
+                            'p',
+                            null,
+                            'Data is loading ... Please be patient'
+                        )
+                    )
                 )
             );
         } else {
+            if (currentYear < 0) currentYear = newData.periods.length - 1;
             return _react2['default'].createElement(
                 'div',
                 null,
                 _react2['default'].createElement(_AvbTreemap2['default'], { width: 1200, height: 600,
                     data: newData,
+                    year: newData.periods[currentYear],
                     accountType: accountType == AccountTypes.EXPENSE ? 'Expenses' : 'Revenues' })
             );
         }
     },
 
     renderTable: function renderTable() {
+        var selectedLevel = stateStore.getValue(this.props.storeId, 'selectedLevel');
         var subComponents = stateStore.getValue(this.props.storeId, 'subComponents');
         return _react2['default'].createElement(
             'div',
@@ -54376,6 +54630,7 @@ var WhatsNewPage = _react2['default'].createClass({
             _react2['default'].createElement(_HistoryTable2['default'], { componentMode: CommonConstants.COMPOSED_COMPONENT,
                 datasetIds: this.props.componentData['mydatasets'].ids,
                 accountType: stateStore.getValue(this.props.storeId, 'accountType'),
+                selectedLevel: selectedLevel,
                 storeId: subComponents.table.storeId,
                 componentData: {},
                 componentProps: {}
@@ -54390,9 +54645,7 @@ var WhatsNewPage = _react2['default'].createClass({
         return _react2['default'].createElement(
             'div',
             null,
-            _react2['default'].createElement('br', null),
             this.optionsPanel(),
-            _react2['default'].createElement('br', null),
             renderFunction()
         );
     }
@@ -55293,12 +55546,12 @@ var WhatsNewPage = _react2['default'].createClass({
         return dataChanged || dm.commandsChanged({ startPath: startPath, nLevels: selectedLevel + addLevel });
     },
 
-    onAccountTypeChange: function onAccountTypeChange(e) {
+    onAccountTypeChange: function onAccountTypeChange(type) {
         dispatcher.dispatch({
             actionType: ActionTypes.COMPONENT_STATE_CHANGE,
             payload: {
                 id: this.props.storeId,
-                changes: [{ name: 'accountType', value: Number(e.target.value) }]
+                changes: [{ name: 'accountType', value: Number(type) }]
             }
         });
     },
@@ -55317,124 +55570,180 @@ var WhatsNewPage = _react2['default'].createClass({
     },
 
     leftPanel: function leftPanel(displayMode) {
-        if (displayMode != 'chart') {
+        if (displayMode == 'chart') {
+            return _react2['default'].createElement('div', { className: 'col-xs-4' });
+        } else {
+            var spacer = String.fromCharCode(160) + String.fromCharCode(160) + String.fromCharCode(160);
+            var yes = 'btn btn-xs btn-primary',
+                no = 'btn btn-xs btn-normal';
+            var yesStyle = { marginTop: 4, marginBottom: 2, color: 'white' };
+            var noStyle = { color: 'black', marginTop: 4, marginBottom: 2 };
+
             var accountType = stateStore.getValue(this.props.storeId, 'accountType');
-            var selectLabelText = 'Account Type:' + String.fromCharCode(160) + String.fromCharCode(160);
             return _react2['default'].createElement(
-                'form',
-                { className: 'form-inline' },
+                'div',
+                { className: 'col-xs-4' },
                 _react2['default'].createElement(
-                    'div',
-                    { className: 'form-group' },
-                    _react2['default'].createElement(
-                        'label',
-                        null,
-                        selectLabelText
-                    ),
-                    _react2['default'].createElement(
-                        'select',
-                        { className: 'form-control', onChange: this.onAccountTypeChange, value: accountType },
-                        this.props.accountTypes.map(function (type, index) {
-                            return _react2['default'].createElement(
-                                'option',
-                                { key: index, value: type.value },
-                                ' ',
-                                type.name,
-                                ' '
-                            );
-                        })
-                    )
+                    'b',
+                    { style: { marginTop: 4, fontSize: 'small' } },
+                    'Account Type:'
+                ),
+                _react2['default'].createElement(
+                    'span',
+                    null,
+                    spacer
+                ),
+                _react2['default'].createElement(
+                    'button',
+                    { style: accountType == AccountTypes.EXPENSE ? yesStyle : noStyle,
+                        className: accountType == AccountTypes.EXPENSE ? yes : no,
+                        onClick: this.onAccountTypeChange.bind(null, AccountTypes.EXPENSE) },
+                    'Spending'
+                ),
+                _react2['default'].createElement(
+                    'span',
+                    null,
+                    spacer
+                ),
+                _react2['default'].createElement(
+                    'button',
+                    { style: accountType == AccountTypes.REVENUE ? yesStyle : noStyle,
+                        className: accountType == AccountTypes.REVENUE ? yes : no,
+                        onClick: this.onAccountTypeChange.bind(null, AccountTypes.REVENUE) },
+                    'Revenue'
                 )
             );
         }
     },
 
-    detailLevel: function detailLevel(e) {
+    modeButtons: function modeButtons() {
+        var spacer = String.fromCharCode(160) + String.fromCharCode(160) + String.fromCharCode(160);
+        var displayMode = stateStore.getValue(this.props.storeId, 'displayMode');
+        var yes = 'btn btn-xs btn-primary',
+            no = 'btn btn-xs btn-normal';
+        var yesStyle = { marginTop: 4, marginBottom: 2, float: 'right', color: 'white' };
+        var noStyle = { float: 'right', color: 'black', marginTop: 4, marginBottom: 2 };
+        if (displayMode == 'chart') {
+            return _react2['default'].createElement(
+                'div',
+                { className: 'col-xs-3' },
+                _react2['default'].createElement(
+                    'button',
+                    { style: noStyle, className: no,
+                        onClick: this.changeMode },
+                    'Table View'
+                ),
+                _react2['default'].createElement(
+                    'span',
+                    { style: { float: 'right' } },
+                    spacer
+                ),
+                _react2['default'].createElement(
+                    'button',
+                    { style: yesStyle, className: yes,
+                        onClick: this.changeMode },
+                    'Chart View'
+                )
+            );
+        } else {
+            return _react2['default'].createElement(
+                'div',
+                { className: 'col-xs-3' },
+                _react2['default'].createElement(
+                    'button',
+                    { style: yesStyle, className: yes,
+                        onClick: this.changeMode },
+                    'Table View'
+                ),
+                _react2['default'].createElement(
+                    'span',
+                    { style: { float: 'right' } },
+                    spacer
+                ),
+                _react2['default'].createElement(
+                    'button',
+                    { style: noStyle, className: no,
+                        onClick: this.changeMode },
+                    'Chart View'
+                )
+            );
+        }
+    },
+
+    detailLevel: function detailLevel(which) {
         dispatcher.dispatch({
             actionType: ActionTypes.COMPONENT_STATE_CHANGE,
             payload: {
                 id: this.props.storeId,
-                changes: [{ name: 'selectedLevel', value: Number(e.target.value) }]
+                changes: [{ name: 'selectedLevel', value: Number(which) }]
             }
         });
+    },
+
+    middleButtons: function middleButtons() {
+        var level = stateStore.getValue(this.props.storeId, 'selectedLevel');
+        var spacer = String.fromCharCode(160) + String.fromCharCode(160) + String.fromCharCode(160);
+        var yes = 'btn btn-xs btn-primary',
+            no = 'btn btn-xs btn-normal';
+        var yesStyle = { marginTop: 4, marginBottom: 2, color: 'white' },
+            noStyle = { marginTop: 4, marginBottom: 2, color: 'black' };
+        return _react2['default'].createElement(
+            'div',
+            { className: 'col-xs-5' },
+            _react2['default'].createElement(
+                'b',
+                { style: { marginTop: 4, fontSize: 'small' } },
+                'Detail Level:'
+            ),
+            _react2['default'].createElement(
+                'span',
+                null,
+                spacer
+            ),
+            _react2['default'].createElement(
+                'button',
+                { style: level == 1 ? yesStyle : noStyle, className: level == 1 ? yes : no,
+                    onClick: this.detailLevel.bind(null, 1) },
+                'Department'
+            ),
+            _react2['default'].createElement(
+                'span',
+                null,
+                spacer
+            ),
+            _react2['default'].createElement(
+                'button',
+                { style: level == 2 ? yesStyle : noStyle, className: level == 2 ? yes : no,
+                    onClick: this.detailLevel.bind(null, 2) },
+                'Division'
+            ),
+            _react2['default'].createElement(
+                'span',
+                null,
+                spacer
+            ),
+            _react2['default'].createElement(
+                'button',
+                { style: level == 3 ? yesStyle : noStyle, className: level == 3 ? yes : no,
+                    onClick: this.detailLevel.bind(null, 3) },
+                'Account'
+            )
+        );
     },
 
     optionsPanel: function interactionPanel() {
         var displayMode = stateStore.getValue(this.props.storeId, 'displayMode');
         var selectedLevel = stateStore.getValue(this.props.storeId, 'selectedLevel');
-        var modeButtonText = displayMode == 'chart' ? 'Table View' : 'Chart View';
-        var spacer = String.fromCharCode(160) + String.fromCharCode(160) + String.fromCharCode(160) + String.fromCharCode(160);
+
         return _react2['default'].createElement(
             'div',
             null,
             _react2['default'].createElement(
                 'div',
                 { className: 'row panel panel-default' },
-                _react2['default'].createElement(
-                    'div',
-                    { className: 'col-xs-3' },
-                    this.leftPanel(displayMode)
-                ),
-                _react2['default'].createElement(
-                    'div',
-                    { className: 'col-xs-6' },
-                    _react2['default'].createElement(
-                        'div',
-                        { className: 'form-group' },
-                        _react2['default'].createElement(
-                            'form',
-                            { className: 'form-inline' },
-                            _react2['default'].createElement(
-                                'label',
-                                null,
-                                'Detail Level:'
-                            ),
-                            _react2['default'].createElement(
-                                'span',
-                                null,
-                                spacer
-                            ),
-                            _react2['default'].createElement(
-                                'label',
-                                { className: 'radio-inline' },
-                                _react2['default'].createElement('input', { value: '1', className: 'radio-inline',
-                                    checked: selectedLevel == 1,
-                                    name: 'detailLevel',
-                                    type: 'radio', onChange: this.detailLevel }),
-                                ' Department'
-                            ),
-                            _react2['default'].createElement(
-                                'label',
-                                { className: 'radio-inline' },
-                                _react2['default'].createElement('input', { value: '2', className: 'radio-inline',
-                                    checked: selectedLevel == 2,
-                                    name: 'detailLevel',
-                                    type: 'radio', onChange: this.detailLevel }),
-                                ' Division'
-                            ),
-                            _react2['default'].createElement(
-                                'label',
-                                { className: 'radio-inline' },
-                                _react2['default'].createElement('input', { value: '3', className: 'radio-inline',
-                                    checked: selectedLevel == 3,
-                                    name: 'detailLevel',
-                                    type: 'radio', onChange: this.detailLevel }),
-                                ' Account'
-                            )
-                        )
-                    )
-                ),
-                _react2['default'].createElement(
-                    'div',
-                    { className: 'col-xs-2' },
-                    _react2['default'].createElement(
-                        'button',
-                        { style: { float: 'right' }, className: 'btn btn-normal',
-                            onClick: this.changeMode },
-                        'Switch To ',
-                        modeButtonText
-                    )
-                )
+                this.leftPanel(displayMode),
+                this.middleButtons(),
+                this.modeButtons()
             )
         );
     },
@@ -55505,7 +55814,6 @@ var WhatsNewPage = _react2['default'].createClass({
             return _react2['default'].createElement(
                 'div',
                 { style: { height: 600 } },
-                _react2['default'].createElement('br', null),
                 _react2['default'].createElement(
                     'div',
                     { className: 'row' },
@@ -55680,9 +55988,7 @@ var WhatsNewPage = _react2['default'].createClass({
         return _react2['default'].createElement(
             'div',
             null,
-            _react2['default'].createElement('br', null),
             this.optionsPanel(),
-            _react2['default'].createElement('br', null),
             renderFunction()
         );
     }
@@ -55848,11 +56154,11 @@ Number.prototype.px = function () {
  *   Reads parameters from current url path and calls related
  *   initialization routines
  */
-function initialize(incomingData) {
+function initialize(incomingData, year) {
     //var urlComponents = window.location.pathname.substring(1).split('/');
     var params = {
         section: 'expenses',
-        year: '2014',
+        year: year,
         mode: 't',
         node: null
     };
@@ -55876,6 +56182,7 @@ function initializeVisualizations(params, incomingData) {
     } else if (!isNaN(yearCookie)) {
         avb.thisYear = yearCookie;
     } else {}
+    console.log('This year = ' + avb.thisYear);
     avb.section = params.section;
 
     // highlight current selection in navigation bar
@@ -55920,6 +56227,7 @@ function loadData(incomingData) {
         return d.year;
     });
     avb.yearIndex = avb.thisYear - avb.firstYear;
+    console.log('Year index ' + avb.yearIndex + ' = ' + avb.thisYear + ' - ' + avb.firstYear);
     statistics.computeStats(avb);
     avb.navbar.initialize(avb.thisYear, avb.firstYear, avb.lastYear);
 
@@ -58736,6 +59044,7 @@ function DataModel(id, datasetIds) {
             return {
                 categories: this.initializationParameters.hierarchy,
                 dataHeaders: headers,
+                periods: headers,
                 levelsDown: startLevel,
                 levelsAggregated: this.initializationParameters.hierarchy.length - nLevels - startLevel,
                 data: data

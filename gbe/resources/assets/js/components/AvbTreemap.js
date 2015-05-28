@@ -92,20 +92,18 @@ var AvbTreemap = React.createClass({
     },
 
     componentDidMount: function() {
-        console.log("In componentDidMount!")
         var el = React.findDOMNode(this.refs.myChart);
         if (this.props.data != null) {
             var data = this.prepareData(this.props.data);
         }
-        avbStuff.initialize(data);
+        avbStuff.initialize(data, this.props.year);
     },
 
     componentDidUpdate: function() {
-        console.log("in componentDidUpdate");
         if (this.props.data != null) {
             var data = this.prepareData(this.props.data);
         }
-        avbStuff.initialize(data);
+        avbStuff.initialize(data, this.props.year);
     },
 
     componentWillUnmount: function () {

@@ -65,11 +65,11 @@ Number.prototype.px = function () {
  *   Reads parameters from current url path and calls related
  *   initialization routines
  */
-function initialize(incomingData){
+function initialize(incomingData, year){
     //var urlComponents = window.location.pathname.substring(1).split('/');
     var params = {
         section : "expenses",
-        year : "2014",
+        year : year,
         mode : "t",
         node : null
     };
@@ -95,6 +95,7 @@ function initializeVisualizations(params, incomingData) {
     } else {
 
     }
+    console.log("This year = " + avb.thisYear);
     avb.section = params.section;
 
     // highlight current selection in navigation bar
@@ -139,6 +140,7 @@ function loadData(incomingData) {
         return d.year
     });
     avb.yearIndex = avb.thisYear - avb.firstYear;
+    console.log("Year index " + avb.yearIndex + " = " + avb.thisYear + " - " + avb.firstYear);
     statistics.computeStats(avb);
     avb.navbar.initialize(avb.thisYear, avb.firstYear, avb.lastYear);
 

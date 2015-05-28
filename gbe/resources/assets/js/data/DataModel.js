@@ -251,6 +251,7 @@ function DataModel(id, datasetIds, initialCommands = null) {
             return {
                 categories:this.initializationParameters.hierarchy,
                 dataHeaders:headers,
+                periods:headers,
                 levelsDown: startLevel,
                 levelsAggregated: this.initializationParameters.hierarchy.length - nLevels - startLevel,
                 data: data
