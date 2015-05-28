@@ -126,7 +126,7 @@ var WhatsNewPage = React.createClass({
             <div className="col-xs-4">
                 <b style={{marginTop:4, fontSize:"small"}}>Account Type:</b>
                 <span>{spacer}</span>
-                <div class="btn-group" role="group" aria-label="First group">
+                <div className="btn-group" role="group" aria-label="First group">
                     <button style={(accountType==AccountTypes.EXPENSE)?yesStyle:noStyle}
                             className={(accountType==AccountTypes.EXPENSE)?yes:no}
                             onClick={this.onAccountTypeChange.bind(null, AccountTypes.EXPENSE)}>Spending</button>
@@ -149,7 +149,7 @@ var WhatsNewPage = React.createClass({
                 <div className="col-xs-3">
                     <b style={{marginTop:4, fontSize:"small"}}>Display Mode:</b>
                     <span>{spacer}</span>
-                    <div class="btn-group" role="group" aria-label="Second group">
+                    <div className="btn-group" role="group" aria-label="Second group">
                         <button  className={yes}
                            onClick={this.changeMode}>Chart View</button>
                         <button className={no}
@@ -163,7 +163,7 @@ var WhatsNewPage = React.createClass({
                 <div className="col-xs-3">
                     <b style={{marginTop:4, fontSize:"small"}}>Display Mode:</b>
                     <span>{spacer}</span>
-                    <div class="btn-group" role="group" aria-label="Second group">
+                    <div className="btn-group" role="group" aria-label="Second group">
                         <button className={no}
                            onClick={this.changeMode}>Chart View</button>
                         <button className={yes}
@@ -193,7 +193,7 @@ var WhatsNewPage = React.createClass({
             <div className="col-xs-5">
                 <b style={{marginTop:4, fontSize:"small"}}>Detail Level:</b>
                 <span>{spacer}</span>
-                <div class="btn-group" role="group" aria-label="Third group">
+                <div className="btn-group" role="group" aria-label="Third group">
                     <button className={(level==1)?yes:no}
                        onClick={this.detailLevel.bind(null, 1)}>Department</button>
                     <button className={(level==2)?yes:no}

@@ -46095,7 +46095,7 @@ var WhatsNewPage = _react2['default'].createClass({
             ),
             _react2['default'].createElement(
                 'div',
-                { 'class': 'btn-group', role: 'group', 'aria-label': 'First group' },
+                { className: 'btn-group', role: 'group', 'aria-label': 'First group' },
                 _react2['default'].createElement(
                     'button',
                     { style: accountType == AccountTypes.EXPENSE ? yesStyle : noStyle,
@@ -46137,7 +46137,7 @@ var WhatsNewPage = _react2['default'].createClass({
                 ),
                 _react2['default'].createElement(
                     'div',
-                    { 'class': 'btn-group', role: 'group', 'aria-label': 'Second group' },
+                    { className: 'btn-group', role: 'group', 'aria-label': 'Second group' },
                     _react2['default'].createElement(
                         'button',
                         { className: yes,
@@ -46168,7 +46168,7 @@ var WhatsNewPage = _react2['default'].createClass({
                 ),
                 _react2['default'].createElement(
                     'div',
-                    { 'class': 'btn-group', role: 'group', 'aria-label': 'Second group' },
+                    { className: 'btn-group', role: 'group', 'aria-label': 'Second group' },
                     _react2['default'].createElement(
                         'button',
                         { className: no,
@@ -46218,7 +46218,7 @@ var WhatsNewPage = _react2['default'].createClass({
             ),
             _react2['default'].createElement(
                 'div',
-                { 'class': 'btn-group', role: 'group', 'aria-label': 'Third group' },
+                { className: 'btn-group', role: 'group', 'aria-label': 'Third group' },
                 _react2['default'].createElement(
                     'button',
                     { className: level == 1 ? yes : no,
