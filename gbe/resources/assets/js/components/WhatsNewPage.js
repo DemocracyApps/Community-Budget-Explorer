@@ -117,7 +117,7 @@ var WhatsNewPage = React.createClass({
 
     leftPanel: function leftPanel(displayMode) {
         var spacer = String.fromCharCode(160)+String.fromCharCode(160)+String.fromCharCode(160);
-        var yes="btn btn-xs btn-primary", no= "btn btn-xs btn-normal";
+        var yes="btn btn-default active", no= "btn btn-default ";
         var yesStyle={marginTop:4, marginBottom:2, color:"white"};
         var noStyle={color:"black", marginTop:4, marginBottom:2};
 
@@ -127,10 +127,10 @@ var WhatsNewPage = React.createClass({
                 <b style={{marginTop:4, fontSize:"small"}}>Account Type:</b>
                 <span>{spacer}</span>
                 <div className="btn-group" role="group" aria-label="First group">
-                    <button style={(accountType==AccountTypes.EXPENSE)?yesStyle:noStyle}
+                    <button
                             className={(accountType==AccountTypes.EXPENSE)?yes:no}
                             onClick={this.onAccountTypeChange.bind(null, AccountTypes.EXPENSE)}>Spending</button>
-                    <button style={(accountType==AccountTypes.REVENUE)?yesStyle:noStyle}
+                    <button
                             className={(accountType==AccountTypes.REVENUE)?yes:no}
                             onClick={this.onAccountTypeChange.bind(null, AccountTypes.REVENUE)}>Revenue</button>
                 </div>
@@ -141,12 +141,12 @@ var WhatsNewPage = React.createClass({
     modeButtons: function() {
         var spacer = String.fromCharCode(160)+String.fromCharCode(160)+String.fromCharCode(160);
         var displayMode = stateStore.getValue(this.props.storeId, 'displayMode');
-        var yes="btn btn-xs btn-primary active", no= "btn btn-xs btn-normal";
+        var yes="btn btn-default active", no= "btn btn-default ";
         var yesStyle={marginTop:4, marginBottom:2, color:"black"};
         var noStyle={color:"black", marginTop:4, marginBottom:2};
         if (displayMode == 'chart') {
             return (
-                <div className="col-xs-3">
+                <div className="col-xs-4">
                     <b style={{marginTop:4, fontSize:"small"}}>Display Mode:</b>
                     <span>{spacer}</span>
                     <div className="btn-group" role="group" aria-label="Second group">
@@ -160,7 +160,7 @@ var WhatsNewPage = React.createClass({
         }
         else {
             return (
-                <div className="col-xs-3">
+                <div className="col-xs-4">
                     <b style={{marginTop:4, fontSize:"small"}}>Display Mode:</b>
                     <span>{spacer}</span>
                     <div className="btn-group" role="group" aria-label="Second group">
@@ -187,10 +187,10 @@ var WhatsNewPage = React.createClass({
     middleButtons: function() {
         var level = stateStore.getValue(this.props.storeId, 'selectedLevel');
         var spacer = String.fromCharCode(160)+String.fromCharCode(160)+String.fromCharCode(160);
-        var yes="btn btn-xs active", no= "btn btn-xs ";
+        var yes="btn btn-default active", no= "btn btn-default ";
         var yesStyle={marginTop:4, marginBottom:2, color:"white"}, noStyle={marginTop:4, marginBottom:2, color:"black"};
         return (
-            <div className="col-xs-5">
+            <div className="col-xs-4">
                 <b style={{marginTop:4, fontSize:"small"}}>Detail Level:</b>
                 <span>{spacer}</span>
                 <div className="btn-group" role="group" aria-label="Third group">

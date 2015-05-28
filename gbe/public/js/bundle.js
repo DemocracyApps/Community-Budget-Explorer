@@ -46074,8 +46074,8 @@ var WhatsNewPage = _react2['default'].createClass({
 
     leftPanel: function leftPanel(displayMode) {
         var spacer = String.fromCharCode(160) + String.fromCharCode(160) + String.fromCharCode(160);
-        var yes = 'btn btn-xs btn-primary',
-            no = 'btn btn-xs btn-normal';
+        var yes = 'btn btn-default active',
+            no = 'btn btn-default ';
         var yesStyle = { marginTop: 4, marginBottom: 2, color: 'white' };
         var noStyle = { color: 'black', marginTop: 4, marginBottom: 2 };
 
@@ -46098,14 +46098,14 @@ var WhatsNewPage = _react2['default'].createClass({
                 { className: 'btn-group', role: 'group', 'aria-label': 'First group' },
                 _react2['default'].createElement(
                     'button',
-                    { style: accountType == AccountTypes.EXPENSE ? yesStyle : noStyle,
+                    {
                         className: accountType == AccountTypes.EXPENSE ? yes : no,
                         onClick: this.onAccountTypeChange.bind(null, AccountTypes.EXPENSE) },
                     'Spending'
                 ),
                 _react2['default'].createElement(
                     'button',
-                    { style: accountType == AccountTypes.REVENUE ? yesStyle : noStyle,
+                    {
                         className: accountType == AccountTypes.REVENUE ? yes : no,
                         onClick: this.onAccountTypeChange.bind(null, AccountTypes.REVENUE) },
                     'Revenue'
@@ -46117,14 +46117,14 @@ var WhatsNewPage = _react2['default'].createClass({
     modeButtons: function modeButtons() {
         var spacer = String.fromCharCode(160) + String.fromCharCode(160) + String.fromCharCode(160);
         var displayMode = stateStore.getValue(this.props.storeId, 'displayMode');
-        var yes = 'btn btn-xs btn-primary active',
-            no = 'btn btn-xs btn-normal';
+        var yes = 'btn btn-default active',
+            no = 'btn btn-default ';
         var yesStyle = { marginTop: 4, marginBottom: 2, color: 'black' };
         var noStyle = { color: 'black', marginTop: 4, marginBottom: 2 };
         if (displayMode == 'chart') {
             return _react2['default'].createElement(
                 'div',
-                { className: 'col-xs-3' },
+                { className: 'col-xs-4' },
                 _react2['default'].createElement(
                     'b',
                     { style: { marginTop: 4, fontSize: 'small' } },
@@ -46155,7 +46155,7 @@ var WhatsNewPage = _react2['default'].createClass({
         } else {
             return _react2['default'].createElement(
                 'div',
-                { className: 'col-xs-3' },
+                { className: 'col-xs-4' },
                 _react2['default'].createElement(
                     'b',
                     { style: { marginTop: 4, fontSize: 'small' } },
@@ -46199,13 +46199,13 @@ var WhatsNewPage = _react2['default'].createClass({
     middleButtons: function middleButtons() {
         var level = stateStore.getValue(this.props.storeId, 'selectedLevel');
         var spacer = String.fromCharCode(160) + String.fromCharCode(160) + String.fromCharCode(160);
-        var yes = 'btn btn-xs active',
-            no = 'btn btn-xs ';
+        var yes = 'btn btn-default active',
+            no = 'btn btn-default ';
         var yesStyle = { marginTop: 4, marginBottom: 2, color: 'white' },
             noStyle = { marginTop: 4, marginBottom: 2, color: 'black' };
         return _react2['default'].createElement(
             'div',
-            { className: 'col-xs-5' },
+            { className: 'col-xs-4' },
             _react2['default'].createElement(
                 'b',
                 { style: { marginTop: 4, fontSize: 'small' } },
