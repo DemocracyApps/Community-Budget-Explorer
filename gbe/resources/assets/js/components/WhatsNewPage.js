@@ -126,13 +126,14 @@ var WhatsNewPage = React.createClass({
             <div className="col-xs-4">
                 <b style={{marginTop:4, fontSize:"small"}}>Account Type:</b>
                 <span>{spacer}</span>
-                <button style={(accountType==AccountTypes.EXPENSE)?yesStyle:noStyle}
-                        className={(accountType==AccountTypes.EXPENSE)?yes:no}
-                        onClick={this.onAccountTypeChange.bind(null, AccountTypes.EXPENSE)}>Spending</button>
-                <span>{spacer}</span>
-                <button style={(accountType==AccountTypes.REVENUE)?yesStyle:noStyle}
-                        className={(accountType==AccountTypes.REVENUE)?yes:no}
-                        onClick={this.onAccountTypeChange.bind(null, AccountTypes.REVENUE)}>Revenue</button>
+                <div class="btn-group" role="group" aria-label="First group">
+                    <button style={(accountType==AccountTypes.EXPENSE)?yesStyle:noStyle}
+                            className={(accountType==AccountTypes.EXPENSE)?yes:no}
+                            onClick={this.onAccountTypeChange.bind(null, AccountTypes.EXPENSE)}>Spending</button>
+                    <button style={(accountType==AccountTypes.REVENUE)?yesStyle:noStyle}
+                            className={(accountType==AccountTypes.REVENUE)?yes:no}
+                            onClick={this.onAccountTypeChange.bind(null, AccountTypes.REVENUE)}>Revenue</button>
+                </div>
             </div>
         )
     },
@@ -140,28 +141,34 @@ var WhatsNewPage = React.createClass({
     modeButtons: function() {
         var spacer = String.fromCharCode(160)+String.fromCharCode(160)+String.fromCharCode(160);
         var displayMode = stateStore.getValue(this.props.storeId, 'displayMode');
-        var yes="btn btn-xs btn-primary", no= "btn btn-xs btn-normal";
-        var yesStyle={marginTop:4, marginBottom:2, float:"right", color:"white"};
-        var noStyle={float:"right", color:"black", marginTop:4, marginBottom:2};
+        var yes="btn btn-xs btn-primary active", no= "btn btn-xs btn-normal";
+        var yesStyle={marginTop:4, marginBottom:2, color:"black"};
+        var noStyle={color:"black", marginTop:4, marginBottom:2};
         if (displayMode == 'chart') {
             return (
                 <div className="col-xs-3">
-                    <button style={noStyle} className={no}
-                       onClick={this.changeMode}>Table View</button>
-                    <span style={{float:"right"}}>{spacer}</span>
-                    <button style={yesStyle} className={yes}
-                       onClick={this.changeMode}>Chart View</button>
+                    <b style={{marginTop:4, fontSize:"small"}}>Display Mode:</b>
+                    <span>{spacer}</span>
+                    <div class="btn-group" role="group" aria-label="Second group">
+                        <button  className={yes}
+                           onClick={this.changeMode}>Chart View</button>
+                        <button className={no}
+                                onClick={this.changeMode}>Table View</button>
+                    </div>
                 </div>
             )
         }
         else {
             return (
                 <div className="col-xs-3">
-                    <button  style={yesStyle} className={yes}
-                       onClick={this.changeMode}>Table View</button>
-                    <span style={{float:"right"}}>{spacer}</span>
-                    <button style={noStyle} className={no}
-                       onClick={this.changeMode}>Chart View</button>
+                    <b style={{marginTop:4, fontSize:"small"}}>Display Mode:</b>
+                    <span>{spacer}</span>
+                    <div class="btn-group" role="group" aria-label="Second group">
+                        <button className={no}
+                           onClick={this.changeMode}>Chart View</button>
+                        <button className={yes}
+                                onClick={this.changeMode}>Table View</button>
+                    </div>
                 </div>
             )
         }
@@ -180,20 +187,20 @@ var WhatsNewPage = React.createClass({
     middleButtons: function() {
         var level = stateStore.getValue(this.props.storeId, 'selectedLevel');
         var spacer = String.fromCharCode(160)+String.fromCharCode(160)+String.fromCharCode(160);
-        var yes="btn btn-xs btn-primary", no= "btn btn-xs btn-normal";
+        var yes="btn btn-xs active", no= "btn btn-xs ";
         var yesStyle={marginTop:4, marginBottom:2, color:"white"}, noStyle={marginTop:4, marginBottom:2, color:"black"};
         return (
             <div className="col-xs-5">
                 <b style={{marginTop:4, fontSize:"small"}}>Detail Level:</b>
                 <span>{spacer}</span>
-                <button style={(level==1)?yesStyle:noStyle} className={(level==1)?yes:no}
-                   onClick={this.detailLevel.bind(null, 1)}>Department</button>
-                <span>{spacer}</span>
-                <button style={(level==2)?yesStyle:noStyle} className={(level==2)?yes:no}
-                   onClick={this.detailLevel.bind(null, 2)}>Division</button>
-                <span>{spacer}</span>
-                <button style={(level==3)?yesStyle:noStyle} className={(level==3)?yes:no}
-                   onClick={this.detailLevel.bind(null, 3)}>Account</button>
+                <div class="btn-group" role="group" aria-label="Third group">
+                    <button className={(level==1)?yes:no}
+                       onClick={this.detailLevel.bind(null, 1)}>Department</button>
+                    <button className={(level==2)?yes:no}
+                       onClick={this.detailLevel.bind(null, 2)}>Division</button>
+                    <button className={(level==3)?yes:no}
+                       onClick={this.detailLevel.bind(null, 3)}>Account</button>
+                </div>
             </div>
         )
     },

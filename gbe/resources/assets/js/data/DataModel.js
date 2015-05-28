@@ -140,6 +140,10 @@ function DataModel(id, datasetIds, initialCommands = null) {
         }
     };
 
+    this.categoryMap = function categoryMap (categories) {
+
+    };
+
     this.getData = function getData (commands, partialOk=false) {
         console.log("In getData with commands = " + JSON.stringify(commands));
         if (this.status == DatasetStatus.DS_STATE_READY ||
@@ -188,6 +192,7 @@ function DataModel(id, datasetIds, initialCommands = null) {
             var tree = {};
             for (let i=0; i<this.data.length; ++i) {
                 let item = this.data[i];
+                //let categories = this.categoryMap(item.categories);
                 // See if it's an included account type
                 if (accountTypes == null || accountTypes.indexOf(item.accountType)>=0) {
                     // Now see if it matches startPath

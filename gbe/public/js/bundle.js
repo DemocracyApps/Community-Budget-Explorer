@@ -46094,23 +46094,22 @@ var WhatsNewPage = _react2['default'].createClass({
                 spacer
             ),
             _react2['default'].createElement(
-                'button',
-                { style: accountType == AccountTypes.EXPENSE ? yesStyle : noStyle,
-                    className: accountType == AccountTypes.EXPENSE ? yes : no,
-                    onClick: this.onAccountTypeChange.bind(null, AccountTypes.EXPENSE) },
-                'Spending'
-            ),
-            _react2['default'].createElement(
-                'span',
-                null,
-                spacer
-            ),
-            _react2['default'].createElement(
-                'button',
-                { style: accountType == AccountTypes.REVENUE ? yesStyle : noStyle,
-                    className: accountType == AccountTypes.REVENUE ? yes : no,
-                    onClick: this.onAccountTypeChange.bind(null, AccountTypes.REVENUE) },
-                'Revenue'
+                'div',
+                { 'class': 'btn-group', role: 'group', 'aria-label': 'First group' },
+                _react2['default'].createElement(
+                    'button',
+                    { style: accountType == AccountTypes.EXPENSE ? yesStyle : noStyle,
+                        className: accountType == AccountTypes.EXPENSE ? yes : no,
+                        onClick: this.onAccountTypeChange.bind(null, AccountTypes.EXPENSE) },
+                    'Spending'
+                ),
+                _react2['default'].createElement(
+                    'button',
+                    { style: accountType == AccountTypes.REVENUE ? yesStyle : noStyle,
+                        className: accountType == AccountTypes.REVENUE ? yes : no,
+                        onClick: this.onAccountTypeChange.bind(null, AccountTypes.REVENUE) },
+                    'Revenue'
+                )
             )
         );
     },
@@ -46118,30 +46117,39 @@ var WhatsNewPage = _react2['default'].createClass({
     modeButtons: function modeButtons() {
         var spacer = String.fromCharCode(160) + String.fromCharCode(160) + String.fromCharCode(160);
         var displayMode = stateStore.getValue(this.props.storeId, 'displayMode');
-        var yes = 'btn btn-xs btn-primary',
+        var yes = 'btn btn-xs btn-primary active',
             no = 'btn btn-xs btn-normal';
-        var yesStyle = { marginTop: 4, marginBottom: 2, float: 'right', color: 'white' };
-        var noStyle = { float: 'right', color: 'black', marginTop: 4, marginBottom: 2 };
+        var yesStyle = { marginTop: 4, marginBottom: 2, color: 'black' };
+        var noStyle = { color: 'black', marginTop: 4, marginBottom: 2 };
         if (displayMode == 'chart') {
             return _react2['default'].createElement(
                 'div',
                 { className: 'col-xs-3' },
                 _react2['default'].createElement(
-                    'button',
-                    { style: noStyle, className: no,
-                        onClick: this.changeMode },
-                    'Table View'
+                    'b',
+                    { style: { marginTop: 4, fontSize: 'small' } },
+                    'Display Mode:'
                 ),
                 _react2['default'].createElement(
                     'span',
-                    { style: { float: 'right' } },
+                    null,
                     spacer
                 ),
                 _react2['default'].createElement(
-                    'button',
-                    { style: yesStyle, className: yes,
-                        onClick: this.changeMode },
-                    'Chart View'
+                    'div',
+                    { 'class': 'btn-group', role: 'group', 'aria-label': 'Second group' },
+                    _react2['default'].createElement(
+                        'button',
+                        { className: yes,
+                            onClick: this.changeMode },
+                        'Chart View'
+                    ),
+                    _react2['default'].createElement(
+                        'button',
+                        { className: no,
+                            onClick: this.changeMode },
+                        'Table View'
+                    )
                 )
             );
         } else {
@@ -46149,21 +46157,30 @@ var WhatsNewPage = _react2['default'].createClass({
                 'div',
                 { className: 'col-xs-3' },
                 _react2['default'].createElement(
-                    'button',
-                    { style: yesStyle, className: yes,
-                        onClick: this.changeMode },
-                    'Table View'
+                    'b',
+                    { style: { marginTop: 4, fontSize: 'small' } },
+                    'Display Mode:'
                 ),
                 _react2['default'].createElement(
                     'span',
-                    { style: { float: 'right' } },
+                    null,
                     spacer
                 ),
                 _react2['default'].createElement(
-                    'button',
-                    { style: noStyle, className: no,
-                        onClick: this.changeMode },
-                    'Chart View'
+                    'div',
+                    { 'class': 'btn-group', role: 'group', 'aria-label': 'Second group' },
+                    _react2['default'].createElement(
+                        'button',
+                        { className: no,
+                            onClick: this.changeMode },
+                        'Chart View'
+                    ),
+                    _react2['default'].createElement(
+                        'button',
+                        { className: yes,
+                            onClick: this.changeMode },
+                        'Table View'
+                    )
                 )
             );
         }
@@ -46182,8 +46199,8 @@ var WhatsNewPage = _react2['default'].createClass({
     middleButtons: function middleButtons() {
         var level = stateStore.getValue(this.props.storeId, 'selectedLevel');
         var spacer = String.fromCharCode(160) + String.fromCharCode(160) + String.fromCharCode(160);
-        var yes = 'btn btn-xs btn-primary',
-            no = 'btn btn-xs btn-normal';
+        var yes = 'btn btn-xs active',
+            no = 'btn btn-xs ';
         var yesStyle = { marginTop: 4, marginBottom: 2, color: 'white' },
             noStyle = { marginTop: 4, marginBottom: 2, color: 'black' };
         return _react2['default'].createElement(
@@ -46200,32 +46217,26 @@ var WhatsNewPage = _react2['default'].createClass({
                 spacer
             ),
             _react2['default'].createElement(
-                'button',
-                { style: level == 1 ? yesStyle : noStyle, className: level == 1 ? yes : no,
-                    onClick: this.detailLevel.bind(null, 1) },
-                'Department'
-            ),
-            _react2['default'].createElement(
-                'span',
-                null,
-                spacer
-            ),
-            _react2['default'].createElement(
-                'button',
-                { style: level == 2 ? yesStyle : noStyle, className: level == 2 ? yes : no,
-                    onClick: this.detailLevel.bind(null, 2) },
-                'Division'
-            ),
-            _react2['default'].createElement(
-                'span',
-                null,
-                spacer
-            ),
-            _react2['default'].createElement(
-                'button',
-                { style: level == 3 ? yesStyle : noStyle, className: level == 3 ? yes : no,
-                    onClick: this.detailLevel.bind(null, 3) },
-                'Account'
+                'div',
+                { 'class': 'btn-group', role: 'group', 'aria-label': 'Third group' },
+                _react2['default'].createElement(
+                    'button',
+                    { className: level == 1 ? yes : no,
+                        onClick: this.detailLevel.bind(null, 1) },
+                    'Department'
+                ),
+                _react2['default'].createElement(
+                    'button',
+                    { className: level == 2 ? yes : no,
+                        onClick: this.detailLevel.bind(null, 2) },
+                    'Division'
+                ),
+                _react2['default'].createElement(
+                    'button',
+                    { className: level == 3 ? yes : no,
+                        onClick: this.detailLevel.bind(null, 3) },
+                    'Account'
+                )
             )
         );
     },
@@ -49442,6 +49453,8 @@ function DataModel(id, datasetIds) {
         }
     };
 
+    this.categoryMap = function categoryMap(categories) {};
+
     this.getData = function getData(commands) {
         var partialOk = arguments[1] === undefined ? false : arguments[1];
 
@@ -49491,6 +49504,7 @@ function DataModel(id, datasetIds) {
             var tree = {};
             for (var i = 0; i < this.data.length; ++i) {
                 var item = this.data[i];
+                //let categories = this.categoryMap(item.categories);
                 // See if it's an included account type
                 if (accountTypes == null || accountTypes.indexOf(item.accountType) >= 0) {
                     // Now see if it matches startPath

@@ -18,6 +18,14 @@
         </div>
 
         <div class="form-group">
+            {!!  Form::label('map', 'Category Mapping File: ')  !!}
+            {!!  Form::text('map', $site->name, ['class' => 'form-control'])  !!}
+            <br>
+            <span class="error">{!!  $errors->first('map')  !!}</span>
+            <br>
+        </div>
+
+        <div class="form-group">
             {!!  Form::submit('Save', ['class' => 'btn btn-primary'])  !!}
         </div>
 
