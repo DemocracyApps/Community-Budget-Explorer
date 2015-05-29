@@ -134,6 +134,10 @@ d3Chart.computeScales = function(data, width, height, margin) {
     var extent = this.computeExtent(data);
     if (extent[0] > 0) extent[0] = 0;
     if (Math.abs(extent[0]) > extent[1]) extent[1] = Math.abs(extent[0]);
+    // Let's try just symmetrizing so that x=0 is always in the middle.
+    var m = Math.max(Math.abs(extent[0]), Math.abs(extent[1]));
+    extent[0] = -m;
+    extent[1] = m;
     var x = d3.scale.linear()
         .domain(extent)
         .range([margin.left,width-(margin.right+margin.left)])

@@ -36939,6 +36939,9 @@ d3Chart.computeScales = function (data, width, height, margin) {
     var extent = this.computeExtent(data);
     if (extent[0] > 0) extent[0] = 0;
     if (Math.abs(extent[0]) > extent[1]) extent[1] = Math.abs(extent[0]);
+    var m = Math.max(Math.abs(extent[0]), Math.abs(extent[1]));
+    extent[0] = -m;
+    extent[1] = m;
     var x = _d32['default'].scale.linear().domain(extent).range([margin.left, width - (margin.right + margin.left)]).nice();
 
     var y = _d32['default'].scale.ordinal().domain(data.map(function (d) {
