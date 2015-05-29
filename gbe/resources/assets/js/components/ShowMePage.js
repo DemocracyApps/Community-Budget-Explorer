@@ -87,14 +87,6 @@ var ShowMePage = React.createClass({
         return ( dm.dataChanged() || dm.commandsChanged({accountTypes: [accountType]}) );
     },
 
-<<<<<<< HEAD
-    componentWillUnmount: function() {
-        console.log("ShowMePage will unmount");
-    },
-
-=======
->>>>>>> 4efe7ff139003b0dd594aeb30ce7a255afc72835
-
 
 	// top options panel
     optionsPanel: function () {
