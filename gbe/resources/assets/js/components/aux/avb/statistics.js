@@ -41,7 +41,7 @@ var computeStats = function (avb) {
                 return utilities.formatcurrency(d.values[avb.yearIndex].val);
             },
             side: function () {
-                return " in " + (avb.firstYear + avb.yearIndex).toString() + "."
+                return " in " + (Number(avb.firstYear) + Number(avb.yearIndex)).toString() + "."
             },
             cellClass: "value sum ",
             cellFunction: function (d, cell) {
