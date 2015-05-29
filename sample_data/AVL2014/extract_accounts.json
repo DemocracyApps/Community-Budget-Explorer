@@ -76,7 +76,7 @@
       "name":"transform",
       "specification": {
         "pattern": "/(.*),(.*),!!8/",
-        "replacement": "$1,$2,unknown"
+        "replacement": "$1,$2,expense"
       },
       "run":true
     }

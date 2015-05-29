@@ -1323,31 +1323,31 @@ Account Code,Account Name,Type
 712304,Capitalized Int. - Infrastruct,expense
 712305,Cap. Int.- Improv other Build,expense
 712998,Interest Expense-Powell Bill,expense
-800110,Transfer to General Fund,unknown
-800210,Transfer to Capital Reserve,unknown
-800220,Transfer to Grant Fund,unknown
-800223,Transfer to Comm Develop Fund,unknown
-800230,Transfer to Housing Partnershp,unknown
-800310,Transfer to Debt Service Fund,unknown
-800410,Transfer to Gen Cap Proj Fund,unknown
-800610,Transfer to Water Services,unknown
-800611,Transfer to Water Cap Prj Fund,unknown
-800620,Transfer to Parking Serv Fund,unknown
-800621,Transfer to Parking Cap Fund,unknown
-800622,Transfer to Street Cut Utility,unknown
-800624,Transfer to Stormwater Fund,unknown
-800625,Transfer to Stormwater Cap Fnd,unknown
-800626,Transfer to Civic Center Fund,unknown
-800627,Transfer to Civic Center Cap,unknown
-800650,Transfer to Transit Fund,unknown
-800651,Transfer to Transit Capital Fu,unknown
-800670,Transfer to Golf Course,unknown
-800671,Transfer to the Golf Captial F,unknown
-800680,Transfer to Festivals Fund,unknown
-800810,Transfer to Insurance Fund,unknown
-800900,Other Financing Uses,unknown
-800910,Other Financing Uses- PPA,unknown
-800999,Other Financing Uses GASB54,unknown
-810001,Loss on Sale of Capital Assets,unknown
-897000,Project Transfers Within Fund,unknown
+800110,Transfer to General Fund,expense
+800210,Transfer to Capital Reserve,expense
+800220,Transfer to Grant Fund,expense
+800223,Transfer to Comm Develop Fund,expense
+800230,Transfer to Housing Partnershp,expense
+800310,Transfer to Debt Service Fund,expense
+800410,Transfer to Gen Cap Proj Fund,expense
+800610,Transfer to Water Services,expense
+800611,Transfer to Water Cap Prj Fund,expense
+800620,Transfer to Parking Serv Fund,expense
+800621,Transfer to Parking Cap Fund,expense
+800622,Transfer to Street Cut Utility,expense
+800624,Transfer to Stormwater Fund,expense
+800625,Transfer to Stormwater Cap Fnd,expense
+800626,Transfer to Civic Center Fund,expense
+800627,Transfer to Civic Center Cap,expense
+800650,Transfer to Transit Fund,expense
+800651,Transfer to Transit Capital Fu,expense
+800670,Transfer to Golf Course,expense
+800671,Transfer to the Golf Captial F,expense
+800680,Transfer to Festivals Fund,expense
+800810,Transfer to Insurance Fund,expense
+800900,Other Financing Uses,expense
+800910,Other Financing Uses- PPA,expense
+800999,Other Financing Uses GASB54,expense
+810001,Loss on Sale of Capital Assets,expense
+897000,Project Transfers Within Fund,expense
 498813,Transfer from Prop & Liab Fund,revenue
