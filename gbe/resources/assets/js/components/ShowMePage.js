@@ -14,7 +14,13 @@ var dispatcher = require('../common/BudgetAppDispatcher');
 var ActionTypes = require('../constants/ActionTypes');
 var CommonConstants = require('../constants/Common');
 
-var WhatsNewPage = React.createClass({
+var AccountTypeButtonPanel = require('./AccountTypeButtonPanel');
+var DetailLevelButtonPanel = require('./DetailLevelButtonPanel');
+var DisplayModeButtonPanel = require('./DisplayModeButtonPanel');
+var YearButtonPanel = require('./YearButtonPanel');
+
+
+var ShowMePage = React.createClass({
 
     propTypes: {
         site: React.PropTypes.object.isRequired,
@@ -82,255 +88,30 @@ var WhatsNewPage = React.createClass({
     },
 
 
-
-
 	// top options panel
     optionsPanel: function () {
         var displayMode = stateStore.getValue(this.props.storeId, 'displayMode');
-        var panels;
+        var detailPanel;
         if (displayMode == "chart") {
-        	panels = [this.typePanel(3), this.modePanel(3), this.yearPanel(6), ];
+        	detailPanel = (<YearButtonPanel columns="6" storeId={this.props.storeId} />);
         }
         else {
-        	panels = [this.typePanel(3), this.modePanel(3), this.detailPanel(6)];
+        	detailPanel = (<DetailLevelButtonPanel columns="6" storeId={this.props.storeId} />);
         }
 
         return (
             <div>
                 <hr style={{marginTop:10, marginBottom:10}}/>
                 <div className="row ">
-                	{panels}
-                </div>
+		        	<AccountTypeButtonPanel columns="3" storeId={this.props.storeId} />
+        			<DisplayModeButtonPanel columns="3" storeId={this.props.storeId} />
+        			{detailPanel}
+        		</div>
                 <hr style={{marginTop:10, marginBottom:10}}/>
             </div>
         )
     },
-/*
-    optionsPanel: function interactionPanel() {
-        var accountType = stateStore.getValue(this.props.storeId, 'accountType');
-        var displayMode = stateStore.getValue(this.props.storeId, 'displayMode');
-        var modeButtonText = (displayMode == "chart")?"Table View":"Chart View";
-        var selectLabelText = "Select Account Type:" + String.fromCharCode(160)+String.fromCharCode(160);
-        if (true) {
-            return (
-                <div>
-                    <div className="row panel panel-default">
-                        {this.leftPanel(displayMode)}
-                        {this.middleButtons(displayMode)}
-                        {this.modeButtons(displayMode)}
-                    </div>
-                </div>
-            )
-        }
-        else {
-            return (
-                <div>
-                    <div className="row">
-                        <div className="col-xs-4">
-                            <form className="form-inline">
-                                <div className="form-group">
-                                    <label>{selectLabelText}<span width="30px"></span></label>
-                                    <select className="form-control" onChange={this.onAccountTypeChange}
-                                            value={accountType}>
-                                        {
-                                            this.props.accountTypes.map(
-                                                function (type, index) {
-                                                    return <option key={index} value={type.value}> {type.name} </option>
-                                                }
-                                            )
-                                        }
-                                    </select>
-                                </div>
-                            </form>
-                        </div>
-                        <div className="col-xs-6"></div>
-                        <div className="col-xs-2">
-                            <button style={{float:"right"}} className="btn btn-normal"
-                                    onClick={this.changeMode}>Switch To {modeButtonText}</button>
-                        </div>
-                    </div>
-                </div>
-            )
-        }
-    },
-*/
-	// Generic button panel.
-    buttonPanel: function(panelWidth, panelTitle, currentValue, setter, options) {
-        return (
-            <div className={"col-xs-"+panelWidth}>
-                <div className="small"><strong>{panelTitle}:</strong></div>
-                <div className="btn-group" role="group" aria-label={panelTitle}>
-                	{options.map(function(option) {
-			    		var callback = setter.bind(this, option.value);
-			    		var className = "btn btn-default"
-			    		if (option.value == null) {
-			    			className += " disabled";
-			    		} else if (currentValue === option.value) {
-			    			className += " active";
-			    		}
-			    		return (<button className={className} onClick={callback}>{option.title}</button>)
-			    	}, this)}
-                </div>
-            </div>)
-    },
 
-    // type panel
-
-    changeAccountType: function (type) {
-        dispatcher.dispatch({
-            actionType: ActionTypes.COMPONENT_STATE_CHANGE,
-            payload: {
-                id: this.props.storeId,
-                changes: [{name: 'accountType', value: Number(type)}]
-            }
-        });
-    },
-
-    typePanel: function (panelWidth) {
-        var accountType = stateStore.getValue(this.props.storeId, 'accountType');
-        return this.buttonPanel(panelWidth, "Account Type", accountType, this.changeAccountType, [
-        	{ value:AccountTypes.EXPENSE, title:"Spending" },
-        	{ value:AccountTypes.REVENUE, title:"Revenue" },
-        ]);
-    },
-
-    // mode panel
-
-    changeMode: function (displayMode) {
-        dispatcher.dispatch({
-            actionType: ActionTypes.COMPONENT_STATE_CHANGE,
-            payload: {
-                id: this.props.storeId,
-                changes: [{name: 'displayMode', value: displayMode}]
-            }
-        });
-    },
-
-    modePanel: function(panelWidth) {
-        var displayMode = stateStore.getValue(this.props.storeId, 'displayMode');
-        return this.buttonPanel(panelWidth, "Display", displayMode, this.changeMode, [
-        	{ value:"chart", title:"Charts"},
-        	{ value:"table", title:"Table"}
-        ]);
- 	},
-
-	// detail panel
-    changeDetailLevel: function (which) {
-        dispatcher.dispatch({
-            actionType: ActionTypes.COMPONENT_STATE_CHANGE,
-            payload: {
-                id: this.props.storeId,
-                changes: [{name: 'selectedLevel', value: Number(which)}]
-            }
-        });
-    },
-
-    detailPanel: function(panelWidth) {
-        var level = stateStore.getValue(this.props.storeId, 'selectedLevel');
-        return this.buttonPanel(panelWidth, "Detail Level", level, this.changeDetailLevel, [
-        	{ value:1, title:"Department"},
-        	{ value:2, title:"Division"},
-        	{ value:3, title:"Account"}
-        ]);
-    },
-
-
-	// year panel
-    changeYear: function(value) {
-        dispatcher.dispatch({
-            actionType: ActionTypes.COMPONENT_STATE_CHANGE,
-            payload: {
-                id: this.props.storeId,
-                changes: [{name: 'currentYear', value: value}]
-            }
-        });
-    },
-
-    yearPanel : function(panelWidth) {
-		var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
-		var accountType = stateStore.getValue(this.props.storeId, 'accountType');
-		var currentYear = stateStore.getValue(this.props.storeId, 'currentYear');
-		var dm = dataModelStore.getModel(dataModelId);
-		var newData = dm.checkData({
-			accountTypes:[accountType],
-			startPath: [],
-			nLevels: 4
-		}, false);
-
-		var options;
-		if (newData == null) {
-			options = [{title:"(loading...)"}];
-		}
-		else {
-            if (currentYear < 0 && newData != null) currentYear = newData.periods.length-1;
-			options = newData.periods.map(function(year, index) {
-				return {value:index, title:year}
-			});
-		}
-		return this.buttonPanel(panelWidth, "Year", currentYear, this.changeYear, options);
-    },
-/*
-    middleButtons: function(displayMode) {
-        if (displayMode == 'chart') {
-            var spacer = String.fromCharCode(160) + String.fromCharCode(160) + String.fromCharCode(160);
-            var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
-            var dm = dataModelStore.getModel(dataModelId);
-            var accountType = stateStore.getValue(this.props.storeId, 'accountType');
-            var currentYear = stateStore.getValue(this.props.storeId, 'currentYear');
-            var newData = dm.checkData({
-                accountTypes:[accountType],
-                startPath: [],
-                nLevels: 4
-            }, false);
-            var headers = (newData==null)?['-']:newData.periods;
-            if (currentYear < 0 && newData != null) currentYear = newData.periods.length-1;
-            return (
-                <div className="col-xs-5">
-                    <form className="form-inline">
-                        <div className="form-group">
-                            <label style={{marginTop:4, fontSize:"small"}}>Year:<span>{spacer}</span></label>
-
-                            <select style={{fontSize:"small"}} className="form-control" onChange={this.onYearChange} value={currentYear}>
-                                {headers.map(function (item, index) {
-                                    return (
-                                        <option key={index} value={index}>{item}</option>
-                                    )
-                                })}
-                            </select>
-                        </div>
-                    </form>
-                </div>
-            )
-        }
-        else {
-            var level = stateStore.getValue(this.props.storeId, 'selectedLevel');
-            var spacer = String.fromCharCode(160) + String.fromCharCode(160) + String.fromCharCode(160);
-            var yes = "btn btn-xs btn-primary", no = "btn btn-xs btn-normal";
-            var yesStyle = {marginTop: 4, marginBottom: 2, color: "white"}, noStyle = {
-                marginTop: 4,
-                marginBottom: 2,
-                color: "black"
-            };
-            return (
-                <div className="col-xs-5">
-                    <b style={{marginTop:4, fontSize:"small"}}>Detail Level:</b>
-                    <span>{spacer}</span>
-                    <button style={(level==1)?yesStyle:noStyle} className={(level==1)?yes:no}
-                            onClick={this.detailLevel.bind(null, 1)}>Department
-                    </button>
-                    <span>{spacer}</span>
-                    <button style={(level==2)?yesStyle:noStyle} className={(level==2)?yes:no}
-                            onClick={this.detailLevel.bind(null, 2)}>Division
-                    </button>
-                    <span>{spacer}</span>
-                    <button style={(level==3)?yesStyle:noStyle} className={(level==3)?yes:no}
-                            onClick={this.detailLevel.bind(null, 3)}>Account
-                    </button>
-                </div>
-            )
-        }
-    },
-*/
     renderCharts: function () {
         var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
         var dm = dataModelStore.getModel(dataModelId);
@@ -399,5 +180,5 @@ var WhatsNewPage = React.createClass({
     }
 });
 
-export default WhatsNewPage;
+export default ShowMePage;
 

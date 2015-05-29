@@ -14,6 +14,10 @@ var dispatcher = require('../common/BudgetAppDispatcher');
 var ActionTypes = require('../constants/ActionTypes');
 var CommonConstants = require('../constants/Common');
 
+var AccountTypeButtonPanel = require('./AccountTypeButtonPanel');
+var DetailLevelButtonPanel = require('./DetailLevelButtonPanel');
+var DisplayModeButtonPanel = require('./DisplayModeButtonPanel');
+
 var WhatsNewPage = React.createClass({
 
     propTypes: {
@@ -93,16 +97,15 @@ var WhatsNewPage = React.createClass({
         return ( dataChanged || dm.commandsChanged({startPath: startPath, nLevels: selectedLevel + addLevel}) );
     },
 
-
 	// top options panel
     optionsPanel: function () {
         return (
             <div>
                 <hr style={{marginTop:10, marginBottom:10}}/>
                 <div className="row ">
-                    {this.typePanel(3)}
-                    {this.modePanel(3)}
-                    {this.detailPanel(6)}
+                    <AccountTypeButtonPanel columns="3" storeId={this.props.storeId} />
+                    <DisplayModeButtonPanel columns="3" storeId={this.props.storeId} />
+                    <DetailLevelButtonPanel columns="6" storeId={this.props.storeId} />
                 </div>
                 <hr style={{marginTop:10, marginBottom:10}}/>
             </div>
@@ -125,7 +128,6 @@ var WhatsNewPage = React.createClass({
     },
 
     // type panel
-
     changeAccountType: function (type) {
         dispatcher.dispatch({
             actionType: ActionTypes.COMPONENT_STATE_CHANGE,
@@ -145,7 +147,6 @@ var WhatsNewPage = React.createClass({
     },
 
     // mode panel
-
     changeMode: function (displayMode) {
         dispatcher.dispatch({
             actionType: ActionTypes.COMPONENT_STATE_CHANGE,

@@ -21,6 +21,8 @@ import ChangeExplorer from './components/ChangeExplorer';
 import HistoryTable from './components/HistoryTable';
 import WhatsNewPage from './components/WhatsNewPage';
 import ShowMePage from './components/ShowMePage';
+import ButtonPanel from './components/ButtonPanel';
+import AccountTypeButtonPanel from './components/AccountTypeButtonPanel';
 
 var reactComponents = {};
 reactComponents['SimpleCard'] = SimpleCard;
