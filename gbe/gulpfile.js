@@ -30,7 +30,7 @@ elixir(function(mix) {
             './vendor/bower_components/jquery-ui/jquery-ui.min.js',
             './vendor/bower_components/bootstrap-sass-official/assets/javascripts/bootstrap.min.js',
             './vendor/bower_components/jquery-cookie/jquery.cookie.js',
-            './vendor/bower_components/FlexSlider/jquery.flexslider-min.js'
+            './vendor/bower_components/FlexSlider/jquery.flexslider.js'
         ], './public/js/all.js', './')
         .copy('./vendor/bower_components/FlexSlider/fonts/flexslider-icon.ttf',
         './public/css/fonts/')

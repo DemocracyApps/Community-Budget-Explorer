@@ -49,6 +49,14 @@ var _componentsShowMePage = require('./components/ShowMePage');
 
 var _componentsShowMePage2 = _interopRequireDefault(_componentsShowMePage);
 
+var _componentsButtonPanel = require('./components/ButtonPanel');
+
+var _componentsButtonPanel2 = _interopRequireDefault(_componentsButtonPanel);
+
+var _componentsAccountTypeButtonPanel = require('./components/AccountTypeButtonPanel');
+
+var _componentsAccountTypeButtonPanel2 = _interopRequireDefault(_componentsAccountTypeButtonPanel);
+
 require('babelify/polyfill');
 
 var dispatcher = require('./common/BudgetAppDispatcher');
@@ -142,7 +150,7 @@ var props = {
 
 var layout = _react2['default'].render(_react2['default'].createElement(_componentsSite2['default'], props), document.getElementById('app'));
 
-},{"./common/ApiActions":258,"./common/BudgetAppDispatcher":259,"./common/IdGenerator":260,"./components/CardTable":263,"./components/ChangeExplorer":264,"./components/HistoryTable":265,"./components/NavCards":266,"./components/ShowMePage":267,"./components/SimpleCard":268,"./components/Site":269,"./components/SlideShow":271,"./components/WhatsNewPage":273,"./constants/ActionTypes":284,"./stores/CardStore":291,"./stores/ConfigStore":292,"./stores/DatasetStore":294,"./stores/StateStore":295,"babelify/polyfill":92,"react":257}],2:[function(require,module,exports){
+},{"./common/ApiActions":258,"./common/BudgetAppDispatcher":259,"./common/IdGenerator":260,"./components/AccountTypeButtonPanel":261,"./components/ButtonPanel":264,"./components/CardTable":265,"./components/ChangeExplorer":266,"./components/HistoryTable":269,"./components/NavCards":270,"./components/ShowMePage":271,"./components/SimpleCard":272,"./components/Site":273,"./components/SlideShow":275,"./components/WhatsNewPage":277,"./constants/ActionTypes":289,"./stores/CardStore":296,"./stores/ConfigStore":297,"./stores/DatasetStore":299,"./stores/StateStore":300,"babelify/polyfill":92,"react":257}],2:[function(require,module,exports){
 (function (global){
 "use strict";
 
@@ -34053,7 +34061,7 @@ var ApiActions = {
 
 module.exports = ApiActions;
 
-},{"../common/BudgetAppDispatcher":259,"../constants/ActionTypes":284,"../stores/ConfigStore":292,"../stores/DatasetStore":294,"object-assign":100}],259:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":259,"../constants/ActionTypes":289,"../stores/ConfigStore":297,"../stores/DatasetStore":299,"object-assign":100}],259:[function(require,module,exports){
 'use strict';
 
 var FluxDispatcher = require('flux').Dispatcher;
@@ -34113,6 +34121,83 @@ var IdGenerator = {
 module.exports = IdGenerator;
 
 },{}],261:[function(require,module,exports){
+/*
+	React component to create an 'Account Type' panel of buttons for the 'page toolbar' of the app.
+*/
+
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+	value: true
+});
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; }
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var dispatcher = require('../common/BudgetAppDispatcher');
+var stateStore = require('../stores/StateStore');
+var AccountTypes = require('../constants/AccountTypes');
+var ActionTypes = require('../constants/ActionTypes');
+
+var ButtonPanel = require('./ButtonPanel');
+
+var AccountTypeButtonPanel = (function (_ButtonPanel) {
+	function AccountTypeButtonPanel(props) {
+		_classCallCheck(this, AccountTypeButtonPanel);
+
+		_get(Object.getPrototypeOf(AccountTypeButtonPanel.prototype), 'constructor', this).call(this, props);
+		this.state = this.getStateFromStore();
+	}
+
+	_inherits(AccountTypeButtonPanel, _ButtonPanel);
+
+	_createClass(AccountTypeButtonPanel, [{
+		key: 'getStateFromStore',
+		value: function getStateFromStore() {
+			return { value: stateStore.getValue(this.props.storeId, 'accountType'),
+				options: [{ value: AccountTypes.EXPENSE, title: 'Spending' }, { value: AccountTypes.REVENUE, title: 'Revenue' }]
+			};
+		}
+	}, {
+		key: 'onButtonClicked',
+		value: function onButtonClicked(newValue) {
+			dispatcher.dispatch({
+				actionType: ActionTypes.COMPONENT_STATE_CHANGE,
+				payload: {
+					id: this.props.storeId,
+					changes: [{ name: 'accountType', value: newValue }]
+				}
+			});
+			// update state to make the button change appearance
+			this.setState(this.getStateFromStore());
+		}
+	}]);
+
+	return AccountTypeButtonPanel;
+})(ButtonPanel);
+
+AccountTypeButtonPanel.propTypes = ButtonPanel.PANEL_PROP_TYPES;
+AccountTypeButtonPanel.defaultProps = {
+	storeId: -1,
+	columns: 4,
+	title: 'Account Type'
+};
+
+exports['default'] = AccountTypeButtonPanel;
+module.exports = exports['default'];
+
+},{"../common/BudgetAppDispatcher":259,"../constants/AccountTypes":288,"../constants/ActionTypes":289,"../stores/StateStore":300,"./ButtonPanel":264,"react":257}],262:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -34354,7 +34439,7 @@ exports['default'] = AvbTreemap;
 module.exports = exports['default'];
 /* entry title */ /* layer chart legend */ /*  info cards */ /*  chart */ /*  treemap */
 
-},{"./aux/D3BarChart":274,"./aux/avb.js":275,"blueimp-md5":93,"d3":96,"react":257}],262:[function(require,module,exports){
+},{"./aux/D3BarChart":279,"./aux/avb.js":280,"blueimp-md5":93,"d3":96,"react":257}],263:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -34381,6 +34466,13 @@ var _react2 = _interopRequireDefault(_react);
 var BootstrapLayout = _react2["default"].createClass({
     displayName: "BootstrapLayout",
 
+    propTypes: {
+        site: _react2["default"].PropTypes.object.isRequired,
+        layout: _react2["default"].PropTypes.object.isRequired,
+        components: _react2["default"].PropTypes.object.isRequired,
+        reactComponents: _react2["default"].PropTypes.object.isRequired
+    },
+
     renderComponent: function renderComponent(component, index) {
         if (!this.props.reactComponents[component.componentName]) {
             console.log("BootstrapLayout - Unable to find component");
@@ -34390,6 +34482,7 @@ var BootstrapLayout = _react2["default"].createClass({
         var componentProps = component.componentProps.length == 0 ? {} : component.componentProps;
         return _react2["default"].createElement(comp, {
             key: index,
+            site: this.props.site,
             componentData: componentData,
             componentProps: componentProps,
             storeId: component.storeId
@@ -34437,7 +34530,139 @@ var BootstrapLayout = _react2["default"].createClass({
 exports["default"] = BootstrapLayout;
 module.exports = exports["default"];
 
-},{"react":257}],263:[function(require,module,exports){
+},{"react":257}],264:[function(require,module,exports){
+/*
+	React component to create a panel of buttons for the 'page toolbar' of the app.
+*/
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; }
+
+var _react = require("react");
+
+var _react2 = _interopRequireDefault(_react);
+
+// Define PropTypes once for all components below.
+var types = _react2["default"].PropTypes;
+var PANEL_PROP_TYPES = {
+	// store id
+	storeId: types.number.isRequired,
+	// number of columns to take up in the toolbar
+	columns: types.number.isRequired,
+	// title of the panel
+	title: types.string.isRequired
+};
+
+// Generic ButtonPanel.
+// Try to use one of the subclasses below if you can.
+
+var ButtonPanel = (function (_React$Component) {
+	function ButtonPanel(props) {
+		_classCallCheck(this, ButtonPanel);
+
+		_get(Object.getPrototypeOf(ButtonPanel.prototype), "constructor", this).call(this, props);
+		this.state = this.getStateFromStore();
+	}
+
+	_inherits(ButtonPanel, _React$Component);
+
+	_createClass(ButtonPanel, [{
+		key: "getStateFromStore",
+
+		// Return the current state from the store.
+		// You should have:
+		//		- `value`  		Selected button's current value.
+		//		- `options`		Array of  { title:"Button Title", value:"ButtonValue" }
+		//						If you want a disabled button, leave off the value.
+		value: function getStateFromStore() {
+			return { value: undefined, options: [] };
+		}
+	}, {
+		key: "onButtonClicked",
+
+		// Return the current map of options to display.
+
+		// onChange handler, override this in your subclass.
+		value: function onButtonClicked(newValue) {
+			console.error("Should be setting value to `" + value + "`.");
+		}
+	}, {
+		key: "render",
+		value: function render() {
+			// Render buttons first.
+			var buttons = this.state.options.map(function (option) {
+				var callback;
+				if (option.value) {
+					callback = this.onButtonClicked.bind(this, option.value);
+				} else {
+					callback = function noop() {};
+				}
+
+				var className = "btn btn-default";
+				if (option.value === undefined) {
+					className += " disabled";
+				} else if (this.state.value === option.value) {
+					className += " btn-primary active";
+				}
+
+				return _react2["default"].createElement(
+					"button",
+					{ key: option.title, className: className, onClick: callback },
+					option.title
+				);
+			}, this);
+
+			return _react2["default"].createElement(
+				"div",
+				{ className: "col-xs-" + this.props.columns },
+				_react2["default"].createElement(
+					"div",
+					{ className: "small" },
+					_react2["default"].createElement(
+						"strong",
+						null,
+						this.props.title,
+						":"
+					)
+				),
+				_react2["default"].createElement(
+					"div",
+					{ className: "btn-group", role: "group", "aria-label": this.props.title },
+					buttons
+				)
+			);
+		}
+	}]);
+
+	return ButtonPanel;
+})(_react2["default"].Component);
+
+;
+
+ButtonPanel.propTypes = PANEL_PROP_TYPES;
+ButtonPanel.defaultProps = {
+	storeId: -1,
+	columns: 4,
+	title: "Untitled Panel"
+};
+
+exports["default"] = ButtonPanel;
+module.exports = exports["default"];
+
+},{"react":257}],265:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -34456,6 +34681,7 @@ var CardTable = _react2['default'].createClass({
     displayName: 'CardTable',
 
     propTypes: {
+        site: _react2['default'].PropTypes.object.isRequired,
         componentData: _react2['default'].PropTypes.object.isRequired,
         componentProps: _react2['default'].PropTypes.object.isRequired,
         storeId: _react2['default'].PropTypes.number.isRequired
@@ -34603,7 +34829,7 @@ var CardTable = _react2['default'].createClass({
                 return _react2['default'].createElement(
                     'div',
                     { key: index, className: 'row card-table-row' },
-                    item.map(this.cardFunction.bind(this))
+                    item.map(this.cardFunction)
                 );
             };
 
@@ -34619,7 +34845,7 @@ var CardTable = _react2['default'].createClass({
 exports['default'] = CardTable;
 module.exports = exports['default'];
 
-},{"../stores/CardStore":291,"react":257}],264:[function(require,module,exports){
+},{"../stores/CardStore":296,"react":257}],266:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -34649,6 +34875,7 @@ var ChangeExplorer = _react2['default'].createClass({
     displayName: 'ChangeExplorer',
 
     propTypes: {
+        site: _react2['default'].PropTypes.object.isRequired,
         componentData: _react2['default'].PropTypes.object.isRequired,
         componentProps: _react2['default'].PropTypes.object.isRequired,
         storeId: _react2['default'].PropTypes.number.isRequired
@@ -34709,7 +34936,7 @@ var ChangeExplorer = _react2['default'].createClass({
                 apiActions.requestDatasetIfNeeded(id);
             });
 
-            dm = dataModelStore.createModel(ids, this.props.dataInitialization);
+            dm = dataModelStore.createModel(ids, this.props.dataInitialization, null);
             stateStore.setComponentState(this.props.storeId, {
                 accountType: AccountTypes.EXPENSE,
                 dataModelId: dm.id,
@@ -35020,7 +35247,159 @@ var ChangeExplorer = _react2['default'].createClass({
 exports['default'] = ChangeExplorer;
 module.exports = exports['default'];
 
-},{"../common/ApiActions":258,"../common/BudgetAppDispatcher":259,"../constants/AccountTypes":283,"../constants/ActionTypes":284,"../constants/Common":285,"../data/DatasetUtilities":290,"../stores/DataModelStore":293,"../stores/DatasetStore":294,"../stores/StateStore":295,"react":257,"react-micro-bar-chart":101,"react-sparkline":102}],265:[function(require,module,exports){
+},{"../common/ApiActions":258,"../common/BudgetAppDispatcher":259,"../constants/AccountTypes":288,"../constants/ActionTypes":289,"../constants/Common":290,"../data/DatasetUtilities":295,"../stores/DataModelStore":298,"../stores/DatasetStore":299,"../stores/StateStore":300,"react":257,"react-micro-bar-chart":101,"react-sparkline":102}],267:[function(require,module,exports){
+/*
+	React component to create an 'Account Type' panel of buttons for the 'page toolbar' of the app.
+*/
+
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+	value: true
+});
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; }
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var dispatcher = require('../common/BudgetAppDispatcher');
+var stateStore = require('../stores/StateStore');
+var ActionTypes = require('../constants/ActionTypes');
+
+var ButtonPanel = require('./ButtonPanel');
+
+var DetailLevelButtonPanel = (function (_ButtonPanel) {
+	function DetailLevelButtonPanel(props) {
+		_classCallCheck(this, DetailLevelButtonPanel);
+
+		_get(Object.getPrototypeOf(DetailLevelButtonPanel.prototype), 'constructor', this).call(this, props);
+		this.state = this.getStateFromStore();
+	}
+
+	_inherits(DetailLevelButtonPanel, _ButtonPanel);
+
+	_createClass(DetailLevelButtonPanel, [{
+		key: 'getStateFromStore',
+		value: function getStateFromStore() {
+			return { value: stateStore.getValue(this.props.storeId, 'selectedLevel'),
+				options: [{ value: 1, title: 'Department' }, { value: 2, title: 'Division' }, { value: 3, title: 'Account' }]
+			};
+		}
+	}, {
+		key: 'onButtonClicked',
+		value: function onButtonClicked(newValue) {
+			dispatcher.dispatch({
+				actionType: ActionTypes.COMPONENT_STATE_CHANGE,
+				payload: {
+					id: this.props.storeId,
+					changes: [{ name: 'selectedLevel', value: newValue }]
+				}
+			});
+			// update state to make the button change appearance
+			this.setState(this.getStateFromStore());
+		}
+	}]);
+
+	return DetailLevelButtonPanel;
+})(ButtonPanel);
+
+DetailLevelButtonPanel.propTypes = ButtonPanel.PANEL_PROP_TYPES;
+DetailLevelButtonPanel.defaultProps = {
+	storeId: -1,
+	columns: 4,
+	title: 'Detail Level'
+};
+
+exports['default'] = DetailLevelButtonPanel;
+module.exports = exports['default'];
+
+},{"../common/BudgetAppDispatcher":259,"../constants/ActionTypes":289,"../stores/StateStore":300,"./ButtonPanel":264,"react":257}],268:[function(require,module,exports){
+/*
+	React component to create an 'Account Type' panel of buttons for the 'page toolbar' of the app.
+*/
+
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+	value: true
+});
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; }
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var dispatcher = require('../common/BudgetAppDispatcher');
+var stateStore = require('../stores/StateStore');
+var ActionTypes = require('../constants/ActionTypes');
+
+var ButtonPanel = require('./ButtonPanel');
+
+var DisplayModeButtonPanel = (function (_ButtonPanel) {
+	function DisplayModeButtonPanel(props) {
+		_classCallCheck(this, DisplayModeButtonPanel);
+
+		_get(Object.getPrototypeOf(DisplayModeButtonPanel.prototype), 'constructor', this).call(this, props);
+		this.state = this.getStateFromStore();
+	}
+
+	_inherits(DisplayModeButtonPanel, _ButtonPanel);
+
+	_createClass(DisplayModeButtonPanel, [{
+		key: 'getStateFromStore',
+		value: function getStateFromStore() {
+			return { value: stateStore.getValue(this.props.storeId, 'displayMode'),
+				options: [{ value: 'chart', title: 'Charts' }, { value: 'table', title: 'Table' }]
+			};
+		}
+	}, {
+		key: 'onButtonClicked',
+		value: function onButtonClicked(newValue) {
+			dispatcher.dispatch({
+				actionType: ActionTypes.COMPONENT_STATE_CHANGE,
+				payload: {
+					id: this.props.storeId,
+					changes: [{ name: 'displayMode', value: newValue }]
+				}
+			});
+			// update state to make the button change appearance
+			this.setState(this.getStateFromStore());
+		}
+	}]);
+
+	return DisplayModeButtonPanel;
+})(ButtonPanel);
+
+DisplayModeButtonPanel.propTypes = ButtonPanel.PANEL_PROP_TYPES;
+DisplayModeButtonPanel.defaultProps = {
+	storeId: -1,
+	columns: 4,
+	title: 'Display'
+};
+
+exports['default'] = DisplayModeButtonPanel;
+module.exports = exports['default'];
+
+},{"../common/BudgetAppDispatcher":259,"../constants/ActionTypes":289,"../stores/StateStore":300,"./ButtonPanel":264,"react":257}],269:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -35050,6 +35429,7 @@ var HistoryTable = _react2['default'].createClass({
     displayName: 'HistoryTable',
 
     propTypes: {
+        site: _react2['default'].PropTypes.object.isRequired,
         componentData: _react2['default'].PropTypes.object.isRequired,
         componentProps: _react2['default'].PropTypes.object.isRequired,
         storeId: _react2['default'].PropTypes.number.isRequired
@@ -35110,7 +35490,7 @@ var HistoryTable = _react2['default'].createClass({
                 apiActions.requestDatasetIfNeeded(id);
             });
 
-            dm = dataModelStore.createModel(ids, this.props.dataInitialization);
+            dm = dataModelStore.createModel(ids, this.props.dataInitialization, null);
             stateStore.setComponentState(this.props.storeId, {
                 accountType: AccountTypes.EXPENSE,
                 dataModelId: dm.id,
@@ -35400,7 +35780,7 @@ var HistoryTable = _react2['default'].createClass({
 exports['default'] = HistoryTable;
 module.exports = exports['default'];
 
-},{"../common/ApiActions":258,"../common/BudgetAppDispatcher":259,"../constants/AccountTypes":283,"../constants/ActionTypes":284,"../constants/Common":285,"../data/DatasetUtilities":290,"../stores/DataModelStore":293,"../stores/DatasetStore":294,"../stores/StateStore":295,"react":257,"react-micro-bar-chart":101,"react-sparkline":102}],266:[function(require,module,exports){
+},{"../common/ApiActions":258,"../common/BudgetAppDispatcher":259,"../constants/AccountTypes":288,"../constants/ActionTypes":289,"../constants/Common":290,"../data/DatasetUtilities":295,"../stores/DataModelStore":298,"../stores/DatasetStore":299,"../stores/StateStore":300,"react":257,"react-micro-bar-chart":101,"react-sparkline":102}],270:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -35422,6 +35802,7 @@ var NavCards = _react2['default'].createClass({
     displayName: 'NavCards',
 
     propTypes: {
+        site: _react2['default'].PropTypes.object.isRequired,
         componentData: _react2['default'].PropTypes.object.isRequired,
         componentProps: _react2['default'].PropTypes.object.isRequired,
         storeId: _react2['default'].PropTypes.number.isRequired
@@ -35494,7 +35875,7 @@ var NavCards = _react2['default'].createClass({
 exports['default'] = NavCards;
 module.exports = exports['default'];
 
-},{"../common/BudgetAppDispatcher":259,"../constants/ActionTypes":284,"../stores/CardStore":291,"../stores/ConfigStore":292,"react":257}],267:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":259,"../constants/ActionTypes":289,"../stores/CardStore":296,"../stores/ConfigStore":297,"react":257}],271:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -35526,10 +35907,16 @@ var dispatcher = require('../common/BudgetAppDispatcher');
 var ActionTypes = require('../constants/ActionTypes');
 var CommonConstants = require('../constants/Common');
 
-var WhatsNewPage = _react2['default'].createClass({
-    displayName: 'WhatsNewPage',
+var AccountTypeButtonPanel = require('./AccountTypeButtonPanel');
+var DetailLevelButtonPanel = require('./DetailLevelButtonPanel');
+var DisplayModeButtonPanel = require('./DisplayModeButtonPanel');
+var YearButtonPanel = require('./YearButtonPanel');
+
+var ShowMePage = _react2['default'].createClass({
+    displayName: 'ShowMePage',
 
     propTypes: {
+        site: _react2['default'].PropTypes.object.isRequired,
         componentData: _react2['default'].PropTypes.object.isRequired,
         componentProps: _react2['default'].PropTypes.object.isRequired,
         storeId: _react2['default'].PropTypes.number.isRequired
@@ -35557,7 +35944,7 @@ var WhatsNewPage = _react2['default'].createClass({
                 apiActions.requestDatasetIfNeeded(id);
             });
 
-            dm = dataModelStore.createModel(ids, this.props.dataInitialization);
+            dm = dataModelStore.createModel(ids, this.props.dataInitialization, null);
             var subComponents = {
                 chart: {},
                 table: {}
@@ -35589,17 +35976,17 @@ var WhatsNewPage = _react2['default'].createClass({
     },
 
     componentWillUnmount: function componentWillUnmount() {
-        console.log('WhatsNewPage will unmount');
+        console.log('ShowMePage will unmount');
     },
 
     // top options panel
     optionsPanel: function optionsPanel() {
         var displayMode = stateStore.getValue(this.props.storeId, 'displayMode');
-        var panels;
+        var detailPanel;
         if (displayMode == 'chart') {
-            panels = [this.typePanel(3), this.modePanel(3), this.yearPanel(6)];
+            detailPanel = _react2['default'].createElement(YearButtonPanel, { columns: '6', storeId: this.props.storeId });
         } else {
-            panels = [this.typePanel(3), this.modePanel(3), this.detailPanel(6)];
+            detailPanel = _react2['default'].createElement(DetailLevelButtonPanel, { columns: '6', storeId: this.props.storeId });
         }
 
         return _react2['default'].createElement(
@@ -35609,241 +35996,14 @@ var WhatsNewPage = _react2['default'].createClass({
             _react2['default'].createElement(
                 'div',
                 { className: 'row ' },
-                panels
+                _react2['default'].createElement(AccountTypeButtonPanel, { columns: '3', storeId: this.props.storeId }),
+                _react2['default'].createElement(DisplayModeButtonPanel, { columns: '3', storeId: this.props.storeId }),
+                detailPanel
             ),
             _react2['default'].createElement('hr', { style: { marginTop: 10, marginBottom: 10 } })
         );
     },
-    /*
-        optionsPanel: function interactionPanel() {
-            var accountType = stateStore.getValue(this.props.storeId, 'accountType');
-            var displayMode = stateStore.getValue(this.props.storeId, 'displayMode');
-            var modeButtonText = (displayMode == "chart")?"Table View":"Chart View";
-            var selectLabelText = "Select Account Type:" + String.fromCharCode(160)+String.fromCharCode(160);
-            if (true) {
-                return (
-                    <div>
-                        <div className="row panel panel-default">
-                            {this.leftPanel(displayMode)}
-                            {this.middleButtons(displayMode)}
-                            {this.modeButtons(displayMode)}
-                        </div>
-                    </div>
-                )
-            }
-            else {
-                return (
-                    <div>
-                        <div className="row">
-                            <div className="col-xs-4">
-                                <form className="form-inline">
-                                    <div className="form-group">
-                                        <label>{selectLabelText}<span width="30px"></span></label>
-                                        <select className="form-control" onChange={this.onAccountTypeChange}
-                                                value={accountType}>
-                                            {
-                                                this.props.accountTypes.map(
-                                                    function (type, index) {
-                                                        return <option key={index} value={type.value}> {type.name} </option>
-                                                    }
-                                                )
-                                            }
-                                        </select>
-                                    </div>
-                                </form>
-                            </div>
-                            <div className="col-xs-6"></div>
-                            <div className="col-xs-2">
-                                <button style={{float:"right"}} className="btn btn-normal"
-                                        onClick={this.changeMode}>Switch To {modeButtonText}</button>
-                            </div>
-                        </div>
-                    </div>
-                )
-            }
-        },
-    */
-    // Generic button panel.
-    buttonPanel: function buttonPanel(panelWidth, panelTitle, currentValue, setter, options) {
-        return _react2['default'].createElement(
-            'div',
-            { className: 'col-xs-' + panelWidth },
-            _react2['default'].createElement(
-                'div',
-                { className: 'small' },
-                _react2['default'].createElement(
-                    'strong',
-                    null,
-                    panelTitle,
-                    ':'
-                )
-            ),
-            _react2['default'].createElement(
-                'div',
-                { className: 'btn-group', role: 'group', 'aria-label': panelTitle },
-                options.map(function (option) {
-                    var callback = setter.bind(this, option.value);
-                    var className = 'btn btn-default';
-                    if (option.value == null) {
-                        className += ' disabled';
-                    } else if (currentValue === option.value) {
-                        className += ' active';
-                    }
-                    return _react2['default'].createElement(
-                        'button',
-                        { className: className, onClick: callback },
-                        option.title
-                    );
-                }, this)
-            )
-        );
-    },
 
-    // type panel
-
-    changeAccountType: function changeAccountType(type) {
-        dispatcher.dispatch({
-            actionType: ActionTypes.COMPONENT_STATE_CHANGE,
-            payload: {
-                id: this.props.storeId,
-                changes: [{ name: 'accountType', value: Number(type) }]
-            }
-        });
-    },
-
-    typePanel: function typePanel(panelWidth) {
-        var accountType = stateStore.getValue(this.props.storeId, 'accountType');
-        return this.buttonPanel(panelWidth, 'Account Type', accountType, this.changeAccountType, [{ value: AccountTypes.EXPENSE, title: 'Spending' }, { value: AccountTypes.REVENUE, title: 'Revenue' }]);
-    },
-
-    // mode panel
-
-    changeMode: function changeMode(displayMode) {
-        dispatcher.dispatch({
-            actionType: ActionTypes.COMPONENT_STATE_CHANGE,
-            payload: {
-                id: this.props.storeId,
-                changes: [{ name: 'displayMode', value: displayMode }]
-            }
-        });
-    },
-
-    modePanel: function modePanel(panelWidth) {
-        var displayMode = stateStore.getValue(this.props.storeId, 'displayMode');
-        return this.buttonPanel(panelWidth, 'Display', displayMode, this.changeMode, [{ value: 'chart', title: 'Charts' }, { value: 'table', title: 'Table' }]);
-    },
-
-    // detail panel
-    changeDetailLevel: function changeDetailLevel(which) {
-        dispatcher.dispatch({
-            actionType: ActionTypes.COMPONENT_STATE_CHANGE,
-            payload: {
-                id: this.props.storeId,
-                changes: [{ name: 'selectedLevel', value: Number(which) }]
-            }
-        });
-    },
-
-    detailPanel: function detailPanel(panelWidth) {
-        var level = stateStore.getValue(this.props.storeId, 'selectedLevel');
-        return this.buttonPanel(panelWidth, 'Detail Level', level, this.changeDetailLevel, [{ value: 1, title: 'Department' }, { value: 2, title: 'Division' }, { value: 3, title: 'Account' }]);
-    },
-
-    // year panel
-    changeYear: function changeYear(value) {
-        dispatcher.dispatch({
-            actionType: ActionTypes.COMPONENT_STATE_CHANGE,
-            payload: {
-                id: this.props.storeId,
-                changes: [{ name: 'currentYear', value: value }]
-            }
-        });
-    },
-
-    yearPanel: function yearPanel(panelWidth) {
-        var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
-        var accountType = stateStore.getValue(this.props.storeId, 'accountType');
-        var currentYear = stateStore.getValue(this.props.storeId, 'currentYear');
-        var dm = dataModelStore.getModel(dataModelId);
-        var newData = dm.checkData({
-            accountTypes: [accountType],
-            startPath: [],
-            nLevels: 4
-        }, false);
-
-        var options;
-        if (newData == null) {
-            options = [{ title: '(loading...)' }];
-        } else {
-            if (currentYear < 0 && newData != null) currentYear = newData.periods.length - 1;
-            options = newData.periods.map(function (year, index) {
-                return { value: index, title: year };
-            });
-        }
-        return this.buttonPanel(panelWidth, 'Year', currentYear, this.changeYear, options);
-    },
-    /*
-        middleButtons: function(displayMode) {
-            if (displayMode == 'chart') {
-                var spacer = String.fromCharCode(160) + String.fromCharCode(160) + String.fromCharCode(160);
-                var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
-                var dm = dataModelStore.getModel(dataModelId);
-                var accountType = stateStore.getValue(this.props.storeId, 'accountType');
-                var currentYear = stateStore.getValue(this.props.storeId, 'currentYear');
-                var newData = dm.checkData({
-                    accountTypes:[accountType],
-                    startPath: [],
-                    nLevels: 4
-                }, false);
-                var headers = (newData==null)?['-']:newData.periods;
-                if (currentYear < 0 && newData != null) currentYear = newData.periods.length-1;
-                return (
-                    <div className="col-xs-5">
-                        <form className="form-inline">
-                            <div className="form-group">
-                                <label style={{marginTop:4, fontSize:"small"}}>Year:<span>{spacer}</span></label>
-    
-                                <select style={{fontSize:"small"}} className="form-control" onChange={this.onYearChange} value={currentYear}>
-                                    {headers.map(function (item, index) {
-                                        return (
-                                            <option key={index} value={index}>{item}</option>
-                                        )
-                                    })}
-                                </select>
-                            </div>
-                        </form>
-                    </div>
-                )
-            }
-            else {
-                var level = stateStore.getValue(this.props.storeId, 'selectedLevel');
-                var spacer = String.fromCharCode(160) + String.fromCharCode(160) + String.fromCharCode(160);
-                var yes = "btn btn-xs btn-primary", no = "btn btn-xs btn-normal";
-                var yesStyle = {marginTop: 4, marginBottom: 2, color: "white"}, noStyle = {
-                    marginTop: 4,
-                    marginBottom: 2,
-                    color: "black"
-                };
-                return (
-                    <div className="col-xs-5">
-                        <b style={{marginTop:4, fontSize:"small"}}>Detail Level:</b>
-                        <span>{spacer}</span>
-                        <button style={(level==1)?yesStyle:noStyle} className={(level==1)?yes:no}
-                                onClick={this.detailLevel.bind(null, 1)}>Department
-                        </button>
-                        <span>{spacer}</span>
-                        <button style={(level==2)?yesStyle:noStyle} className={(level==2)?yes:no}
-                                onClick={this.detailLevel.bind(null, 2)}>Division
-                        </button>
-                        <span>{spacer}</span>
-                        <button style={(level==3)?yesStyle:noStyle} className={(level==3)?yes:no}
-                                onClick={this.detailLevel.bind(null, 3)}>Account
-                        </button>
-                    </div>
-                )
-            }
-        },
-    */
     renderCharts: function renderCharts() {
         var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
         var dm = dataModelStore.getModel(dataModelId);
@@ -35918,10 +36078,10 @@ var WhatsNewPage = _react2['default'].createClass({
     }
 });
 
-exports['default'] = WhatsNewPage;
+exports['default'] = ShowMePage;
 module.exports = exports['default'];
 
-},{"../common/ApiActions":258,"../common/BudgetAppDispatcher":259,"../common/IdGenerator":260,"../constants/AccountTypes":283,"../constants/ActionTypes":284,"../constants/Common":285,"../stores/ConfigStore":292,"../stores/DataModelStore":293,"../stores/DatasetStore":294,"../stores/StateStore":295,"./AvbTreemap":261,"./HistoryTable":265,"react":257}],268:[function(require,module,exports){
+},{"../common/ApiActions":258,"../common/BudgetAppDispatcher":259,"../common/IdGenerator":260,"../constants/AccountTypes":288,"../constants/ActionTypes":289,"../constants/Common":290,"../stores/ConfigStore":297,"../stores/DataModelStore":298,"../stores/DatasetStore":299,"../stores/StateStore":300,"./AccountTypeButtonPanel":261,"./AvbTreemap":262,"./DetailLevelButtonPanel":267,"./DisplayModeButtonPanel":268,"./HistoryTable":269,"./YearButtonPanel":278,"react":257}],272:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -35940,6 +36100,7 @@ var SimpleCard = _react2['default'].createClass({
     displayName: 'SimpleCard',
 
     propTypes: {
+        site: _react2['default'].PropTypes.object.isRequired,
         componentData: _react2['default'].PropTypes.object.isRequired,
         componentProps: _react2['default'].PropTypes.object.isRequired,
         storeId: _react2['default'].PropTypes.number.isRequired
@@ -35983,7 +36144,7 @@ var SimpleCard = _react2['default'].createClass({
 exports['default'] = SimpleCard;
 module.exports = exports['default'];
 
-},{"../stores/CardStore":291,"react":257}],269:[function(require,module,exports){
+},{"../stores/CardStore":296,"react":257}],273:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -36072,6 +36233,7 @@ var Site = _react2['default'].createClass({
         var page = configStore.getConfiguration('pages', currentPage);
 
         var layoutProps = {
+            site: this.props.site,
             layout: page.layout,
             components: page.components,
             reactComponents: this.props.reactComponents
@@ -36142,7 +36304,7 @@ var Site = _react2['default'].createClass({
 exports['default'] = Site;
 module.exports = exports['default'];
 
-},{"../common/BudgetAppDispatcher":259,"../constants/ActionTypes":284,"../stores/ConfigStore":292,"../stores/DatasetStore":294,"../stores/StateStore":295,"./BootstrapLayout":262,"./SiteNavigation":270,"react":257}],270:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":259,"../constants/ActionTypes":289,"../stores/ConfigStore":297,"../stores/DatasetStore":299,"../stores/StateStore":300,"./BootstrapLayout":263,"./SiteNavigation":274,"react":257}],274:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -36168,9 +36330,7 @@ var SiteNavigation = _react2['default'].createClass({
         pages: _react2['default'].PropTypes.array.isRequired
     },
 
-    goHome: (function () {
-        console.log('Go home');
-        console.log('To: ' + this.props.pages[0]);
+    goHome: function goHome() {
         dispatcher.dispatch({
             actionType: ActionTypes.STATE_CHANGE,
             payload: {
@@ -36180,7 +36340,7 @@ var SiteNavigation = _react2['default'].createClass({
                 }]
             }
         });
-    }).bind(undefined),
+    },
 
     render: function render() {
 
@@ -36223,7 +36383,7 @@ var SiteNavigation = _react2['default'].createClass({
                     { className: 'navbar-header' },
                     _react2['default'].createElement(
                         'button',
-                        { type: 'button', 'class': 'navbar-toggle collapsed', 'data-toggle': 'collapse', 'data-target': '#navbar', 'aria-expanded': 'false', 'aria-controls': 'navbar' },
+                        { type: 'button', className: 'navbar-toggle collapsed', 'data-toggle': 'collapse', 'data-target': '#navbar', 'aria-expanded': 'false', 'aria-controls': 'navbar' },
                         _react2['default'].createElement(
                             'span',
                             { className: 'sr-only' },
@@ -36260,7 +36420,7 @@ var SiteNavigation = _react2['default'].createClass({
 exports['default'] = SiteNavigation;
 module.exports = exports['default'];
 
-},{"../common/BudgetAppDispatcher":259,"../constants/ActionTypes":284,"../stores/ConfigStore":292,"../stores/StateStore":295,"react":257}],271:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":259,"../constants/ActionTypes":289,"../stores/ConfigStore":297,"../stores/StateStore":300,"react":257}],275:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -36279,6 +36439,7 @@ var SlideShow = _react2['default'].createClass({
     displayName: 'SlideShow',
 
     propTypes: {
+        site: _react2['default'].PropTypes.object.isRequired,
         componentData: _react2['default'].PropTypes.object.isRequired,
         componentProps: _react2['default'].PropTypes.object.isRequired,
         storeId: _react2['default'].PropTypes.number.isRequired
@@ -36351,7 +36512,7 @@ var SlideShow = _react2['default'].createClass({
 exports['default'] = SlideShow;
 module.exports = exports['default'];
 
-},{"../stores/CardStore":291,"react":257}],272:[function(require,module,exports){
+},{"../stores/CardStore":296,"react":257}],276:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -36408,7 +36569,7 @@ var VerticalBarChart = _react2['default'].createClass({
 exports['default'] = VerticalBarChart;
 module.exports = exports['default'];
 
-},{"./aux/D3BarChart":274,"d3":96,"react":257}],273:[function(require,module,exports){
+},{"./aux/D3BarChart":279,"d3":96,"react":257}],277:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -36441,10 +36602,15 @@ var dispatcher = require('../common/BudgetAppDispatcher');
 var ActionTypes = require('../constants/ActionTypes');
 var CommonConstants = require('../constants/Common');
 
+var AccountTypeButtonPanel = require('./AccountTypeButtonPanel');
+var DetailLevelButtonPanel = require('./DetailLevelButtonPanel');
+var DisplayModeButtonPanel = require('./DisplayModeButtonPanel');
+
 var WhatsNewPage = _react2['default'].createClass({
     displayName: 'WhatsNewPage',
 
     propTypes: {
+        site: _react2['default'].PropTypes.object.isRequired,
         componentData: _react2['default'].PropTypes.object.isRequired,
         componentProps: _react2['default'].PropTypes.object.isRequired,
         storeId: _react2['default'].PropTypes.number.isRequired
@@ -36472,7 +36638,7 @@ var WhatsNewPage = _react2['default'].createClass({
                 apiActions.requestDatasetIfNeeded(id);
             });
 
-            dm = dataModelStore.createModel(ids, this.props.dataInitialization);
+            dm = dataModelStore.createModel(ids, this.props.dataInitialization, null);
             var subComponents = {
                 chart: {},
                 table: {}
@@ -36525,9 +36691,9 @@ var WhatsNewPage = _react2['default'].createClass({
             _react2['default'].createElement(
                 'div',
                 { className: 'row ' },
-                this.typePanel(3),
-                this.modePanel(3),
-                this.detailPanel(6)
+                _react2['default'].createElement(AccountTypeButtonPanel, { columns: '3', storeId: this.props.storeId }),
+                _react2['default'].createElement(DisplayModeButtonPanel, { columns: '3', storeId: this.props.storeId }),
+                _react2['default'].createElement(DetailLevelButtonPanel, { columns: '6', storeId: this.props.storeId })
             ),
             _react2['default'].createElement('hr', { style: { marginTop: 10, marginBottom: 10 } })
         );
@@ -36565,7 +36731,6 @@ var WhatsNewPage = _react2['default'].createClass({
     },
 
     // type panel
-
     changeAccountType: function changeAccountType(type) {
         dispatcher.dispatch({
             actionType: ActionTypes.COMPONENT_STATE_CHANGE,
@@ -36582,7 +36747,6 @@ var WhatsNewPage = _react2['default'].createClass({
     },
 
     // mode panel
-
     changeMode: function changeMode(displayMode) {
         dispatcher.dispatch({
             actionType: ActionTypes.COMPONENT_STATE_CHANGE,
@@ -36829,7 +36993,103 @@ var WhatsNewPage = _react2['default'].createClass({
 exports['default'] = WhatsNewPage;
 module.exports = exports['default'];
 
-},{"../common/ApiActions":258,"../common/BudgetAppDispatcher":259,"../common/IdGenerator":260,"../constants/AccountTypes":283,"../constants/ActionTypes":284,"../constants/Common":285,"../data/DatasetUtilities":290,"../stores/ConfigStore":292,"../stores/DataModelStore":293,"../stores/DatasetStore":294,"../stores/StateStore":295,"./ChangeExplorer":264,"./VerticalBarChart":272,"react":257}],274:[function(require,module,exports){
+},{"../common/ApiActions":258,"../common/BudgetAppDispatcher":259,"../common/IdGenerator":260,"../constants/AccountTypes":288,"../constants/ActionTypes":289,"../constants/Common":290,"../data/DatasetUtilities":295,"../stores/ConfigStore":297,"../stores/DataModelStore":298,"../stores/DatasetStore":299,"../stores/StateStore":300,"./AccountTypeButtonPanel":261,"./ChangeExplorer":266,"./DetailLevelButtonPanel":267,"./DisplayModeButtonPanel":268,"./VerticalBarChart":276,"react":257}],278:[function(require,module,exports){
+/*
+	React component to create an 'Account Type' panel of buttons for the 'page toolbar' of the app.
+*/
+
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+	value: true
+});
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; }
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var dataModelStore = require('../stores/DataModelStore');
+var dispatcher = require('../common/BudgetAppDispatcher');
+var stateStore = require('../stores/StateStore');
+var ActionTypes = require('../constants/ActionTypes');
+
+var ButtonPanel = require('./ButtonPanel');
+
+var YearButtonPanel = (function (_ButtonPanel) {
+	function YearButtonPanel(props) {
+		_classCallCheck(this, YearButtonPanel);
+
+		_get(Object.getPrototypeOf(YearButtonPanel.prototype), 'constructor', this).call(this, props);
+		this.state = this.getStateFromStore();
+	}
+
+	_inherits(YearButtonPanel, _ButtonPanel);
+
+	_createClass(YearButtonPanel, [{
+		key: 'getStateFromStore',
+		value: function getStateFromStore() {
+			var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
+			var accountType = stateStore.getValue(this.props.storeId, 'accountType');
+			var currentYear = stateStore.getValue(this.props.storeId, 'currentYear');
+
+			var dm = dataModelStore.getModel(dataModelId);
+			var newData = dm.checkData({
+				accountTypes: [accountType],
+				startPath: [],
+				nLevels: 4
+			}, false);
+
+			var options;
+			if (newData == null) {
+				options = [{ title: '(loading...)' }];
+			} else {
+				if (currentYear < 0 && newData != null) currentYear = newData.periods.length - 1;
+				options = newData.periods.map(function (year, index) {
+					return { value: index, title: year };
+				});
+			}
+
+			return { value: currentYear, options: options };
+		}
+	}, {
+		key: 'onButtonClicked',
+		value: function onButtonClicked(newValue) {
+			dispatcher.dispatch({
+				actionType: ActionTypes.COMPONENT_STATE_CHANGE,
+				payload: {
+					id: this.props.storeId,
+					changes: [{ name: 'currentYear', value: newValue }]
+				}
+			});
+			// update state to make the button change appearance
+			this.setState(this.getStateFromStore());
+		}
+	}]);
+
+	return YearButtonPanel;
+})(ButtonPanel);
+
+YearButtonPanel.propTypes = ButtonPanel.PANEL_PROP_TYPES;
+YearButtonPanel.defaultProps = {
+	storeId: -1,
+	columns: 6,
+	title: 'Year'
+};
+
+exports['default'] = YearButtonPanel;
+module.exports = exports['default'];
+
+},{"../common/BudgetAppDispatcher":259,"../constants/ActionTypes":289,"../stores/DataModelStore":298,"../stores/StateStore":300,"./ButtonPanel":264,"react":257}],279:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -36939,6 +37199,7 @@ d3Chart.computeScales = function (data, width, height, margin) {
     var extent = this.computeExtent(data);
     if (extent[0] > 0) extent[0] = 0;
     if (Math.abs(extent[0]) > extent[1]) extent[1] = Math.abs(extent[0]);
+    // Let's try just symmetrizing so that x=0 is always in the middle.
     var m = Math.max(Math.abs(extent[0]), Math.abs(extent[1]));
     extent[0] = -m;
     extent[1] = m;
@@ -36953,7 +37214,7 @@ d3Chart.computeScales = function (data, width, height, margin) {
 exports['default'] = d3Chart;
 module.exports = exports['default'];
 
-},{"../../data/DatasetUtilities":290,"d3":96}],275:[function(require,module,exports){
+},{"../../data/DatasetUtilities":295,"d3":96}],280:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -37257,7 +37518,7 @@ exports['default'] = {
 };
 module.exports = exports['default'];
 
-},{"./avb/cards":276,"./avb/chart":277,"./avb/navbar":278,"./avb/statistics":279,"./avb/table":280,"./avb/treemap":281,"d3":96}],276:[function(require,module,exports){
+},{"./avb/cards":281,"./avb/chart":282,"./avb/navbar":283,"./avb/statistics":284,"./avb/table":285,"./avb/treemap":286,"d3":96}],281:[function(require,module,exports){
 /*
 File: cards.js
 
@@ -37373,7 +37634,7 @@ var avb_cards = (function () {
 exports["default"] = avb_cards;
 module.exports = exports["default"];
 
-},{}],277:[function(require,module,exports){
+},{}],282:[function(require,module,exports){
 /*
 File: chart.js
 
@@ -37962,7 +38223,7 @@ var avb_chart = (function () {
 exports['default'] = avb_chart;
 module.exports = exports['default'];
 
-},{"./utilities":282}],278:[function(require,module,exports){
+},{"./utilities":287}],283:[function(require,module,exports){
 /*
 File: navbar.js
 
@@ -38169,7 +38430,7 @@ var avb_navbar = (function () {
 exports['default'] = avb_navbar;
 module.exports = exports['default'];
 
-},{}],279:[function(require,module,exports){
+},{}],284:[function(require,module,exports){
 /*
 File: statistics.js
 
@@ -38391,7 +38652,7 @@ exports["default"] = {
 };
 module.exports = exports["default"];
 
-},{"./utilities":282}],280:[function(require,module,exports){
+},{"./utilities":287}],285:[function(require,module,exports){
 /*
 File: table.js
 
@@ -38831,7 +39092,7 @@ var avb_table = (function () {
 exports["default"] = avb_table;
 module.exports = exports["default"];
 
-},{}],281:[function(require,module,exports){
+},{}],286:[function(require,module,exports){
 /*
 File: treemap.js
 
@@ -39450,7 +39711,7 @@ var avb_treemap = (function () {
 exports["default"] = avb_treemap;
 module.exports = exports["default"];
 
-},{"./utilities":282}],282:[function(require,module,exports){
+},{"./utilities":287}],287:[function(require,module,exports){
 
 /*
  *   Detects IE browsers
@@ -39607,7 +39868,7 @@ exports['default'] = {
 };
 module.exports = exports['default'];
 
-},{}],283:[function(require,module,exports){
+},{}],288:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -39620,7 +39881,7 @@ module.exports = {
     CONTRA: 6
 };
 
-},{}],284:[function(require,module,exports){
+},{}],289:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -39629,7 +39890,7 @@ module.exports = {
     DATASET_RECEIVED: "DATASET_RECEIVED"
 };
 
-},{}],285:[function(require,module,exports){
+},{}],290:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -39637,7 +39898,7 @@ module.exports = {
     COMPOSED_COMPONENT: 1
 };
 
-},{}],286:[function(require,module,exports){
+},{}],291:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -39648,7 +39909,7 @@ module.exports = {
     DS_STATE_READY: "DS_STATE_READY"
 };
 
-},{}],287:[function(require,module,exports){
+},{}],292:[function(require,module,exports){
 'use strict';
 
 function Card(timestamp, title, body, link, image) {
@@ -39667,7 +39928,7 @@ function Card(timestamp, title, body, link, image) {
 
 module.exports = Card;
 
-},{}],288:[function(require,module,exports){
+},{}],293:[function(require,module,exports){
 'use strict';
 
 var DatasetStatus = require('../constants/DatasetStatus');
@@ -39680,6 +39941,7 @@ var datasetUtilities = require('./DatasetUtilities');
 
 function DataModel(id, datasetIds) {
     var initialCommands = arguments[2] === undefined ? null : arguments[2];
+    var categoryMap = arguments[3] === undefined ? null : arguments[3];
 
     this.id = id;
     this.timestamp = -1;
@@ -39944,7 +40206,7 @@ function DataModel(id, datasetIds) {
 
 module.exports = DataModel;
 
-},{"../common/BudgetAppDispatcher":259,"../constants/AccountTypes":283,"../constants/ActionTypes":284,"../constants/DatasetStatus":286,"../stores/DatasetStore":294,"./DatasetUtilities":290}],289:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":259,"../constants/AccountTypes":288,"../constants/ActionTypes":289,"../constants/DatasetStatus":291,"../stores/DatasetStore":299,"./DatasetUtilities":295}],294:[function(require,module,exports){
 'use strict';
 
 var DatasetStatus = require('../constants/DatasetStatus');
@@ -39988,7 +40250,7 @@ function Dataset(timestamp, sourceId) {
 
 module.exports = Dataset;
 
-},{"../constants/DatasetStatus":286}],290:[function(require,module,exports){
+},{"../constants/DatasetStatus":291}],295:[function(require,module,exports){
 'use strict';
 
 var assign = require('object-assign');
@@ -40200,7 +40462,7 @@ var DatasetUtilities = {
 
 module.exports = DatasetUtilities;
 
-},{"../common/BudgetAppDispatcher":259,"../constants/AccountTypes":283,"../constants/ActionTypes":284,"../constants/DatasetStatus":286,"../stores/DatasetStore":294,"object-assign":100}],291:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":259,"../constants/AccountTypes":288,"../constants/ActionTypes":289,"../constants/DatasetStatus":291,"../stores/DatasetStore":299,"object-assign":100}],296:[function(require,module,exports){
 'use strict';
 
 var dispatcher = require('../common/BudgetAppDispatcher');
@@ -40258,7 +40520,7 @@ dispatcher.register(function (action) {
 
 module.exports = CardStore;
 
-},{"../common/BudgetAppDispatcher":259,"../constants/ActionTypes":284,"../data/Card":287,"events":94,"object-assign":100}],292:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":259,"../constants/ActionTypes":289,"../data/Card":292,"events":94,"object-assign":100}],297:[function(require,module,exports){
 'use strict';
 
 var dispatcher = require('../common/BudgetAppDispatcher');
@@ -40344,7 +40606,7 @@ dispatcher.register(function (action) {
 
 module.exports = ConfigStore;
 
-},{"../common/BudgetAppDispatcher":259,"../constants/ActionTypes":284,"events":94,"object-assign":100}],293:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":259,"../constants/ActionTypes":289,"events":94,"object-assign":100}],298:[function(require,module,exports){
 'use strict';
 
 var dispatcher = require('../common/BudgetAppDispatcher');
@@ -40364,8 +40626,8 @@ var DataModelStore = assign({}, EventEmitter.prototype, {
     _models: [],
     dependencyMap: [],
 
-    createModel: function createModel(inputDatasets, initialization) {
-        var dm = new DataModel(this.modelIdCounter++, inputDatasets, initialization);
+    createModel: function createModel(inputDatasets, initialization, categoryMap) {
+        var dm = new DataModel(this.modelIdCounter++, inputDatasets, initialization, categoryMap);
         inputDatasets.forEach((function (datasetId) {
             this.addDependency(datasetId, dm.id);
         }).bind(this));
@@ -40413,7 +40675,7 @@ dispatcher.register(function (action) {
 
 module.exports = DataModelStore;
 
-},{"../common/BudgetAppDispatcher":259,"../constants/ActionTypes":284,"../data/DataModel":288,"events":94,"object-assign":100}],294:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":259,"../constants/ActionTypes":289,"../data/DataModel":293,"events":94,"object-assign":100}],299:[function(require,module,exports){
 'use strict';
 
 var dispatcher = require('../common/BudgetAppDispatcher');
@@ -40483,7 +40745,7 @@ DatasetStore.dispatchToken = dispatcher.register(function (action) {
 
 module.exports = DatasetStore;
 
-},{"../common/BudgetAppDispatcher":259,"../constants/ActionTypes":284,"../data/Dataset":289,"events":94,"object-assign":100}],295:[function(require,module,exports){
+},{"../common/BudgetAppDispatcher":259,"../constants/ActionTypes":289,"../data/Dataset":294,"events":94,"object-assign":100}],300:[function(require,module,exports){
 'use strict';
 
 var dispatcher = require('../common/BudgetAppDispatcher');
@@ -40645,4 +40907,4 @@ dispatcher.register(function (action) {
 module.exports = StateStore;
 /*path OR id, key */
 
-},{"../common/BudgetAppDispatcher":259,"../constants/ActionTypes":284,"events":94,"object-assign":100}]},{},[1]);
+},{"../common/BudgetAppDispatcher":259,"../constants/ActionTypes":289,"events":94,"object-assign":100}]},{},[1]);
