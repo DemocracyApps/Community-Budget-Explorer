@@ -31,5 +31,14 @@
             <p>{!! $site->name !!}</p>
         </div>
     </div>
+    <div class="row">
+        <div class="col-xs-1"></div>
+        <div class="col-xs-2">
+            <p><b>Category Map File: </b> </p>
+        </div>
+        <div class="col-xs-9">
+            <p>{!! $site->getProperty('map') !!}</p>
+        </div>
+    </div>
 
 @stop

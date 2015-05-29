@@ -45,6 +45,10 @@ class BuildController extends Controller {
 
         $site = Site::where('slug','=', $slug)->first();
         $site->name = $request->get('name');
+        if ($request->has('map')) {
+            $mapName = $request->get('map');
+            $site->setProperty('map', $mapName);
+        }
         $site->save();
         return redirect('/build/'.$site->slug);
     }

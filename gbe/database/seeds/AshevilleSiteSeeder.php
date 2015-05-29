@@ -33,6 +33,7 @@ class AshevilleSiteSeeder extends Seeder
         $site->government = 1; // Ditto
         $site->slug = 'asheville';
         $site->published = true;
+        $site->setProperty('map', 'serviceareas.json');
         $site->save();
 
 
