@@ -89,7 +89,7 @@ for (i=0; i<GBEVars.pages.length; ++i) {
     pages.push(page.id);
 }
 
-//  Data
+//  Data:
 //   This is an array of data objects. In the case of cards, the data object contains the
 //   actual data. In the case of datasets, the object contains the dataset ID needed to make an API
 //   request. These need to be thrown into the card and dataset stores.

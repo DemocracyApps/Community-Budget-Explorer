@@ -13,13 +13,6 @@ var AvbTreemap = React.createClass({
         accountType: React.PropTypes.string.isRequired
     },
 
-    getInitialState: function() {
-        return {
-            hoverMessage: "Mouse over bars to see details"
-        };
-    },
-
-
     findNext: function(current, key) {
         let index = -1;
         for (let i=0; index < 0 && i<current.sub.length; ++i) {

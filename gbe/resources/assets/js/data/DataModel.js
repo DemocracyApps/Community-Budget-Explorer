@@ -15,6 +15,7 @@ function DataModel(id, datasetIds, initialCommands = null, categoryMap = null) {
     this.initializationParameters = null;
     this.currentCommands = null;
     this.data = null;
+    this.categoryMap = null;
 
     for (let i=0; i<datasetIds.length; ++i) {
         var ds = datasetStore.getDataset(datasetIds[i]);
@@ -23,9 +24,27 @@ function DataModel(id, datasetIds, initialCommands = null, categoryMap = null) {
 
     if (initialCommands != null) this.initializationParameters = initialCommands;
 
+    if (categoryMap && categoryMap.translations && categoryMap.translations.length > 0) {
+        let tree = {};
+
+        for (let i=0; i<categoryMap.translations.length; ++i) {
+            let current = tree;
+            let t = categoryMap.translations[i];
+            for (let j=0; j<t.from.length; ++j) {
+                if (!(t.from[j] in current)) {
+                    current[t.from[j]] = {};
+                }
+                current = current[t.from[j]];
+            }
+            current.to = t.to;
+        }
+        this.categoryMap =  tree;
+    }
+
     this.checkReady = function () {
         let needsUpdate = false;
         this.status = DatasetStatus.DS_STATE_READY;
+        let oldCount = this.readyCount;
         this.readyCount = 0;
         for (let i=0; i<this.rawDatasets.length; ++i) {
 
@@ -37,10 +56,10 @@ function DataModel(id, datasetIds, initialCommands = null, categoryMap = null) {
                 needsUpdate = true;
             }
         }
-        console.log("checkready: readyCount = " + this.readyCount);
         if (this.readyCount < this.rawDatasets.length) {
             this.status = (this.readyCount == 0?DatasetStatus.DS_STATE_PENDING:DatasetStatus.DS_STATE_PARTIAL);
         }
+        if (oldCount != this.readyCount) needsUpdate = true;
         return needsUpdate;
     };
 
@@ -55,8 +74,8 @@ function DataModel(id, datasetIds, initialCommands = null, categoryMap = null) {
         this.data = datasetUtilities.mergeDatasets(this.rawDatasets, {
             hierarchy:this.initializationParameters.hierarchy,
             accountTypes:this.initializationParameters.accountTypes,
-            amountThreshold:amountThreshold
-        });
+            amountThreshold:amountThreshold,
+        }, this.categoryMap);
     }
 
     this.getTimestamp = function() {
@@ -76,7 +95,7 @@ function DataModel(id, datasetIds, initialCommands = null, categoryMap = null) {
         /*
          * TODO: Need a better way to deal with categories across (and within) datasets. This assumes they are uniform.
          */
-        if (this.readyCount > 0) {
+        if (this.readyCount > 0 && needUpdate) {
             this.data = null;
 
             let amountThreshold = 0.0;
@@ -87,9 +106,8 @@ function DataModel(id, datasetIds, initialCommands = null, categoryMap = null) {
                 hierarchy:this.initializationParameters.hierarchy,
                 accountTypes:this.initializationParameters.accountTypes,
                 amountThreshold:amountThreshold
-            });
+            }, this.categoryMap);
         }
-        console.log("this.dataChanged returning " + needUpdate);
         return needUpdate;
     };
 
@@ -140,12 +158,7 @@ function DataModel(id, datasetIds, initialCommands = null, categoryMap = null) {
         }
     };
 
-    this.categoryMap = function categoryMap (categories) {
-
-    };
-
     this.getData = function getData (commands, partialOk=false) {
-        console.log("In getData with commands = " + JSON.stringify(commands));
         if (this.status == DatasetStatus.DS_STATE_READY ||
             (this.status == DatasetStatus.DS_STATE_PARTIAL && partialOk)) {
             this.currentCommands = commands;
@@ -187,12 +200,11 @@ function DataModel(id, datasetIds, initialCommands = null, categoryMap = null) {
              * What want to do is include only those that
              *    a. have a type in accountTypes (or accountTypes is null)
              *    b. match the startPath
-             * then we want to traverse the remaining path for maxLevels and copy over
+             * then we want to copy over nLevels of the remaining path, aggregating anything deeper than that
              */
             var tree = {};
             for (let i=0; i<this.data.length; ++i) {
                 let item = this.data[i];
-                //let categories = this.categoryMap(item.categories);
                 // See if it's an included account type
                 if (accountTypes == null || accountTypes.indexOf(item.accountType)>=0) {
                     // Now see if it matches startPath

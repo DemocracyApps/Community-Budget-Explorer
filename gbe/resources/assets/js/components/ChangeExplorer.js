@@ -83,7 +83,7 @@ var ChangeExplorer = React.createClass({
                 apiActions.requestDatasetIfNeeded(id);
             });
 
-            dm = dataModelStore.createModel(ids, this.props.dataInitialization, null);
+            dm = dataModelStore.createModel(ids, this.props.dataInitialization, this.props.site.categoryMap);
             stateStore.setComponentState(this.props.storeId,
                 {
                     accountType: AccountTypes.EXPENSE,
@@ -91,12 +91,6 @@ var ChangeExplorer = React.createClass({
                     selectedLevel: 0
                 });
         }
-    },
-
-    componentWillUnmount: function () {
-        console.log("ChangeExplorer will unmount");
-        //var dataModelId = stateStore.getComponentStateValue(this.props.storeId, 'dataModelId');
-        //if (dataModelId != null) dataModelStore.deleteModel(dataModelId);
     },
 
     componentWillReceiveProps: function () {
@@ -249,14 +243,12 @@ var ChangeExplorer = React.createClass({
         var accountType = this.getAccountType();
         //var selectedLevel = stateStore.getValue(this.props.storeId, 'selectedLevel');
         var selectedLevel = this.getSelectedLevel();
-        console.log("Current level = " + selectedLevel);
         var newData = dm.getData({
             accountTypes:[accountType],
             startPath: [],
             nLevels: selectedLevel+1
         }, false);
         var dataNull = (newData == null);
-        console.log("Rendering ChangeExplorer: dataModelId = " + dataModelId + ", dataNull = " + dataNull);
 
         if (newData == null) {
             return (
