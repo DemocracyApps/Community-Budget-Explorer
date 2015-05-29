@@ -59,12 +59,17 @@ class AshevilleSiteSeeder extends Seeder
         $card->site = $site->id;
         $card->card_set = $cardset->id;
         $card->ordinal = 1;
-        $card->title = 'City Council Budget Goals';
-        $card->body = "These are the goals for the budget";
-
+        $card->title = 'Revenue Highlights';
+        $card->body ="
+* 1.5 cent property tax increase to 47.5 cents/$100 of assessed value
+* 4% increase in sales tax revenue
+* 12% decrease in licensing and permitting revenue
+* 5.4% inter-governmental revenue increase in General Fund
+* No appropriation from unassigned fund balance";
+        $card->link = "/docs/asheville/Revenue_Summary.pdf";
         $picName = uniqid('pic') . '.jpg';
         $path = public_path().'/img/cards/'.$picName;
-        \Image::make(public_path().'/img/init/slide1.jpg')->save($path);
+        \Image::make(public_path().'/img/init/slide2.jpg')->save($path);
         $card->image = '/img/cards/'.$picName;
         $card->save();
 
@@ -72,19 +77,6 @@ class AshevilleSiteSeeder extends Seeder
         $card->site = $site->id;
         $card->card_set = $cardset->id;
         $card->ordinal = 2;
-        $card->title = 'Revenue Highlights';
-        $card->body = "These are the big changes to revenue";
-        $picName = uniqid('pic') . '.jpg';
-        $path = public_path().'/img/cards/'.$picName;
-        \Image::make(public_path().'/img/init/slide2.jpg')->save($path);
-        $card->image = '/img/cards/'.$picName;
-
-        $card->save();
-
-        $card = new Card();
-        $card->site = $site->id;
-        $card->card_set = $cardset->id;
-        $card->ordinal = 3;
         $card->title = 'Spending Highlights';
         $card->body = "These are the big changes to spending";
         $picName = uniqid('pic') . '.jpg';
@@ -92,6 +84,24 @@ class AshevilleSiteSeeder extends Seeder
         \Image::make(public_path().'/img/init/slide3.jpg')->save($path);
         $card->image = '/img/cards/'.$picName;
         $card->save();
+
+        $card = new Card();
+        $card->site = $site->id;
+        $card->card_set = $cardset->id;
+        $card->ordinal = 3;
+        $card->title = 'City Council Budget Goals';
+        $card->body = "
+* Classification and Compensation Study, Managed Savings
+* Asheville Police Department Management Goals & Strategic Plan
+* Reducing Taxpayer Subsidy of Programs
+* Continuing Sound Financial Management by Addressing Long-Term Liabilities";
+        $card->link = "/docs/asheville/Council_Budget_Goals.pdf";
+        $picName = uniqid('pic') . '.jpg';
+        $path = public_path().'/img/cards/'.$picName;
+        \Image::make(public_path().'/img/init/slide1.jpg')->save($path);
+        $card->image = '/img/cards/'.$picName;
+        $card->save();
+
 
         /*
          * Now set up the navigation cards
