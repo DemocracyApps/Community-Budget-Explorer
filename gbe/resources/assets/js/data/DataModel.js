@@ -7,7 +7,7 @@ var datasetStore = require('../stores/DatasetStore');
 var datasetUtilities = require('./DatasetUtilities');
 
 
-function DataModel(id, datasetIds, initialCommands = null) {
+function DataModel(id, datasetIds, initialCommands = null, categoryMap = null) {
     this.id = id;
     this.timestamp = -1;
     this.readyCount= 0;

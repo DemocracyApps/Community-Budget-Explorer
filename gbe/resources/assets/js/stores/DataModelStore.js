@@ -15,8 +15,8 @@ var DataModelStore = assign({}, EventEmitter.prototype, {
     _models: [],
     dependencyMap: [],
 
-    createModel: function createModel (inputDatasets, initialization) {
-        var dm = new DataModel(this.modelIdCounter++, inputDatasets, initialization);
+    createModel: function createModel (inputDatasets, initialization, categoryMap) {
+        var dm = new DataModel(this.modelIdCounter++, inputDatasets, initialization, categoryMap);
         inputDatasets.forEach(function (datasetId) {
            this.addDependency(datasetId, dm.id);
         }.bind(this));

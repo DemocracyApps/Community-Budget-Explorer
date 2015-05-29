@@ -83,7 +83,7 @@ var HistoryTable = React.createClass({
                 apiActions.requestDatasetIfNeeded(id);
             });
 
-            dm = dataModelStore.createModel(ids, this.props.dataInitialization);
+            dm = dataModelStore.createModel(ids, this.props.dataInitialization, null);
             stateStore.setComponentState(this.props.storeId,
                 {
                     accountType: AccountTypes.EXPENSE,

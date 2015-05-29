@@ -48,7 +48,7 @@ var WhatsNewPage = React.createClass({
                 apiActions.requestDatasetIfNeeded(id);
             });
 
-            dm = dataModelStore.createModel(ids, this.props.dataInitialization);
+            dm = dataModelStore.createModel(ids, this.props.dataInitialization, null);
             let subComponents = {
                 chart: {},
                 table: {}
