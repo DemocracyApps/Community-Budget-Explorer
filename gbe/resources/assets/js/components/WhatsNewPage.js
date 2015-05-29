@@ -17,6 +17,7 @@ var CommonConstants = require('../constants/Common');
 var WhatsNewPage = React.createClass({
 
     propTypes: {
+        site: React.PropTypes.object.isRequired,
         componentData: React.PropTypes.object.isRequired,
         componentProps: React.PropTypes.object.isRequired,
         storeId: React.PropTypes.number.isRequired

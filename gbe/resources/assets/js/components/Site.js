@@ -68,6 +68,7 @@ var Site = React.createClass({
         var page = configStore.getConfiguration('pages', currentPage);
 
         var layoutProps = {
+            site: this.props.site,
             layout: page.layout,
             components: page.components,
             reactComponents:this.props.reactComponents

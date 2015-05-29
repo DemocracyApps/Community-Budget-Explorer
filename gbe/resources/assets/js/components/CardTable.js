@@ -5,6 +5,7 @@ var cardStore = require('../stores/CardStore');
 var CardTable = React.createClass({
 
     propTypes: {
+        site: React.PropTypes.object.isRequired,
         componentData: React.PropTypes.object.isRequired,
         componentProps: React.PropTypes.object.isRequired,
         storeId: React.PropTypes.number.isRequired
@@ -118,7 +119,7 @@ var CardTable = React.createClass({
             var rowFunction = function (item, index) {
                 return (
                     <div key={index} className="row card-table-row">
-                        {item.map(this.cardFunction.bind(this))}
+                        {item.map(this.cardFunction)}
                     </div>
                 )
             };

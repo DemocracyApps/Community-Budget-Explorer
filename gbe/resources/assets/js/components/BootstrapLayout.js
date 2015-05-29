@@ -13,6 +13,13 @@ import React from 'react';
 
 var BootstrapLayout = React.createClass({
 
+    propTypes: {
+        site: React.PropTypes.object.isRequired,
+        layout: React.PropTypes.object.isRequired,
+        components: React.PropTypes.object.isRequired,
+        reactComponents:React.PropTypes.object.isRequired
+    },
+
     renderComponent: function (component, index) {
         if (! this.props.reactComponents[component.componentName]) {
             console.log("BootstrapLayout - Unable to find component");
@@ -22,6 +29,7 @@ var BootstrapLayout = React.createClass({
         var componentProps = (component.componentProps.length == 0)?{}:component.componentProps;
         return React.createElement(comp, {
             key:index,
+            site: this.props.site,
             componentData:componentData,
             componentProps:componentProps,
             storeId:component.storeId
