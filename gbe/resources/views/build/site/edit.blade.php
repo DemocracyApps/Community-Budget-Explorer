@@ -18,8 +18,8 @@
         </div>
 
         <div class="form-group">
-            {!!  Form::label('map', 'Category Mapping File: ')  !!}
-            {!!  Form::text('map', $site->name, ['class' => 'form-control'])  !!}
+            {!!  Form::label('map', 'Category Mapping File (enter name of file in /public/data/maps): ')  !!}
+            {!!  Form::text('map', $site->getProperty('map'), ['class' => 'form-control'])  !!}
             <br>
             <span class="error">{!!  $errors->first('map')  !!}</span>
             <br>
