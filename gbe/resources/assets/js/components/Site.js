@@ -86,12 +86,8 @@ var Site = React.createClass({
                 <SiteNavigation site={this.props.site} pages={this.props.pages}/>
 
                 <div className="container-fluid">
-                    <div className="row">
-                        <div className="col-xs-12">
-                            <h3 style={{marginTop:5}}>{this.pageTitle(page)}</h3>
-                            {pageDescription(page)}
-                        </div>
-                    </div>
+                    <h1>{this.pageTitle(page)}</h1>
+                    {pageDescription(page)}
                 </div>
                 <div className="container-fluid site-body">
                     <BootstrapLayout {...layoutProps}/>

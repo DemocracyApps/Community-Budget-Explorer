@@ -92,7 +92,40 @@ var WhatsNewPage = React.createClass({
         return ( dataChanged || dm.commandsChanged({startPath: startPath, nLevels: selectedLevel + addLevel}) );
     },
 
-    onAccountTypeChange: function (type) {
+
+	// top options panel
+    optionsPanel: function () {
+        return (
+            <div>
+                <hr style={{marginTop:10, marginBottom:10}}/>
+                <div className="row ">
+                    {this.typePanel(3)}
+                    {this.modePanel(3)}
+                    {this.detailPanel(6)}
+                </div>
+                <hr style={{marginTop:10, marginBottom:10}}/>
+            </div>
+        )
+    },
+
+	// Generic button panel.
+    buttonPanel: function(panelWidth, panelTitle, currentValue, setter, options) {
+        return (
+            <div className={"col-xs-"+panelWidth}>
+                <div className="small"><strong>{panelTitle}:</strong></div>
+                <div className="btn-group" role="group" aria-label={panelTitle}>
+                	{options.map(function(option) {
+			    		var callback = setter.bind(this, option.value);
+			    		return (<button className={"btn btn-default "+(currentValue === option.value ? "active" : "")}
+								   onClick={callback}>{option.title}</button>)
+			    	}, this)}
+                </div>
+            </div>)
+    },
+
+    // type panel
+
+    changeAccountType: function (type) {
         dispatcher.dispatch({
             actionType: ActionTypes.COMPONENT_STATE_CHANGE,
             payload: {
@@ -102,10 +135,17 @@ var WhatsNewPage = React.createClass({
         });
     },
 
-    changeMode: function (e) {
-        var currentMode = stateStore.getValue(this.props.storeId, 'displayMode');
-        var displayMode = currentMode=="chart"?"table":"chart";
+    typePanel: function (panelWidth) {
+        var accountType = stateStore.getValue(this.props.storeId, 'accountType');
+        return this.buttonPanel(panelWidth, "Account Type", accountType, this.changeAccountType, [
+        	{ value:AccountTypes.EXPENSE, title:"Spending" },
+        	{ value:AccountTypes.REVENUE, title:"Revenue" },
+        ]);
+    },
 
+    // mode panel
+
+    changeMode: function (displayMode) {
         dispatcher.dispatch({
             actionType: ActionTypes.COMPONENT_STATE_CHANGE,
             payload: {
@@ -115,66 +155,16 @@ var WhatsNewPage = React.createClass({
         });
     },
 
-    leftPanel: function leftPanel(displayMode) {
-        var spacer = String.fromCharCode(160)+String.fromCharCode(160)+String.fromCharCode(160);
-        var yes="btn btn-default active", no= "btn btn-default ";
-        var yesStyle={marginTop:4, marginBottom:2, color:"white"};
-        var noStyle={color:"black", marginTop:4, marginBottom:2};
-
-        var accountType = stateStore.getValue(this.props.storeId, 'accountType');
-        return (
-            <div className="col-xs-4">
-                <b style={{marginTop:4, fontSize:"small"}}>Account Type:</b>
-                <span>{spacer}</span>
-                <div className="btn-group" role="group" aria-label="First group">
-                    <button
-                            className={(accountType==AccountTypes.EXPENSE)?yes:no}
-                            onClick={this.onAccountTypeChange.bind(null, AccountTypes.EXPENSE)}>Spending</button>
-                    <button
-                            className={(accountType==AccountTypes.REVENUE)?yes:no}
-                            onClick={this.onAccountTypeChange.bind(null, AccountTypes.REVENUE)}>Revenue</button>
-                </div>
-            </div>
-        )
-    },
-
-    modeButtons: function() {
-        var spacer = String.fromCharCode(160)+String.fromCharCode(160)+String.fromCharCode(160);
+    modePanel: function(panelWidth) {
         var displayMode = stateStore.getValue(this.props.storeId, 'displayMode');
-        var yes="btn btn-default active", no= "btn btn-default ";
-        var yesStyle={marginTop:4, marginBottom:2, color:"black"};
-        var noStyle={color:"black", marginTop:4, marginBottom:2};
-        if (displayMode == 'chart') {
-            return (
-                <div className="col-xs-4">
-                    <b style={{marginTop:4, fontSize:"small"}}>Display Mode:</b>
-                    <span>{spacer}</span>
-                    <div className="btn-group" role="group" aria-label="Second group">
-                        <button  className={yes}
-                           onClick={this.changeMode}>Chart View</button>
-                        <button className={no}
-                                onClick={this.changeMode}>Table View</button>
-                    </div>
-                </div>
-            )
-        }
-        else {
-            return (
-                <div className="col-xs-4">
-                    <b style={{marginTop:4, fontSize:"small"}}>Display Mode:</b>
-                    <span>{spacer}</span>
-                    <div className="btn-group" role="group" aria-label="Second group">
-                        <button className={no}
-                           onClick={this.changeMode}>Chart View</button>
-                        <button className={yes}
-                                onClick={this.changeMode}>Table View</button>
-                    </div>
-                </div>
-            )
-        }
-    },
+        return this.buttonPanel(panelWidth, "Display", displayMode, this.changeMode, [
+        	{ value:"chart", title:"Charts"},
+        	{ value:"table", title:"Table"}
+        ]);
+ 	},
 
-    detailLevel: function (which) {
+	// detail panel
+    changeDetailLevel: function (which) {
         dispatcher.dispatch({
             actionType: ActionTypes.COMPONENT_STATE_CHANGE,
             payload: {
@@ -184,42 +174,15 @@ var WhatsNewPage = React.createClass({
         });
     },
 
-    middleButtons: function() {
+    detailPanel: function(panelWidth) {
         var level = stateStore.getValue(this.props.storeId, 'selectedLevel');
-        var spacer = String.fromCharCode(160)+String.fromCharCode(160)+String.fromCharCode(160);
-        var yes="btn btn-default active", no= "btn btn-default ";
-        var yesStyle={marginTop:4, marginBottom:2, color:"white"}, noStyle={marginTop:4, marginBottom:2, color:"black"};
-        return (
-            <div className="col-xs-4">
-                <b style={{marginTop:4, fontSize:"small"}}>Detail Level:</b>
-                <span>{spacer}</span>
-                <div className="btn-group" role="group" aria-label="Third group">
-                    <button className={(level==1)?yes:no}
-                       onClick={this.detailLevel.bind(null, 1)}>Department</button>
-                    <button className={(level==2)?yes:no}
-                       onClick={this.detailLevel.bind(null, 2)}>Division</button>
-                    <button className={(level==3)?yes:no}
-                       onClick={this.detailLevel.bind(null, 3)}>Account</button>
-                </div>
-            </div>
-        )
+        return this.buttonPanel(panelWidth, "Detail Level", level, this.changeDetailLevel, [
+        	{ value:1, title:"Department"},
+        	{ value:2, title:"Division"},
+        	{ value:3, title:"Account"}
+        ]);
     },
 
-    optionsPanel: function interactionPanel() {
-        var displayMode = stateStore.getValue(this.props.storeId, 'displayMode');
-        var selectedLevel = stateStore.getValue(this.props.storeId, 'selectedLevel');
-
-        return (
-            <div>
-                <div className="row ">
-                    {this.leftPanel(displayMode)}
-                    {this.middleButtons()}
-
-                    {this.modeButtons()}
-                </div>
-            </div>
-        )
-    },
 
     computeAreas: function(rows) {
         var ahash = {};
