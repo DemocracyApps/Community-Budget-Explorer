@@ -55,7 +55,20 @@ class SitesController extends Controller {
         $site->apiUrl  = Util::apiPath() . "/organizations/" . $government->id;
         $site->ajaxUrl = Util::ajaxPath('sites', 'base');
         $site->properties = $siteData->properties;
+        $site->categoryMap = null;
 
+        if ($siteData->hasProperty('map')) {
+            $jp = new JsonProcessor();
+            $mapFileName = $siteData->getProperty('map');
+            $path = public_path() . '/data/maps/' . $mapFileName;
+            $specification = \File::get($path);
+
+            $str = $jp->minifyJson($specification);
+            $cfig = $jp->decodeJson($str, true);
+            if ($cfig != null) {
+                $site->categoryMap = $cfig;
+            }
+        }
         $pages = $siteData->getPages();
         if ($pageName==null) $pageName = $pages[0]->shortName;
 
