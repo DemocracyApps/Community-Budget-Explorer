@@ -61,7 +61,7 @@ class AshevilleSiteSeeder extends Seeder
         $card->ordinal = 1;
         $card->title = 'Revenue Highlights';
         $card->body ="
-* 1.5 cent property tax increase to 47.5 cents/$100 of assessed value
+* 1.5 cent property tax increase to 47.5 cents per $100 assessed value
 * 4% increase in sales tax revenue
 * 12% decrease in licensing and permitting revenue
 * 5.4% inter-governmental revenue increase in General Fund
@@ -78,7 +78,12 @@ class AshevilleSiteSeeder extends Seeder
         $card->card_set = $cardset->id;
         $card->ordinal = 2;
         $card->title = 'Spending Highlights';
-        $card->body = "These are the big changes to spending";
+        $card->body = "
+* 3.6% overall increase in spending
+* $1M increase in Public Safety
+* $354,000 increase in Environment & Transportation
+* $250,000 increase for seasonal/temporary staff living wage";
+        $card->link = "/docs/asheville/Expenditure_Summary.pdf";
         $picName = uniqid('pic') . '.jpg';
         $path = public_path().'/img/cards/'.$picName;
         \Image::make(public_path().'/img/init/slide3.jpg')->save($path);
@@ -99,6 +104,58 @@ class AshevilleSiteSeeder extends Seeder
         $picName = uniqid('pic') . '.jpg';
         $path = public_path().'/img/cards/'.$picName;
         \Image::make(public_path().'/img/init/slide1.jpg')->save($path);
+        $card->image = '/img/cards/'.$picName;
+        $card->save();
+
+        $card = new Card();
+        $card->site = $site->id;
+        $card->card_set = $cardset->id;
+        $card->ordinal = 4;
+        $card->title = 'Staffing Highlights';
+        $card->body = "
+* 14.25 FTE positions added in General Fund
+* 10.37 FTE positions added in enterprise funds
+* Living wage extended to seasonal/temporary staff
+* 1% across-the-board pay raise";
+        $card->link = "/docs/asheville/Staffing_Summary.pdf";
+        $picName = uniqid('pic') . '.jpg';
+        $path = public_path().'/img/cards/'.$picName;
+        \Image::make(public_path().'/img/init/slide4.jpg')->save($path);
+        $card->image = '/img/cards/'.$picName;
+        $card->save();
+
+        $card = new Card();
+        $card->site = $site->id;
+        $card->card_set = $cardset->id;
+        $card->ordinal = 5;
+        $card->title = 'Budget Highlights By Fund';
+        $card->body = "
+* Water Resources: Rate changes expected to generate $465,000 new revenue
+* Stormwater: 5% rate adjustment expected to generate $240,000 new revenue
+* Transit: Fully funded Sunday service plus minor route adjustments
+* Parking Services: No rate change; current revenue up & trend expected to continue
+* Street Cut Utility: $240,000 spending increase";
+        $card->link = "/docs/asheville/Fund_Highlights_Summary.pdf";
+        $picName = uniqid('pic') . '.jpg';
+        $path = public_path().'/img/cards/'.$picName;
+        \Image::make(public_path().'/img/init/slide5.jpg')->save($path);
+        $card->image = '/img/cards/'.$picName;
+        $card->save();
+
+        $card = new Card();
+        $card->site = $site->id;
+        $card->card_set = $cardset->id;
+        $card->ordinal = 6;
+        $card->title = 'Capital Improvements';
+        $card->body = "
+* Capital Expenditures program begun in FY2014 is now in full swing
+* $26.2M proposed spending for FY2016
+* $16.9M was spent during FY2014 & FY2015
+* $64.3M planned over the next 4 budget cycles (FY2017-FY2020)";
+        $card->link = "/docs/asheville/CapitalImprovementProgramAndDebt.pdf";
+        $picName = uniqid('pic') . '.jpg';
+        $path = public_path().'/img/cards/'.$picName;
+        \Image::make(public_path().'/img/init/slide6.jpg')->save($path);
         $card->image = '/img/cards/'.$picName;
         $card->save();
 
