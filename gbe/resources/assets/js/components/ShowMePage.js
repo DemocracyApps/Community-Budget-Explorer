@@ -54,7 +54,7 @@ var ShowMePage = React.createClass({
                 apiActions.requestDatasetIfNeeded(id);
             });
 
-            dm = dataModelStore.createModel(ids, this.props.dataInitialization, null);
+            dm = dataModelStore.createModel(ids, this.props.dataInitialization, this.props.site.categoryMap);
             let subComponents = {
                 chart: {},
                 table: {}
@@ -87,10 +87,13 @@ var ShowMePage = React.createClass({
         return ( dm.dataChanged() || dm.commandsChanged({accountTypes: [accountType]}) );
     },
 
+<<<<<<< HEAD
     componentWillUnmount: function() {
         console.log("ShowMePage will unmount");
     },
 
+=======
+>>>>>>> 4efe7ff139003b0dd594aeb30ce7a255afc72835
 
 
 	// top options panel
@@ -164,6 +167,7 @@ var ShowMePage = React.createClass({
                               accountType={stateStore.getValue(this.props.storeId, 'accountType')}
                               selectedLevel={selectedLevel}
                               storeId={subComponents.table.storeId}
+                              site={this.props.site}
                               componentData={{}}
                               componentProps={{}}
                     />

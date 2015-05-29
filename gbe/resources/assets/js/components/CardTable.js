@@ -67,8 +67,6 @@ var CardTable = React.createClass({
 
     render: function() {
 
-        console.log("Here we go: " + this.props.componentData["mycardset"].ids.length);
-
         if (this.props.componentData["mycardset"] && this.props.componentData["mycardset"].ids.length > 0) {
             let colClasses = [
                 "col-md-12",
@@ -79,7 +77,6 @@ var CardTable = React.createClass({
             ];
 
             let maxColumns = Number(this.props.componentProps.maxColumns);
-            console.log("Max columns = " + maxColumns);
             let colClass = colClasses[maxColumns];
             let count = this.props.componentData["mycardset"].ids.length;
             let rowCount = Math.floor(count/maxColumns);

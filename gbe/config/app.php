@@ -206,6 +206,7 @@ return [
         'Html'      => 'Illuminate\Html\HtmlFacade',
         'Socialize' => 'Laravel\Socialite\Facades\Socialite',
         'Image'     => 'Intervention\Image\Facades\Image',
+		'DomainContext' => 'DemocracyApps\DomainContext\DomainContextFacade',
 
     ],
 

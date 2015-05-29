@@ -52,7 +52,7 @@ var WhatsNewPage = React.createClass({
                 apiActions.requestDatasetIfNeeded(id);
             });
 
-            dm = dataModelStore.createModel(ids, this.props.dataInitialization, null);
+            dm = dataModelStore.createModel(ids, this.props.dataInitialization, this.props.site.categoryMap);
             let subComponents = {
                 chart: {},
                 table: {}
@@ -339,6 +339,7 @@ var WhatsNewPage = React.createClass({
                                 accountType={stateStore.getValue(this.props.storeId, 'accountType')}
                                 selectedLevel={selectedLevel}
                                 storeId={subComponents.table.storeId}
+                                site={this.props.site}
                                 componentData={{}}
                                 componentProps={{}}
                     />

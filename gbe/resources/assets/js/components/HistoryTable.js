@@ -83,7 +83,7 @@ var HistoryTable = React.createClass({
                 apiActions.requestDatasetIfNeeded(id);
             });
 
-            dm = dataModelStore.createModel(ids, this.props.dataInitialization, null);
+            dm = dataModelStore.createModel(ids, this.props.dataInitialization, this.props.site.categoryMap);
             stateStore.setComponentState(this.props.storeId,
                 {
                     accountType: AccountTypes.EXPENSE,
@@ -91,12 +91,6 @@ var HistoryTable = React.createClass({
                     selectedLevel: 1
                 });
         }
-    },
-
-    componentWillUnmount: function () {
-        console.log("ChangeExplorer will unmount");
-        //var dataModelId = stateStore.getComponentStateValue(this.props.storeId, 'dataModelId');
-        //if (dataModelId != null) dataModelStore.deleteModel(dataModelId);
     },
 
     componentWillReceiveProps: function () {
@@ -253,8 +247,6 @@ var HistoryTable = React.createClass({
             startPath: [],
             nLevels: selectedLevel+1
         }, false);
-        var dataNull = (newData == null);
-        console.log("Rendering HistoryTable: dataModelId = " + dataModelId + ", dataNull = " + dataNull);
 
         if (newData == null) {
             return (
@@ -268,8 +260,6 @@ var HistoryTable = React.createClass({
             var headers = newData.dataHeaders;
             let currentLevel = stateStore.getValue(this.props.storeId,'currentLevel');
             let dataLength = rows[0].amount.length;
-            //rows.map(datasetUtilities.computeChanges);
-            //rows = rows.sort(datasetUtilities.sortByAbsoluteDifference);
             let thStyle={textAlign:"right"};
             return (
                 <div>

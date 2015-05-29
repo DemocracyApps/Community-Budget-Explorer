@@ -8,6 +8,23 @@ var AccountTypes = require('../constants/AccountTypes');
 var datasetStore = require('../stores/DatasetStore');
 
 var DatasetUtilities = {
+
+    reMapCategories: function mapCategories (categories, catMap) {
+        let current = catMap;
+        let cats = categories.slice();
+        let level = 0, nLevels = categories.length;
+
+        while (level < nLevels && categories[level] in current) {
+            current = current[categories[level]];
+            ++level;
+        }
+        if ('to' in current) { // we have a map
+            for (let i=0; i<current.to.length; ++i) {
+                cats[i] = current.to[i];
+            }
+        }
+        return cats;
+    },
     /*
      * There are a few weirdnesses in the API-delivered data that we need to handle here.
      * It's likely we actually want to change this on the server side, but for now we'll
@@ -23,8 +40,7 @@ var DatasetUtilities = {
      *    is just one longer with the acccount in the last slot.
      */
 
-    mergeDatasets: function (rawDatasets, parameters) {
-
+    mergeDatasets: function (rawDatasets, parameters, remap) {
         var hierarchy = parameters.hierarchy;
         var accountTypes = parameters.accountTypes;
         var amountThreshold = parameters.amountThreshold;
@@ -105,7 +121,7 @@ var DatasetUtilities = {
                     current[key] = {
                         isBottom: true,
                         accountType: item.type,
-                        categories: categories,
+                        categories: (remap)?this.reMapCategories(categories,remap):categories,
                         amount: amounts
                     };
                     this.count++;

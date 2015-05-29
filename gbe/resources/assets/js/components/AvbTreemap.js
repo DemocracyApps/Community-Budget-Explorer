@@ -13,13 +13,6 @@ var AvbTreemap = React.createClass({
         accountType: React.PropTypes.string.isRequired
     },
 
-    getInitialState: function() {
-        return {
-            hoverMessage: "Mouse over bars to see details"
-        };
-    },
-
-
     findNext: function(current, key) {
         let index = -1;
         for (let i=0; index < 0 && i<current.sub.length; ++i) {
@@ -56,6 +49,7 @@ var AvbTreemap = React.createClass({
             sub: []
         }
 
+        // NOTE: This assumes that we won't hit the same full path twice. If we do, the bottom will be wrong.
         for (let i=0; i<inData.length; ++i) {
             let item = inData[i];
             //let hash = md5.md5(item.categories.join());
@@ -77,13 +71,13 @@ var AvbTreemap = React.createClass({
                         values: vals,
                         sub: []
                     };
+                    nextIndex = current.sub.length;
                     current.sub.push(node);
+                }
+                if (i < nLevels - 1) {
                     for (let j=0; j<item.amount.length; ++j) {
                         current.values[j].val += item.amount[j];
                     }
-                    current = node;
-                }
-                else {
                     current = current.sub[nextIndex];
                 }
             }
@@ -104,10 +98,6 @@ var AvbTreemap = React.createClass({
             var data = this.prepareData(this.props.data);
         }
         avbStuff.initialize(data, this.props.year);
-    },
-
-    componentWillUnmount: function () {
-
     },
 
     render: function() {

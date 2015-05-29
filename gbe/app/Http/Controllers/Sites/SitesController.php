@@ -41,7 +41,7 @@ class SitesController extends Controller {
         return $bodies;
     }
 
-	public function page($slug, $pageName=null, Request $request)
+	public function page($slug, $pageName=null)
     {
         $siteData = Site::where('slug','=',$slug)->first();
         $government = GovernmentOrganization::where('id','=',$siteData->government)->first();

@@ -43,6 +43,14 @@ var SlideShow = React.createClass({
             zIndex:"1"
         };
 
+        var showLink = function(card) {
+            if (card.link) {
+                return (
+                    <div> <a href={card.link} target="_blank" className="btn-sm btn-info">Read More</a></div>
+                )
+            }
+        };
+
         return (
             <div className="slider" >
                 <div className="flexslider">
@@ -53,8 +61,8 @@ var SlideShow = React.createClass({
                                     <img src={item.image} style={imgStyle}/>
                                     <div style={overlayStyle}>
                                         <h2>{item.title}</h2>
-                                        <br/>
                                         <span dangerouslySetInnerHTML={{__html: item.body[0]}} />
+                                        {showLink(item)}
                                     </div>
                                 </li>
                             )

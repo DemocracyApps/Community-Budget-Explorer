@@ -2,24 +2,12 @@
   "name":"Asheville Mapping to Service Areas",
   "translations": [
     {
-      "from": [
-        "General Fund",
-        "Police Department"
-      ],
-      "to": [
-        "Public Safety",
-        "Police"
-      ]
+      "from": ["General Fund", "Police Department"],
+      "to":   ["Public Safety", "Police"]
     },
     {
-      "from": [
-        "General Fund",
-        "Fire & Rescue Department"
-      ],
-      "to": [
-        "Public Safety",
-        "Fire & Rescue"
-      ]
+      "from": ["General Fund", "Fire & Rescue Department"],
+      "to": ["Public Safety", "Fire & Rescue"]
     }
   ]
 }
