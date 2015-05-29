@@ -27,7 +27,7 @@ class AshevilleSiteSeeder extends Seeder
 
         // Create the Asheville site
         $site = new Site();
-        $site->name = "Asheville Budget 2014-2015";
+        $site->name = "Asheville Budget 2015-2016";
         $site->owner_type = Site::GOVERNMENT;
         $site->owner = 1; // Asheville government;
         $site->government = 1; // Ditto
