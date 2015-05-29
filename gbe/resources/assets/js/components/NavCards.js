@@ -56,7 +56,7 @@ var NavCards = React.createClass({
                             height: 200
                         };
                         return (
-                            <a href="#" onClick={gotoPage.bind(null,card.link)}>
+                            <a key={index} href="#" onClick={gotoPage.bind(null,card.link)}>
                             <div className="col-xs-4" style={cardStyle}>
                                 <h1> {card.title} </h1>
 
