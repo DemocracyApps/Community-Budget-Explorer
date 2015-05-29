@@ -33,6 +33,8 @@ return [
     'mapped_domain_storage' => 'config', // Could be 'database'
 
     'mapped_domains' => [
-        'example.com' => 1
+        'gee.dev' => 'asheville',
+        'avlbudget.org' => 'asheville',
+        'community-budgets.org' => 'asheville'
     ],
 ];
