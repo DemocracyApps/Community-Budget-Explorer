@@ -57,7 +57,7 @@ class SitesController extends Controller {
         $site->properties = $siteData->properties;
         $site->categoryMap = null;
 
-        if ($siteData->hasProperty('map')) {
+        if ($siteData->hasProperty('map') && $siteData->getProperty('map') != null) {
             $jp = new JsonProcessor();
             $mapFileName = $siteData->getProperty('map');
             $path = public_path() . '/data/maps/' . $mapFileName;
