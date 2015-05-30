@@ -74,12 +74,10 @@ var AvbTreemap = React.createClass({
                     nextIndex = current.sub.length;
                     current.sub.push(node);
                 }
-                if (i < nLevels) {
-                    for (let j=0; j<item.amount.length; ++j) {
-                        current.values[j].val += item.amount[j];
-                    }
-                    current = current.sub[nextIndex];
+                for (let j=0; j<item.amount.length; ++j) {
+                    current.values[j].val += item.amount[j];
                 }
+                current = current.sub[nextIndex];
             }
         }
         return tree;
