@@ -49,6 +49,9 @@ class BuildController extends Controller {
             $mapName = $request->get('map');
             $site->setProperty('map', $mapName);
         }
+        else {
+            $site->setProperty('map', null);
+        }
         $site->save();
         return redirect('/build/'.$site->slug);
     }
