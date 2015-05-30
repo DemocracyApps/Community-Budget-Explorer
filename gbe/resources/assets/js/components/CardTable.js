@@ -11,6 +11,17 @@ var CardTable = React.createClass({
         storeId: React.PropTypes.number.isRequired
     },
 
+    cardLink: function (card) {
+        if (card.link) return (
+            <div class="row">
+                <div className="col-md-3">
+                    <a style={{float:"right"}} href={card.link} target="_blank" className="btn-sm btn-info">Read More</a>
+                </div>
+                <div className="col-md-9"></div>
+            </div>
+        )
+    },
+
     cardFunction: function(card, index) {
         if (card.body.length > 1) {
             return (
@@ -25,9 +36,7 @@ var CardTable = React.createClass({
                         <div className="col-md-6">
                             <span dangerouslySetInnerHTML={{__html: card.body[1]}} />
                         </div>
-                        <div className="col-md-4">
-                            <a className="btn-sm btn-primary">Read More</a>
-                        </div>
+                        {this.cardLink(card)}
                     </div>
                 </div>
             )
@@ -40,16 +49,14 @@ var CardTable = React.createClass({
                             <h4>{card.title}</h4>
                         </div>
                         <div className="col-md-4">
-                            <a href={card.link} className="thumbnail">
-                                <img src={card.image} alt="..."/>
+                            <a href={card.link} target="_blank" className="thumbnail">
+                                <img src={card.image} alt={card.link}/>
                             </a>
                         </div>
                         <div className="col-md-8">
                             <span dangerouslySetInnerHTML={{__html: card.body[0]}} />
                         </div>
-                        <div className="col-md-4">
-                            <a className="btn-sm btn-primary">Read More</a>
-                        </div>
+                        {this.cardLink(card)}
                     </div>
                 </div>
             )
@@ -57,8 +64,13 @@ var CardTable = React.createClass({
         else {
             return (
                 <div key={index} className="col-md-6 card">
-                    <h4>{card.title}</h4>
-                    <span dangerouslySetInnerHTML={{__html: card.body[0]}} />
+                    <div className="row" style={{marginBottom:15}}>
+                        <div className="col-md-12">
+                            <h4>{card.title}</h4>
+                            <span dangerouslySetInnerHTML={{__html: card.body[0]}} />
+                        </div>
+                        {this.cardLink(card)}
+                    </div>
                 </div>
             )
         }
