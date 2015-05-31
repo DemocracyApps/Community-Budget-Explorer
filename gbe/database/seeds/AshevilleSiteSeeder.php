@@ -473,71 +473,7 @@ City of Asheville website."
         );
 
     }
-
-    private function junkcreateAboutPage($site, $simpleCardComponent)
-    {
-        $page = new Page();
-        $page->site = $site->id;
-        $page->title = "About This Site";
-        $page->short_name = "About";
-        $page->menu_name = "About";
-        $page->ordinal = 5;
-        $page->show_in_menu = true;
-        $layout = Layout::where('name','=','One-Column')->first();
-        $page->layout = $layout->id;
-        $page->save();
-
-        $cardset = new CardSet();
-        $cardset->site = $site->id;
-        $cardset->name = 'About Page Cards';
-        $cardset->save();
-        $ordinal = 1;
-
-        $card1 = $this->createCard($site, $cardset, $ordinal++, "Capital Improvements/Debt Management",
-            [
-                'link' => "/docs/asheville/10-CapitalImprovementProgramAndDebt.pdf",
-                'image'=> public_path()."/img/init/capital_debt.png",
-                'body' => "Click on the thumbnail or below to explore budget details for the General
-Capital Fund, the Water Resources Capital Fund, and the Parking Services Capital Fund, including a project-by-project listing."
-            ]
-        );
-
-        $card2 = $this->createCard($site, $cardset, $ordinal++, "Capital Improvements/Debt Management",
-            [
-                'link' => "/docs/asheville/10-CapitalImprovementProgramAndDebt.pdf",
-                'image'=> public_path()."/img/init/capital_debt.png",
-                'body' => "Click on the thumbnail or below to explore budget details for the General
-Capital Fund, the Water Resources Capital Fund, and the Parking Services Capital Fund, including a project-by-project listing."
-            ]
-        );
-
-        $c = new PageComponent();
-        $c->component = $simpleCardComponent->id;
-        $c->page = $page->id;
-        $c->target="main";
-        $data = array();
-        $data['type'] = 'card';
-        $data['items'] = array("$card1->id");
-        $dataBundle = array();
-        $dataBundle['mycard'] = $data;
-        $c->setProperty('data', $dataBundle);
-        $c->setProperty('props', ["headerTag" => "2"]);
-        $c->save();
-        $c = new PageComponent();
-        $c->component = $simpleCardComponent->id;
-        $c->page = $page->id;
-        $c->target="main";
-        $data = array();
-        $data['type'] = 'card';
-        $data['items'] = array("$card2->id");
-        $dataBundle = array();
-        $dataBundle['mycard'] = $data;
-        $c->setProperty('data', $dataBundle);
-        $c->setProperty('props', ["headerTag" => "2"]);
-        $c->save();
-
-    }
-
+    
     private function createAboutPage($site, $simpleCardComponent)
     {
         $page = new Page();
@@ -576,7 +512,7 @@ of Asheville for their ongoing cooperation and support."
         );
         $card2 = $this->createCard($site, $cardset, $ordinal++, 'Contact us',
             [
-                'body' => "<iframe src=\"https://docs.google.com/forms/d/1gtQxsqx_HYwHh65046wsAavrlJcgMLYlQJ-tLtfsBF4/viewform?embedded=true\" width=\"760\" height=\"500\" frameborder=\"0\" marginheight=\"0\" marginwidth=\"0\">Loading...</iframe>"
+                'body' => "<iframe src=\"https://docs.google.com/forms/d/1gtQxsqx_HYwHh65046wsAavrlJcgMLYlQJ-tLtfsBF4/viewform?embedded=true\" width=\"760\" height=\"700\" frameborder=\"0\" marginheight=\"0\" marginwidth=\"0\">Loading...</iframe>"
             ]
         );
 
