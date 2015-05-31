@@ -473,7 +473,7 @@ City of Asheville website."
         );
 
     }
-    
+
     private function createAboutPage($site, $simpleCardComponent)
     {
         $page = new Page();
