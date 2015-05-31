@@ -1,13 +1,53 @@
 {
-  "name":"SimpleCard",
+  "name": "SimpleCard",
   "description": "Just a simple display of a single card",
   "props": {},
   "data": [
     {
-      "tag":"mycard",
-      "name":"Your Card",
+      "tag": "mycard",
+      "name": "Your Card",
       "description": "Pick a card, any card",
-      "type":"card"
+      "type": "card"
     }
-  ]
+  ],
+  "props": {
+    "headerTag": {
+      "value": "1",
+      "configurable": true,
+      "label": "Select type of header tag",
+      "type": "select",
+      "options": [
+        {
+          "name": "No header",
+          "value": "0",
+          "description": "No header"
+        },
+        {
+          "name": "H1",
+          "value": "1",
+          "description": "H1"
+        },
+        {
+          "name": "H2",
+          "value": "2",
+          "description": "H2"
+        },
+        {
+          "name": "H3",
+          "value": "3",
+          "description": "H3"
+        },
+        {
+          "name": "H4",
+          "value": "4",
+          "description": "H4"
+        },
+        {
+          "name": "H5",
+          "value": "5",
+          "description": "H5"
+        }
+      ]
+    }
+  }
 }

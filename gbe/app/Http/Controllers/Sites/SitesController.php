@@ -94,7 +94,7 @@ class SitesController extends Controller {
             }
 
             // Get the page components
-            $pComponents = PageComponent::where('page','=',$page->tableId)->get();
+            $pComponents = PageComponent::where('page','=',$page->tableId)->orderBy('id')->get();
             $page->components = array();
             $pd = new \Parsedown();
             foreach ($pComponents as $pc) {
@@ -131,7 +131,7 @@ class SitesController extends Controller {
                                     else {
                                         $storedCard = Card::find($cId);
                                         $card = $storedCard->asSimpleObject(['dataType' => 'card']);
-                                        $card->body = $pd->text($card->body);
+                                        $card->body = array($pd->text($card->body));
                                         $cardStore[$cId] = array($card);
                                     }
                                     $data[] = $card;

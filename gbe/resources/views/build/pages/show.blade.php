@@ -39,10 +39,11 @@
         <h2>Components</h2>
         <table class="table">
             <tr>
-                <th>Name</th><th>Target</th><th></th>
+                <th>Id</th><th>Name</th><th>Target</th><th></th>
             </tr>
             @foreach($pageComponents as $pc)
                 <tr>
+                    <td>{!! $pc->id !!}</td>
                     <td>{!! $components[$pc->component]->name !!}</td>
                     <td>
                         <select id="select_target_{!! $pc->id !!}"
