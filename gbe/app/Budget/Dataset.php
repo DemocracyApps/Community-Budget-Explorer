@@ -71,6 +71,7 @@ class Dataset extends EloquentPropertiedObject {
         $updated_at = date('Y-m-d H:i:s');
         $line = fgetcsv($myFile); // Skip the header
         $lnum = 1;
+        $errnum=0;
         while (! feof($myFile)) {
             $columns = fgetcsv($myFile);
             ++$lnum;
@@ -84,6 +85,7 @@ class Dataset extends EloquentPropertiedObject {
                     $account = $accountMap[$accountCode];
                 }
                 else {
+                    echo "Unable to locate account $accountCode\n";
                     $account = $accountMap['-1'];
                 }
 
@@ -91,16 +93,20 @@ class Dataset extends EloquentPropertiedObject {
                 if ($ncat > 0) {
                     $categories = array();
                     for ($i = 0; $i < $ncat; ++$i) {
-                        $code = trim($columns[$i + 2]);
+                        $code = strip_tags(trim($columns[$i + 2]));
                         $map = $categoryMaps[$i];
                         if (array_key_exists($code, $map)) {
                             $categories[] = $map[$code];
                         }
                         else {
+                            ++$errnum;
+                            echo "Unable to locate category /$code/ at level $i : " . implode('/', $columns) . "\n";
                             $categories[] = null;
                         }
                     }
                 }
+
+                if ($errnum > 500) exit(1);
                 $category1 = null;
                 $category2 = null;
                 $category3 = null;
