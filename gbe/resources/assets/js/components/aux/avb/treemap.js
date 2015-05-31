@@ -511,11 +511,12 @@ var avb_treemap = function () {
      *   @param {state obj} event - object containing previous state
      */
     function popUrl(event) {
-        console.log("In popUrl");
         if (utilities.ie()) return;
 
         if (event.state === null) {
-            localAvb.navigation.open(localAvb.root.hash, 500, localAvb);
+            if (localAvb) {
+                localAvb.navigation.open(localAvb.root.hash, 500, localAvb);
+            }
         } else if (event.state.mode !== avb.mode) {
             switchMode(event.state.mode, false);
         } else {
