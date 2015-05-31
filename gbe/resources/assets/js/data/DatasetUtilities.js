@@ -13,14 +13,16 @@ var DatasetUtilities = {
         let current = catMap;
         let cats = categories.slice();
         let level = 0, nLevels = categories.length;
-
+        let to = null;
         while (level < nLevels && categories[level] in current) {
             current = current[categories[level]];
+            if ('to' in current) to = current.to;
             ++level;
         }
-        if ('to' in current) { // we have a map
-            for (let i=0; i<current.to.length; ++i) {
-                cats[i] = current.to[i];
+        if (to) { // we have a map
+            let old = cats.join('/');
+            for (let i=0; i<to.length; ++i) {
+                cats[i] = to[i];
             }
         }
         return cats;
