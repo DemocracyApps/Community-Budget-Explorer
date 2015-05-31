@@ -103,7 +103,7 @@ class PagesController extends Controller {
                 $targets[] = $column['id'];
             }
         }
-        $pageComponents = PageComponent::where('page','=',$id)->get();
+        $pageComponents = PageComponent::where('page','=',$id)->orderBy('id')->get();
         $list = Component::all();
         $components = array();
         foreach ($list as $item) {
