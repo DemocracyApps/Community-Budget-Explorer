@@ -202,7 +202,7 @@ var WhatsNewPage = React.createClass({
         }
         var areas = [];
         for (var nm in ahash) {
-            if (ahash.hasOwnProperty(nm)) {
+            if (ahash.hasOwnProperty(nm) && Math.abs(ahash[nm].value) > 0.0) {
                 areas.push(ahash[nm]);
             }
         }
