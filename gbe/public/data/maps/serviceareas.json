@@ -2,12 +2,76 @@
   "name":"Asheville Mapping to Service Areas",
   "translations": [
     {
-      "from": ["General Fund", "Police Department"],
-      "to":   ["Public Safety", "Police"]
+      "from":["Civic Center Fund","Civic Center Department"],
+      "to":["Culture & Recreation","Cellular Center Fund"]
+    },
+    {
+      "from":["Civic Center Cap Projects Fund","Civic Center Department"],
+      "to":["Capital Improvements Program/Debt Management","General Capital Fund"]
+    },
+    {
+      "from": ["General Fund","Administration Services Dept"],
+      "to":["General Government","Administrative Services"]
+    },
+    {
+      "from":["General Fund","Building Safety Department"],
+      "to":["Community Development","Building Safety"]
+    },
+    {
+      "from":["General Fund","Economic Development Departmen"],
+      "to":["General Government","Economic Development"]
+    },
+    {
+      "from":["General Fund","Finance Department"],
+      "to":["General Government","Finance and Management Services"]
     },
     {
       "from": ["General Fund", "Fire & Rescue Department"],
       "to": ["Public Safety", "Fire & Rescue"]
+    },
+    {
+      "from":["General Fund","Human Resources Department"],
+      "to":["General Government","Human Resources"]
+    },
+    {
+      "from":["General Fund","Information Technology Dept."],
+      "to":["General Government","Information Technology Services"]
+    },
+    {
+      "from":["General Fund","Legal Department"],
+      "to":["General Government","City Attorney's Office"]
+    },
+    {
+      "from": ["General Fund","Parks Rec & Cultural Arts Dept"],
+      "to":["Culture & Recreation","Parks, Recreation & Cultural Affairs"]
+    },
+    {
+      "from":["General Fund","Planning & Development Dept"],
+      "to":["Community Development","Planning & Urban Design"]
+    },
+    {
+      "from": ["General Fund", "Police Department"],
+      "to":   ["Public Safety", "Police"]
+    },
+    {
+      "from":["General Fund","Police Department","Patrol Division","Transfer to Grant Fund"],
+      "to":["Public Safety","Non-Departmental Public Safety"]
+    },
+    {
+      "from":["General Fund","Public Works Department"],
+      "to":["Environment & Transportation","Public Works"]
+    },
+    {
+      "from":["General Fund","Transportation Department"],
+      "to":["Environment & Transportation","Transportation"]
+    },
+    {
+      "from": ["General Fund","Non-Departmental Dept"],
+      "to":["General Government","Non-Departmental"]
+    },
+    {
+      "from": ["General Fund","Non-Departmental Department"],
+      "to":["General Government","Non-Departmental"]
     },
     {
       "from":["General Fund","Non-Departmental Department","Inter-Extra Goverment Services","Crime Stoppers"],
@@ -18,12 +82,48 @@
       "to":["Public Safety","Non-Departmental Public Safety","Inter-Extra Government Services"]
     },
     {
-      "from":["General Fund","Police Department","Patrol Division","Transfer to Grant Fund"],
-      "to":["Public Safety","Non-Departmental Public Safety"]
+      "from": ["General Fund","Non-Departmental Department","Non-Divisional","Transfer to Grant Fund"],
+      "to":["Environment & Transportation","Non-Departmental Environment & Transportation"]
+    },
+    {
+      "from": ["General Fund","Non-Departmental Department","Non-Divisional","Transfer to Transit Fund"],
+      "to":["Environment & Transportation","Non-Departmental Environment & Transportation"]
+    },
+    {
+      "from": ["General Fund","Non-Departmental Department","Non-Divisional","Transfer to Civic Center Fund"],
+      "to":["Culture & Recreation","Non-Departmental Culture & Recreation"]
+    },
+    {
+      "from":["Health Insurance Fund","Human Resources Department"],
+      "to":["Other Funds","Health Insurance Fund"]
+    },
+    {
+      "from":["Mass Transit Fund","Transportation Department"],
+      "to":["Environment & Transportation","Transit Services Fund"]
+    },
+    {
+      "from":["Parking Services Fund","Transportation Department"],
+      "to":["Environment & Transportation","Parking Services Fund"]
+    },
+    {
+      "from":["Property and Liability Fund","Administration Services Dept"],
+      "to":["Other Funds","Property and Liability Fund"]
+    },
+    {
+      "from":["Stormwater Fund","Public Works Department"],
+      "to":["Environment & Transportation","Stormwater Fund"]
+    },
+    {
+      "from":["Street Cut Utility Fund","Public Works Department"],
+      "to":["Environment & Transportation","Street Cut Utility Fund"]
     },
     {
       "from":["Water Services Fund","Water Department"],
       "to":["Environment & Transportation","Water Resources Fund"]
+    },
+    {
+      "from":["Workers' Compensation Fund","Finance Department"],
+      "to":["Other Funds","Workers' Compensation Fund"]
     }
   ]
 }
