@@ -341,7 +341,7 @@ of the organization chart at left."
 
         $this->createCard($site, $cardset, $ordinal++, "Budget Process",
             [
-                'link' => "x",
+                'link' => "/docs/asheville/Budget_Process.pdf",
                 'image'=> null,
                 'body' => "
 Budget preparation affords departments the opportunity to reassess their goals and objectives
