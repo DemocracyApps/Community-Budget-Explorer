@@ -42,10 +42,12 @@ var SimpleCard = React.createClass({
         }
         else {
             return (
-                <div>
-                    {renderTitle(Number(this.props.componentProps.headerTag), card)}
+                <div className="row">
+                    <div className="col-md-12">
+                        {renderTitle(Number(this.props.componentProps.headerTag), card)}
 
-                    <span dangerouslySetInnerHTML={{__html: card.body}} />
+                        <span dangerouslySetInnerHTML={{__html: card.body}} />
+                    </div>
                 </div>
             );
         }

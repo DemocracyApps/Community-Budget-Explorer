@@ -62,6 +62,25 @@ var Site = React.createClass({
         return res;
     },
 
+    /*
+     *   Pushes current status to browser history
+     *
+     *   @param {string} section - current section
+     *   @param {int} year - current year
+     *   @param {string} mode - treemap or table view
+     *   @param {string} node - hash of current node
+     *
+     */
+    pushUrl: function (page) {
+        //if (utilities.ie()) return;
+        // format URL
+        var url = '/' + page;
+        // create history object
+        window.history.pushState({
+            page: page
+        }, "", url);
+    },
+
     render: function() {
 
         var currentPage = stateStore.getValue('site.currentPage');
@@ -74,6 +93,7 @@ var Site = React.createClass({
             reactComponents:this.props.reactComponents
         };
 
+        this.pushUrl(page.shortName);
         var pageDescription = function (page) {
             if (page.description != null) {
                 return <div><p>{page.description}</p><hr/></div>
@@ -87,8 +107,12 @@ var Site = React.createClass({
                 <SiteNavigation site={this.props.site} pages={this.props.pages}/>
 
                 <div className="container-fluid">
-                    <h1>{this.pageTitle(page)}</h1>
-                    {pageDescription(page)}
+                    <div className="row">
+                        <div className="col-md-12">
+                            <h1>{this.pageTitle(page)}</h1>
+                            {pageDescription(page)}
+                        </div>
+                    </div>
                 </div>
                 <div className="container-fluid site-body">
                     <BootstrapLayout {...layoutProps}/>
