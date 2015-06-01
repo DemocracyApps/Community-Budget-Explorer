@@ -41,7 +41,7 @@ class SitesController extends Controller {
         return $bodies;
     }
 
-	public function page($slug, $pageName=null)
+	public function page($slug, $pageName=null, $parameters = null)
     {
         $siteData = Site::where('slug','=',$slug)->first();
         $government = GovernmentOrganization::where('id','=',$siteData->government)->first();
@@ -51,6 +51,8 @@ class SitesController extends Controller {
         $site->id = 0;
         $site->slug = $siteData->slug;
         $site->startPage = -1;
+        $site->embedded = false;
+        if ($parameters != null && array_key_exists('embedded',$parameters) && $parameters['embedded']=='true') $site->embedded = true;
         $site->baseUrl = url('/'.$slug);
         $site->apiUrl  = Util::apiPath() . "/organizations/" . $government->id;
         $site->ajaxUrl = Util::ajaxPath('sites', 'base');

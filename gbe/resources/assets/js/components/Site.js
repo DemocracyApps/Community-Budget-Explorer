@@ -75,15 +75,18 @@ var Site = React.createClass({
         //if (utilities.ie()) return;
         // format URL
         var url = '/' + page;
+        if (this.props.site.embedded) url += "?embedded=true";
         // create history object
         window.history.pushState({
-            page: page
+            page: page,
+            embedded: this.props.site.embedded
         }, "", url);
     },
 
     render: function() {
 
         var currentPage = stateStore.getValue('site.currentPage');
+        var embedded = this.props.site.embedded;
         var page = configStore.getConfiguration('pages', currentPage);
 
         var layoutProps = {
@@ -101,32 +104,52 @@ var Site = React.createClass({
         };
         //if we want fixed top, add class 'navbar-fixed-top' to the 'nav' element
 
-        return (
-            <div className="container">
+        if (embedded) {
+            return (
+                <div className="container">
+                    <div className="container-fluid">
+                        <div className="row">
+                            <div className="col-md-12">
+                                <h1>{this.pageTitle(page)}</h1>
+                                {pageDescription(page)}
+                            </div>
+                        </div>
+                    </div>
+                    <div className="container-fluid site-body">
+                        <BootstrapLayout {...layoutProps}/>
+                    </div>
+                </div>
+            );
+        }
+        else {
+            return (
+                <div className="container">
 
-                <SiteNavigation site={this.props.site} pages={this.props.pages}/>
+                    <SiteNavigation site={this.props.site} pages={this.props.pages}/>
 
-                <div className="container-fluid">
-                    <div className="row">
-                        <div className="col-md-12">
-                            <h1>{this.pageTitle(page)}</h1>
-                            {pageDescription(page)}
+                    <div className="container-fluid">
+                        <div className="row">
+                            <div className="col-md-12">
+                                <h1>{this.pageTitle(page)}</h1>
+                                {pageDescription(page)}
+                            </div>
+                        </div>
+                    </div>
+                    <div className="container-fluid site-body">
+                        <BootstrapLayout {...layoutProps}/>
+                    </div>
+                    <div style={{minHeight:70}}></div>
+                    <div className="container-fluid site-footer">
+                        <div className="row">
+                            <div className="col-xs-12">
+                                <span style={{float: "right"}}>Powered by <a href="http://democracyapps.us"
+                                                                             target="_blank">DemocracyApps</a></span>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div className="container-fluid site-body">
-                    <BootstrapLayout {...layoutProps}/>
-                </div>
-                <div style={{minHeight:70}}></div>
-                <div className="container-fluid site-footer">
-                    <div className="row">
-                        <div className="col-xs-12" >
-                            <span style={{float: "right"}}>Powered by <a href="http://democracyapps.us" target="_blank">DemocracyApps</a></span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        );
+            );
+        }
     }
 });
 

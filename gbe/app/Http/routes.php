@@ -40,11 +40,14 @@ Route::get('home', 'HomeController@index');
 if (\DomainContext::isMapped()) {
     Route::any('/', function(\DemocracyApps\DomainContext\DomainContext $context) {
         $controller = app()->make('DemocracyApps\GB\Http\Controllers\Sites\SitesController');
-        return $controller->callAction('page', array('slug'=>$context->getDomainIdentifier()));
+        $parameters = Request::all();
+        return $controller->callAction('page', array('slug'=>$context->getDomainIdentifier(),'parameters'=>$parameters));
     });
     Route::any('/{pageName}', function($pageName, \DemocracyApps\DomainContext\DomainContext $context) {
         $controller = app()->make('DemocracyApps\GB\Http\Controllers\Sites\SitesController');
-        return $controller->callAction('page', array('slug'=>$context->getDomainIdentifier(), 'pageName'=>$pageName));
+        $parameters = Request::all();
+        return $controller->callAction('page', array('slug'=>$context->getDomainIdentifier(), 'pageName'=>$pageName,
+                                                     'parameters'=>$parameters));
     });
 }
 else {
