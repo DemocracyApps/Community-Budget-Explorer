@@ -159,6 +159,7 @@ function DataModel(id, datasetIds, initialCommands = null, categoryMap = null) {
     };
 
     this.getData = function getData (commands, partialOk=false) {
+        this.dataChanged();
         if (this.status == DatasetStatus.DS_STATE_READY ||
             (this.status == DatasetStatus.DS_STATE_PARTIAL && partialOk)) {
             this.currentCommands = commands;

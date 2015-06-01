@@ -84,7 +84,7 @@ var WhatsNewPage = React.createClass({
         var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
         var dm = dataModelStore.getModel(dataModelId);
         var dataChanged = dm.dataChanged();
-        if (areas == null) return true;
+        var areasNull = (areas == null);
 
         var selectedLevel = stateStore.getValue(this.props.storeId, 'selectedLevel');
         var selectedArea = stateStore.getValue(this.props.storeId, 'selectedArea');
@@ -94,7 +94,8 @@ var WhatsNewPage = React.createClass({
             startPath = [areas[selectedArea].name];
             addLevel = 0;
         }
-        return ( dataChanged || dm.commandsChanged({startPath: startPath, nLevels: selectedLevel + addLevel}) );
+        let result = (areasNull || dataChanged || dm.commandsChanged({startPath: startPath, nLevels: selectedLevel + addLevel}) );
+        return result;
     },
 
 	// top options panel
@@ -228,7 +229,6 @@ var WhatsNewPage = React.createClass({
         var accountType = stateStore.getValue(this.props.storeId, 'accountType');
         var selectedLevel = stateStore.getValue(this.props.storeId, 'selectedLevel');
         var areas = stateStore.getComponentStateValue(this.props.storeId, 'areaList');
-
         var selectedArea = stateStore.getValue(this.props.storeId, 'selectedArea');
         var startPath = [];
         var addLevel = 1;
@@ -242,7 +242,6 @@ var WhatsNewPage = React.createClass({
             nLevels: selectedLevel + addLevel
         }, false);
         var dataNull = (currentData == null);
-
         if (dataNull) {
             return (
                 <div style={{height: 600}}>
@@ -350,7 +349,6 @@ var WhatsNewPage = React.createClass({
     render: function () {
         var displayMode = stateStore.getValue(this.props.storeId, 'displayMode');
         var renderFunction = (displayMode == "chart")?this.renderCharts:this.renderTable;
-
         return (
             <div>
                 {this.optionsPanel()}
