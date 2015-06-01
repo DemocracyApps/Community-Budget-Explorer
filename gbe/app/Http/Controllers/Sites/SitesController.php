@@ -69,6 +69,11 @@ class SitesController extends Controller {
                 $site->categoryMap = $cfig;
             }
         }
+        $scripts = "";
+        if ($siteData->scripts != null && $siteData->live) {
+            $scripts = $siteData->scripts;
+        }
+
         $pages = $siteData->getPages();
         if ($pageName==null) $pageName = $pages[0]->shortName;
 
@@ -187,7 +192,8 @@ class SitesController extends Controller {
 
         // Putting site in an array to work around stupid issue in Jeff Way's PHPToJavaScriptTransformer
         // Stdclass objects are converted to JSON if they're in an array, but error out if not.
-        return view('sites.appPage', array('site'=>[$site], 'pages'=>$pages, 'data' => $data, 'doAvb'=>true));
+        return view('sites.appPage', array('site'=>[$site], 'pages'=>$pages, 'data' => $data, 'doAvb'=>true,
+                    'scripts'=>$scripts));
     }
 
     private function buildCardObject(Card $storedCard)

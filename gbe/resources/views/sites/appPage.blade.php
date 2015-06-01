@@ -28,5 +28,5 @@
         $path = base_path() . '/resources/views/sites/treemap_templates.php';
         require_once($path);
     ?>
-
+    {!! $scripts !!}
 @stop

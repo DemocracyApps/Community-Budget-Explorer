@@ -26,6 +26,22 @@
         </div>
 
         <div class="form-group">
+            {!!  Form::label('live', 'Site is live (turns on scripts below): ')  !!}
+            {!!  Form::checkbox('live', 'live', $site->live)  !!}
+            <br>
+            <span class="error">{!!  $errors->first('live')  !!}</span>
+            <br>
+        </div>
+
+        <div class="form-group">
+            {!!  Form::label('scripts', 'Scripts to be included on every page of the site (e.g., Google Analytices): ')  !!}
+            {!!  Form::textarea('scripts', $site->scripts, ['class' => 'form-control'])  !!}
+            <br>
+            <span class="error">{!!  $errors->first('scripts')  !!}</span>
+            <br>
+        </div>
+
+        <div class="form-group">
             {!!  Form::submit('Save', ['class' => 'btn btn-primary'])  !!}
         </div>
 

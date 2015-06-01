@@ -52,6 +52,19 @@ class BuildController extends Controller {
         else {
             $site->setProperty('map', null);
         }
+        if ($request->has('live')) {
+            $site->live = true;
+        }
+        else {
+            $site->live = false;
+        }
+        if ($request->has('scripts')) {
+            $scripts = $request->get('scripts');
+            $site->scripts = $scripts;
+        }
+        else {
+            $site->scripts = null;
+        }
         $site->save();
         return redirect('/build/'.$site->slug);
     }

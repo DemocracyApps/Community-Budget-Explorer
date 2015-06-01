@@ -40,5 +40,23 @@
             <p>{!! $site->getProperty('map') !!}</p>
         </div>
     </div>
+    <div class="row">
+        <div class="col-xs-1"></div>
+        <div class="col-xs-2">
+            <p><b>Site Is Live: </b> </p>
+        </div>
+        <div class="col-xs-9">
+            <p>{!! $site->live?"Yes":"No" !!}</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-1"></div>
+        <div class="col-xs-2">
+            <p><b>Scripts: </b> </p>
+        </div>
+        <div class="col-xs-9">
+            <pre>{!! htmlspecialchars($site->scripts) !!}</pre>
+        </div>
+    </div>
 
 @stop
