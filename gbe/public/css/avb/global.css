@@ -84,9 +84,6 @@ p {
 * Defaults to > 1200px width
 */
 /* line 30, ../../scss/partials/_avb.scss */
-.container {
-  width: 1200px;
-}
 
 /* line 35, ../../scss/partials/_avb.scss */
 #chart-wrap {

@@ -75,7 +75,18 @@ var Site = React.createClass({
         //if (utilities.ie()) return;
         // format URL
         var url = '/' + page;
-        if (this.props.site.embedded) url += "?embedded=true";
+        var nParams = 0;
+        if ('embedded' in this.props.site) nParams++;
+        if ('maxWidth' in this.props.site) nParams++;
+
+        if (nParams > 0) {
+            var added = "?";
+            if (this.props.site.embedded) {
+                url += "?embedded=true";
+                if ('maxWidth' in this.props.site) url += "&max-width="+this.props.site.maxWidth;
+            }
+            else if ('maxWidth' in this.props.site) url += "?max-width=" + this.props.site.maxWidth;
+        }
         // create history object
         window.history.pushState({
             page: page,
@@ -138,7 +149,7 @@ var Site = React.createClass({
                     <div className="container-fluid site-body">
                         <BootstrapLayout {...layoutProps}/>
                     </div>
-                    <div style={{minHeight:70}}></div>
+                    <div style={{minHeight:50}}></div>
                     <div className="container-fluid site-footer">
                         <div className="row">
                             <div className="col-xs-12">

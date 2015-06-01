@@ -138,10 +138,15 @@ var ShowMePage = React.createClass({
             )
         }
         else {
+            let width = 1200, height = 600;
+            if (this.props.site.maxWidth) {
+                width = Number(this.props.site.maxWidth);
+                height = Math.trunc(height*width/1200);
+            }
             if (currentYear < 0) currentYear = newData.periods.length-1;
             return (
                 <div>
-                    <AvbTreemap width={1200} height={600}
+                    <AvbTreemap width={width} height={height}
                                 data={newData}
                                 year={newData.periods[currentYear]}
                                 accountType={(accountType==AccountTypes.EXPENSE)?"Expenses":"Revenues"}/>

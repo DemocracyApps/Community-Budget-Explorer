@@ -53,6 +53,7 @@ class SitesController extends Controller {
         $site->startPage = -1;
         $site->embedded = false;
         if ($parameters != null && array_key_exists('embedded',$parameters) && $parameters['embedded']=='true') $site->embedded = true;
+        if ($parameters != null && array_key_exists('max-width',$parameters)) $site->maxWidth = $parameters['max-width'];
         $site->baseUrl = url('/'.$slug);
         $site->apiUrl  = Util::apiPath() . "/organizations/" . $government->id;
         $site->ajaxUrl = Util::ajaxPath('sites', 'base');

@@ -133,13 +133,13 @@ class AshevilleSiteSeeder extends Seeder
 
         $this->createCard($site, $cardset, $ordinal++, 'Budget Highlights By Fund',
             [
-                'link' => "/docs/asheville/Fund_Highlights_Summary.pdf",
+                'link' => "/docs/asheville/Budget_Highlights_Summary.pdf",
                 'image'=> public_path().'/img/init/slide5.jpg',
                 'body' => "
-* Water Resources: Rate changes expected to generate $465,000 new revenue
-* Stormwater: 5% rate adjustment expected to generate $240,000 new revenue
+* Water Resources: Rate changes generate $465,000 new revenue
+* Stormwater: 5% rate adjustment generates $240,000 new revenue
 * Transit: Fully funded Sunday service plus minor route adjustments
-* Parking Services: No rate change; current revenue up & trend expected to continue
+* Parking Services: No rate change; revenue up & trend expected to continue
 * Street Cut Utility: $240,000 spending increase"
             ]
         );
@@ -517,7 +517,9 @@ startup.
 
 The site is entirely a volunteer effort. We would like to acknowledge the active support and help of
 volunteers from [Code for Asheville](http://www.codeforasheville.org/) and
-the [Asheville Coders League](http://avlcoders.org/). We would also like to thank the staff of the City
+the [Asheville Coders League](http://avlcoders.org/). A tip of the hat
+to [Involution Studios](http://www.goinvo.com/) for the amazing _Show Me The Money_ visualization. We
+would also like to thank the staff of the City
 of Asheville for their ongoing cooperation and support."
             ]
         );
