@@ -37,6 +37,7 @@ function DataModel(id, datasetIds, initialCommands = null, categoryMap = null) {
                 current = current[t.from[j]];
             }
             current.to = t.to;
+            if ('suppress' in t) current.suppress = t.suppress;
         }
         this.categoryMap =  tree;
     }

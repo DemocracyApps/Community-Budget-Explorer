@@ -14,10 +14,17 @@ var DatasetUtilities = {
         let cats = categories.slice();
         let level = 0, nLevels = categories.length;
         let to = null;
-        while (level < nLevels && categories[level] in current) {
+        let suppress = false;
+        while (! suppress && level < nLevels && categories[level] in current) {
             current = current[categories[level]];
             if ('to' in current) to = current.to;
+            if ('suppress' in current) {
+                suppress = true;
+            }
             ++level;
+        }
+        if (suppress) {
+            return null;
         }
         if (to) { // we have a map
             let old = cats.join('/');
@@ -110,27 +117,34 @@ var DatasetUtilities = {
                     if (!(key in current)) current[key] = {isBottom: false};
                     current = current[key];
                 }
-
+                let suppress = false;
                 key = getCurrentCategory(hierarchy.length - 1, item, categoryMap);
                 if (!(key in current)) {
-                    let amounts = new Array(nPeriods);
-                    for (var k = 0; k < nPeriods; ++k) amounts[k] = Number(0.0);
                     let categories = new Array(hierarchy.length);
                     for (level = 0; level < hierarchy.length; ++level) {
                         categories[level] = getCurrentCategory(level, item, categoryMap);
                     }
+                    let translatedCategories = (remap)?this.reMapCategories(categories,remap):categories;
+                    if (translatedCategories != null) {
+                        let amounts = new Array(nPeriods);
+                        for (var k = 0; k < nPeriods; ++k) amounts[k] = Number(0.0);
 
-                    current[key] = {
-                        isBottom: true,
-                        accountType: item.type,
-                        categories: (remap)?this.reMapCategories(categories,remap):categories,
-                        amount: amounts
-                    };
-                    this.count++;
+                        current[key] = {
+                            isBottom: true,
+                            accountType: item.type,
+                            categories: translatedCategories,
+                            amount: amounts
+                        };
+                        this.count++;
+                    }
+                    else {
+                        suppress = true;
+                    }
                 }
-
-                let factor = (item.type == AccountTypes.REVENUE) ? -1.0 : 1.0;
-                current[key].amount[iPeriod] += Number(item.amount) * factor;
+                if (! suppress) {
+                    let factor = (item.type == AccountTypes.REVENUE) ? -1.0 : 1.0;
+                    current[key].amount[iPeriod] += Number(item.amount) * factor;
+                }
             }
         }
 

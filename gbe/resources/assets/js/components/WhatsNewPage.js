@@ -353,6 +353,10 @@ var WhatsNewPage = React.createClass({
             <div>
                 {this.optionsPanel()}
                 {renderFunction()}
+                <br/>
+                <div style={{marginTop:10,fontSize:"small"}}>
+                    *Note that inter-fund transfers may be double-counted at the top levels.
+                </div>
             </div>
         )
     }

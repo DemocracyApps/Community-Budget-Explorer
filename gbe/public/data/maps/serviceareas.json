@@ -95,7 +95,8 @@
     },
     {
       "from":["Health Insurance Fund","Human Resources Department"],
-      "to":["Other Funds","Health Insurance Fund"]
+      "to":["Other Funds","Health Insurance Fund"],
+      "suppress":true
     },
     {
       "from":["Mass Transit Fund","Transportation Department"],
@@ -107,7 +108,8 @@
     },
     {
       "from":["Property and Liability Fund","Administration Services Dept"],
-      "to":["Other Funds","Property and Liability Fund"]
+      "to":["Other Funds","Property and Liability Fund"],
+      "suppress":true
     },
     {
       "from":["Stormwater Fund","Public Works Department"],
@@ -123,7 +125,8 @@
     },
     {
       "from":["Workers' Compensation Fund","Finance Department"],
-      "to":["Other Funds","Workers' Compensation Fund"]
+      "to":["Other Funds","Workers' Compensation Fund"],
+      "suppress":true
     }
   ]
 }
