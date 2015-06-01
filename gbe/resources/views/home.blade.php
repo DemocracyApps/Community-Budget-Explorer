@@ -4,8 +4,23 @@
 @section('content')
     <div class="row">
         <h1>Welcome to The Government Budget Explorer!</h1>
-        <p> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed in tortor ullamcorper, sodales enim quis, vehicula dui. Nulla faucibus dolor sit amet enim rhoncus rutrum. Aenean iaculis volutpat tellus, eget vulputate erat dictum ut. Nunc facilisis nisl erat, sed ornare libero lobortis at. Vestibulum eu elementum sem, nec ornare augue. Curabitur sagittis tellus at ante congue ultrices. Sed vel sagittis metus. Sed convallis, sapien eu fermentum eleifend, tortor enim consequat orci, a sagittis diam magna eu ligula. Sed dapibus facilisis nulla at tincidunt. Nulla blandit feugiat purus, a pulvinar ante. Vestibulum mollis elit ut risus facilisis, mattis venenatis metus iaculis. Fusce sed cursus sem, nec ornare erat. </p>
-        <br>
+        <p>This site is still under development, but feel free to explore community budgets listed below. </p>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Site Name</th><th>Government Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($sites as $site)
+                    <tr>
+                        <td><a href="/sites/{!! $site->slug !!}">{!! $site->name !!}</a> </td>
+                        <td>{!! $site->governmentName !!}</td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
     </div>
 @stop
 

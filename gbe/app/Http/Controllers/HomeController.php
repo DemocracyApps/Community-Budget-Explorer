@@ -1,4 +1,7 @@
 <?php namespace DemocracyApps\GB\Http\Controllers;
+use DemocracyApps\GB\Organizations\GovernmentOrganization;
+use DemocracyApps\GB\Sites\Site;
+
 /**
  *
  * This file is part of the Government Budget Explorer (GBE).
@@ -46,8 +49,11 @@ class HomeController extends Controller {
 	 */
 	public function index()
 	{
-        $projects = array();
-		return view('home', array('projects' => $projects));
+		$sites = Site::where('published','=',true)->get();
+		foreach ($sites as $site) {
+			$site->governmentName = GovernmentOrganization::where('id','=',$site->government)->first()->name;
+		}
+		return view('home', array('sites' => $sites));
 	}
     /**
      * Show the application dashboard to the user.
