@@ -31,7 +31,7 @@ var SlideShow = React.createClass({
         var overlayStyle = {
             zIndex:"100",
             position:"absolute",
-            width:"50%",
+            width:"60%",
             top:110,
             right:"10%",
             background: "#666",
