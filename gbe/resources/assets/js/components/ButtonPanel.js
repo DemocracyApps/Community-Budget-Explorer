@@ -40,6 +40,7 @@ class ButtonPanel extends React.Component {
 	}
 
 	render() {
+		this.state = this.getStateFromStore();
 		// Render buttons first.
 		var buttons = this.state.options.map(function(option) {
 			var callback;
