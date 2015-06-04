@@ -46,7 +46,7 @@ var ShowMePage = React.createClass({
     componentWillMount: function () {
         // If this is the first time this component is mounting, we need to create the data model
         // and do any other state initialization required.
-        var dataModelId = stateStore.getComponentStateValue(this.props.storeId, 'dataModelId');
+        var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
         let dm = null;
         if (dataModelId == null) {
             var ids = this.props.componentData['mydatasets'].ids;
@@ -60,14 +60,14 @@ var ShowMePage = React.createClass({
                 table: {}
             };
             subComponents.chart.id = idGenerator.generateId();
-            subComponents.chart.storeId = stateStore.registerComponent('components', subComponents.chart.id, {});
-            configStore.registerComponent(subComponents.chart.storeId, 'components', subComponents.chart.id, {});
+            subComponents.chart.storeId = stateStore.registerComponent(this.props.storeId, subComponents.chart.id, {});
+            configStore.registerComponent(subComponents.chart.storeId, subComponents.chart.id, {});
 
             subComponents.table.id = idGenerator.generateId();
-            subComponents.table.storeId = stateStore.registerComponent('components', subComponents.table.id, {});
-            configStore.registerComponent(subComponents.table.storeId, 'components', subComponents.table.id, {});
+            subComponents.table.storeId = stateStore.registerComponent(this.props.storeId, subComponents.table.id, {});
+            configStore.registerComponent(subComponents.table.storeId, subComponents.table.id, {});
 
-            stateStore.setComponentState(this.props.storeId,
+            stateStore.initializeComponentState(this.props.storeId,
                 {
                     accountType: AccountTypes.EXPENSE,
                     dataModelId: dm.id,

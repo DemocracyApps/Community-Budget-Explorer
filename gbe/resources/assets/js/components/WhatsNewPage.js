@@ -44,7 +44,7 @@ var WhatsNewPage = React.createClass({
     componentWillMount: function () {
         // If this is the first time this component is mounting, we need to create the data model
         // and do any other state initialization required.
-        var dataModelId = stateStore.getComponentStateValue(this.props.storeId, 'dataModelId');
+        var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
         let dm = null;
         if (dataModelId == null) {
             var ids = this.props.componentData['mydatasets'].ids;
@@ -57,15 +57,16 @@ var WhatsNewPage = React.createClass({
                 chart: {},
                 table: {}
             };
+
             subComponents.chart.id = idGenerator.generateId();
-            subComponents.chart.storeId = stateStore.registerComponent('components', subComponents.chart.id, {});
-            configStore.registerComponent(subComponents.chart.storeId, 'components', subComponents.chart.id, {});
+            subComponents.chart.storeId = stateStore.registerComponent(this.props.storeId, subComponents.chart.id, {});
+            configStore.registerComponent(subComponents.chart.storeId, subComponents.chart.id, {});
 
             subComponents.table.id = idGenerator.generateId();
-            subComponents.table.storeId = stateStore.registerComponent('components', subComponents.table.id, {});
-            configStore.registerComponent(subComponents.table.storeId, 'components', subComponents.table.id, {});
+            subComponents.table.storeId = stateStore.registerComponent(this.props.storeId, subComponents.table.id, {});
+            configStore.registerComponent(subComponents.table.storeId, subComponents.table.id, {});
 
-            stateStore.setComponentState(this.props.storeId,
+            stateStore.initializeComponentState(this.props.storeId,
                 {
                     accountType: AccountTypes.EXPENSE,
                     dataModelId: dm.id,
@@ -79,7 +80,7 @@ var WhatsNewPage = React.createClass({
     },
 
     shouldComponentUpdate: function (nextProps, nextState) {
-        var areas = stateStore.getComponentStateValue(this.props.storeId, 'areaList');
+        var areas = stateStore.getValue(this.props.storeId, 'areaList');
 
         var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
         var dm = dataModelStore.getModel(dataModelId);
@@ -228,7 +229,7 @@ var WhatsNewPage = React.createClass({
         var dm = dataModelStore.getModel(dataModelId);
         var accountType = stateStore.getValue(this.props.storeId, 'accountType');
         var selectedLevel = stateStore.getValue(this.props.storeId, 'selectedLevel');
-        var areas = stateStore.getComponentStateValue(this.props.storeId, 'areaList');
+        var areas = stateStore.getValue(this.props.storeId, 'areaList');
         var selectedArea = stateStore.getValue(this.props.storeId, 'selectedArea');
         var startPath = [];
         var addLevel = 1;
@@ -267,7 +268,7 @@ var WhatsNewPage = React.createClass({
             var rows = currentData.data;
             if (areas == null) {
                 areas = this.computeAreas(rows);
-                stateStore.setComponentState(this.props.storeId, {areaList: areas});
+                stateStore._setComponentState(this.props.storeId, {areaList: areas}); // Shouldn't be doing this, need to work out better way
             }
             rows.map(datasetUtilities.computeChanges);
             rows = rows.sort(datasetUtilities.sortByAbsoluteDifference).slice(0, 10);

@@ -69,7 +69,7 @@ var HistoryTable = React.createClass({
     componentWillMount: function () {
         // If this is the first time this component is mounting, we need to create the data model
         // and do any other state initialization required.
-        var dataModelId = stateStore.getComponentStateValue(this.props.storeId, 'dataModelId');
+        var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
         let dm = null;
         if (dataModelId == null) {
             var ids;
@@ -84,7 +84,7 @@ var HistoryTable = React.createClass({
             });
 
             dm = dataModelStore.createModel(ids, this.props.dataInitialization, this.props.site.categoryMap);
-            stateStore.setComponentState(this.props.storeId,
+            stateStore.initializeComponentState(this.props.storeId,
                 {
                     accountType: AccountTypes.EXPENSE,
                     dataModelId: dm.id,

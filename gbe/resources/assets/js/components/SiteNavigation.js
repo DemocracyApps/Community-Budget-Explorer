@@ -18,7 +18,8 @@ var SiteNavigation = React.createClass({
             payload: {
                 changes: [
                     {
-                        name: "site.currentPage",
+                        section:"site",
+                        name: "currentPage",
                         value: this.props.pages[0]
                     }
                 ]
@@ -29,7 +30,7 @@ var SiteNavigation = React.createClass({
     render: function() {
 
         var navItem = function(pageId, index) {
-            var currentPage = stateStore.getValue('site.currentPage');
+            var currentPage = stateStore.getGlobalValue('site','currentPage');
             var page = configStore.getConfiguration('pages', pageId);
 
             var selectPage = function(e) {
@@ -38,7 +39,8 @@ var SiteNavigation = React.createClass({
                     payload: {
                         changes: [
                             {
-                                name: "site.currentPage",
+                                section:"site",
+                                name: "currentPage",
                                 value: page.id
                             }
                         ]

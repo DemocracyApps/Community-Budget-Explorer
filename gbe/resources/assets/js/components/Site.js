@@ -28,7 +28,7 @@ var Site = React.createClass({
     },
 
     componentWillMount: function() {
-        stateStore.registerState('site.currentPage', this.props.site.startPage);
+        stateStore.initializeGlobalState('site', {'currentPage': this.props.site.startPage});
     },
 
     componentDidMount: function () {
@@ -96,7 +96,7 @@ var Site = React.createClass({
 
     render: function() {
 
-        var currentPage = stateStore.getValue('site.currentPage');
+        var currentPage = stateStore.getGlobalValue('site','currentPage');
         var embedded = this.props.site.embedded;
         var page = configStore.getConfiguration('pages', currentPage);
 

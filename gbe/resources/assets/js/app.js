@@ -76,13 +76,13 @@ configStore.storeConfiguration('common', 'site', GBEVars.site[0]);
 var pages = [];
 for (i=0; i<GBEVars.pages.length; ++i) {
     var page = GBEVars.pages[i];
-    page.storeId = stateStore.registerComponent('page', page.shortName, {});
+    page.storeId = stateStore.registerComponent(null, page.shortName, {});
     for (var key in page.components) {
         if (page.components.hasOwnProperty(key)) {
             page.components[key].forEach(function (c) {
                 let uniqId = idGenerator.generateId();
-                c.storeId = stateStore.registerComponent('components', uniqId, {}); // Should use a common ID generator, but no time right now
-                configStore.registerComponent(c.storeId, 'components', uniqId, {});
+                c.storeId = stateStore.registerComponent(null, uniqId, {});
+                configStore.registerComponent(c.storeId, uniqId, {});
             });
         }
     }

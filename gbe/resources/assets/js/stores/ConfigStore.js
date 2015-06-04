@@ -23,10 +23,9 @@ var ConfigStore = assign({}, EventEmitter.prototype, {
 
     },
 
-    registerComponent: function registerComponent (storeId, type, name, initialValue) {
+    registerComponent: function registerComponent (storeId, name, initialValue) {
         var component = {
             id: storeId,
-            type: type,
             name: name,
             state: initialValue
         }
