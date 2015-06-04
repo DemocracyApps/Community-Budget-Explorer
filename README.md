@@ -17,9 +17,10 @@ If you are using Vagrant, the following commands will install and start an insta
     sudo ./setup/setup.sh
     cd gbe
     cp .env.example .env
-    composer update
+    composer install
     npm install
     bower install
+    gulp
     ./artisan migrate --seed
     
 The server will be at 192.168.33.27, but that can of course be changed in the Vagrantfile. You can also find the 
