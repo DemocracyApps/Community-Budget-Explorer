@@ -13,7 +13,7 @@ var CardTable = React.createClass({
 
     cardLink: function (card) {
         if (card.link) return (
-            <div class="row">
+            <div className="row">
                 <div className="col-md-3">
                     <a style={{float:"right"}} href={card.link} target="_blank" className="btn-sm btn-info">Read More</a>
                 </div>
