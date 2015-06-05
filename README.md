@@ -32,8 +32,16 @@ current Asheville data and site:
 The Vagrant file configures the server IP to be 192.168.33.27, but that can of course be changed. You can also find the 
 configuration there for a Digital Ocean provider.
 
-When  will probably need to enter your Github credentials while running 'composer update' since you'll 
-exceed their anonymous rate limits.
+You  will probably something like the following while running 'composer install':
+
+
+    Could not fetch https://api.github.com/repos/sebastianbergmann/php-text-template/zipball/206dfefc0ffe9cebf65c413e3d0e809c82fbf00a, please create a GitHub OAuth token to go over the API rate limit
+    Head to https://github.com/settings/tokens/new?scopes=repo&description=Composer+on+ip-172-31-24-138+2015-06-05+1547
+    to retrieve a token. It will be stored in "/home/ubuntu/.composer/auth.json" for future use by Composer.
+    Token (hidden): 
+
+Go to the specified URL, enter your password, then click the button to generate a token. Copy and paste the resulting
+token after the prompt and the installation will continue.
 
 ### Installing on an Existing Server
 
