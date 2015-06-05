@@ -34,6 +34,7 @@ return [
 
     'mapped_domains' => [
         'gee.dev' => 'asheville',
-        'avlbudget.org' => 'asheville'
+        'avlbudget.org' => 'asheville',
+        'www.avlbudget.org' => 'asheville'
     ],
 ];
