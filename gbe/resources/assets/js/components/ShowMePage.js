@@ -55,18 +55,11 @@ var ShowMePage = React.createClass({
             });
 
             dm = dataModelStore.createModel(ids, this.props.dataInitialization, this.props.site.categoryMap);
+
             let subComponents = {
                 chart: {},
                 table: {}
             };
-            subComponents.chart.id = idGenerator.generateId();
-            subComponents.chart.storeId = stateStore.registerComponent(this.props.storeId, subComponents.chart.id, {});
-            configStore.registerComponent(subComponents.chart.storeId, subComponents.chart.id, {});
-
-            subComponents.table.id = idGenerator.generateId();
-            subComponents.table.storeId = stateStore.registerComponent(this.props.storeId, subComponents.table.id, {});
-            configStore.registerComponent(subComponents.table.storeId, subComponents.table.id, {});
-
             stateStore.initializeComponentState(this.props.storeId,
                 {
                     accountType: AccountTypes.EXPENSE,
@@ -77,6 +70,17 @@ var ShowMePage = React.createClass({
                     subComponents: subComponents
                 });
 
+            subComponents.chart.storeId = stateStore.registerComponent(this.props.storeId, {});
+            configStore.registerComponent(subComponents.chart.storeId, {});
+
+            subComponents.table.storeId = stateStore.registerComponent(this.props.storeId, {});
+            configStore.registerComponent(subComponents.table.storeId, {});
+
+            stateStore.setOverrideValue(this.props.storeId, subComponents.chart.storeId, "accountType");
+            stateStore.setOverrideValue(this.props.storeId, subComponents.chart.storeId, "selectedLevel");
+
+            stateStore.setOverrideValue(this.props.storeId, subComponents.table.storeId, "accountType");
+            stateStore.setOverrideValue(this.props.storeId, subComponents.table.storeId, "selectedLevel");
         }
     },
 

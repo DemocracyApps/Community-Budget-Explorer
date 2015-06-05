@@ -37,35 +37,6 @@ var ChangeExplorer = React.createClass({
         };
     },
 
-    getAccountType: function() {
-        if (this.props.componentMode == CommonConstants.COMPOSED_COMPONENT) {
-            return this.props.accountType;
-        }
-        else {
-            return stateStore.getValue(this.props.storeId, 'accountType');
-        }
-    },
-
-    getSelectedLevel: function() {
-        if (this.props.componentMode == CommonConstants.COMPOSED_COMPONENT) {
-            return this.props.selectedLevel;
-        }
-        else {
-            return stateStore.getValue(this.props.storeId, 'selectedLevel');
-        }
-    },
-
-    prepareLocalState: function (dm) {
-        var accountType = this.getAccountType();
-        var selectedLevel = stateStore.getValue(this.props.storeId, 'selectedLevel');
-
-        return dm.checkData({
-            accountTypes: [accountType],
-            startPath: [],
-            nLevels: selectedLevel+1
-        }, true);
-    },
-
     componentWillMount: function () {
         // If this is the first time this component is mounting, we need to create the data model
         // and do any other state initialization required.
@@ -93,137 +64,23 @@ var ChangeExplorer = React.createClass({
         }
     },
 
-    componentWillReceiveProps: function () {
-        var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
-        var dm = dataModelStore.getModel(dataModelId);
-        this.prepareLocalState(dm);
-    },
-
     shouldComponentUpdate: function (nextProps, nextState) {
         var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
         var dm = dataModelStore.getModel(dataModelId);
-        var accountType = this.getAccountType;
+        var accountType = this.props.accountType;
         return ( dm.dataChanged() || dm.commandsChanged({accountTypes: [accountType]}) );
-    },
-
-    onAccountTypeChange: function (e) {
-        dispatcher.dispatch({
-            actionType: ActionTypes.COMPONENT_STATE_CHANGE,
-            payload: {
-                id: this.props.storeId,
-                changes: [
-                    {
-                        name: 'accountType',
-                        value: Number(e.target.value)
-                    }
-                ]
-            }
-        });
-    },
-
-    doReset: function (e) {
-        dispatcher.dispatch({
-            actionType: ActionTypes.COMPONENT_STATE_CHANGE,
-            payload: {
-                id: this.props.storeId,
-                changes: [
-                    {
-                        name: 'selectedLevel',
-                        value: 0
-                    }
-                ]
-            }
-        });
-    },
-
-    onLevelChange: function onLevelChange(e) {
-        dispatcher.dispatch({
-            actionType: ActionTypes.COMPONENT_STATE_CHANGE,
-            payload: {
-                id: this.props.storeId,
-                changes: [
-                    {
-                        name: 'selectedLevel',
-                        value: Number(e.target.value)
-                    }
-                ]
-            }
-        });
-    },
-
-    renderLevelSelector: function renderLevelSelector(data) {
-        if (this.props.componentMode == CommonConstants.STANDALONE_COMPONENT) {
-            let selectedLevel = stateStore.getValue(this.props.storeId, 'selectedLevel');
-            var selectLabelText = "Select Detail Level:" + String.fromCharCode(160) + String.fromCharCode(160);
-            var spacer = String.fromCharCode(160) + String.fromCharCode(160) + String.fromCharCode(160) + String.fromCharCode(160);
-            return (
-                <div className="form-group">
-                    <form className="form-inline">
-                        <label>{selectLabelText}</label>
-                        <select className="form-control" onChange={this.onLevelChange} value={selectedLevel}>
-                            {data.categories.map(function (item, index) {
-                                return (
-                                    <option key={index} value={index}>{item}</option>
-                                )
-                            })}
-                        </select>
-                        <span>{spacer}</span>
-                        <button className="btn btn-normal" onClick={this.doReset}>Reset</button>
-                    </form>
-                </div>
-            )
-        }
-    },
-
-    renderAccountSelector() {
-        var accountType = this.getAccountType();
-        if (this.props.componentMode == CommonConstants.STANDALONE_COMPONENT) {
-            return (
-                <form className="form-inline">
-                <div className="form-group">
-                    <label>Select Account Type</label>
-                    <select className="form-control" onChange={this.onAccountTypeChange} value={accountType}>
-                        {
-                            this.props.accountTypes.map(
-                                function (type, index) {
-                                    return <option key={index} value={type.value}> {type.name} </option>
-                                }
-                            )
-                        }
-                    </select>
-                </div>
-                </form>
-            )
-        }
-    },
-
-    interactionPanel: function interactionPanel(data, rows) {
-        var accountType = stateStore.getValue(this.props.storeId, 'accountType');
-        return (
-            <div>
-                <div className="row">
-                    <div className="col-xs-6">
-                        {this.renderLevelSelector(data, rows)}
-                    </div>
-                  <div className="col-xs-6">
-                      {this.renderAccountSelector()}
-                  </div>
-                </div>
-            </div>
-      )
     },
 
     tableRow: function (item, index) {
         let length = item.amount.length;
         let label = item.categories[0];
-        var selectedLevel = this.getSelectedLevel();
+        var selectedLevel = this.props.selectedLevel;
         if (selectedLevel > 0) {
             for (let i=1; i<=selectedLevel; ++i) {
                 label += " " + String.fromCharCode(183) + " "+item.categories[i];
             }
         }
 
-        // Note that Sparkline below can be replaced with MicroBarChart.
         let tdStyle={textAlign:"right"};
         return <tr key={index}>
             <td key="0" style={{width:"35%"}}>{label}</td>
@@ -240,15 +97,13 @@ var ChangeExplorer = React.createClass({
     render: function() {
         var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
         var dm = dataModelStore.getModel(dataModelId);
-        var accountType = this.getAccountType();
-        //var selectedLevel = stateStore.getValue(this.props.storeId, 'selectedLevel');
-        var selectedLevel = this.getSelectedLevel();
+        var accountType = this.props.accountType;
+        var selectedLevel = this.props.selectedLevel;
         var newData = dm.getData({
             accountTypes:[accountType],
             startPath: [],
             nLevels: selectedLevel+1
         }, false);
-        var dataNull = (newData == null);
 
         if (newData == null) {
             return (
@@ -267,8 +122,6 @@ var ChangeExplorer = React.createClass({
             let thStyle={textAlign:"right"};
             return (
                 <div>
-                    {this.interactionPanel(newData, rows)}
-
                     <table className="table">
                         <thead>
                         <tr>

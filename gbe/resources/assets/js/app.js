@@ -80,9 +80,8 @@ for (i=0; i<GBEVars.pages.length; ++i) {
     for (var key in page.components) {
         if (page.components.hasOwnProperty(key)) {
             page.components[key].forEach(function (c) {
-                let uniqId = idGenerator.generateId();
-                c.storeId = stateStore.registerComponent(null, uniqId, {});
-                configStore.registerComponent(c.storeId, uniqId, {});
+                c.storeId = stateStore.registerComponent(null, {});
+                configStore.registerComponent(c.storeId, {});
             });
         }
     }
