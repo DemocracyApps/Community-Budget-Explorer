@@ -32,7 +32,7 @@ current Asheville data and site:
 The Vagrant file configures the server IP to be 192.168.33.27, but that can of course be changed. You can also find the 
 configuration there for a Digital Ocean provider.
 
-You  will probably something like the following while running 'composer install':
+You  will probably see something like the following while running 'composer install':
 
 
     Could not fetch https://api.github.com/repos/sebastianbergmann/php-text-template/zipball/206dfefc0ffe9cebf65c413e3d0e809c82fbf00a, please create a GitHub OAuth token to go over the API rate limit
