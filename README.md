@@ -1,5 +1,11 @@
 # Government Budget Explorer
 
+_Don't tell me what you value, show me your budget, and I'll tell you what you value._ - Joe Biden
+
+The Government Budget Explorer is a SaaS platform for creating municipal and county budget sites that
+let citizesn explore, understand and then engage with their government's plans for spending and revenue.
+ 
+ 
 A SaaS platform for local budget sites like the [Asheville budget site](http://avlbudget.org) we built last year.
 
 See the [wiki](https://github.com/DemocracyApps/GBE/wiki) for more details.
