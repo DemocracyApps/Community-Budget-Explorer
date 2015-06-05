@@ -18,7 +18,7 @@ within each layout.
 Developers have the ability to create new visualizations, storytelling components, whatever they like and make them 
 available for inclusion in their own or others' sites. The platform currently has a small set of built-in components,
 but we will be creating more over time. If you are interested in contributing to the platform, this would be a
-great way to do it
+great way to do it (see next section).
 
 ## Development Status
 
@@ -26,6 +26,10 @@ This platform is under very active development as of June, 2015. We just release
 the [Asheville budget site](http://avlbudget.org) as our first production site on the new platform. We will
 begin adding several western NC county budgets over the next month or two, and are looking for other communities
 interested in using the platform. 
+
+If you are interested in contributing to the project (independently, or as part
+of [CityCampNC](http://citycampnc.org/) June 11-13, take a look at
+the [issues page](https://github.com/DemocracyApps/GBE/issues), especially those labeled with _Hackathon Project_.
 
 
 ## Documentation
