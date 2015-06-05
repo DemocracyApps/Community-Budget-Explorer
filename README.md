@@ -4,10 +4,35 @@ _Don't tell me what you value, show me your budget, and I'll tell you what you v
 
 The Government Budget Explorer is a SaaS platform for creating municipal and county budget sites that
 let citizens explore, understand and then engage with their government's plans for spending and revenue. The
-first site to use the platform is [Asheville, NC](http://avlbudget.org). The software may be used to create a
-standalone server operating a single site or a platform for hosting many different communities. 
+first site to use the platform is [Asheville, NC 2015-16 Budget Explorer](http://avlbudget.org). The
+software may be used to create a standalone server operating a single site or a platform for hosting
+many different communities.
+
+The platform is designed to be highly customizable and extensible. 
+
+Site creators have the ability to create pages, 
+select from multiple available layouts or create their own on each page, and select from a menu of components
+(visualizations, tables, navigation components, resource tables, slideshows, simple pages, etc.) for placement
+within each layout. 
+
+Developers have the ability to create new visualizations, storytelling components, whatever they like and make them 
+available for inclusion in their own or others' sites. The platform currently has a small set of built-in components,
+but we will be creating more over time. If you are interested in contributing to the platform, this would be a
+great way to do it
+
+## Development Status
+
+This platform is under very active development as of June, 2015. We just released
+the [Asheville budget site](http://avlbudget.org) as our first production site on the new platform. We will
+begin adding several western NC county budgets over the next month or two, and are looking for other communities
+interested in using the platform. 
 
 
+## Documentation
+
+There is documentation about the platform and the administrative interface, and guidance on developing new components
+on the [wiki](https://github.com/DemocracyApps/GBE/wiki). This is a first draft - we will be improving on it and
+better integrating it into the repository itself over the next few months.
 
 ## Installation
 
