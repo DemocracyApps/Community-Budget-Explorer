@@ -1,5 +1,6 @@
 import React from 'react';
-import ChangeExplorer from './ChangeExplorer';
+import ChangesTable from './ChangesTable';
+import ChangesChart from './ChangesChart';
 import VerticalBarChart from './VerticalBarChart';
 
 var datasetStore = require('../stores/DatasetStore');
@@ -43,10 +44,10 @@ var WhatsNewPage = React.createClass({
     componentWillMount: function () {
         // If this is the first time this component is mounting, we need to create the data model
         // and do any other state initialization required.
-        var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
+        let dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
         let dm = null;
         if (dataModelId == null) {
-            var ids = this.props.componentData['mydatasets'].ids;
+            let ids = this.props.componentData['mydatasets'].ids;
             ids.forEach(function (id) {
                 apiActions.requestDatasetIfNeeded(id);
             });
@@ -83,23 +84,20 @@ var WhatsNewPage = React.createClass({
     },
 
     shouldComponentUpdate: function (nextProps, nextState) {
-        var areas = stateStore.getValue(this.props.storeId, 'areaList');
+        let dm = dataModelStore.getModel(stateStore.getValue(this.props.storeId, 'dataModelId'));
+        let selectedLevel = stateStore.getValue(this.props.storeId, 'selectedLevel');
+        let selectedArea = stateStore.getValue(this.props.storeId, 'selectedArea');
+        let startPath = [], addLevel=1;
+        let areas = dm.getCategoryNames(null, 0);
 
-        var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
-        var dm = dataModelStore.getModel(dataModelId);
-        var dataChanged = dm.dataChanged();
-        var areasNull = (areas == null);
-
-        var selectedLevel = stateStore.getValue(this.props.storeId, 'selectedLevel');
-        var selectedArea = stateStore.getValue(this.props.storeId, 'selectedArea');
-        var startPath = [];
-        var addLevel = 1;
         if (areas != null && selectedArea >= 0) {
             startPath = [areas[selectedArea].name];
             addLevel = 0;
         }
-        let result = (areasNull || dataChanged || dm.commandsChanged({startPath: startPath, nLevels: selectedLevel + addLevel}) );
-        return result;
+        return ((areas == null) ||
+                 dm.dataChanged() ||
+                 dm.commandsChanged({startPath: startPath, nLevels: selectedLevel + addLevel})
+               );
     },
 
 	// top options panel
@@ -144,7 +142,7 @@ var WhatsNewPage = React.createClass({
     },
 
     typePanel: function (panelWidth) {
-        var accountType = stateStore.getValue(this.props.storeId, 'accountType');
+        let accountType = stateStore.getValue(this.props.storeId, 'accountType');
         return this.buttonPanel(panelWidth, "Account Type", accountType, this.changeAccountType, [
         	{ value:AccountTypes.EXPENSE, title:"Spending" },
         	{ value:AccountTypes.REVENUE, title:"Revenue" },
@@ -163,7 +161,7 @@ var WhatsNewPage = React.createClass({
     },
 
     modePanel: function(panelWidth) {
-        var displayMode = stateStore.getValue(this.props.storeId, 'displayMode');
+        let displayMode = stateStore.getValue(this.props.storeId, 'displayMode');
         return this.buttonPanel(panelWidth, "Display", displayMode, this.changeMode, [
         	{ value:"chart", title:"Charts"},
         	{ value:"table", title:"Table"}
@@ -182,39 +180,12 @@ var WhatsNewPage = React.createClass({
     },
 
     detailPanel: function(panelWidth) {
-        var level = stateStore.getValue(this.props.storeId, 'selectedLevel');
+        let level = stateStore.getValue(this.props.storeId, 'selectedLevel');
         return this.buttonPanel(panelWidth, "Detail Level", level, this.changeDetailLevel, [
         	{ value:1, title:"Department"},
         	{ value:2, title:"Division"},
         	{ value:3, title:"Account"}
         ]);
-    },
-
-
-    computeAreas: function(rows) {
-        var ahash = {};
-        var nYears = rows[0].amount.length;
-        for (let i=0; i<rows.length; ++i) {
-            let current = ahash[rows[i].categories[0]];
-            if (current == undefined) {
-                current = {
-                    name: rows[i].categories[0],
-                    value: 0.0
-                };
-                ahash[current.name] = current;
-            }
-            current.value += rows[i].amount[nYears-1];
-        }
-        var areas = [];
-        for (var nm in ahash) {
-            if (ahash.hasOwnProperty(nm) && Math.abs(ahash[nm].value) > 0.0) {
-                areas.push(ahash[nm]);
-            }
-        }
-        areas = areas.sort(function(a, b) {
-           return b.value - a.value;
-        });
-        return areas;
     },
 
     selectArea: function(e) {
@@ -227,25 +198,41 @@ var WhatsNewPage = React.createClass({
         });
     },
 
+    newRenderCharts: function() {
+        let subComponents = stateStore.getValue(this.props.storeId, 'subComponents');
+        let selectedLevel = stateStore.getValue(this.props.storeId, 'selectedLevel');
+        let selectedArea = stateStore.getValue(this.props.storeId, 'selectedArea');
+        return (
+            <div>
+                <ChangesChart site={this.props.site}
+                              storeId={subComponents.table.storeId}
+                              datasets={this.props.componentData['mydatasets'].ids}
+                              accountType={stateStore.getValue(this.props.storeId, 'accountType')}
+                              selectedLevel={selectedLevel}
+                              selectedArea={selectedArea}
+                    />
+            </div>
+        )
+    },
+
     renderCharts: function () {
-        var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
-        var dm = dataModelStore.getModel(dataModelId);
-        var accountType = stateStore.getValue(this.props.storeId, 'accountType');
-        var selectedLevel = stateStore.getValue(this.props.storeId, 'selectedLevel');
-        var areas = stateStore.getValue(this.props.storeId, 'areaList');
-        var selectedArea = stateStore.getValue(this.props.storeId, 'selectedArea');
-        var startPath = [];
-        var addLevel = 1;
+        let dm = dataModelStore.getModel(stateStore.getValue(this.props.storeId, 'dataModelId'));
+        let accountType = stateStore.getValue(this.props.storeId, 'accountType');
+        let selectedLevel = stateStore.getValue(this.props.storeId, 'selectedLevel');
+        let selectedArea = stateStore.getValue(this.props.storeId, 'selectedArea');
+
+        let startPath = [], addLevel = 1;
+        let areas = dm.getCategoryNames(null, 0);
         if (areas != null && selectedArea >= 0) {
             startPath = [areas[selectedArea].name];
             addLevel = 0;
         }
-        var currentData = dm.getData({
+        let currentData = dm.getData({
             accountTypes:[accountType],
             startPath: startPath,
             nLevels: selectedLevel + addLevel
         }, false);
-        var dataNull = (currentData == null);
+        let dataNull = (currentData == null);
         if (dataNull) {
             return (
                 <div style={{height: 600}}>
@@ -268,18 +255,15 @@ var WhatsNewPage = React.createClass({
                 }, false);
             }
 
-            var rows = currentData.data;
+            let rows = currentData.data;
             if (areas == null) {
-                areas = this.computeAreas(rows);
-                if (false) areas = dm.getCategoryNames(null, 0);
-                stateStore._setComponentState(this.props.storeId, {areaList: areas}); // Shouldn't be doing this, need to work out better way
+                areas = dm.getCategoryNames(null, 0);
             }
 
-            if (true) {
-                rows.map(datasetUtilities.computeChanges);
-                rows = rows.sort(datasetUtilities.sortByAbsoluteDifference).slice(0, 10);
-            }
-            var topDifferences = [];
+            rows.map(datasetUtilities.computeChanges);
+            rows = rows.sort(datasetUtilities.sortByAbsoluteDifference).slice(0, 10);
+
+            let topDifferences = [];
             for (let i = 0; i < rows.length; ++i) {
                 let item = {
                     show: true,
@@ -302,16 +286,16 @@ var WhatsNewPage = React.createClass({
                 }
             }
 
-            var w = window.innerWidth;
+            let w = window.innerWidth;
             w = 100 * Math.trunc(w/100);
 
-            var h = window.innerHeight;
+            let h = window.innerHeight;
             h = 100 * Math.round(h/100);
             if (h < 500) h = 500;
             w /= 12;
             w *= 8;
             if (w < 300) w = 300;
-            var txt = (accountType==AccountTypes.EXPENSE)?'Top Spending Changes':'Top Revenue Changes';
+            let txt = (accountType==AccountTypes.EXPENSE)?'Top Spending Changes':'Top Revenue Changes';
             return (
                 <div className = "row">
                     <div className="col-md-3 col-sm-3">
@@ -320,7 +304,7 @@ var WhatsNewPage = React.createClass({
                         <ul className="servicearea-selector nav nav-pills nav-stacked">
                             <li role="presentation" className={selectedArea==-1?"active":"not-active"}><a href="#" id={-1} onClick={this.selectArea}>All Areas</a></li>
                             {areas.map(function(item, index){
-                                var spacer = String.fromCharCode(160);
+                                let spacer = String.fromCharCode(160);
                                 return <li role="presentation" className={selectedArea==index?"active":"not-active"}><a href="#" id={index}
                                               onClick={this.selectArea.bind(null, index)}>{spacer} {item.name}</a></li>
                             }.bind(this))}
@@ -336,12 +320,12 @@ var WhatsNewPage = React.createClass({
     },
 
     renderTable: function () {
-        var subComponents = stateStore.getValue(this.props.storeId, 'subComponents');
-        var selectedLevel = stateStore.getValue(this.props.storeId, 'selectedLevel');
+        let subComponents = stateStore.getValue(this.props.storeId, 'subComponents');
+        let selectedLevel = stateStore.getValue(this.props.storeId, 'selectedLevel');
 
         return (
             <div>
-                <ChangeExplorer site={this.props.site}
+                <ChangesTable site={this.props.site}
                                 storeId={subComponents.table.storeId}
                                 datasets={this.props.componentData['mydatasets'].ids}
                                 accountType={stateStore.getValue(this.props.storeId, 'accountType')}
@@ -352,8 +336,8 @@ var WhatsNewPage = React.createClass({
     },
 
     render: function () {
-        var displayMode = stateStore.getValue(this.props.storeId, 'displayMode');
-        var renderFunction = (displayMode == "chart")?this.renderCharts:this.renderTable;
+        let displayMode = stateStore.getValue(this.props.storeId, 'displayMode');
+        let renderFunction = (displayMode == "chart")?this.renderCharts:this.renderTable;
         return (
             <div>
                 {this.optionsPanel()}

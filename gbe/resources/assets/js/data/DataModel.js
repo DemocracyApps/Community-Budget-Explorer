@@ -317,6 +317,8 @@ function DataModel(id, datasetIds, initialCommands = null, categoryMap = null) {
     };
 
     this.getCategoryNames = function (startPath, level) {
+        if (this.data == null || this.data.length == 0) return null;
+        
         var rows = this.data;
         var ahash = {};
         var nYears = rows[0].amount.length;

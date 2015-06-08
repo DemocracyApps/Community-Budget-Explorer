@@ -12,7 +12,7 @@ var CommonConstants = require('../constants/Common');
 
 var Sparkline = require('react-sparkline');
 
-var ChangeExplorer = React.createClass({
+var ChangesChart = React.createClass({
 
     propTypes: {
         site: React.PropTypes.object.isRequired,
@@ -129,4 +129,4 @@ var ChangeExplorer = React.createClass({
     }
 });
 
-export default ChangeExplorer;
+export default ChangesChart;
