@@ -15,10 +15,13 @@ function DataModel(id, datasetIds, initialCommands = null, categoryMap = null) {
     this.initializationParameters = null;
     this.currentCommands = null;
     this.data = null;
+    this.processedData = null;
     this.categoryMap = null;
+    this.hierarchy = null;
 
     for (let i=0; i<datasetIds.length; ++i) {
         var ds = datasetStore.getDataset(datasetIds[i]);
+        if (this.hierarchy == null) this.hierarchy = ds.categories.slice();
         this.rawDatasets.push(ds);
     }
 
@@ -73,8 +76,8 @@ function DataModel(id, datasetIds, initialCommands = null, categoryMap = null) {
             amountThreshold = Number(this.initializationParameters.amountThreshold);
         }
         this.data = datasetUtilities.mergeDatasets(this.rawDatasets, {
-            hierarchy:this.initializationParameters.hierarchy,
-            accountTypes:this.initializationParameters.accountTypes,
+            //hierarchy:this.initializationParameters.hierarchy,
+            hierarchy:this.hierarchy,
             amountThreshold:amountThreshold,
         }, this.categoryMap);
     }
@@ -104,8 +107,8 @@ function DataModel(id, datasetIds, initialCommands = null, categoryMap = null) {
                 amountThreshold = Number(this.initializationParameters.amountThreshold);
             }
             this.data = datasetUtilities.mergeDatasets(this.rawDatasets, {
-                hierarchy:this.initializationParameters.hierarchy,
-                accountTypes:this.initializationParameters.accountTypes,
+                //hierarchy:this.initializationParameters.hierarchy,
+                hierarchy:this.hierarchy,
                 amountThreshold:amountThreshold
             }, this.categoryMap);
         }
@@ -140,18 +143,22 @@ function DataModel(id, datasetIds, initialCommands = null, categoryMap = null) {
             }
             if ('nLevels' in commands) {
                 nLevels = commands.nLevels;
-                if (startLevel + nLevels > this.initializationParameters.hierarchy.length) {
-                    nLevels = this.initializationParameters.hierarchy.length - startLevel;
+                //if (startLevel + nLevels > this.initializationParameters.hierarchy.length) {
+                if (startLevel + nLevels > this.hierarchy.length) {
+                    //nLevels = this.initializationParameters.hierarchy.length - startLevel;
+                    nLevels = this.hierarchy.length - startLevel;
                 }
             }
             let headers = this.getHeaders();
 
             return {
-                categories:this.initializationParameters.hierarchy,
+                categories:this.hierarchy,
+                //categories:this.initializationParameters.hierarchy,
                 dataHeaders:headers,
                 periods:headers,
                 levelsDown: startLevel,
-                levelsAggregated: this.initializationParameters.hierarchy.length - nLevels - startLevel,
+                //levelsAggregated: this.initializationParameters.hierarchy.length - nLevels - startLevel,
+                levelsAggregated: this.hierarchy.length - nLevels - startLevel,
             };
         }
         else {
@@ -193,8 +200,11 @@ function DataModel(id, datasetIds, initialCommands = null, categoryMap = null) {
             }
             if ('nLevels' in commands) {
                 nLevels = commands.nLevels;
-                if (startLevel + nLevels > this.initializationParameters.hierarchy.length) {
-                    nLevels = this.initializationParameters.hierarchy.length - startLevel;
+                //if (startLevel + nLevels > this.initializationParameters.hierarchy.length) {
+                //    nLevels = this.initializationParameters.hierarchy.length - startLevel;
+                //}
+                if (startLevel + nLevels > this.hierarchy.length) {
+                    nLevels = this.hierarchy.length - startLevel;
                 }
             }
 
@@ -267,12 +277,16 @@ function DataModel(id, datasetIds, initialCommands = null, categoryMap = null) {
 
             }
 
+            this.processedData = data;
+
             return {
-                categories:this.initializationParameters.hierarchy,
+                //categories:this.initializationParameters.hierarchy,
+                categories:this.hierarchy,
                 dataHeaders:headers,
                 periods:headers,
                 levelsDown: startLevel,
-                levelsAggregated: this.initializationParameters.hierarchy.length - nLevels - startLevel,
+                //levelsAggregated: this.initializationParameters.hierarchy.length - nLevels - startLevel,
+                levelsAggregated: this.hierarchy.length - nLevels - startLevel,
                 data: data
             };
         }
@@ -288,6 +302,47 @@ function DataModel(id, datasetIds, initialCommands = null, categoryMap = null) {
             nDatasets: this.rawDatasets.length,
             nCategories: this.rawDatasets
         };
+    };
+
+    this.computeChanges = function computeChanges() {
+        if (this.processedData != null) {
+            this.processedData.map(datasetUtilities.computeChanges);
+        }
+    };
+
+    this.sortByAbsoluteChange = function sortByAbsoluteChange() {
+        if (this.processedData != null) {
+            this.processedData.sort(datasetUtilities.sortByAbsoluteDifference);
+        }
+    };
+
+    this.getCategoryNames = function (startPath, level) {
+        var rows = this.data;
+        var ahash = {};
+        var nYears = rows[0].amount.length;
+        for (let i=0; i<rows.length; ++i) {
+            if (startPath == null || this.pathMatches(startPath, rows[i].categories)) {
+                let current = ahash[rows[i].categories[level]];
+                if (current == undefined) {
+                    current = {
+                        name: rows[i].categories[level],
+                        value: 0.0
+                    };
+                    ahash[current.name] = current;
+                }
+                current.value += rows[i].amount[nYears - 1];
+            }
+        }
+        var areas = [];
+        for (var nm in ahash) {
+            if (ahash.hasOwnProperty(nm) && Math.abs(ahash[nm].value) > 0.0) {
+                areas.push(ahash[nm]);
+            }
+        }
+        areas = areas.sort(function(a, b) {
+            return b.value - a.value;
+        });
+        return areas;
     };
 }
 

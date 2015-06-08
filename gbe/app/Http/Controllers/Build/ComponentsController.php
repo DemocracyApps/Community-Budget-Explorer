@@ -82,10 +82,12 @@ class ComponentsController extends Controller {
         $component = Component::find($this->pageComponent->component);
         $cardSets = $site->getCardsByCardSet();
         $dataSets = $site->getDatasets();
+        $categories = $site->getAccountCategories();
+
         return view('build.pages.components.edit', ['site'=>$site, 'page'=>$page, 'component'=>$component,
             'pageComponent'=>$this->pageComponent, 'dataDefs'=>$component->getProperty('data'),
             'propDefs' => $component->getProperty('props'),
-            'cardSets' => $cardSets, 'dataSets'=>$dataSets]);
+            'cardSets' => $cardSets, 'dataSets'=>$dataSets, 'dataCategories'=>$categories]);
 	}
 
 	/**
@@ -109,6 +111,10 @@ class ComponentsController extends Controller {
         }
         $this->pageComponent->setProperty('props', $propBundle);
 
+        $categories = null;
+        if ($request->has("catChecks")) {
+            $categories = $request->get("catChecks");
+        }
         $dataDefs = $component->getProperty('data');
         $dataBundle = array();
         foreach ($dataDefs as $def) {
@@ -129,6 +135,7 @@ class ComponentsController extends Controller {
             }
             elseif ($type == 'dataset' || $type == 'multidataset') {
                 if ($request->has('selectedDataset_'.$tag)) {
+                    $data['categories'] = $categories;
                     if ($type == 'dataset') {
                         $data['items'][] = $request->get('selectedDataset_' . $tag);
                     }

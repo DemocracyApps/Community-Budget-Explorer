@@ -17,6 +17,7 @@
  *  along with the GBE.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+use DemocracyApps\GB\Budget\AccountCategory;
 use DemocracyApps\GB\Budget\Dataset;
 use DemocracyApps\GB\Organizations\GovernmentOrganization;
 use DemocracyApps\GB\Organizations\MediaOrganization;
@@ -92,5 +93,18 @@ class Site extends EloquentPropertiedObject
     public function getDatasets()
     {
         return Dataset::where('government_organization', '=', $this->government)->orderBy('year')->get();
+    }
+
+    public function getAccountCategories()
+    {
+        $ds = Dataset::where('government_organization', '=', $this->government)->orderBy('year', 'desc')->first();
+        $categories = array();
+        $cOrder = json_decode($ds->category_order);
+        for ($i=0; $i<sizeof($cOrder); ++$i) {
+            $cat = AccountCategory::find($cOrder[$i]);
+            $categories[] = $cat->name;
+        }
+        $categories[] = "Account";
+        return $categories;
     }
 }

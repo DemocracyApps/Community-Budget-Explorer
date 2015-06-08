@@ -51,7 +51,6 @@ var DatasetUtilities = {
 
     mergeDatasets: function (rawDatasets, parameters, remap) {
         var hierarchy = parameters.hierarchy;
-        var accountTypes = parameters.accountTypes;
         var amountThreshold = parameters.amountThreshold;
         var nPeriods = rawDatasets.length;
 
@@ -103,8 +102,6 @@ var DatasetUtilities = {
                 let item = data.items[j];
                 item.amount = Number(item.amount);
 
-                if (accountTypes.indexOf(item.type) < 0) continue; // Skip if not one of the specified account types
-
                 if (!(item.type in tree)) tree[item.type] = {isBottom: false};
 
                 let current = tree[item.type]; // We never aggregate across account types
@@ -150,8 +147,9 @@ var DatasetUtilities = {
 
         // Now collapse the tree back out
         let mergedData = [];
-        for (var accType in accountTypes) {
-            var partial = this.extractFromTree(tree[accountTypes[accType]], +amountThreshold);
+        for (var accType in tree) {
+            console.log("We are merging back in account type " + accType);
+            var partial = this.extractFromTree(tree[accType], +amountThreshold);
             mergedData = mergedData.concat(partial);
         }
         return mergedData;

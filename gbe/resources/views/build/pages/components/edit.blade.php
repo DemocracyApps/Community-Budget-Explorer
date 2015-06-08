@@ -10,9 +10,6 @@
 
         @foreach ($propDefs as $key => $def)
             @if ($def['configurable'])
-                <?php
-                \Log::info("Got key = " . $key);
-            ?>
                 @if ($def['type'] == 'select')
                     <label for="property_{!! $key !!}">{!! $def['label'] !!}</label>
                     <select id="property_{!! $key !!}" class="form-control" name="property_{!! $key !!}">
@@ -33,6 +30,7 @@
                 $dDescription = $def['description'];
                 reset($cardSets);
                 $firstSet = key($cardSets);
+                $needCategories = false;
             ?>
             <div class="row">
                 <div class="col-xs-12">
@@ -70,6 +68,9 @@
                         </div>
                     @endif
                 @elseif ($dType == 'dataset' || $dType == 'multidataset')
+                    <?php
+                        $needCategories = true;
+                    ?>
                     <div class="col-xs-6">
                         <div class="form-group">
                             <label for="selectedDataset_{!! $dTag !!}">CardSet:</label>
@@ -96,6 +97,15 @@
             </div>
         @endforeach
 
+        @if ($needCategories)
+            <div class="form-group">
+                <label for="catChecks">Select account categories to include (1 or more)</label>
+                <br>
+                @foreach ($dataCategories as $cat)
+                    <input type="checkbox" name="catChecks[]" checked value="{!! $cat !!}">{!! $cat !!}<br>
+                @endforeach
+            </div>
+        @endif
         <div class="form-group">
             {!!  Form::submit('Save', ['class' => 'btn btn-primary'])  !!}
         </div>

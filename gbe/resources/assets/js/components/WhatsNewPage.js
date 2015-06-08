@@ -34,7 +34,6 @@ var WhatsNewPage = React.createClass({
                 {name: "Revenue", value: AccountTypes.REVENUE}
             ],
             dataInitialization: {
-                hierarchy: ['Fund', 'Department', 'Division', 'Account'],
                 accountTypes: [AccountTypes.EXPENSE, AccountTypes.REVENUE],
                 amountThreshold: 0.01
             }
@@ -272,10 +271,14 @@ var WhatsNewPage = React.createClass({
             var rows = currentData.data;
             if (areas == null) {
                 areas = this.computeAreas(rows);
+                if (false) areas = dm.getCategoryNames(null, 0);
                 stateStore._setComponentState(this.props.storeId, {areaList: areas}); // Shouldn't be doing this, need to work out better way
             }
-            rows.map(datasetUtilities.computeChanges);
-            rows = rows.sort(datasetUtilities.sortByAbsoluteDifference).slice(0, 10);
+
+            if (true) {
+                rows.map(datasetUtilities.computeChanges);
+                rows = rows.sort(datasetUtilities.sortByAbsoluteDifference).slice(0, 10);
+            }
             var topDifferences = [];
             for (let i = 0; i < rows.length; ++i) {
                 let item = {
@@ -338,14 +341,11 @@ var WhatsNewPage = React.createClass({
 
         return (
             <div>
-                <ChangeExplorer componentMode={CommonConstants.COMPOSED_COMPONENT}
-                                datasetIds={this.props.componentData['mydatasets'].ids}
+                <ChangeExplorer site={this.props.site}
+                                storeId={subComponents.table.storeId}
+                                datasets={this.props.componentData['mydatasets'].ids}
                                 accountType={stateStore.getValue(this.props.storeId, 'accountType')}
                                 selectedLevel={selectedLevel}
-                                storeId={subComponents.table.storeId}
-                                site={this.props.site}
-                                componentData={{}}
-                                componentProps={{}}
                     />
             </div>
         )

@@ -101,7 +101,7 @@ while (GBEVars.data.length > 0) {
         cardStore.storeCard(datum);
     }
     else if (datum.dataType == "dataset") {
-        var ds = datasetStore.registerDataset(datum.id);
+        var ds = datasetStore.registerDataset(datum.id, datum.categories);
         apiActions.requestDatasetIfNeeded(ds.sourceId);
     }
 }

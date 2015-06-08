@@ -14,13 +14,13 @@ var DatasetStore = assign({}, EventEmitter.prototype, {
     timestamp: 1, // Let's components optimize whether they need to redraw
     _datasets: [], // These are the datasets as received from the server
 
-    registerDataset: function (sourceId) {
+    registerDataset: function (sourceId, categories) {
         var ds = null;
         if (sourceId in this._datasets) {
             ds = this._datasets[sourceId];
         }
         else {
-            ds = new Dataset(this.timestamp++, sourceId);
+            ds = new Dataset(this.timestamp++, sourceId, categories);
             this._datasets[sourceId] = ds;
         }
         return ds;

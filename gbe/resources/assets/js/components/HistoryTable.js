@@ -29,7 +29,6 @@ var HistoryTable = React.createClass({
                 {name: "Revenue", value: AccountTypes.REVENUE}
             ],
             dataInitialization: {
-                hierarchy: ['Fund', 'Department', 'Division', 'Account'],
                 accountTypes: [AccountTypes.EXPENSE, AccountTypes.REVENUE],
                 amountThreshold: 0.01
             },

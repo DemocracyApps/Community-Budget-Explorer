@@ -1,9 +1,10 @@
 var DatasetStatus = require('../constants/DatasetStatus');
 
-function Dataset(timestamp, sourceId) {
+function Dataset(timestamp, sourceId, categories) {
     this.timestamp = timestamp;
     this.sourceId = sourceId;
     this.status = DatasetStatus.DS_STATE_NEW;
+    this.categories = categories;
     this.data = null;
 
     this.receiveDataset = function (data, newTimestamp) {

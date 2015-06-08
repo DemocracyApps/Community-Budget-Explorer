@@ -130,6 +130,7 @@ class SitesController extends Controller {
                         }
                         if ($pc->hasProperty('data')) {
                             $dataList = $pc->getProperty('data');
+
                             foreach ($dataList as $key => $dataItem) {
                                 if ($dataItem['type'] == 'card') {
                                     $cId = $dataItem['items'][0];
@@ -169,6 +170,7 @@ class SitesController extends Controller {
                                     $ds = new \stdClass();
                                     $ds->dataType = 'dataset';
                                     $ds->id = $dsId;
+                                    $ds->categories = $dataItem['categories'];
 
                                     $data[] = $ds;
                                     $c->componentData[$key] = array('type'=>'dataset', 'ids'=>array($ds->id));
@@ -180,6 +182,7 @@ class SitesController extends Controller {
                                         $ds = new \stdClass();
                                         $ds->dataType = 'dataset';
                                         $ds->id = $dsetId;
+                                        $ds->categories = $dataItem['categories'];
                                         $data[] = $ds;
                                         $idList[] = $dsetId;
                                     }
