@@ -25,13 +25,16 @@ var NavCards = React.createClass({
         var colors = ["#7DA8CC","#A4CC56","#41A7BF","#A58A6A","#E56B41","#856AC6","#F08B27"];
 
         var gotoPage = function(pageName) {
+            console.log("Try to get page by pageName " + pageName);
             var page = configStore.getConfiguration('pagesByShortName', pageName);
+            console.log("going to page " + page);
             dispatcher.dispatch({
                 actionType: ActionTypes.STATE_CHANGE,
                 payload: {
                     changes: [
                         {
-                            name: "site.currentPage",
+                            section:"site",
+                            name: "currentPage",
                             value: page.id
                         }
                     ]
