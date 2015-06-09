@@ -148,9 +148,10 @@ var DatasetUtilities = {
         // Now collapse the tree back out
         let mergedData = [];
         for (var accType in tree) {
-            console.log("We are merging back in account type " + accType);
-            var partial = this.extractFromTree(tree[accType], +amountThreshold);
-            mergedData = mergedData.concat(partial);
+            if (accType != 'isBottom') {
+                var partial = this.extractFromTree(tree[accType], +amountThreshold);
+                mergedData = mergedData.concat(partial);
+            }
         }
         return mergedData;
     },

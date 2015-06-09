@@ -39,9 +39,9 @@ var ChangesTable = React.createClass({
         }
     },
 
-    shouldComponentUpdate: function () {
+    shouldComponentUpdate: function (nextProps, nextState) {
         let dm = dataModelStore.getModel(stateStore.getValue(this.props.storeId, 'dataModelId'));
-        return ( dm.dataChanged() || dm.commandsChanged({accountTypes: [this.props.accountType]}) );
+        return ( dm.dataChanged() || dm.commandsChanged({accountTypes: [nextProps.accountType]}) );
     },
 
     tableRow: function (item, index) {

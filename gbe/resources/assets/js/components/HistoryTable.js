@@ -36,15 +36,6 @@ var HistoryTable = React.createClass({
         };
     },
 
-    getAccountType: function() {
-        if (this.props.componentMode == CommonConstants.COMPOSED_COMPONENT) {
-            return this.props.accountType;
-        }
-        else {
-            return stateStore.getValue(this.props.storeId, 'accountType');
-        }
-    },
-
     getSelectedLevel: function() {
         if (this.props.componentMode == CommonConstants.COMPOSED_COMPONENT) {
             return this.props.selectedLevel;
@@ -55,7 +46,7 @@ var HistoryTable = React.createClass({
     },
 
     prepareLocalState: function (dm) {
-        var accountType = this.getAccountType();
+        var accountType = stateStore.getValue(this.props.storeId, 'accountType');
         var selectedLevel = this.getSelectedLevel();
 
         return dm.checkData({
@@ -101,7 +92,7 @@ var HistoryTable = React.createClass({
     shouldComponentUpdate: function (nextProps, nextState) {
         var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
         var dm = dataModelStore.getModel(dataModelId);
-        var accountType = this.getAccountType;
+        var accountType = stateStore.getValue(this.props.storeId, 'accountType');
         return ( dm.dataChanged() || dm.commandsChanged({accountTypes: [accountType]}) );
     },
 
@@ -239,7 +230,7 @@ var HistoryTable = React.createClass({
     render: function() {
         var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
         var dm = dataModelStore.getModel(dataModelId);
-        var accountType = this.getAccountType();
+        var accountType = stateStore.getValue(this.props.storeId, 'accountType');
         var selectedLevel = this.getSelectedLevel();
         var newData = dm.getData({
             accountTypes:[accountType],

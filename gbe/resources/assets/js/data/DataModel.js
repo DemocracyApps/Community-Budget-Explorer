@@ -115,6 +115,10 @@ function DataModel(id, datasetIds, initialCommands = null, categoryMap = null) {
         return needUpdate;
     };
 
+    this.ensureDataReady = function ensureDataReady() {
+        this.dataChanged();
+    };
+
     this.getHeaders = function getHeaders() {
         var headers = [];
         for (var i=0; i<this.rawDatasets.length; ++i) {

@@ -1,4 +1,5 @@
 import React from 'react';
+import VerticalBarChart from './VerticalBarChart';
 
 var datasetStore = require('../stores/DatasetStore');
 var stateStore = require('../stores/StateStore');
@@ -14,6 +15,9 @@ var Sparkline = require('react-sparkline');
 
 var ChangesChart = React.createClass({
 
+    /*
+     * Initialization & lifecycle methods
+     */
     propTypes: {
         site: React.PropTypes.object.isRequired,
         storeId: React.PropTypes.number.isRequired,
@@ -35,94 +39,135 @@ var ChangesChart = React.createClass({
             ids.forEach(function (id) { apiActions.requestDatasetIfNeeded(id); });
 
             let dm = dataModelStore.createModel(ids, {amountThreshold: 0.01}, this.props.site.categoryMap);
-            stateStore.initializeComponentState(this.props.storeId, {dataModelId: dm.id});
+            console.log("Created model with id = " + dm.id);
+            stateStore.initializeComponentState(this.props.storeId, {dataModelId: dm.id, selectedArea: -1});
         }
     },
 
-    shouldComponentUpdate: function () {
-        let dm = dataModelStore.getModel(stateStore.getValue(this.props.storeId, 'dataModelId'));
-        return ( dm.dataChanged() || dm.commandsChanged({accountTypes: [this.props.accountType]}) );
+    shouldComponentUpdate: function (nextProps, nextState) {
+        let dm = dataModelStore.getModel(stateStore.getValue(nextProps.storeId, 'dataModelId'));
+        let selectedArea = stateStore.getValue(nextProps.storeId, 'selectedArea');
+        let startPath = [], addLevel = 1;
+        let areas = dm.getCategoryNames(null, 0);
+        if (areas != null && selectedArea >= 0) {
+            startPath = [areas[selectedArea].name];
+            addLevel = 0;
+        }
+        let nLevels = nextProps.selectedLevel + addLevel;
+        let commands = {accountTypes: [nextProps.accountType], startPath: startPath, nLevels: nLevels};
+        return ( dm.dataChanged() || dm.commandsChanged(commands) );
     },
 
-    tableRow: function (item, index) {
-        let length = item.amount.length;
-        let label = item.categories[0];
-        var selectedLevel = this.props.selectedLevel;
-        if (selectedLevel > 0) {
-            for (let i=1; i<=selectedLevel; ++i) {
-                label += " " + String.fromCharCode(183) + " "+item.categories[i];
+    /*
+     * Computations
+     */
+    computeTopDifferences: function (currentData, selectedLevel) {
+        let rows = currentData.data;
+        rows.map(datasetUtilities.computeChanges);
+        rows = rows.sort(datasetUtilities.sortByAbsoluteDifference).slice(0, 10);
+
+        let topDifferences = [];
+        for (let i = 0; i < rows.length; ++i) {
+            let item = {
+                show: true,
+                name: rows[i].categories[selectedLevel],
+                categories: rows[i].categories.slice(0,selectedLevel+1),
+                value: rows[i].difference,
+                percent: rows[i].percent,
+                history: rows[i].amount
+            };
+            topDifferences.push(item);
+        }
+        if (rows.length < 10) {
+            for (let i=0; i<10-rows.length; ++i) {
+                topDifferences.push({
+                    show: false,
+                    name: "Filler+i",
+                    categories: ["Filler"+i],
+                    value: 0.0
+                });
             }
         }
+        return topDifferences;
+    },
 
-        let tdStyle={textAlign:"right"};
-        return <tr key={index}>
-            <td key="0" style={{width:"35%"}}>{label}</td>
-            <td>
-                <Sparkline data={item.amount} />
-            </td>
-            <td key="1" style={tdStyle}>{datasetUtilities.formatDollarAmount(item.amount[length-2])}</td>
-            <td key="2" style={tdStyle}>{datasetUtilities.formatDollarAmount(item.amount[length-1])}</td>
-            <td key="3" style={tdStyle}>{item.percent}</td>
-            <td key="4" style={tdStyle}>{datasetUtilities.formatDollarAmount(item.difference)}</td>
-        </tr>
+    /*
+     * Rendering and interactivity methods (read from the bottom)
+     */
+    selectArea: function(e) {
+        dispatcher.dispatch({
+            actionType: ActionTypes.COMPONENT_STATE_CHANGE,
+            payload: {
+                id: this.props.storeId,
+                changes: [{name: 'selectedArea', value: Number(e)}]
+            }
+        });
     },
 
     render: function() {
-        /*
-         * The getData() method of a data model takes 2 arguments:
-         *  1. A set of configuration parameters specifying what data to retrieve. Here, e.g. we
-         *     specify which account types to include, where to start in the hierarchy, and how
-         *     many levels to go down before starting to just aggregate. For example, to get a
-         *     one-dimensional summary of expenses by department within General Government, we'd set
-         *     accountTypes to [AccountTypes.EXPENSE], startPath to ['General Government'], and
-         *     nLevels to 1.
-         *  2. A boolean indicating whether we want a partial result (e.g., only 2 of 5 requested years
-         *     have been received from the server). In some cases (e.g., a history table), we can render
-         *     a useful result even with partial data. In this case, we need at least 2 datasets from
-         *     consecutive years for a difference to make any sense, but we just keep it simple and wait
-         *     until everything is received.
-         */
         let dm = dataModelStore.getModel(stateStore.getValue(this.props.storeId, 'dataModelId'));
-        let newData = dm.getData({
-            accountTypes:[this.props.accountType],
-            startPath: [],
-            nLevels: this.props.selectedLevel+1
-        }, false);
+        let selectedArea = stateStore.getValue(this.props.storeId, 'selectedArea');
+        let acctType = this.props.accountType;
+        let selectedLevel = this.props.selectedLevel;
+        let startPath = [], L0 = 1;
 
-        if (newData == null) { // Data's not yet ready
+        dm.ensureDataReady();
+        let areas = dm.getCategoryNames(null, 0);
+        if (areas != null && selectedArea >= 0) {
+            startPath = [areas[selectedArea].name];
+            L0 = 0;
+        }
+
+        let curData = dm.getData({accountTypes:[acctType], startPath: startPath, nLevels: selectedLevel + L0}, false);
+
+        if (curData == null) {
             return (
-                <div>
-                    <p>Data is loading ... Please be patient</p>
+                <div style={{height: 600}}>
+                    <div className="row">
+                        <div className="col-xs-3"></div>
+                        <div className="col-xs-9">
+                            <p>Data is loading ... Please be patient</p>
+                        </div>
+                    </div>
                 </div>
             )
         }
         else {
-            let rows =  newData.data, headers = newData.dataHeaders;
-            let dataLength = rows[0].amount.length;
-            let thStyle={textAlign:"right"};
-            let keyIndex = 0;
+            // Skip over any levels that have only a single item.
+            while (curData.data.length <= 1 && selectedLevel < 3) {
+                ++selectedLevel;
+                curData = dm.getData({accountTypes:[acctType], startPath: startPath, nLevels: selectedLevel + L0}, false);
+            }
 
-            // Set up the data by computing differences and sorting by them.
-            rows.map(datasetUtilities.computeChanges);
-            rows = rows.sort(datasetUtilities.sortByAbsoluteDifference);
-
+            // Start by computing differences, sorting, and then slicing out the top 10.
+            let topDifferences = this.computeTopDifferences(curData, selectedLevel);
+            let w = Math.max(300,2* (100 * Math.trunc(window.innerWidth/100))/3);
+            let txt = (this.props.accountType==AccountTypes.EXPENSE)?'Top Spending Changes':'Top Revenue Changes';
             return (
-                <div>
-                    <table className="table">
-                        <thead>
-                            <tr>
-                                <th key={keyIndex++}>Category</th>
-                                <th key={keyIndex++}>History<br/>{headers[0]}-{headers[dataLength-1]}</th>
-                                <th key={keyIndex++} style={thStyle}>{headers[dataLength-2]}</th>
-                                <th key={keyIndex++} style={thStyle}>{headers[dataLength-1]}</th>
-                                <th key={keyIndex++} style={thStyle}>Percentage<br/>Change</th>
-                                <th key={keyIndex++} style={thStyle}>Actual<br/>Difference</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {rows.map(this.tableRow)}
-                        </tbody>
-                    </table>
+                <div className = "row">
+                    <div className="col-md-3 col-sm-3">
+                        <h2>Service Area</h2>
+                        <br/>
+                        <ul className="servicearea-selector nav nav-pills nav-stacked">
+                            <li role="presentation" className={selectedArea==-1?"active":"not-active"}>
+                                <a href="#" id={-1} onClick={this.selectArea}>All Areas</a>
+                            </li>
+
+                            {areas.map(function(item, index){
+                                let spacer = String.fromCharCode(160);
+                                return (
+                                    <li role="presentation" className={selectedArea==index?"active":"not-active"}>
+                                        <a href="#" id={index}
+                                           onClick={this.selectArea.bind(null, index)}>{spacer} {item.name}</a>
+                                    </li>
+                                )
+                            }.bind(this))}
+                        </ul>
+                    </div>
+                    <div className="col-md-9 col-sm-9">
+                        <h2>{txt}</h2>
+                        <VerticalBarChart width={w} height={600} data={topDifferences}/>
+                    </div>
                 </div>
             )
         }

@@ -86,7 +86,7 @@ var ShowMePage = React.createClass({
     shouldComponentUpdate: function (nextProps, nextState) {
         var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
         var dm = dataModelStore.getModel(dataModelId);
-        var accountType = this.getAccountType;
+        var accountType = stateStore.getValue(this.props.storeId, 'accountType');
         var status = ( dm.dataChanged() || dm.commandsChanged({accountTypes: [accountType]}) );
         return status;
     },

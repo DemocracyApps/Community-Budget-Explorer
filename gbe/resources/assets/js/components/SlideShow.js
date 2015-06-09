@@ -46,7 +46,8 @@ var SlideShow = React.createClass({
         var showLink = function(card) {
             if (card.link) {
                 return (
-                    <div> <a href={card.link} target="_blank" style={{float:"right",marginTop:15}} className="btn-sm btn-info">Read More</a></div>
+                    <div> <a href={card.link} target="_blank" style={{float:"right",marginTop:15}}
+                             className="btn-sm btn-info">Read More</a></div>
                 )
             }
         };

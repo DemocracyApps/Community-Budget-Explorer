@@ -95,11 +95,10 @@ var Site = React.createClass({
     },
 
     render: function() {
-
+        var counter = 0;
         var currentPage = stateStore.getGlobalValue('site','currentPage');
         var embedded = this.props.site.embedded;
         var page = configStore.getConfiguration('pages', currentPage);
-
         var layoutProps = {
             site: this.props.site,
             layout: page.layout,
