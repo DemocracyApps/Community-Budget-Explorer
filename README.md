@@ -31,6 +31,14 @@ If you are interested in contributing to the project (independently, or as part
 of [CityCampNC](http://citycampnc.org/) June 11-13, take a look at
 the [issues page](https://github.com/DemocracyApps/GBE/issues), especially those labeled with _Hackathon Project_.
 
+If you are interested specifically in contributing a front-end component, take a look at WhatsNewPage.js and its
+sub-components ChangesTable.js and ChangesChart.js in 
+the [front-end components directory](https://github.com/DemocracyApps/GBE/tree/master/gbe/resources/assets/js/components)
+for examples using budget data. For examples using static content, you should look in the same place at SimpleCard.js
+(which is used for both parts of the About page on [avlbudget.org](http://avlbudget.org)), or any of CardTable.js (the 
+budget doc breakdown page), NavCards.js (the navigation blocks at the bottom of the home page), or SlideShow.js (the
+slideshow at the top of the home page). The data being delivered to these components is configured on the server side, 
+as described in the documentation on the wiki.
 
 ## Documentation
 
