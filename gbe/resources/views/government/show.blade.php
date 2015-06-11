@@ -50,7 +50,7 @@
         <h3>Data Sets</h3>
     </div>
     <div class="col-md-6">
-        <a href="/governments/{!! $organization->id !!}/datasets/create&chart={!! $charts[0]->id !!}"
+        <a href="/governments/{!! $organization->id !!}/datasets/create?chart={!! $charts[0]->id !!}"
            class="btn btn-primary btn-sm" style="float:right;">New Dataset</a>
     </div>
     <table class="table">

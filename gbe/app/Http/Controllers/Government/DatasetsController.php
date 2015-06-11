@@ -93,7 +93,7 @@ class DatasetsController extends Controller {
         $notification->type = 'DatasetUpload';
         $notification->save();
         $data['notificationId'] = $notification->id;
-        \Queue::push('\DemocracyApps\GB\Accounts\CSVProcessors\DatasetCSVProcessor', $data);
+        \Queue::push('\DemocracyApps\GB\Budget\CSVProcessors\DatasetCSVProcessor', $data);
 
         return redirect("/governments/$govId");
 	}
