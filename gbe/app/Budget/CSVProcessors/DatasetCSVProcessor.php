@@ -16,7 +16,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with the GBE.  If not, see <http://www.gnu.org/licenses/>.
  */
-use DemocracyApps\GB\Accounts\Dataset;
+use DemocracyApps\GB\Budget\Dataset;
 use DemocracyApps\GB\Utility\Notification;
 
 class DatasetCSVProcessor
@@ -29,12 +29,13 @@ class DatasetCSVProcessor
         \Auth::login($user);
 
         $filePath = $data['filePath'];
-        $dataset = $data['dataset'];
-
+        $datasetId = $data['dataset'];
+        $dataset = Dataset::find($datasetId);
+        \Log::info("Found the dataset: " . json_encode($dataset));
 
         \Log::info("Starting processing of " . $filePath);
         $notification = Notification::find($data['notificationId']);
-        $notification->messages = Dataset::processCsvInput($filePath, $dataset);
+        $notification->messages = $dataset->loadAllInOneCSVData($filePath);
         $notification->status = 'Completed';
         $notification->completed_at = date('Y-m-d H:i:s');
         $notification->save();

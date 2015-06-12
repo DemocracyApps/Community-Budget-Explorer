@@ -140,15 +140,6 @@ class Dataset extends EloquentPropertiedObject {
                     \DB::table('data_items')->insert($records);
                     $records = array();
                 }
-
-//                $ditem = new DataItem();
-//                $ditem->group = $group;
-//                $ditem->account = $account;
-//                $ditem->amount = $amount;
-//                $ditem->dataset = $this->id;
-//                $ditem->addCategories($categories);
-//
-//                $ditem->save();
             }
             else if (sizeof($columns) > 0) { // We ignore blank lines
                 $val = trim($columns[0]);
@@ -162,6 +153,173 @@ class Dataset extends EloquentPropertiedObject {
         return "Processed data items file - total bad lines = " . $badLines . ' of ' . $lnum;
     }
 
+    public function loadAllInOneCSVData($filePath)
+    {
+
+        \Log::info("Starting load all in one with dataset $this->id");
+        ini_set("auto_detect_line_endings", true); // Deal with Mac line endings
+        if ( !file_exists($filePath)) {
+            \Log::info("Dataset.loadAllInOneCSVData: The file " . $filePath . " does not exist");
+        }
+        $myFile = fopen($filePath,"r") or die ("Unable to open file");
+
+
+        $records = array();
+        $created_at = date('Y-m-d H:i:s');
+        $updated_at = date('Y-m-d H:i:s');
+        /*
+         * So we expect a file with the format:
+         *  Type, Value, Category1, Category2, ...
+         */
+        $header = fgetcsv($myFile); // Get the header to grab category names
+        \Log::info("Here's the header: " . json_encode($header));
+        if (sizeof($header) < 3) throw new \Exception("Dataset.loadAllInOneCSVData: Header must have at least 3 columns");
+        $categoryNames = array_slice($header, 2);
+        $nCategories = sizeof($categoryNames);
+        $categories = array();
+        $order = [];
+
+        for ($i=0; $i<$nCategories; ++$i) {
+            $categories[$i] = new \stdClass();
+            $categories[$i]->name = $categoryNames[$i];
+            \Log::info("Read a category " . $categoryNames[$i]);
+            $categories[$i]->values = array();
+            if ($i < $nCategories-1) { // Don't do this part for account level
+                \Log::info("Creating the category");
+                $accountCategory = AccountCategory::where('chart', '=', $this->chart)->where('name', '=', $categoryNames[$i])->first();
+                if ($accountCategory == null) {
+                    $accountCategory = new AccountCategory();
+                    $accountCategory->chart = $this->chart;
+                    $accountCategory->name = $categories[$i]->name;
+                    $accountCategory->save();
+                }
+                $categories[$i]->id = $accountCategory->id;
+                $order[] = $accountCategory->id;
+            }
+        }
+        \Log::info("Ok, let's save out with order = " . json_encode($order));
+        $this->category_order = json_encode($order);
+        $this->save();
+
+        $lnum = 1;
+        $errnum=0;
+        while (! feof($myFile)) {
+            $isBad = false;
+            $columns = fgetcsv($myFile);
+            ++$lnum;
+
+            // Must at least have type, value and an account. Can have multiple categories preceding the account
+            if (sizeof($columns) > 3) {
+                // Initializations
+                $type = Account::UNKNOWN;
+                $accountId = null;
+                $categoryList = array();
+
+                // Get the account type
+                $typeName = strtolower(strip_tags(trim($columns[0])));
+                if (starts_with($typeName, 'exp'))
+                    $type = Account::EXPENSE;
+                elseif (starts_with($typeName, 'rev'))
+                    $type = Account::REVENUE;
+                else
+                    $isBad = true;
+
+                if ($isBad) {
+                    ++$errnum;
+                    continue;
+                }
+
+                // Amount
+                $amount = strip_tags(trim($columns[1]));
+
+                // Now category and account information
+                for ($i = 0; $i < $nCategories; ++$i) {
+                    $catName = strip_tags(trim($columns[$i + 2]));
+
+                    if (array_key_exists($catName, $categories[$i]->values)) {
+                        if ($i < $nCategories-1) {
+                            $categoryList[] = $categories[$i]->values[$catName];
+                        }
+                        else {
+                            $accountId = $categories[$i]->values[$catName];
+                        }
+                    }
+                    else {
+                        if ($i == $nCategories - 1) { // Account
+                            $account = Account::where('name', '=', $catName)
+                                            ->where('chart', '=', $this->chart)->first();
+                            if ($account == null) {
+                                $account = new Account();
+                                $account->chart = $this->chart;
+                                $account->name = $catName;
+                                $account->code = $catName;
+                                $account->type = $type;
+                                $account->created_at = $created_at;
+                                $account->updated_at = $updated_at;
+                                $account->save();
+                                $accountId = $account->id;
+                            }
+                            else {
+                                $accountId = $account->id;
+                            }
+                            $categories[$i]->values[$catName] = $accountId;
+                        } else {
+                            $catValue = AccountCategoryValue::where('name', '=', $catName)
+                                ->where('category', '=', $categories[$i]->id)->first();
+                            if ($catValue == null) { // Need to create it
+                                $c = new AccountCategoryValue();
+                                $c->name = $catName;
+                                $c->code = $catName;
+                                $c->category = $categories[$i]->id;
+                                $c->save();
+                                $categoryList[] = $c->id;
+                                $categories[$i]->values[$catName] = $c->id;
+                            } else {
+                                $categories[$i]->values[$catName] = $catValue->id;
+                                $categoryList[] = $catValue->id;
+                            }
+                        }
+                    }
+                }
+
+                $category1 = null;
+                $category2 = null;
+                $category3 = null;
+                $categoryN = null;
+
+                if ($nCategories>0) $category1 = $categoryList[0];
+                if ($nCategories>1) $category2 = $categoryList[1];
+                if ($nCategories>2) $category3 = $categoryList[2];
+                if ($nCategories>3) {
+                    $spill = array_slice($categoryList, 3);
+                    $categoryN = json_encode($spill);
+                }
+
+                $records[] = [
+                    'group'=>$this->id, // Not sure group is necessary
+                    'account'=>$accountId,
+                    'amount'=>$amount,
+                    'dataset'=>$this->id,
+                    'category1'=> $category1,
+                    'category2'=> $category2,
+                    'category3'=> $category3,
+                    'categoryN'=> $categoryN,
+                    'created_at' => $created_at,
+                    'updated_at' => $updated_at
+                ];
+                if (sizeof($records) >= 999) {
+                    \DB::table('data_items')->insert($records);
+                    $records = array();
+                }
+            }
+        }
+        if (sizeof($records)> 0) \DB::table('data_items')->insert($records);
+        return "Processed data items file - total errors = " . $errnum . ' of ' . $lnum;
+    }
+
+    /*
+     * This routine is possibly unused??
+     */
     static public function processCSVInput($filePath, $dataset)
     {
         ini_set("auto_detect_line_endings", true); // Deal with Mac line endings
