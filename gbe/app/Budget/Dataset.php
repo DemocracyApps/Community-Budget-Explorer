@@ -172,7 +172,6 @@ class Dataset extends EloquentPropertiedObject {
          *  Type, Value, Category1, Category2, ...
          */
         $header = fgetcsv($myFile); // Get the header to grab category names
-        \Log::info("Here's the header: " . json_encode($header));
         if (sizeof($header) < 3) throw new \Exception("Dataset.loadAllInOneCSVData: Header must have at least 3 columns");
         $categoryNames = array_slice($header, 2);
         $nCategories = sizeof($categoryNames);
@@ -182,10 +181,8 @@ class Dataset extends EloquentPropertiedObject {
         for ($i=0; $i<$nCategories; ++$i) {
             $categories[$i] = new \stdClass();
             $categories[$i]->name = $categoryNames[$i];
-            \Log::info("Read a category " . $categoryNames[$i]);
             $categories[$i]->values = array();
             if ($i < $nCategories-1) { // Don't do this part for account level
-                \Log::info("Creating the category");
                 $accountCategory = AccountCategory::where('chart', '=', $this->chart)->where('name', '=', $categoryNames[$i])->first();
                 if ($accountCategory == null) {
                     $accountCategory = new AccountCategory();
@@ -197,7 +194,6 @@ class Dataset extends EloquentPropertiedObject {
                 $order[] = $accountCategory->id;
             }
         }
-        \Log::info("Ok, let's save out with order = " . json_encode($order));
         $this->category_order = json_encode($order);
         $this->save();
 

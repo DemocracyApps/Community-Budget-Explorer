@@ -31,7 +31,6 @@ class DatasetCSVProcessor
         $filePath = $data['filePath'];
         $datasetId = $data['dataset'];
         $dataset = Dataset::find($datasetId);
-        \Log::info("Found the dataset: " . json_encode($dataset));
 
         \Log::info("Starting processing of " . $filePath);
         $notification = Notification::find($data['notificationId']);
