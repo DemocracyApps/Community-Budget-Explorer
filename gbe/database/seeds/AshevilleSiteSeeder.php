@@ -309,9 +309,7 @@ class AshevilleSiteSeeder extends Seeder
                 'link' => "/docs/asheville/FY 2015- 16 Proposed Budget.pdf",
                 'image'=> null,
                 'body' => "
-Use the button below to download the full 2015-16 City of Asheville Proposed Budget document.
-
-For a searchable version of the PDF, [click here](/docs/asheville/FY2015-16AshevilleBudget-searchable.pdf)"
+Use the button below to download the full 2015-16 City of Asheville Proposed Budget document."
             ]
         );
 
