@@ -112,7 +112,7 @@ var ChangesChart = React.createClass({
         let startPath = [], L0 = 1;
 
         dm.ensureDataReady();
-        let areas = dm.getCategoryNames(null, 0);
+        let areas = dm.getCategoryNames(null, 0, acctType);
         if (areas != null && selectedArea >= 0) {
             startPath = [areas[selectedArea].name];
             L0 = 0;

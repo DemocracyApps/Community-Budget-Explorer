@@ -320,23 +320,25 @@ function DataModel(id, datasetIds, initialCommands = null, categoryMap = null) {
         }
     };
 
-    this.getCategoryNames = function (startPath, level) {
+    this.getCategoryNames = function (startPath, level, accountType) {
         if (this.data == null || this.data.length == 0) return null;
         
         var rows = this.data;
         var ahash = {};
         var nYears = rows[0].amount.length;
         for (let i=0; i<rows.length; ++i) {
-            if (startPath == null || this.pathMatches(startPath, rows[i].categories)) {
-                let current = ahash[rows[i].categories[level]];
-                if (current == undefined) {
-                    current = {
-                        name: rows[i].categories[level],
-                        value: 0.0
-                    };
-                    ahash[current.name] = current;
+            if (rows[i].accountType == accountType) {
+                if (startPath == null || this.pathMatches(startPath, rows[i].categories)) {
+                    let current = ahash[rows[i].categories[level]];
+                    if (current == undefined) {
+                        current = {
+                            name: rows[i].categories[level],
+                            value: 0.0
+                        };
+                        ahash[current.name] = current;
+                    }
+                    current.value += Number(rows[i].amount[nYears - 1]);
                 }
-                current.value += rows[i].amount[nYears - 1];
             }
         }
         var areas = [];
