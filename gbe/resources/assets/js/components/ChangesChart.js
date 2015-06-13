@@ -47,8 +47,10 @@ var ChangesChart = React.createClass({
     shouldComponentUpdate: function (nextProps, nextState) {
         let dm = dataModelStore.getModel(stateStore.getValue(nextProps.storeId, 'dataModelId'));
         let selectedArea = stateStore.getValue(nextProps.storeId, 'selectedArea');
+        let acctType = nextProps.accountType;
         let startPath = [], addLevel = 1;
-        let areas = dm.getCategoryNames(null, 0);
+        dm.ensureDataReady();
+        let areas = dm.getCategoryNames(null, 0, acctType);
         if (areas != null && selectedArea >= 0) {
             startPath = [areas[selectedArea].name];
             addLevel = 0;
