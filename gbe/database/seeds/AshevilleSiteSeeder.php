@@ -1,5 +1,6 @@
 <?php
 
+use DemocracyApps\GB\Organizations\GovernmentOrganization;
 use DemocracyApps\GB\Sites\Card;
 use DemocracyApps\GB\Sites\CardSet;
 use DemocracyApps\GB\Sites\Component;
@@ -21,12 +22,13 @@ class AshevilleSiteSeeder extends Seeder
         $showmepageComponent = Component::where('name','=','ShowMePage')->first();
         $navCardsComponent = Component::where('name','=','NavCards')->first();
 
+        $government = GovernmentOrganization::where('name','=','Asheville City Government')->first();
         // Create the Asheville site
         $site = new Site();
         $site->name = "Asheville Budget 2015-2016";
         $site->owner_type = Site::GOVERNMENT;
-        $site->owner = 1; // Asheville government;
-        $site->government = 1; // Ditto
+        $site->owner = $government->id; // Asheville government;
+        $site->government = $government->id; // Ditto
         $site->slug = 'asheville';
         $site->published = true;
         $site->live = false;
@@ -41,6 +43,7 @@ class AshevilleSiteSeeder extends Seeder
 
 </script>";
         $site->setProperty('map', 'serviceareas.json');
+        $site->setProperty('reverseRevenueSign', true);
         $site->save();
 
 
