@@ -54,7 +54,13 @@ class SitesController extends Controller {
         $site->embedded = false;
         if ($parameters != null && array_key_exists('embedded',$parameters) && $parameters['embedded']=='true') $site->embedded = true;
         if ($parameters != null && array_key_exists('max-width',$parameters)) $site->maxWidth = $parameters['max-width'];
-        $site->baseUrl = url('/'.$slug);
+
+        if (\DomainContext::isMapped()) {
+            $site->baseUrl = '/';
+        }
+        else {
+            $site->baseUrl = url('/sites/' . $slug . '/');
+        }
         $site->apiUrl  = Util::apiPath() . "/organizations/" . $government->id;
         $site->ajaxUrl = Util::ajaxPath('sites', 'base');
         $site->properties = $siteData->properties;

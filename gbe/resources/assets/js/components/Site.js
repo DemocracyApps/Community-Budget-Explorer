@@ -74,7 +74,9 @@ var Site = React.createClass({
     pushUrl: function (page) {
         //if (utilities.ie()) return;
         // format URL
-        var url = '/' + page;
+        var baseUrl = this.props.site.baseUrl;
+        if (!baseUrl.endsWith('/')) baseUrl += '/';
+        var url = baseUrl + page;
         var nParams = 0;
         if ('embedded' in this.props.site) nParams++;
         if ('maxWidth' in this.props.site) nParams++;
