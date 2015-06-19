@@ -108,6 +108,7 @@ while (GBEVars.data.length > 0) {
     }
 }
 
+GBEVars.site[0].properties = JSON.parse(GBEVars.site[0].properties);
 var props = {
     site: GBEVars.site[0],
     pages: pages,
