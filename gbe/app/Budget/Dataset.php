@@ -220,6 +220,7 @@ class Dataset extends EloquentPropertiedObject {
                 else
                     $isBad = true;
 
+                \Log::info("Got a type of $type");
                 if ($isBad) {
                     ++$errnum;
                     continue;
@@ -284,9 +285,9 @@ class Dataset extends EloquentPropertiedObject {
                 $categoryN = null;
 
                 if ($nCategories>0) $category1 = $categoryList[0];
-                if ($nCategories>1) $category2 = $categoryList[1];
-                if ($nCategories>2) $category3 = $categoryList[2];
-                if ($nCategories>3) {
+                if ($nCategories>1 && array_key_exists(1, $categoryList)) $category2 = $categoryList[1];
+                if ($nCategories>2 && array_key_exists(2, $categoryList)) $category3 = $categoryList[2];
+                if ($nCategories>3 && array_key_exists(3, $categoryList)) {
                     $spill = array_slice($categoryList, 3);
                     $categoryN = json_encode($spill);
                 }
