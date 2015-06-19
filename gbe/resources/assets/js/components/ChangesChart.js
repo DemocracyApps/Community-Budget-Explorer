@@ -37,8 +37,12 @@ var ChangesChart = React.createClass({
         if (dataModelId == null) {
             let ids = this.props.datasets;
             ids.forEach(function (id) { apiActions.requestDatasetIfNeeded(id); });
+            let reverseRevenueSign = false;
+            if (this.props.site.properties.reverseRevenueSign) {
+                reverseRevenueSign = true;
+            }
 
-            let dm = dataModelStore.createModel(ids, {amountThreshold: 0.01}, this.props.site.categoryMap);
+            let dm = dataModelStore.createModel(ids, {amountThreshold: 0.01, reverseRevenueSign:reverseRevenueSign}, this.props.site.categoryMap);
             console.log("Created model with id = " + dm.id);
             stateStore.initializeComponentState(this.props.storeId, {dataModelId: dm.id, selectedArea: -1});
         }

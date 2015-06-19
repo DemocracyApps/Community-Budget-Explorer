@@ -52,6 +52,7 @@ var DatasetUtilities = {
     mergeDatasets: function (rawDatasets, parameters, remap) {
         var hierarchy = parameters.hierarchy;
         var amountThreshold = parameters.amountThreshold;
+        var reverseRevenueSign = parameters.reverseRevenueSign;
         var nPeriods = rawDatasets.length;
 
         if (rawDatasets.length > 1) rawDatasets.sort(this.datasetCompare);
@@ -139,7 +140,7 @@ var DatasetUtilities = {
                     }
                 }
                 if (! suppress) {
-                    let factor = (item.type == AccountTypes.REVENUE) ? -1.0 : 1.0;
+                    let factor = (reverseRevenueSign && item.type == AccountTypes.REVENUE) ? -1.0 : 1.0;
                     current[key].amount[iPeriod] += Number(item.amount) * factor;
                 }
             }

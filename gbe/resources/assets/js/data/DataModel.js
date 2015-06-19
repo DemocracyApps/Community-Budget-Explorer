@@ -26,7 +26,6 @@ function DataModel(id, datasetIds, initialCommands = null, categoryMap = null) {
     }
 
     if (initialCommands != null) this.initializationParameters = initialCommands;
-
     if (categoryMap && categoryMap.translations && categoryMap.translations.length > 0) {
         let tree = {};
 
@@ -75,10 +74,12 @@ function DataModel(id, datasetIds, initialCommands = null, categoryMap = null) {
         if ('amountThreshold' in this.initializationParameters) {
             amountThreshold = Number(this.initializationParameters.amountThreshold);
         }
+        let reverseRevenueSign = false;
+        if (this.initializationParameters.reverseRevenueSign) reverseRevenueSign = true;
         this.data = datasetUtilities.mergeDatasets(this.rawDatasets, {
-            //hierarchy:this.initializationParameters.hierarchy,
             hierarchy:this.hierarchy,
             amountThreshold:amountThreshold,
+            reverseRevenueSign:reverseRevenueSign
         }, this.categoryMap);
     }
 
@@ -106,10 +107,12 @@ function DataModel(id, datasetIds, initialCommands = null, categoryMap = null) {
             if ('amountThreshold' in this.initializationParameters) {
                 amountThreshold = Number(this.initializationParameters.amountThreshold);
             }
+            let reverseRevenueSign = false;
+            if (this.initializationParameters.reverseRevenueSign) reverseRevenueSign = true;
             this.data = datasetUtilities.mergeDatasets(this.rawDatasets, {
-                //hierarchy:this.initializationParameters.hierarchy,
                 hierarchy:this.hierarchy,
-                amountThreshold:amountThreshold
+                amountThreshold:amountThreshold,
+                reverseRevenueSign:reverseRevenueSign
             }, this.categoryMap);
         }
         return needUpdate;

@@ -28,26 +28,13 @@ var HistoryTable = React.createClass({
                 {name: "Expense", value: AccountTypes.EXPENSE},
                 {name: "Revenue", value: AccountTypes.REVENUE}
             ],
-            dataInitialization: {
-                accountTypes: [AccountTypes.EXPENSE, AccountTypes.REVENUE],
-                amountThreshold: 0.01
-            },
             componentMode: CommonConstants.STANDALONE_COMPONENT
         };
     },
 
-    getSelectedLevel: function() {
-        if (this.props.componentMode == CommonConstants.COMPOSED_COMPONENT) {
-            return this.props.selectedLevel;
-        }
-        else {
-            return stateStore.getValue(this.props.storeId, 'selectedLevel');
-        }
-    },
-
     prepareLocalState: function (dm) {
         var accountType = stateStore.getValue(this.props.storeId, 'accountType');
-        var selectedLevel = this.getSelectedLevel();
+        var selectedLevel = this.props.selectedLevel;
 
         return dm.checkData({
             accountTypes: [accountType],
@@ -73,7 +60,14 @@ var HistoryTable = React.createClass({
                 apiActions.requestDatasetIfNeeded(id);
             });
 
-            dm = dataModelStore.createModel(ids, this.props.dataInitialization, this.props.site.categoryMap);
+            let reverseRevenueSign = false;
+            if (this.props.site.properties.reverseRevenueSign) {
+                reverseRevenueSign = true;
+            }
+
+            dm = dataModelStore.createModel(ids, {amountThreshold:0.01, reverseRevenueSign:reverseRevenueSign},
+                this.props.site.categoryMap);
+
             stateStore.initializeComponentState(this.props.storeId,
                 {
                     accountType: AccountTypes.EXPENSE,
@@ -93,7 +87,8 @@ var HistoryTable = React.createClass({
         var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
         var dm = dataModelStore.getModel(dataModelId);
         var accountType = stateStore.getValue(this.props.storeId, 'accountType');
-        return ( dm.dataChanged() || dm.commandsChanged({accountTypes: [accountType]}) );
+        var result = ( dm.dataChanged() || dm.commandsChanged({accountTypes: [accountType]}) );
+        return result;
     },
 
     onAccountTypeChange: function (e) {
@@ -141,71 +136,9 @@ var HistoryTable = React.createClass({
         });
     },
 
-    renderLevelSelector: function renderLevelSelector(data) {
-        if (this.props.componentMode == CommonConstants.STANDALONE_COMPONENT) {
-            let selectedLevel = this.getSelectedLevel();
-            var selectLabelText = "Select Detail Level:" + String.fromCharCode(160) + String.fromCharCode(160);
-            var spacer = String.fromCharCode(160) + String.fromCharCode(160) + String.fromCharCode(160) + String.fromCharCode(160);
-            return (
-                <div className="form-group">
-                    <form className="form-inline">
-                        <label>{selectLabelText}</label>
-                        <select className="form-control" onChange={this.onLevelChange} value={selectedLevel}>
-                            {data.categories.map(function (item, index) {
-                                return (
-                                    <option key={index} value={index}>{item}</option>
-                                )
-                            })}
-                        </select>
-                        <span>{spacer}</span>
-                        <button className="btn btn-normal" onClick={this.doReset}>Reset</button>
-                    </form>
-                </div>
-            )
-        }
-    },
-
-    renderAccountSelector() {
-        if (this.props.componentMode == CommonConstants.STANDALONE_COMPONENT) {
-            return (
-                <form className="form-inline">
-                <div className="form-group">
-                    <label>Select Account Type</label>
-                    <select className="form-control" onChange={this.onAccountTypeChange} value={accountType}>
-                        {
-                            this.props.accountTypes.map(
-                                function (type, index) {
-                                    return <option key={index} value={type.value}> {type.name} </option>
-                                }
-                            )
-                        }
-                    </select>
-                </div>
-                </form>
-            )
-        }
-    },
-
-    interactionPanel: function interactionPanel(data, rows) {
-        var accountType = stateStore.getValue(this.props.storeId, 'accountType');
-        return (
-            <div>
-                <div className="row">
-                    <div className="col-xs-6">
-                        {this.renderLevelSelector(data, rows)}
-                    </div>
-                  <div className="col-xs-6">
-                      {this.renderAccountSelector()}
-                  </div>
-                </div>
-            </div>
-      )
-    },
-
     tableRow: function (item, index) {
-        let length = item.amount.length;
         let label = item.categories[0];
-        var selectedLevel = this.getSelectedLevel();
+        var selectedLevel = this.props.selectedLevel;
         if (selectedLevel > 0) {
             for (let i=1; i<=selectedLevel; ++i) {
                 label += " " + String.fromCharCode(183) + " "+item.categories[i];
@@ -230,8 +163,8 @@ var HistoryTable = React.createClass({
     render: function() {
         var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
         var dm = dataModelStore.getModel(dataModelId);
-        var accountType = stateStore.getValue(this.props.storeId, 'accountType');
-        var selectedLevel = this.getSelectedLevel();
+        var accountType = this.props.accountType;
+        var selectedLevel = this.props.selectedLevel;
         var newData = dm.getData({
             accountTypes:[accountType],
             startPath: [],
@@ -248,13 +181,11 @@ var HistoryTable = React.createClass({
         else {
             var rows =  newData.data;
             var headers = newData.dataHeaders;
-            let currentLevel = stateStore.getValue(this.props.storeId,'currentLevel');
             let dataLength = rows[0].amount.length;
             let thStyle={textAlign:"right"};
+
             return (
                 <div>
-                    {this.interactionPanel(newData, rows)}
-
                     <table className="table">
                         <thead>
                         <tr>

@@ -34,11 +34,7 @@ var ShowMePage = React.createClass({
             accountTypes: [
                 {name: "Expense", value: AccountTypes.EXPENSE},
                 {name: "Revenue", value: AccountTypes.REVENUE}
-            ],
-            dataInitialization: {
-                accountTypes: [AccountTypes.EXPENSE, AccountTypes.REVENUE],
-                amountThreshold: 0.01
-            }
+            ]
         };
     },
 
@@ -52,8 +48,13 @@ var ShowMePage = React.createClass({
             ids.forEach(function (id) {
                 apiActions.requestDatasetIfNeeded(id);
             });
+            let reverseRevenueSign = false;
+            if (this.props.site.properties.reverseRevenueSign) {
+                reverseRevenueSign = true;
+            }
 
-            dm = dataModelStore.createModel(ids, this.props.dataInitialization, this.props.site.categoryMap);
+            dm = dataModelStore.createModel(ids, {amountThreshold:0.01, reverseRevenueSign:reverseRevenueSign},
+                                            this.props.site.categoryMap);
 
             let subComponents = {
                 chart: {},

@@ -33,8 +33,12 @@ var ChangesTable = React.createClass({
         if (dataModelId == null) {
             let ids = this.props.datasets;
             ids.forEach(function (id) { apiActions.requestDatasetIfNeeded(id); });
-
-            let dm = dataModelStore.createModel(ids, {amountThreshold: 0.01}, this.props.site.categoryMap);
+            let reverseRevenueSign = false;
+            if (this.props.site.properties.reverseRevenueSign) {
+                reverseRevenueSign = true;
+            }
+            let dm = dataModelStore.createModel(ids, {amountThreshold: 0.01, reverseRevenueSign: reverseRevenueSign},
+                                                this.props.site.categoryMap);
             stateStore.initializeComponentState(this.props.storeId, {dataModelId: dm.id});
         }
     },
@@ -42,6 +46,32 @@ var ChangesTable = React.createClass({
     shouldComponentUpdate: function (nextProps, nextState) {
         let dm = dataModelStore.getModel(stateStore.getValue(this.props.storeId, 'dataModelId'));
         return ( dm.dataChanged() || dm.commandsChanged({accountTypes: [nextProps.accountType]}) );
+    },
+
+    createLabel: function(item) {
+        var label = "";
+        /*
+         A. If the table is sorted by a value (the What's New table):
+             1. if the detail level is Department, show as <Department> (<Service Area or Fund>)
+             2. if the detail level is Division, show as <Division> (<Service Area> . <Department>)
+             3. if the detail level is Account, show as <Division>.<Account> (<Service Area> . <Department)
+         B. If the table is sorted by category (the Show Me The Money table),
+            show as a hierarchy (for now using indentation - I'll add dynamic hierarchy as a separate issue).
+         */
+        if (this.props.selectedLevel < 3) {
+            label = item.categories[this.props.selectedLevel];
+            if (this.props.selectedLevel == 1) {
+                label += " (" + item.categories[0] + ")";
+            }
+            else {
+                label += " (" + item.categories[0] + String.fromCharCode(183) + item.categories[1] + ")";
+            }
+        }
+        else {
+            label = item.categories[2] + String.fromCharCode(183) + item.categories[3];
+            label += " (" + item.categories[0] + String.fromCharCode(183) + item.categories[1] + ")";
+        }
+        return label;
     },
 
     tableRow: function (item, index) {
@@ -53,6 +83,7 @@ var ChangesTable = React.createClass({
                 label += " " + String.fromCharCode(183) + " "+item.categories[i];
             }
         }
+        label = this.createLabel(item);
 
         let tdStyle={textAlign:"right"};
         return <tr key={index}>
