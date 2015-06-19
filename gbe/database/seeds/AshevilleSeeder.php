@@ -16,10 +16,10 @@ class AshevilleSeeder extends Seeder {
         $org = new GovernmentOrganization();
         $org->name = "Asheville City Government";
         $org->save();
-        $org->addMember($user, 9);
+//        $org->addMember($user, 9);
 
-        $user = User::where('email','=','admin@democracyapps.us')->first();
-        $org->addMember($user, 9);
+  //      $user = User::where('email','=','admin@democracyapps.us')->first();
+    //    $org->addMember($user, 9);
 
 
         // Create the chart of accounts
@@ -147,7 +147,7 @@ class AshevilleSeeder extends Seeder {
         $d->day = $day;
         $d->government_organization = $orgId;
         $d->chart = $chartId;
-        $d->category_order = json_encode($order);
+        if ($order != null) $d->category_order = json_encode($order);
         $d->save();
         return $d;
     }
