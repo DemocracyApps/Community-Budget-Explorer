@@ -100,8 +100,11 @@ var ShowMePage = React.createClass({
         if (displayMode == "chart") {
         	detailPanel = (<YearButtonPanel columns="6" storeId={this.props.storeId} />);
         }
+        else if (this.props.componentProps.detailSelectorOn == "Yes") {
+                detailPanel = (<DetailLevelButtonPanel columns="6" storeId={this.props.storeId}/>);
+        }
         else {
-        	detailPanel = (<DetailLevelButtonPanel columns="6" storeId={this.props.storeId} />);
+            detailPanel = "";
         }
 
         return (
