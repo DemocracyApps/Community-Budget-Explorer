@@ -41,7 +41,7 @@ class BuncombeSiteSeeder extends Seeder
 
         $this->createWhatsNewPage($site, $whatsnewpageComponent);
 
-        $this->createShowMePage($site, $showmepageComponent);
+        $this->createShowMePage($site, $showmepageComponent, $simpleCardComponent);
 
         $this->createDocMapPage($site, $cardTableComponent);
 
@@ -155,7 +155,7 @@ startup."
 
     }
 
-    private function createShowMePage($site, $showmepageComponent)
+    private function createShowMePage($site, $showmepageComponent, $simpleCardComponent)
     {
         $page = new Page();
         $page->site = $site->id;
@@ -168,6 +168,36 @@ startup."
         $layout = Layout::where('name','=','One-Column')->first();
         $page->layout = $layout->id;
         $page->save();
+
+        $cardset = new CardSet();
+        $cardset->site = $site->id;
+        $cardset->name = 'ShowMe Page Cards';
+        $cardset->save();
+        $ordinal = 1;
+        $card1 = $this->createCard($site, $cardset, $ordinal++, 'What is this?',
+            [
+                'body' => "_Don't tell me what you value, show me your budget, and I'll tell you what you value. - Joe Biden_
+
+The purpose of this site is to help support the public conversation
+achieve those priorities.
+
+This site is built on a free, open-source platform developed by [DemocracyApps](http://democracyapps.us), a local civic tech
+startup."
+            ]
+        );
+
+        $c = new PageComponent();
+        $c->component = $simpleCardComponent->id;
+        $c->page = $page->id;
+        $c->target="main";
+        $data = array();
+        $data['type'] = 'card';
+        $data['items'] = array("$card1->id");
+        $dataBundle = array();
+        $dataBundle['mycard'] = $data;
+        $c->setProperty('data', $dataBundle);
+        $c->setProperty('props', ["headerTag" => "0"]);
+        $c->save();
 
         $c = new PageComponent();
         $c->component = $showmepageComponent->id;
