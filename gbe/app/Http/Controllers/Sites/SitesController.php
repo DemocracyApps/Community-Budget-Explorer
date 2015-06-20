@@ -147,7 +147,7 @@ class SitesController extends Controller {
                                         $storedCard = Card::find($cId);
                                         $card = $storedCard->asSimpleObject(['dataType' => 'card']);
                                         $card->body = array($pd->text($card->body));
-                                        $cardStore[$cId] = array($card);
+                                        $cardStore[$cId] = $card;
                                     }
                                     $data[] = $card;
                                     $c->componentData[$key] = array('type'=> 'card', 'ids'=>array($card->id));
