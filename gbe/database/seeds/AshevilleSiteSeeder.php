@@ -246,6 +246,7 @@ class AshevilleSiteSeeder extends Seeder
         $c->component = $whatsnewpageComponent->id;
         $c->page = $page->id;
         $c->target="main";
+        $c->setProperty('props', ["detailSelectorOn" => "Yes"]);
         $c->save();
 
     }

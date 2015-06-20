@@ -10,7 +10,24 @@
     }
   ],
   "props": {
-
+    "detailSelectorOn": {
+      "value": "1",
+      "configurable": true,
+      "label": "Show detail level selector?",
+      "type": "select",
+      "options": [
+        {
+          "name": "Yes",
+          "value": "Yes",
+          "description": "Yes."
+        },
+        {
+          "name": "No",
+          "value": "No",
+          "description": "No."
+        }
+      ]
+    }
   },
   "state": {
 

@@ -87,22 +87,38 @@ var WhatsNewPage = React.createClass({
     },
 
     optionsPanel: function () {
-        return (
-            <div>
-                <hr style={{marginTop:10, marginBottom:10}}/>
-                <div className="row ">
-                    <AccountTypeButtonPanel columns="3" storeId={this.props.storeId} />
-                    <DisplayModeButtonPanel columns="3" storeId={this.props.storeId} />
-                    <DetailLevelButtonPanel columns="6" storeId={this.props.storeId} />
+        console.log("PROPS IN OPTIONS: " + JSON.stringify(this.props.componentProps.detailSelectorOn));
+        if (this.props.componentProps.detailSelectorOn == "Yes") {
+            return (
+                <div>
+                    <hr style={{marginTop:10, marginBottom:10}}/>
+                    <div className="row ">
+                        <AccountTypeButtonPanel columns="3" storeId={this.props.storeId}/>
+                        <DisplayModeButtonPanel columns="3" storeId={this.props.storeId}/>
+                        <DetailLevelButtonPanel columns="6" storeId={this.props.storeId}/>
+                    </div>
+                    <hr style={{marginTop:10, marginBottom:10}}/>
                 </div>
-                <hr style={{marginTop:10, marginBottom:10}}/>
-            </div>
-        )
+            )
+        }
+        else {
+            return (
+                <div>
+                    <hr style={{marginTop:10, marginBottom:10}}/>
+                    <div className="row ">
+                        <AccountTypeButtonPanel columns="3" storeId={this.props.storeId}/>
+                        <DisplayModeButtonPanel columns="3" storeId={this.props.storeId}/>
+                    </div>
+                    <hr style={{marginTop:10, marginBottom:10}}/>
+                </div>
+            )
+        }
     },
 
     render: function () {
         let displayMode = stateStore.getValue(this.props.storeId, 'displayMode');
         let renderFunction = (displayMode == "chart")?this.renderCharts:this.renderTable;
+
         return (
             <div>
                 {this.optionsPanel()}
