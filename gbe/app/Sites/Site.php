@@ -18,6 +18,7 @@
  */
 
 use DemocracyApps\GB\Budget\AccountCategory;
+use DemocracyApps\GB\Budget\AccountChart;
 use DemocracyApps\GB\Budget\Dataset;
 use DemocracyApps\GB\Organizations\GovernmentOrganization;
 use DemocracyApps\GB\Organizations\MediaOrganization;
@@ -97,13 +98,19 @@ class Site extends EloquentPropertiedObject
 
     public function getAccountCategories()
     {
-        $ds = Dataset::where('government_organization', '=', $this->government)->orderBy('year', 'desc')->first();
+        $chart = AccountChart::where('government_organization', '=', $this->government)->first();
+        $acct_categories = AccountCategory::where('chart','=',$chart->id)->get();
         $categories = array();
-        $cOrder = json_decode($ds->category_order);
-        for ($i=0; $i<sizeof($cOrder); ++$i) {
-            $cat = AccountCategory::find($cOrder[$i]);
+        foreach ($acct_categories as $cat) {
             $categories[] = $cat->name;
         }
+
+//        $ds = Dataset::where('government_organization', '=', $this->government)->orderBy('year', 'desc')->first();
+//        $cOrder = json_decode($ds->category_order);
+//        for ($i=0; $i<sizeof($cOrder); ++$i) {
+//            $cat = AccountCategory::find($cOrder[$i]);
+//            $categories[] = $cat->name;
+//        }
         $categories[] = "Account";
         return $categories;
     }
