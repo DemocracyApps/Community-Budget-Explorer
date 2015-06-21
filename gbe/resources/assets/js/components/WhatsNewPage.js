@@ -86,8 +86,8 @@ var WhatsNewPage = React.createClass({
         )
     },
 
-    optionsPanel: function () {
-        console.log("PROPS IN OPTIONS: " + JSON.stringify(this.props.componentProps.detailSelectorOn));
+    optionsPanel: function (categories) {
+
         if (this.props.componentProps.detailSelectorOn == "Yes") {
             return (
                 <div>
@@ -95,7 +95,7 @@ var WhatsNewPage = React.createClass({
                     <div className="row ">
                         <AccountTypeButtonPanel columns="3" storeId={this.props.storeId}/>
                         <DisplayModeButtonPanel columns="3" storeId={this.props.storeId}/>
-                        <DetailLevelButtonPanel columns="6" storeId={this.props.storeId}/>
+                        <DetailLevelButtonPanel columns="6" storeId={this.props.storeId} categories={categories}/>
                     </div>
                     <hr style={{marginTop:10, marginBottom:10}}/>
                 </div>
@@ -118,10 +118,10 @@ var WhatsNewPage = React.createClass({
     render: function () {
         let displayMode = stateStore.getValue(this.props.storeId, 'displayMode');
         let renderFunction = (displayMode == "chart")?this.renderCharts:this.renderTable;
-
+        let categories = ['Department','Division','Account'];
         return (
             <div>
-                {this.optionsPanel()}
+                {this.optionsPanel(categories)}
                 {renderFunction()}
             </div>
         )

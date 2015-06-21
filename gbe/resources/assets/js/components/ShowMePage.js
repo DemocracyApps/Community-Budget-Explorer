@@ -94,14 +94,14 @@ var ShowMePage = React.createClass({
 
 
 	// top options panel
-    optionsPanel: function () {
+    optionsPanel: function (categories) {
         var displayMode = stateStore.getValue(this.props.storeId, 'displayMode');
         var detailPanel;
         if (displayMode == "chart") {
         	detailPanel = (<YearButtonPanel columns="6" storeId={this.props.storeId} />);
         }
         else if (this.props.componentProps.detailSelectorOn == "Yes") {
-                detailPanel = (<DetailLevelButtonPanel columns="6" storeId={this.props.storeId}/>);
+                detailPanel = (<DetailLevelButtonPanel columns="6" storeId={this.props.storeId} categories={categories}/>);
         }
         else {
             detailPanel = "";
@@ -184,9 +184,24 @@ var ShowMePage = React.createClass({
         var displayMode = stateStore.getValue(this.props.storeId, 'displayMode');
         var renderFunction = (displayMode == "chart")?this.renderCharts:this.renderTable;
 
+        var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
+        var dm = dataModelStore.getModel(dataModelId);
+        var accountType = stateStore.getValue(this.props.storeId, 'accountType');
+        var newData = dm.getData({
+            accountTypes:[accountType],
+            startPath: [],
+            nLevels: 4
+        }, false);
+        var categories = null;
+        if (newData != null) {
+            categories = newData.categories.slice(1);
+        }
+        else {
+            categories = ["Loading", "Loading", "Loading"];
+        }
         return (
             <div>
-                {this.optionsPanel()}
+                {this.optionsPanel(categories)}
                 {renderFunction()}
             </div>
         )

@@ -20,9 +20,9 @@ class DetailLevelButtonPanel extends ButtonPanel {
 	getStateFromStore() {
 		return { value : stateStore.getValue(this.props.storeId, 'selectedLevel'),
 				 options: [
-					{ value:1, title:"Department"},
-					{ value:2, title:"Division"},
-					{ value:3, title:"Account"}
+					{ value:1, title:this.props.categories[0]},
+					{ value:2, title:this.props.categories[1]},
+					{ value:3, title:this.props.categories[2]}
 				 ]
 			};
 	}
