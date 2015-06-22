@@ -63,6 +63,7 @@ class SitesController extends Controller {
             $site->baseUrl = url('/sites/' . $slug . '/');
             $site->isMapped = false;
         }
+        \Log::info("The base URL on the site is " . $site->baseUrl);
         $site->apiUrl  = Util::apiPath() . "/organizations/" . $government->id;
         $site->ajaxUrl = Util::ajaxPath('sites', 'base');
         $site->properties = $siteData->properties;

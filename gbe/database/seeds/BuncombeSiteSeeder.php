@@ -41,7 +41,7 @@ class BuncombeSiteSeeder extends Seeder
         $this->createWhatsNewPage($site, 2, $whatsnewpageComponent, $simpleCardComponent);
 
         $this->createSchoolsPage($site, 3, $showmepageComponent, $simpleCardComponent);
-        
+
         $this->createAboutPage($site, 5, $simpleCardComponent);
     }
 
@@ -104,7 +104,7 @@ issued after the budget is adopted, but since the categories used there are diff
 spreadsheet, it was not practical to map 2014 actuals to the 2016 budget. You may download the data used for
 this page [here](/docs/buncombe/Budget_Spreadsheets_2016-2014.xlsx).
 The final budget reports for earlier years may be
-found <a href="https://www.buncombecounty.org/Governing/Depts/Administration/budget-management/operating-budget.aspx">here</a>'
+found <a href="https://www.buncombecounty.org/Governing/Depts/Administration/budget-management/operating-budget.aspx">here</a>.'
             ]
         );
 
@@ -181,7 +181,7 @@ issued after the budget is adopted, but since the categories used there are diff
 spreadsheet, it was not practical to map 2014 actuals to the 2016 budget. You may download the data used for
 this page [here](/docs/buncombe/Budget_Spreadsheets_2016-2014.xlsx).
 The final budget reports for earlier years may be
-found <a href="https://www.buncombecounty.org/Governing/Depts/Administration/budget-management/operating-budget.aspx">here</a>'
+found <a href="https://www.buncombecounty.org/Governing/Depts/Administration/budget-management/operating-budget.aspx">here</a>.'
             ]
         );
 
