@@ -48,5 +48,5 @@
 
   <hr>
 
-  <p> No account? <a href={!!url('auth/register')!!}>Sign up here</a></p>
+  <!-- <p> No account? <a href={!!url('auth/register')!!}>Sign up here</a></p> -->
 @stop
