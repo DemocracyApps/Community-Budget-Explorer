@@ -29,6 +29,7 @@ var ChangesTable = React.createClass({
          *  2. Create the data model (which merges datasets from multiple years & provides an interface)
          *  3. Initialize any state variables (here, just the ID of the data model)
          */
+
         let dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
         if (dataModelId == null) {
             let ids = this.props.datasets;
@@ -44,8 +45,9 @@ var ChangesTable = React.createClass({
     },
 
     shouldComponentUpdate: function (nextProps, nextState) {
+        let newInstance = (nextProps.storeId != this.props.storeId);
         let dm = dataModelStore.getModel(stateStore.getValue(this.props.storeId, 'dataModelId'));
-        return ( dm.dataChanged() || dm.commandsChanged({accountTypes: [nextProps.accountType]}) );
+        return ( newInstance || dm.dataChanged() || dm.commandsChanged({accountTypes: [nextProps.accountType]}) );
     },
 
     createLabel: function(item) {

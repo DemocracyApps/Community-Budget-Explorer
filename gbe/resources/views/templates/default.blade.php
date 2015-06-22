@@ -19,7 +19,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Government Budget Explorer</title>
+    <title>Community Budget Explorer</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="/css/all.css">
     @yield('head')
@@ -37,7 +37,7 @@
                 <img src="/img/DemocracyApps_logo-01_RGB.jpg" height="123" width="96" alt="DemocracyApps Logo"/>
             </div>
             <div class="col-md-8 hdr-main">
-                <h1>Government Budget Explorer</h1>
+                <h1>Community Budget Explorer</h1>
             </div>
             <div class="col-md-3 hdr-right">
                 <ul class="nav nav-pills">

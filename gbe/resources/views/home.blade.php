@@ -3,7 +3,6 @@
 
 @section('content')
     <div class="row">
-        <h1>Welcome to The Government Budget Explorer!</h1>
         <p>This site is still under development, but feel free to explore community budgets listed below. </p>
 
         <table class="table">

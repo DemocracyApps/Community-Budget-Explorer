@@ -43,7 +43,6 @@ var ChangesChart = React.createClass({
             }
 
             let dm = dataModelStore.createModel(ids, {amountThreshold: 0.01, reverseRevenueSign:reverseRevenueSign}, this.props.site.categoryMap);
-            console.log("Created model with id = " + dm.id);
             stateStore.initializeComponentState(this.props.storeId, {dataModelId: dm.id, selectedArea: -1});
         }
     },

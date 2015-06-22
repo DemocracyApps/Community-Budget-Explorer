@@ -38,49 +38,54 @@ var ShowMePage = React.createClass({
         };
     },
 
+    initialize: function() {
+        let dm = null;
+        var ids = this.props.componentData['mydatasets'].ids;
+        ids.forEach(function (id) {
+            apiActions.requestDatasetIfNeeded(id);
+        });
+        let reverseRevenueSign = false;
+        if (this.props.site.properties.reverseRevenueSign) {
+            reverseRevenueSign = true;
+        }
+
+        dm = dataModelStore.createModel(ids, {amountThreshold:0.01, reverseRevenueSign:reverseRevenueSign},
+            this.props.site.categoryMap);
+
+        let subComponents = {
+            chart: {},
+            table: {}
+        };
+        stateStore.initializeComponentState(this.props.storeId,
+            {
+                accountType: AccountTypes.EXPENSE,
+                dataModelId: dm.id,
+                displayMode: "chart",
+                selectedLevel: 1,
+                currentYear: -1,
+                subComponents: subComponents
+            });
+
+        subComponents.chart.storeId = stateStore.registerComponent(this.props.storeId, {});
+        configStore.registerComponent(subComponents.chart.storeId, {});
+
+        subComponents.table.storeId = stateStore.registerComponent(this.props.storeId, {});
+        configStore.registerComponent(subComponents.table.storeId, {});
+
+        stateStore.setOverrideValue(this.props.storeId, subComponents.chart.storeId, "accountType");
+        stateStore.setOverrideValue(this.props.storeId, subComponents.chart.storeId, "selectedLevel");
+
+        stateStore.setOverrideValue(this.props.storeId, subComponents.table.storeId, "accountType");
+        stateStore.setOverrideValue(this.props.storeId, subComponents.table.storeId, "selectedLevel");
+        return dm;
+    },
+
     componentWillMount: function () {
         // If this is the first time this component is mounting, we need to create the data model
         // and do any other state initialization required.
         var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
-        let dm = null;
         if (dataModelId == null) {
-            var ids = this.props.componentData['mydatasets'].ids;
-            ids.forEach(function (id) {
-                apiActions.requestDatasetIfNeeded(id);
-            });
-            let reverseRevenueSign = false;
-            if (this.props.site.properties.reverseRevenueSign) {
-                reverseRevenueSign = true;
-            }
-
-            dm = dataModelStore.createModel(ids, {amountThreshold:0.01, reverseRevenueSign:reverseRevenueSign},
-                                            this.props.site.categoryMap);
-
-            let subComponents = {
-                chart: {},
-                table: {}
-            };
-            stateStore.initializeComponentState(this.props.storeId,
-                {
-                    accountType: AccountTypes.EXPENSE,
-                    dataModelId: dm.id,
-                    displayMode: "chart",
-                    selectedLevel: 1,
-                    currentYear: -1,
-                    subComponents: subComponents
-                });
-
-            subComponents.chart.storeId = stateStore.registerComponent(this.props.storeId, {});
-            configStore.registerComponent(subComponents.chart.storeId, {});
-
-            subComponents.table.storeId = stateStore.registerComponent(this.props.storeId, {});
-            configStore.registerComponent(subComponents.table.storeId, {});
-
-            stateStore.setOverrideValue(this.props.storeId, subComponents.chart.storeId, "accountType");
-            stateStore.setOverrideValue(this.props.storeId, subComponents.chart.storeId, "selectedLevel");
-
-            stateStore.setOverrideValue(this.props.storeId, subComponents.table.storeId, "accountType");
-            stateStore.setOverrideValue(this.props.storeId, subComponents.table.storeId, "selectedLevel");
+            this.initialize();
         }
     },
 
@@ -121,18 +126,19 @@ var ShowMePage = React.createClass({
     },
 
     renderCharts: function () {
-        var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
-        var dm = dataModelStore.getModel(dataModelId);
         var accountType = stateStore.getValue(this.props.storeId, 'accountType');
         var currentYear = stateStore.getValue(this.props.storeId, 'currentYear');
+
+        var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
+        var dm = dataModelStore.getModel(dataModelId);
+
         var newData = dm.getData({
             accountTypes:[accountType],
             startPath: [],
             nLevels: 4
         }, false);
-        var dataNull = (newData == null);
 
-        if (dataNull) {
+        if (newData == null) {
             return (
                 <div style={{height: 600}}>
                     <div className="row">
@@ -181,12 +187,19 @@ var ShowMePage = React.createClass({
     },
 
     render: function () {
+        var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
+        var dm;
+
+        if (dataModelId == null) {
+            dm = this.initialize();
+        }
+        else {
+            dm = dataModelStore.getModel(dataModelId);
+        }
+        var accountType = stateStore.getValue(this.props.storeId, 'accountType');
         var displayMode = stateStore.getValue(this.props.storeId, 'displayMode');
         var renderFunction = (displayMode == "chart")?this.renderCharts:this.renderTable;
 
-        var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
-        var dm = dataModelStore.getModel(dataModelId);
-        var accountType = stateStore.getValue(this.props.storeId, 'accountType');
         var newData = dm.getData({
             accountTypes:[accountType],
             startPath: [],
