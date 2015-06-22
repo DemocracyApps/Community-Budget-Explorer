@@ -216,6 +216,8 @@ var ShowMePage = React.createClass({
             <div>
                 {this.optionsPanel(categories)}
                 {renderFunction()}
+                <br/>
+                <br/>
             </div>
         )
     }
