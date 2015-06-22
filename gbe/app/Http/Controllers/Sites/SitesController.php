@@ -57,9 +57,11 @@ class SitesController extends Controller {
 
         if (\DomainContext::isMapped()) {
             $site->baseUrl = '/';
+            $site->isMapped = true;
         }
         else {
             $site->baseUrl = url('/sites/' . $slug . '/');
+            $site->isMapped = false;
         }
         $site->apiUrl  = Util::apiPath() . "/organizations/" . $government->id;
         $site->ajaxUrl = Util::ajaxPath('sites', 'base');

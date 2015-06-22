@@ -56,6 +56,18 @@ var SiteNavigation = React.createClass({
                 </li>
             )
         }.bind(this);
+        var homeItem = function() {
+            if (this.props.site.isMapped) {
+                return "";
+            }
+            else {
+                return (
+                    <li key={this.props.pages.length}>
+                        <a href="http://communitybudgets.org"><i style={{float:"right"}}  className="fa fa-home"></i></a>
+                    </li>
+                )
+            }
+        }.bind(this);
 
         return (
             <nav className="navbar navbar-default">
@@ -75,6 +87,7 @@ var SiteNavigation = React.createClass({
 
                         <ul className="nav navbar-nav">
                             {this.props.pages.map(navItem)}
+                            {homeItem()}
                         </ul>
                     </div>
                 </div>
