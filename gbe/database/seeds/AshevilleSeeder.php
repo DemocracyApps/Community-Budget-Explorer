@@ -14,7 +14,7 @@ class AshevilleSeeder extends Seeder {
         // Create the organization and first users
         $user = User::where('email','=','eric@deepweave.com')->first();
         $org = new GovernmentOrganization();
-        $org->name = "Asheville City Government";
+        $org->name = "Asheville, NC";
         $org->save();
 //        $org->addMember($user, 9);
 

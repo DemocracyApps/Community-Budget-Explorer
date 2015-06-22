@@ -129,13 +129,10 @@
 <footer class="row">
     <div class="col-md-1">
     </div>
-    <div class="col-md-5">
-        <div id="copyright">Copyright 2015 DemocracyApps</div>
+    <div class="col-md-9">
+        <div style="float:right; font-size:smaller;" id="copyright">Copyright 2015 <a href="http://democracyapps.us" target="_blank">DemocracyApps</a></div>
     </div>
-    <div class="col-md-5" style="text-align:right;">
-        @yield('footer_right')
-    </div>
-    <div class="col-md-1">
+    <div class="col-md-2">
     </div>
 </footer>
 <br>
