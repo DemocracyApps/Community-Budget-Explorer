@@ -174,9 +174,15 @@ var avb_chart = function() {
 
         // grid initialization
 
+        var tickCount = avb.lastYear - avb.firstYear + 1;
+        var tickValues = [];
+        for (let yr=avb.firstYear; yr<=avb.lastYear; ++yr) {
+            tickValues.push(yr);
+        }
         // ticksize = height - 10px for label space
         var xgrid_axis = d3.svg.axis().scale(chart.xscale).orient("bottom")
             .tickSize(-chart.yscale.range()[0] + 10, 0, 0).ticks(6)
+            .tickValues(tickValues)
             .tickFormat(function (d) {
                 return '';
             });
@@ -277,9 +283,9 @@ var avb_chart = function() {
          */
         var xAxis = d3.svg.axis().scale(chart.xscale)
             .orient("bottom").tickSize(0, 0, 0).tickPadding(10)
-            .tickFormat(function (d) {
-                return d;
-            });
+            .tickValues(tickValues)
+            .ticks(tickCount)
+            .tickFormat(d3.format("d"));
 
         var yAxis = d3.svg.axis().scale(chart.yscale).ticks(4)
             .orient("left").tickSize(0, 0, 0).tickPadding(5)
