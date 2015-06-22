@@ -49,7 +49,7 @@ class HomeController extends Controller {
 	 */
 	public function index()
 	{
-		$sites = Site::where('published','=',true)->get();
+		$sites = Site::where('published','=',true)->orderBy('name')->get();
 		foreach ($sites as $site) {
 			$site->governmentName = GovernmentOrganization::where('id','=',$site->government)->first()->name;
 		}

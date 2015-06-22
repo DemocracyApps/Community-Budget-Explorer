@@ -22,10 +22,10 @@ class AshevilleSiteSeeder extends Seeder
         $showmepageComponent = Component::where('name','=','ShowMePage')->first();
         $navCardsComponent = Component::where('name','=','NavCards')->first();
 
-        $government = GovernmentOrganization::where('name','=','Asheville City Government')->first();
+        $government = GovernmentOrganization::where('name','=','Asheville, NC')->first();
         // Create the Asheville site
         $site = new Site();
-        $site->name = "Asheville Budget 2015-2016";
+        $site->name = "Asheville, NC Budget 2015-2016";
         $site->owner_type = Site::GOVERNMENT;
         $site->owner = $government->id; // Asheville government;
         $site->government = $government->id; // Ditto

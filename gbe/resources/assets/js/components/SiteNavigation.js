@@ -63,7 +63,7 @@ var SiteNavigation = React.createClass({
             else {
                 return (
                     <li key={this.props.pages.length}>
-                        <a href="http://communitybudgets.org"><i style={{float:"right"}}  className="fa fa-home"></i></a>
+                        <a href="/"> <i style={{float:"right"}}  className="fa fa-home"></i></a>
                     </li>
                 )
             }
