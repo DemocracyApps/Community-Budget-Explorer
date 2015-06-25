@@ -41,19 +41,22 @@ class SitesController extends Controller {
         return $bodies;
     }
 
-	public function page($slug, $pageName=null, $parameters = null)
+	public function page($slug, $pageName=null, Request $request)
     {
         $siteData = Site::where('slug','=',$slug)->first();
         $government = GovernmentOrganization::where('id','=',$siteData->government)->first();
-
         $site = new \stdClass();
         $site->name = $siteData->name;
         $site->id = 0;
         $site->slug = $siteData->slug;
         $site->startPage = -1;
         $site->embedded = false;
-        if ($parameters != null && array_key_exists('embedded',$parameters) && $parameters['embedded']=='true') $site->embedded = true;
-        if ($parameters != null && array_key_exists('max-width',$parameters)) $site->maxWidth = $parameters['max-width'];
+        if ($request->has('embedded')) {
+            if ($request->get('embedded') == 'true') $site->embedded=true;
+        }
+        if ($request->has('max-width')) {
+            $site->maxWidth = $request->get('max-width');
+        }
 
         if (\DomainContext::isMapped()) {
             $site->baseUrl = '/';
