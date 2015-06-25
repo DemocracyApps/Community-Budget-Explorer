@@ -80,7 +80,6 @@ var Site = React.createClass({
         var nParams = 0;
         if ('embedded' in this.props.site) nParams++;
         if ('maxWidth' in this.props.site) nParams++;
-
         if (nParams > 0) {
             var added = "?";
             if (this.props.site.embedded) {
@@ -115,9 +114,13 @@ var Site = React.createClass({
         };
         //if we want fixed top, add class 'navbar-fixed-top' to the 'nav' element
 
+        let styles={};
+        if (this.props.site.maxWidth) {
+            styles = {maxWidth:this.props.site.maxWidth};
+        }
         if (embedded) {
             return (
-                <div className="container">
+                <div className="container" style={styles}>
                     <div className="container-fluid">
                         <div className="row">
                             <div className="col-md-12">
@@ -134,7 +137,7 @@ var Site = React.createClass({
         }
         else {
             return (
-                <div className="container">
+                <div className="container" style={styles}>
 
                     <SiteNavigation site={this.props.site} pages={this.props.pages}/>
 
