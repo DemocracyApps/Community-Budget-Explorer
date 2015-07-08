@@ -53,7 +53,12 @@ class DatasetsController extends Controller {
 	{
         $organization = GovernmentOrganization::find($govId);
         $chart = AccountChart::find($request->get('chart'));
-        return view('government.dataset.create', array('organization'=>$organization, 'chart'=>$chart));
+        if ($request->has('multi') && $request->get('multi') == 'true') {
+            return view('government.dataset.create_multi', array('organization' => $organization, 'chart' => $chart));
+        }
+        else {
+            return view('government.dataset.create', array('organization' => $organization, 'chart' => $chart));
+        }
     }
 
 	/**
@@ -63,39 +68,76 @@ class DatasetsController extends Controller {
 	 */
 	public function store($govId, Request $request)
 	{
+        $isMulti = $request->has('multi');
 
-        $rules = ['name' => 'required', 'year'=>'required | digits:4', 'type'=>'in:actual,budget'];
-
+        if ($isMulti) {
+            $rules = ['year' => 'required | digits:4', 'year_column' => 'required | integer', 'year_count'=>'required | integer',
+                'categories' => 'required | integer', 'categories_column' => 'required | integer'];
+        }
+        else {
+            $rules = ['name' => 'required', 'year' => 'required | digits:4', 'type' => 'in:actual,budget'];
+        }
 
         $this->validate($request, $rules);
 
         if (! $request->hasFile('data')) {
             return redirect()->back()->withInput()->withErrors(array('file'=>'You must select a file to upload'));
         }
-        $this->dataset->name = $request->get('name');
-        $this->dataset->government_organization = $govId;
-        $this->dataset->chart = $request->get('chart');
-        $this->dataset->year = $request->get('year');
-        $this->dataset->type = $request->get('type');
-        $this->dataset->granularity=Dataset::ANNUAL;
-        if ($request->has('description')) $this->dataset->description = $request->get('description');
-        $this->dataset->save();
 
-        $file = $request->file('data');
-        $data = array();
-        $data['dataset'] = $this->dataset->id;
-        $data['userId'] = \Auth::user()->id;
-        $name = uniqid('upload');
-        $file->move('/var/www/gbe/public/downloads', $name);
-        $data['filePath'] = '/var/www/gbe/public/downloads/' . $name;
-        $notification = new \DemocracyApps\GB\Utility\Notification;
-        $notification->user_id = $data['userId'];
-        $notification->status = 'Scheduled';
-        $notification->type = 'DatasetUpload';
-        $notification->save();
-        $data['notificationId'] = $notification->id;
-        \Queue::push('\DemocracyApps\GB\Budget\CSVProcessors\DatasetCSVProcessor', $data);
+        if ($isMulti) {
+            $data = array();
+            $data['multi'] = true;
+            $data['userId'] = \Auth::user()->id;
+            $data['name'] = $request->get('name');
+            $data['governmentId'] = $govId;
+            $data['chart'] = $request->get('chart');
+            $data['start_year'] = $request->get('year');
+            $data['year_column'] = $request->get('year_column');
+            $data['year_count'] = $request->get('year_count');
+            $data['categories'] = $request->get('categories');
+            $data['categories_column'] = $request->get('categories_column');
+            if ($request->has('description')) {
+                $data['description'] = $request->get('description');
+            }
 
+            $file = $request->file('data');
+            $name = uniqid('upload');
+            $file->move('/var/www/gbe/public/downloads', $name);
+            $data['filePath'] = '/var/www/gbe/public/downloads/' . $name;
+            $notification = new \DemocracyApps\GB\Utility\Notification;
+            $notification->user_id = $data['userId'];
+            $notification->status = 'Scheduled';
+            $notification->type = 'DatasetUpload';
+            $notification->save();
+            $data['notificationId'] = $notification->id;
+            \Queue::push('\DemocracyApps\GB\Budget\CSVProcessors\DatasetCSVProcessor', $data);
+        }
+        else {
+            $this->dataset->name = $request->get('name');
+            $this->dataset->government_organization = $govId;
+            $this->dataset->chart = $request->get('chart');
+            $this->dataset->year = $request->get('year');
+            $this->dataset->type = $request->get('type');
+            $this->dataset->granularity = Dataset::ANNUAL;
+            if ($request->has('description')) $this->dataset->description = $request->get('description');
+            $this->dataset->save();
+
+            $file = $request->file('data');
+            $data = array();
+            $data['multi'] = false;
+            $data['dataset'] = $this->dataset->id;
+            $data['userId'] = \Auth::user()->id;
+            $name = uniqid('upload');
+            $file->move('/var/www/gbe/public/downloads', $name);
+            $data['filePath'] = '/var/www/gbe/public/downloads/' . $name;
+            $notification = new \DemocracyApps\GB\Utility\Notification;
+            $notification->user_id = $data['userId'];
+            $notification->status = 'Scheduled';
+            $notification->type = 'DatasetUpload';
+            $notification->save();
+            $data['notificationId'] = $notification->id;
+            \Queue::push('\DemocracyApps\GB\Budget\CSVProcessors\DatasetCSVProcessor', $data);
+        }
         return redirect("/governments/$govId");
 	}
 

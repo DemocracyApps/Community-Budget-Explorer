@@ -51,7 +51,10 @@
     </div>
     <div class="col-md-6">
         <a href="/governments/{!! $organization->id !!}/datasets/create?chart={!! $charts[0]->id !!}"
-           class="btn btn-primary btn-sm" style="float:right;">New Dataset</a>
+           class="btn btn-primary btn-sm" style="float:right;">Upload Dataset</a>
+        <span style="float:right;">&nbsp;</span>
+        <a href="/governments/{!! $organization->id !!}/datasets/create?chart={!! $charts[0]->id !!}&multi=true"
+           class="btn btn-primary btn-sm" style="float:right;">Upload Multiple Datasets</a>
     </div>
     <table class="table">
         <tr>
