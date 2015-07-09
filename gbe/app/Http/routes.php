@@ -18,8 +18,8 @@
  */
 
 
-Log::info("Top of routes with URI " . \Request::server('REQUEST_URI') .
-          " and method " .\Request::server('REQUEST_METHOD'));
+//Log::info("Top of routes with URI " . \Request::server('REQUEST_URI') .
+//          " and method " .\Request::server('REQUEST_METHOD'));
 
 
 Route::group(['domain'=>'gbetest.dev'], function() {
