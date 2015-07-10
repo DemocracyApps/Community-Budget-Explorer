@@ -44,7 +44,7 @@ class ButtonPanel extends React.Component {
 		// Render buttons first.
 		var buttons = this.state.options.map(function(option) {
 			var callback;
-			if (option.value) {
+			if (option.value != undefined) {
 				callback = this.onButtonClicked.bind(this, option.value);
 			}
 			else {
