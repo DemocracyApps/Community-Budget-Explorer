@@ -296,7 +296,9 @@ class SystemController extends Controller
             if (array_key_exists('data', $specification)) {
                 $component->setProperty('data', $specification['data']);
             }
-
+            if (array_key_exists('props', $specification)) {
+                $component->setProperty('props', $specification['props']);
+            }
         }
 
         $component->save();
