@@ -56,13 +56,20 @@ var ShowMePage = React.createClass({
             chart: {},
             table: {}
         };
+        // I don't like how we're handling year. Assumes that the Year selector defaults to last, not first.
+        // Need to do this better.
+        var currentYear = -1;
+        if (this.props.componentProps.startYear == "0") {
+            currentYear = 0;
+        }
+
         stateStore.initializeComponentState(this.props.storeId,
             {
                 accountType: AccountTypes.EXPENSE,
                 dataModelId: dm.id,
                 displayMode: "chart",
                 selectedLevel: 1,
-                currentYear: -1,
+                currentYear: currentYear,
                 subComponents: subComponents
             });
 
@@ -171,7 +178,14 @@ var ShowMePage = React.createClass({
                 width = Number(this.props.site.maxWidth);
                 height = Math.trunc(height*width/1200);
             }
-            if (currentYear < 0) currentYear = newData.periods.length-1;
+            if (currentYear < 0) {
+                if (this.props.componentProps.startYear == "0") {
+                    currentYear = 0;
+                }
+                else {
+                    currentYear = newData.periods.length - 1;
+                }
+            }
             return (
                 <div>
                     <AvbTreemap width={width} height={height}
@@ -227,6 +241,7 @@ var ShowMePage = React.createClass({
         else {
             categories = ["Loading", "Loading", "Loading"];
         }
+
         return (
             <div>
                 {this.optionsPanel(categories)}

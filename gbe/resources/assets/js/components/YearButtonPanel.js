@@ -22,7 +22,6 @@ class YearButtonPanel extends ButtonPanel {
 		var dataModelId = stateStore.getValue(this.props.storeId, 'dataModelId');
 		var accountType = stateStore.getValue(this.props.storeId, 'accountType');
 		var currentYear = stateStore.getValue(this.props.storeId, 'currentYear');
-
 		var dm = dataModelStore.getModel(dataModelId);
 		var newData = dm.checkData({
 			accountTypes:[accountType],

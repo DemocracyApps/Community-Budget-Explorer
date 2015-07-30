@@ -10,6 +10,7 @@ var AvbTreemap = React.createClass({
         data: React.PropTypes.object.isRequired,
         width: React.PropTypes.number.isRequired,
         height: React.PropTypes.number.isRequired,
+        year: React.PropTypes.string.isRequired,
         accountType: React.PropTypes.string.isRequired
     },
 
