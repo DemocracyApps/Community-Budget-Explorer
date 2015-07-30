@@ -112,17 +112,32 @@ var ShowMePage = React.createClass({
             detailPanel = "";
         }
 
-        return (
-            <div>
-                <hr style={{marginTop:10, marginBottom:10}}/>
-                <div className="row ">
-		        	<AccountTypeButtonPanel columns="3" storeId={this.props.storeId} />
-        			<DisplayModeButtonPanel columns="3" storeId={this.props.storeId} />
-        			{detailPanel}
-        		</div>
-                <hr style={{marginTop:10, marginBottom:10}}/>
-            </div>
-        )
+        if (this.props.componentProps.accountTypeSelectorOn == "Yes") {
+            return (
+                <div>
+                    <hr style={{marginTop:10, marginBottom:10}}/>
+                    <div className="row ">
+                        <AccountTypeButtonPanel columns="3" storeId={this.props.storeId}/>
+                        <DisplayModeButtonPanel columns="3" storeId={this.props.storeId}/>
+                        {detailPanel}
+                    </div>
+                    <hr style={{marginTop:10, marginBottom:10}}/>
+                </div>
+            )
+        }
+        else {
+            return (
+                <div>
+                    <hr style={{marginTop:10, marginBottom:10}}/>
+                    <div className="row ">
+
+                        <DisplayModeButtonPanel columns="3" storeId={this.props.storeId}/>
+                        {detailPanel}
+                    </div>
+                    <hr style={{marginTop:10, marginBottom:10}}/>
+                </div>
+            )
+        }
     },
 
     renderCharts: function () {

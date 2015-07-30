@@ -27,6 +27,42 @@
           "description": "No."
         }
       ]
+    },
+    "accountTypeSelectorOn": {
+      "value": "Yes",
+      "configurable": true,
+      "label": "Show account type selector?",
+      "type": "select",
+      "options": [
+        {
+          "name": "Yes",
+          "value": "Yes",
+          "description": "Yes."
+        },
+        {
+          "name": "No",
+          "value": "No",
+          "description": "No."
+        }
+      ]
+    },
+    "startYear": {
+      "value": 1,
+      "configurable": true,
+      "label":"Show first or last year on initial load?",
+      "type":"select",
+      "options": [
+        {
+          "name": "First",
+          "value": 0,
+          "description": "First"
+        },
+        {
+          "name": "Last",
+          "value": 1,
+          "description": "Last"
+        }
+      ]
     }
   },
   "state": {
