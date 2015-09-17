@@ -19,6 +19,7 @@
 
 Route::resource('governments', 'Government\GovernmentOrganizationsController');
 Route::resource('governments/{govId}/users', 'Government\GovernmentUsersController');
+Route::resource('governments/{govId}/data', 'Government\GovernmentDataController');
 
 Route::get('governments/{govId}/sites', 'Government\GovernmentSitesController@index');
 Route::get('governments/{govId}/sites/create', 'Government\GovernmentSitesController@createSite');
