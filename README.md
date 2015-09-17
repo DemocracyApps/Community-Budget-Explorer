@@ -1,8 +1,8 @@
-# Government Budget Explorer
+# Community Budget Explorer
 
 _Don't tell me what you value, show me your budget, and I'll tell you what you value._ - Joe Biden
 
-The Government Budget Explorer is a SaaS platform for creating municipal and county budget sites that
+The Community Budget Explorer is a SaaS platform for creating municipal and county budget sites that
 let citizens explore, understand and then engage with their government's plans for spending and revenue. The
 first site to use the platform is [Asheville, NC 2015-16 Budget Explorer](http://avlbudget.org). The
 software may be used to create a standalone server operating a single site or a platform for hosting
