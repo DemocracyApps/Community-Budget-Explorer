@@ -2,3 +2,10 @@
 .vagrant
 .DS_Store
 npm-debug.log
+/vendor
+/node_modules
+.env
+work
+.DS_Store
+HOLD
+
