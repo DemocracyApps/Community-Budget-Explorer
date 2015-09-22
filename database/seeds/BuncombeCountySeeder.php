@@ -40,19 +40,19 @@ class BuncombeCountySeeder extends Seeder {
         echo "Process 2016 Budget\n";
         $ds = $this->createDataset("2016 Budget", "budget", Dataset::ANNUAL, 2016, null, null,
             $org->id, $chart->id, $order);
-        $ds->loadAllInOneCSVData("../sample_data/BuncombeCounty/Budget2016.csv");
+        $ds->loadAllInOneCSVData("./resources/sample_data/BuncombeCounty/Budget2016.csv");
 
         \Log::info("Process 2015 Budget");
         echo "Process 2015 Budget\n";
         $ds = $this->createDataset("2015 Budget", "budget", Dataset::ANNUAL, 2015, null, null,
             $org->id, $chart->id, $order);
-        $ds->loadAllInOneCSVData("../sample_data/BuncombeCounty/Budget2015.csv");
+        $ds->loadAllInOneCSVData("./resources/sample_data/BuncombeCounty/Budget2015.csv");
 
         \Log::info("Process 2014 Budget");
         echo "Process 2014 Budget\n";
         $ds = $this->createDataset("2014 Budget", "budget", Dataset::ANNUAL, 2014, null, null,
             $org->id, $chart->id, $order);
-        $ds->loadAllInOneCSVData("../sample_data/BuncombeCounty/Budget2015.csv");
+        $ds->loadAllInOneCSVData("./resources/sample_data/BuncombeCounty/Budget2015.csv");
 
         // Now create the school categories
         $order = array();
@@ -67,17 +67,17 @@ class BuncombeCountySeeder extends Seeder {
         echo "Process 2014 School Actuals\n";
         $ds = $this->createDataset("2014 School Actuals", "actual", Dataset::ANNUAL, 2014, null, null,
             $org->id, $chart->id, $order);
-        $ds->loadAllInOneCSVData("../sample_data/BuncombeCounty/Schools2014.csv");
+        $ds->loadAllInOneCSVData("./resources/sample_data/BuncombeCounty/Schools2014.csv");
 
         echo "Process 2015 School Budget\n";
         $ds = $this->createDataset("2015 School Budget", "actual", Dataset::ANNUAL, 2015, null, null,
             $org->id, $chart->id, $order);
-        $ds->loadAllInOneCSVData("../sample_data/BuncombeCounty/Schools2015.csv");
+        $ds->loadAllInOneCSVData("./resources/sample_data/BuncombeCounty/Schools2015.csv");
 
         echo "Process 2016 School Budget\n";
         $ds = $this->createDataset("2016 School Budget", "actual", Dataset::ANNUAL, 2016, null, null,
             $org->id, $chart->id, $order);
-        $ds->loadAllInOneCSVData("../sample_data/BuncombeCounty/Schools2016.csv");
+        $ds->loadAllInOneCSVData("./resources/sample_data/BuncombeCounty/Schools2016.csv");
     }
 
     private function createDataset($name, $type, $granularity, $year, $month, $day, $orgId, $chartId, $order)
