@@ -30,7 +30,7 @@ class AshevilleSeeder extends Seeder {
 
         \Log::info("Process accounts");
         echo "Process accounts\n";
-        $filePath = "../sample_data/AVL2014/canonical/accounts.csv";
+        $filePath = "./resources/sample_data/AVL2014/canonical/accounts.csv";
         if (file_exists($filePath)) {
             \Bus::dispatch(new \DemocracyApps\GB\Commands\DataImport\LoadAccounts($filePath, $chart->id, false));
         }
@@ -41,27 +41,27 @@ class AshevilleSeeder extends Seeder {
         \Log::info("Process funds");
         echo "Process funds\n";
         // Fund
-        $cat = $this->createCategory("Fund", $chart->id, "../sample_data/AVL2014/canonical/cat_fund.csv");
+        $cat = $this->createCategory("Fund", $chart->id, "./resources/sample_data/AVL2014/canonical/cat_fund.csv");
         $order[] = $cat->id;
         \Log::info("Process departments");
         echo "Process departments\n";
         // Department
-        $cat = $this->createCategory("Department", $chart->id, "../sample_data/AVL2014/canonical/cat_department.csv");
+        $cat = $this->createCategory("Department", $chart->id, "./resources/sample_data/AVL2014/canonical/cat_department.csv");
         $order[] = $cat->id;
         \Log::info("Process divisions");
         echo "Process divisions\n";
         // Division
-        $cat = $this->createCategory("Division", $chart->id, "../sample_data/AVL2014/canonical/cat_division.csv");
+        $cat = $this->createCategory("Division", $chart->id, "./resources/sample_data/AVL2014/canonical/cat_division.csv");
         $order[] = $cat->id;
         \Log::info("Process functions");
         echo "Process functions\n";
         // Function
-        $cat = $this->createCategory("Function", $chart->id, "../sample_data/AVL2014/canonical/cat_function.csv");
+        $cat = $this->createCategory("Function", $chart->id, "./resources/sample_data/AVL2014/canonical/cat_function.csv");
         $order[] = $cat->id;
         \Log::info("Process cost centers");
         echo "Process cost centers\n";
         // Cost Center
-        $cat = $this->createCategory("Cost Center", $chart->id, "../sample_data/AVL2014/canonical/cat_costcenter.csv");
+        $cat = $this->createCategory("Cost Center", $chart->id, "./resources/sample_data/AVL2014/canonical/cat_costcenter.csv");
         $order[] = $cat->id;
 
         //
@@ -71,67 +71,67 @@ class AshevilleSeeder extends Seeder {
         echo "Process 2016 Budget\n";
         $ds = $this->createDataset("2016 Budget", "budget", Dataset::ANNUAL, 2016, null, null,
             $org->id, $chart->id, $order);
-        $ds->loadCSVData("../sample_data/AVL2014/canonical/2016ProposedBudget_processed.csv", "all");
+        $ds->loadCSVData("./resources/sample_data/AVL2014/canonical/2016ProposedBudget_processed.csv", "all");
 
         \Log::info("Process 2015 Budget");
         echo "Process 2015 Budget\n";
         $ds = $this->createDataset("2015 Budget", "budget", Dataset::ANNUAL, 2015, null, null,
             $org->id, $chart->id, $order);
-        $ds->loadCSVData("../sample_data/AVL2014/canonical/2015AdoptedBudget_processed.csv", "all");
+        $ds->loadCSVData("./resources/sample_data/AVL2014/canonical/2015AdoptedBudget_processed.csv", "all");
 
         \Log::info("Process 2014 Actuals");
         echo "Process 2014 Actuals\n";
         $ds = $this->createDataset("2014 Actuals", "actual", Dataset::ANNUAL, 2014, null, null,
             $org->id, $chart->id, $order);
-        $ds->loadCSVData("../sample_data/AVL2014/canonical/2014All_processed.csv", "all");
+        $ds->loadCSVData("./resources/sample_data/AVL2014/canonical/2014All_processed.csv", "all");
 
         \Log::info("Process 2013 Actuals");
         echo "Process 2013 Actuals\n";
         $ds = $this->createDataset("2013 Actuals", "actual", Dataset::ANNUAL, 2013, null, null,
                                    $org->id, $chart->id, $order);
-        $ds->loadCSVData("../sample_data/AVL2014/canonical/general_fund_2013_processed.csv", "general");
-        $ds->loadCSVData("../sample_data/AVL2014/canonical/civiccenter_fund_2013_processed.csv", "civiccenter");
-        $ds->loadCSVData("../sample_data/AVL2014/canonical/masstransit_fund_2013_processed.csv", "masstransit");
-        $ds->loadCSVData("../sample_data/AVL2014/canonical/parkingservices_fund_2013_processed.csv", "parking");
-        $ds->loadCSVData("../sample_data/AVL2014/canonical/stormwater_fund_2013_processed.csv", "stormwater");
-        $ds->loadCSVData("../sample_data/AVL2014/canonical/streetcut_fund_2013_processed.csv", "streetcut");
-        $ds->loadCSVData("../sample_data/AVL2014/canonical/water_fund_2013_processed.csv", "water");
+        $ds->loadCSVData("./resources/sample_data/AVL2014/canonical/general_fund_2013_processed.csv", "general");
+        $ds->loadCSVData("./resources/sample_data/AVL2014/canonical/civiccenter_fund_2013_processed.csv", "civiccenter");
+        $ds->loadCSVData("./resources/sample_data/AVL2014/canonical/masstransit_fund_2013_processed.csv", "masstransit");
+        $ds->loadCSVData("./resources/sample_data/AVL2014/canonical/parkingservices_fund_2013_processed.csv", "parking");
+        $ds->loadCSVData("./resources/sample_data/AVL2014/canonical/stormwater_fund_2013_processed.csv", "stormwater");
+        $ds->loadCSVData("./resources/sample_data/AVL2014/canonical/streetcut_fund_2013_processed.csv", "streetcut");
+        $ds->loadCSVData("./resources/sample_data/AVL2014/canonical/water_fund_2013_processed.csv", "water");
 
         \Log::info("Process 2012 Actuals");
         echo "Process 2012 Actuals\n";
         $ds = $this->createDataset("2012 Actuals", "actual", Dataset::ANNUAL, 2012, null, null,
             $org->id, $chart->id, $order);
-        $ds->loadCSVData("../sample_data/AVL2014/canonical/general_fund_2012_processed.csv", "general");
-        $ds->loadCSVData("../sample_data/AVL2014/canonical/civiccenter_fund_2012_processed.csv", "civiccenter");
-        $ds->loadCSVData("../sample_data/AVL2014/canonical/masstransit_fund_2012_processed.csv", "masstransit");
-        $ds->loadCSVData("../sample_data/AVL2014/canonical/parkingservices_fund_2012_processed.csv", "parking");
-        $ds->loadCSVData("../sample_data/AVL2014/canonical/stormwater_fund_2012_processed.csv", "stormwater");
-        $ds->loadCSVData("../sample_data/AVL2014/canonical/streetcut_fund_2012_processed.csv", "streetcut");
-        $ds->loadCSVData("../sample_data/AVL2014/canonical/water_fund_2012_processed.csv", "water");
+        $ds->loadCSVData("./resources/sample_data/AVL2014/canonical/general_fund_2012_processed.csv", "general");
+        $ds->loadCSVData("./resources/sample_data/AVL2014/canonical/civiccenter_fund_2012_processed.csv", "civiccenter");
+        $ds->loadCSVData("./resources/sample_data/AVL2014/canonical/masstransit_fund_2012_processed.csv", "masstransit");
+        $ds->loadCSVData("./resources/sample_data/AVL2014/canonical/parkingservices_fund_2012_processed.csv", "parking");
+        $ds->loadCSVData("./resources/sample_data/AVL2014/canonical/stormwater_fund_2012_processed.csv", "stormwater");
+        $ds->loadCSVData("./resources/sample_data/AVL2014/canonical/streetcut_fund_2012_processed.csv", "streetcut");
+        $ds->loadCSVData("./resources/sample_data/AVL2014/canonical/water_fund_2012_processed.csv", "water");
 
         \Log::info("Process 2011 Actuals");
         echo "Process 2011 Actuals\n";
         $ds = $this->createDataset("2011 Actuals", "actual", Dataset::ANNUAL, 2011, null, null,
             $org->id, $chart->id, $order);
-        $ds->loadCSVData("../sample_data/AVL2014/canonical/general_fund_2011_processed.csv", "general");
-        $ds->loadCSVData("../sample_data/AVL2014/canonical/civiccenter_fund_2011_processed.csv", "civiccenter");
-        $ds->loadCSVData("../sample_data/AVL2014/canonical/masstransit_fund_2011_processed.csv", "masstransit");
-        $ds->loadCSVData("../sample_data/AVL2014/canonical/parkingservices_fund_2011_processed.csv", "parking");
-        $ds->loadCSVData("../sample_data/AVL2014/canonical/stormwater_fund_2011_processed.csv", "stormwater");
-        $ds->loadCSVData("../sample_data/AVL2014/canonical/streetcut_fund_2011_processed.csv", "streetcut");
-        $ds->loadCSVData("../sample_data/AVL2014/canonical/water_fund_2011_processed.csv", "water");
+        $ds->loadCSVData("./resources/sample_data/AVL2014/canonical/general_fund_2011_processed.csv", "general");
+        $ds->loadCSVData("./resources/sample_data/AVL2014/canonical/civiccenter_fund_2011_processed.csv", "civiccenter");
+        $ds->loadCSVData("./resources/sample_data/AVL2014/canonical/masstransit_fund_2011_processed.csv", "masstransit");
+        $ds->loadCSVData("./resources/sample_data/AVL2014/canonical/parkingservices_fund_2011_processed.csv", "parking");
+        $ds->loadCSVData("./resources/sample_data/AVL2014/canonical/stormwater_fund_2011_processed.csv", "stormwater");
+        $ds->loadCSVData("./resources/sample_data/AVL2014/canonical/streetcut_fund_2011_processed.csv", "streetcut");
+        $ds->loadCSVData("./resources/sample_data/AVL2014/canonical/water_fund_2011_processed.csv", "water");
 
         \Log::info("Process 2010 Actuals");
         echo "Process 2010 Actuals\n";
         $ds = $this->createDataset("2010 Actuals", "actual", Dataset::ANNUAL, 2010, null, null,
             $org->id, $chart->id, $order);
-        $ds->loadCSVData("../sample_data/AVL2014/canonical/general_fund_2010_processed.csv", "general");
-        $ds->loadCSVData("../sample_data/AVL2014/canonical/civiccenter_fund_2010_processed.csv", "civiccenter");
-        $ds->loadCSVData("../sample_data/AVL2014/canonical/masstransit_fund_2010_processed.csv", "masstransit");
-        $ds->loadCSVData("../sample_data/AVL2014/canonical/parkingservices_fund_2010_processed.csv", "parking");
-        $ds->loadCSVData("../sample_data/AVL2014/canonical/stormwater_fund_2010_processed.csv", "stormwater");
-        $ds->loadCSVData("../sample_data/AVL2014/canonical/streetcut_fund_2010_processed.csv", "streetcut");
-        $ds->loadCSVData("../sample_data/AVL2014/canonical/water_fund_2010_processed.csv", "water");
+        $ds->loadCSVData("./resources/sample_data/AVL2014/canonical/general_fund_2010_processed.csv", "general");
+        $ds->loadCSVData("./resources/sample_data/AVL2014/canonical/civiccenter_fund_2010_processed.csv", "civiccenter");
+        $ds->loadCSVData("./resources/sample_data/AVL2014/canonical/masstransit_fund_2010_processed.csv", "masstransit");
+        $ds->loadCSVData("./resources/sample_data/AVL2014/canonical/parkingservices_fund_2010_processed.csv", "parking");
+        $ds->loadCSVData("./resources/sample_data/AVL2014/canonical/stormwater_fund_2010_processed.csv", "stormwater");
+        $ds->loadCSVData("./resources/sample_data/AVL2014/canonical/streetcut_fund_2010_processed.csv", "streetcut");
+        $ds->loadCSVData("./resources/sample_data/AVL2014/canonical/water_fund_2010_processed.csv", "water");
 
 
     }
