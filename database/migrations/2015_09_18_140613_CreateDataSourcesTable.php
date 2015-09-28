@@ -20,8 +20,9 @@ class CreateDataSourcesTable extends Migration {
 			$table->text('description')->nullable();
 			$table->integer('organization');
 			$table->foreign('organization')->references('id')->on('government_organizations');
+			$table->string('status')->nullable();
+			$table->dateTime('status_date')->nullable();
 			$table->text('properties')->nullable();
-			$table->dateTime('last_update')->nullable();
 			$table->timestamps();
 		});
 	}

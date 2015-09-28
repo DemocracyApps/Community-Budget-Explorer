@@ -1,4 +1,4 @@
-<?php namespace DemocracyApps\GB\Http\Controllers;
+<?php namespace DemocracyApps\GB\Data;
 /**
  *
  * This file is part of the Government Budget Explorer (GBE).
@@ -16,13 +16,9 @@
  *  You should have received a copy of the GNU General Public License
  *  along with the GBE.  If not, see <http://www.gnu.org/licenses/>.
  */
-use Illuminate\Foundation\Bus\DispatchesJobs;
-use Illuminate\Routing\Controller as BaseController;
-use Illuminate\Foundation\Validation\ValidatesRequests;
+use DemocracyApps\GB\Utility\EloquentPropertiedObject;
 
-abstract class Controller extends BaseController {
-
-	//use DispatchesCommands, ValidatesRequests;
-	use DispatchesJobs, ValidatesRequests;
+class DatasourceAction extends EloquentPropertiedObject {
+  protected  $table = 'datasource_actions';
 
 }

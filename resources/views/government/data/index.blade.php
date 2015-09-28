@@ -28,7 +28,7 @@
                     <th>Source Type</th>
                     <th>Description</th>
                     <th>Action</th>
-                    <th>Last Updated</th>
+                    <th>Last Action</th>
                 </tr>
                 @foreach($dataSources as $item)
                     <tr>
@@ -44,7 +44,9 @@
                         @else
                             <td>TBD</td>
                         @endif
-                        <td> {!! ($item->last_update == null)?'Never':date('M d, Y', strtotime($item->last_update)) !!}</td>
+
+                        <td> {!! isset($actions[$item->id])?$actions[$item->id]->status:"Fuggit" !!}</td>
+                        {{--<td> {!! ($item->last_update == null)?'Never':date('M d, Y', strtotime($item->last_update)) !!}</td>--}}
                     </tr>
                 @endforeach
             </table>
