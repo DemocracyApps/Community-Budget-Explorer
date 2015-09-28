@@ -5,6 +5,7 @@
     <form method="POST" action="/governments/{!!$organization->id!!}/data" accept-charset="UTF-8" enctype="multipart/form-data">
         <input type="hidden" name="_token" value="{!! csrf_token() !!}">
         <input type="hidden" name="organization" value="{!! $organization->id !!}">
+        <input type="hidden" name="datasource" value="{!! $datasource !!}">
 
         <h1>Create A New Data Source</h1>
 
