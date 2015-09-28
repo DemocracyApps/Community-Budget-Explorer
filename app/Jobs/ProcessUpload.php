@@ -20,6 +20,30 @@ class ProcessUpload extends Job implements SelfHandling, ShouldQueue
     $this->dataSource = $dataSource;
   }
 
+  protected function readCSVFile ($filePath)
+  {
+    $myFile = false;
+    $fileData = null;
+    ini_set("auto_detect_line_endings", true); // Deal with Mac line endings
+    if ( !file_exists($filePath)) {
+      \Log::info("ProcessUpload Job: The file " . $filePath . " does not exist");
+    }
+    else {
+      $myFile = fopen($filePath, "r");
+    }
+    if (!$myFile) {
+      \Log::info("ProcessUpload Job: Unable to open file $filePath");
+    }
+    else {
+      $fileData = [];
+      while (!feof($myFile)) {
+        $columns = fgetcsv($myFile);
+        $fileData[] = $columns;
+      }
+    }
+    return $fileData;
+  }
+
   /**
    * Execute the job.
    *
@@ -31,7 +55,9 @@ class ProcessUpload extends Job implements SelfHandling, ShouldQueue
 
     $url = getenv('CBE_DATASERVER') . '/doit';
 
-    echo "Going to the URL " . $url . PHP_EOL;
+    echo "The file path to the data is " . $params['file_path'];
+    $fileData = $this->readCSVFile($params['file_path']);
+    echo "Going to the URL " . $url . " with file data of length ". sizeof($fileData) . PHP_EOL;
 
     //$url = 'http://gbe.dev:53821/doit';
 

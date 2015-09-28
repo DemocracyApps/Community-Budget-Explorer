@@ -146,7 +146,6 @@ class GovernmentDataController extends Controller {
             $this->dataSource->save();
 
             $job = new ProcessUpload($this->dataSource);
-
             $this->dispatch($job);
             return redirect("/governments/$govt_org_id/data");
         }
