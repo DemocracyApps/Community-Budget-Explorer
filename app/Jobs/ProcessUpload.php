@@ -55,9 +55,11 @@ class ProcessUpload extends Job implements SelfHandling, ShouldQueue
 
     $url = getenv('CBE_DATASERVER') . '/doit';
 
+    \Log::info("The file path to the data is " . $params['file_path']);
     echo "The file path to the data is " . $params['file_path'];
     $fileData = $this->readCSVFile($params['file_path']);
     echo "Going to the URL " . $url . " with file data of length ". sizeof($fileData) . PHP_EOL;
+    \Log::info("Going to the URL " . $url . " with file data of length ". sizeof($fileData) . PHP_EOL);
 
     //$url = 'http://gbe.dev:53821/doit';
 
