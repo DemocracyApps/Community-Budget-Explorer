@@ -64,6 +64,6 @@ class ProcessUpload extends Job implements SelfHandling, ShouldQueue
     //$url = 'http://gbe.dev:53821/doit';
 
     $returnValue = CurlUtilities::curlAjaxPost($url, json_encode($params));
-    var_dump($returnValue);
+    \Log::info("What we got in return: " . json_encode($returnValue));
   }
 }
