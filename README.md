@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/DemocracyApps/Community-Budget-Explorer.png?label=ready&title=Ready)](https://waffle.io/DemocracyApps/Community-Budget-Explorer)
 # Community Budget Explorer
 
 _Don't tell me what you value, show me your budget, and I'll tell you what you value._ - Joe Biden
