@@ -8,5 +8,8 @@ npm-debug.log
 work
 .DS_Store
 HOLD
+<<<<<<< HEAD
 .sass-cache
+=======
+>>>>>>> 0122443b743f4daebe68091c79c18ce37bdaa5e9
 
