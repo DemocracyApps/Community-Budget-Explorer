@@ -520,7 +520,7 @@ module.exports = function(NAME, wrapper, methods, common, IS_MAP, IS_WEAK){
   return C;
 };
 },{"./$.def":17,"./$.fails":23,"./$.for-of":26,"./$.global":28,"./$.iter-detect":42,"./$.mix":50,"./$.redef":57,"./$.strict-new":64,"./$.tag":71}],15:[function(require,module,exports){
-var core = module.exports = {version: '1.2.0'};
+var core = module.exports = {version: '1.2.1'};
 if(typeof __e == 'number')__e = core; // eslint-disable-line no-undef
 },{}],16:[function(require,module,exports){
 // optional / simple context binding
@@ -1310,7 +1310,7 @@ if(!setTask || !clearTask){
     defer = ctx(port.postMessage, port, 1);
   // Browsers with postMessage, skip WebWorkers
   // IE8 has postMessage, but it's sync & typeof its postMessage is 'object'
-  } else if(global.addEventListener && typeof postMessage == 'function' && !global.importScript){
+  } else if(global.addEventListener && typeof postMessage == 'function' && !global.importScripts){
     defer = function(id){
       global.postMessage(id + '', '*');
     };
@@ -3053,6 +3053,7 @@ var $              = require('./$')
   , keyOf          = require('./$.keyof')
   , $names         = require('./$.get-names')
   , enumKeys       = require('./$.enum-keys')
+  , isArray        = require('./$.is-array')
   , isObject       = require('./$.is-object')
   , anObject       = require('./$.an-object')
   , toIObject      = require('./$.to-iobject')
@@ -3062,6 +3063,8 @@ var $              = require('./$')
   , _create        = $.create
   , getNames       = $names.get
   , $Symbol        = global.Symbol
+  , $JSON          = global.JSON
+  , _stringify     = $JSON && $JSON.stringify
   , setter         = false
   , HIDDEN         = wks('_hidden')
   , isEnum         = $.isEnum
@@ -3093,6 +3096,10 @@ var wrap = function(tag){
     }
   });
   return sym;
+};
+
+var isSymbol = function(it){
+  return typeof it == 'symbol';
 };
 
 var $defineProperty = function defineProperty(it, key, D){
@@ -3144,16 +3151,41 @@ var $getOwnPropertySymbols = function getOwnPropertySymbols(it){
   while(names.length > i)if(has(AllSymbols, key = names[i++]))result.push(AllSymbols[key]);
   return result;
 };
+var $stringify = function stringify(it){
+  var args = [it]
+    , i    = 1
+    , replacer, $replacer;
+  while(arguments.length > i)args.push(arguments[i++]);
+  replacer = args[1];
+  if(typeof replacer == 'function')$replacer = replacer;
+  if($replacer || !isArray(replacer))replacer = function(key, value){
+    if($replacer)value = $replacer.call(this, key, value);
+    if(!isSymbol(value))return value;
+  };
+  args[1] = replacer;
+  return _stringify.apply($JSON, args);
+};
+var buggyJSON = $fails(function(){
+  var S = $Symbol();
+  // MS Edge converts symbol values to JSON as {}
+  // WebKit converts symbol values to JSON as null
+  // V8 throws on boxed symbols
+  return _stringify([S]) != '[null]' || _stringify({a: S}) != '{}' || _stringify(Object(S)) != '{}';
+});
 
 // 19.4.1.1 Symbol([description])
 if(!useNative){
   $Symbol = function Symbol(){
-    if(this instanceof $Symbol)throw TypeError('Symbol is not a constructor');
+    if(isSymbol(this))throw TypeError('Symbol is not a constructor');
     return wrap(uid(arguments[0]));
   };
   $redef($Symbol.prototype, 'toString', function toString(){
     return this._k;
   });
+
+  isSymbol = function(it){
+    return it instanceof $Symbol;
+  };
 
   $.create     = $create;
   $.isEnum     = $propertyIsEnumerable;
@@ -3167,13 +3199,6 @@ if(!useNative){
     $redef(ObjectProto, 'propertyIsEnumerable', $propertyIsEnumerable, true);
   }
 }
-
-// MS Edge converts symbol values to JSON as {}
-if(!useNative || $fails(function(){
-  return JSON.stringify([$Symbol()]) != '[null]';
-}))$redef($Symbol.prototype, 'toJSON', function toJSON(){
-  if(useNative && isObject(this))return this;
-});
 
 var symbolStatics = {
   // 19.4.2.1 Symbol.for(key)
@@ -3230,13 +3255,16 @@ $def($def.S + $def.F * !useNative, 'Object', {
   getOwnPropertySymbols: $getOwnPropertySymbols
 });
 
+// 24.3.2 JSON.stringify(value [, replacer [, space]])
+$JSON && $def($def.S + $def.F * (!useNative || buggyJSON), 'JSON', {stringify: $stringify});
+
 // 19.4.3.5 Symbol.prototype[@@toStringTag]
 setTag($Symbol, 'Symbol');
 // 20.2.1.9 Math[@@toStringTag]
 setTag(Math, 'Math', true);
 // 24.3.3 JSON[@@toStringTag]
 setTag(global.JSON, 'JSON', true);
-},{"./$":45,"./$.an-object":3,"./$.def":17,"./$.enum-keys":20,"./$.fails":23,"./$.get-names":27,"./$.global":28,"./$.has":29,"./$.is-object":37,"./$.keyof":46,"./$.library":47,"./$.property-desc":56,"./$.redef":57,"./$.shared":61,"./$.support-desc":70,"./$.tag":71,"./$.to-iobject":75,"./$.uid":78,"./$.wks":80}],167:[function(require,module,exports){
+},{"./$":45,"./$.an-object":3,"./$.def":17,"./$.enum-keys":20,"./$.fails":23,"./$.get-names":27,"./$.global":28,"./$.has":29,"./$.is-array":35,"./$.is-object":37,"./$.keyof":46,"./$.library":47,"./$.property-desc":56,"./$.redef":57,"./$.shared":61,"./$.support-desc":70,"./$.tag":71,"./$.to-iobject":75,"./$.uid":78,"./$.wks":80}],167:[function(require,module,exports){
 'use strict';
 var $            = require('./$')
   , weak         = require('./$.collection-weak')
