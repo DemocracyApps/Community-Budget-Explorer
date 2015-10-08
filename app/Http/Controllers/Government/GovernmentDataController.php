@@ -11,26 +11,26 @@ use Illuminate\Http\Request;
 
 class GovernmentDataController extends Controller {
 
-    protected $governmentOrganization = null;
+  protected $governmentOrganization = null;
 
 
-    protected $dataSource = null;
+  protected $dataSource = null;
 
-    public function __construct(GovernmentOrganization $org, DataSource $dataSource)
-    {
-        $this->governmentOrganization = $org;
-        $this->dataSource = $dataSource;
-    }
+  public function __construct(GovernmentOrganization $org, DataSource $dataSource)
+  {
+    $this->governmentOrganization = $org;
+    $this->dataSource = $dataSource;
+  }
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return Response
-     */
-    public function index($govt_org_id, Request $request)
-    {
-        $params = ['first'=>1, 'second'=>'abcdefg'];
-        $url = 'http://gbe.dev:53821/doit'; // Standard AWS IP for instance queries
+  /**
+   * Display a listing of the resource.
+   *
+   * @return Response
+   */
+  public function index($govt_org_id, Request $request)
+  {
+    $params = ['first'=>1, 'second'=>'abcdefg'];
+    $url = 'http://gbe.dev:53821/doit'; // Standard AWS IP for instance queries
 
 //        $data = array("name" => "Hagrid", "age" => "36");
 //        $data_string = json_encode($data);
@@ -50,140 +50,143 @@ class GovernmentDataController extends Controller {
 //        dd($result);
 //        //DONE
 
-        $organization = GovernmentOrganization::find($govt_org_id);
-        $dataSources = DataSource::where('organization', '=', $govt_org_id)->orderBy('id')->get();
+    $organization = GovernmentOrganization::find($govt_org_id);
+    $dataSources = DataSource::where('organization', '=', $govt_org_id)->orderBy('id')->get();
 
-        $actions = array();
-        foreach ($dataSources as $source) {
-            $atmp = DatasourceAction::where('datasource_id', '=', $source->id)->orderBy('id', 'desc')->get();
-            if (isset($atmp) && sizeof($atmp) > 0) {
-                $actions[$source->id] = $atmp[0];
-            }
-        }
-        //dd($actions[1]->id);
-        return view('government.data.index', array('organization'=>$organization,
-                                                   'dataSources' => $dataSources, 'actions'=> $actions));
+    $actions = array();
+    foreach ($dataSources as $source) {
+      $atmp = DatasourceAction::where('datasource_id', '=', $source->id)->orderBy('id', 'desc')->get();
+      if (isset($atmp) && sizeof($atmp) > 0) {
+        $actions[$source->id] = $atmp[0];
+      }
     }
+    //dd($actions[1]->id);
+    return view('government.data.index', array('organization'=>$organization,
+      'dataSources' => $dataSources, 'actions'=> $actions));
+  }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return Response
-     */
-    public function create($govt_org_id, Request $request)
-    {
-        $organization = GovernmentOrganization::find($govt_org_id);
-        $sourceId = $request->get('datasource');
-        return view('government.data.create', array('organization'=>$organization, 'datasource' => $sourceId));
+  /**
+   * Show the form for creating a new resource.
+   *
+   * @return Response
+   */
+  public function create($govt_org_id, Request $request)
+  {
+    $organization = GovernmentOrganization::find($govt_org_id);
+    $sourceId = $request->get('datasource');
+    return view('government.data.create', array('organization'=>$organization, 'datasource' => $sourceId));
+  }
+
+  /**
+   * Store a newly created resource in storage.
+   *
+   * @return Response
+   */
+  public function store($govt_org_id, Request $request)
+  {
+    $rules = ['name' => 'required', 'type' => 'in:file,api'];
+
+    $this->validate($request, $rules);
+    $organization = $request->get('organization');
+    $this->dataSource->name = $request->get('name');
+    $this->dataSource->organization = $organization;
+    $this->dataSource->source_type = $request->get('type');
+    if ($request->has('description')) $this->dataSource->description = $request->get('description');
+    $this->dataSource->save();
+
+    return redirect("/governments/$organization/data");
+  }
+
+  public function upload($govt_org_id, Request $request)
+  {
+    if ($request->method() == 'GET') {
+      $organization = GovernmentOrganization::find($govt_org_id);
+      $dataSourceId = $request->get('datasource');
+      return view('government.data.upload', array('organization' => $organization, 'datasource' => $dataSourceId));
     }
+    else { // POST
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @return Response
-     */
-    public function store($govt_org_id, Request $request)
-    {
-        $rules = ['name' => 'required', 'type' => 'in:file,api'];
-
+      $format = $request->get('format');
+      if ($format == 'simplebudget') {
+        $rules = ['year' => 'required | digits:4', 'year_count'=>'required | integer',
+          'categories' => 'required | integer'];
         $this->validate($request, $rules);
-        $organization = $request->get('organization');
-        $this->dataSource->name = $request->get('name');
-        $this->dataSource->organization = $organization;
-        $this->dataSource->source_type = $request->get('type');
-        if ($request->has('description')) $this->dataSource->description = $request->get('description');
-        $this->dataSource->save();
 
-        return redirect("/governments/$organization/data");
-    }
-
-    public function upload($govt_org_id, Request $request)
-    {
-        if ($request->method() == 'GET') {
-            $organization = GovernmentOrganization::find($govt_org_id);
-            $dataSourceId = $request->get('datasource');
-            return view('government.data.upload', array('organization' => $organization, 'datasource' => $dataSourceId));
+        if (! $request->hasFile('data')) {
+          return redirect()->back()->withInput()->withErrors(array('file'=>'You must select a file to upload'));
         }
-        else { // POST
 
-            $format = $request->get('format');
-            if ($format == 'simplebudget') {
-                $rules = ['year' => 'required | digits:4', 'year_count'=>'required | integer',
-                  'categories' => 'required | integer'];
-                $this->validate($request, $rules);
+      }
+      else if ($format == 'simpleproject') {
 
-                if (! $request->hasFile('data')) {
-                    return redirect()->back()->withInput()->withErrors(array('file'=>'You must select a file to upload'));
-                }
+      }
+      else {
+        throw new \Exception("Unknown format $format in data upload");
+      }
+      $parameters = new \stdClass();
+      $parameters->organization = $govt_org_id;
+      $parameters->data_source = $request->get('datasource');
+      $parameters->format = $format;
+      if ($parameters->format == 'simplebudget') {
+        $parameters->type = $request->get('type');
+        $parameters->year_count = $request->get('year_count');
+        $parameters->start_year = $request->get('start_year');
+        $parameters->category_count = $request->get('categories_count');
+      }
+      else if ($parameters->format = 'simpleproject') {
 
-            }
-            else if ($format == 'simpleproject') {
+      }
+      $this->dataSource = DataSource::find($request->get('datasource'));
+      $this->dataSource->status = 'queued';
+      $this->dataSource->status_date = date("M d, Y H:i:s");
 
-            }
-            else {
-                throw new \Exception("Unknown format $format in data upload");
-            }
-            $parameters = new \stdClass();
-            $parameters->type = $format;
-            if ($parameters->type == 'simplebudget') {
-                $parameters->year_count = $request->get('year_count');
-                $parameters->start_year = $request->get('year');
-                $parameters->category_count = $request->get('categories');
-            }
-            else if ($parameters->type = 'simpleproject') {
+      $file = $request->file('data');
+      $name = uniqid('upload');
+      $file->move('/var/www/cbe/public/downloads', $name);
+      $parameters->file_path = '/var/www/cbe/public/downloads/' . $name;
 
-            }
-            $this->dataSource = DataSource::find($request->get('datasource'));
-            $this->dataSource->status = 'queued';
-            $this->dataSource->status_date = date("M d, Y H:i:s");
+      $this->dataSource->setProperty('upload_parameters', $parameters);
+      $this->dataSource->save();
 
-            $file = $request->file('data');
-            $name = uniqid('upload');
-            $file->move('/var/www/cbe/public/downloads', $name);
-            $parameters->file_path = '/var/www/cbe/public/downloads/' . $name;
-
-            $this->dataSource->setProperty('upload_parameters', $parameters);
-            $this->dataSource->save();
-
-            $job = new ProcessUpload($this->dataSource);
-            $this->dispatch($job);
-            return redirect("/governments/$govt_org_id/data");
-        }
+      $job = new ProcessUpload($this->dataSource);
+      $this->dispatch($job);
+      return redirect("/governments/$govt_org_id/data");
     }
+  }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return Response
-     */
-    public function show($id)
-    {
-        //
-    }
+  /**
+   * Display the specified resource.
+   *
+   * @param  int  $id
+   * @return Response
+   */
+  public function show($id)
+  {
+    //
+  }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return Response
-     */
-    public function edit($govt_org_id, $id)
-    {
+  /**
+   * Show the form for editing the specified resource.
+   *
+   * @param  int  $id
+   * @return Response
+   */
+  public function edit($govt_org_id, $id)
+  {
 //        $organization = GovernmentOrganization::find($govt_org_id);
 //        $orgUser = GovernmentOrganizationUser::find($id);
 //        $user = User::find($orgUser->user_id);
 //        return view('government.users.edit', array('organization'=>$organization, 'orgUser'=>$orgUser, 'user'=>$user));
-    }
+  }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  int  $id
-     * @return Response
-     */
-    public function update($govt_org_id, $id, Request $request)
-    {
+  /**
+   * Update the specified resource in storage.
+   *
+   * @param  int  $id
+   * @return Response
+   */
+  public function update($govt_org_id, $id, Request $request)
+  {
 //        $rules = ['access'=>'required'];
 //        $this->validate($request, $rules);
 //        $orgUser = GovernmentOrganizationUser::find($id);
@@ -192,17 +195,17 @@ class GovernmentDataController extends Controller {
 //
 //        return redirect('/governments/'.$govt_org_id.'/users');
 
-    }
+  }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
+  /**
+   * Remove the specified resource from storage.
+   *
+   * @param  int  $id
+   * @return Response
+   */
+  public function destroy($id)
+  {
+    //
+  }
 
 }

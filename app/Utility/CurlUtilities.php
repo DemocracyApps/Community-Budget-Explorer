@@ -4,7 +4,7 @@
 class CurlUtilities
 {
 
-  public static function curlAjaxPost ($url, $jsonContent)
+  public static function curlJsonPost ($url, $jsonContent)
   {
 
     $session = curl_init($url);
@@ -15,6 +15,7 @@ class CurlUtilities
     curl_setopt($session, CURLOPT_CUSTOMREQUEST, "POST");
     curl_setopt($session, CURLOPT_POSTFIELDS, $jsonContent);
     curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($session, CURLOPT_TIMEOUT, 0);
     curl_setopt($session, CURLOPT_HTTPHEADER, array(
         'Content-Type: application/json',
         'Content-Length: ' . strlen($jsonContent))

@@ -3,6 +3,7 @@
 namespace DemocracyApps\GB\Jobs;
 
 use DemocracyApps\GB\Data\DataSource;
+use DemocracyApps\GB\Data\DataUtilities;
 use DemocracyApps\GB\Utility\CurlUtilities;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -53,17 +54,14 @@ class ProcessUpload extends Job implements SelfHandling, ShouldQueue
   {
     $params = $this->dataSource->getProperty('upload_parameters');
 
-    $url = getenv('CBE_DATASERVER') . '/doit';
+    $url = DataUtilities::getDataserverEndpoint($params['organization']) . '/api/v1/upload';
 
     \Log::info("The file path to the data is " . $params['file_path']);
-    echo "The file path to the data is " . $params['file_path'];
     $fileData = $this->readCSVFile($params['file_path']);
-    echo "Going to the URL " . $url . " with file data of length ". sizeof($fileData) . PHP_EOL;
     \Log::info("Going to the URL " . $url . " with file data of length ". sizeof($fileData) . PHP_EOL);
 
-    //$url = 'http://gbe.dev:53821/doit';
-
-    $returnValue = CurlUtilities::curlAjaxPost($url, json_encode($params));
+    $params['fileData'] = $fileData;
+    $returnValue = CurlUtilities::curlJsonPost($url, json_encode($params));
     \Log::info("What we got in return: " . json_encode($returnValue));
   }
 }

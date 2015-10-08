@@ -23,28 +23,43 @@
 
         <br>
 
-        <div class="row">
-            <div id="simplebudget" style="display:none;">
-                <div class="col-md-12 form-group">
-                    <b>Documentation:</b><br>
-                    <p>The simple budget format consists of a type column with allowed values <i>Revenue</i>
-                        or <i>Expense</i> followed by one or more category columns and then one or more data columns.
-                    </p>
+        <div id="simplebudget" style="display:none;">
+            <div class="col-md-12 form-group">
+                <b>Documentation:</b><br>
+                <p>The simple budget format consists of one or more category columns followed by
+                    one or more data columns. The base name plus the column header will be used to label
+                    each dataset.
+                </p>
+            </div>
+            <div class="row">
+                <div class="col-md-6 form-group">
+                    <label for="name">Base Name</label>
+                    <input type="text" name="name" class="form-control">
+                    <span class="error">{!! $errors->first('name') !!}</span>
                 </div>
-
+                <div class="col-md-2 form-group"></div>
                 <div class="col-md-4 form-group">
-                    {!!  Form::label('categories', 'Number of Categories: ')  !!}
-                    {!!  Form::text('categories', null, ['class' => 'form-control'])  !!}
+                    <label for="type">Type: </label>
+                    <select name="type" class="form-control">
+                        <option value="Expense" selected>Expense</option>
+                        <option value="Revenue">Revenue</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 form-group">
+                    <label for="categories">Number of Categories</label>
+                    <input type="text" value='' name="categories" class="form-control">
                     <span class="error">{!!  $errors->first('categories')  !!}</span>
                 </div>
                 <div class="col-md-4 form-group">
-                    {!!  Form::label('year_count', 'Number of Years: ')  !!}
-                    {!!  Form::text('year_count', null, ['class' => 'form-control'])  !!}
+                    <label for="year_count">Number of Years</label>
+                    <input type="text" name="year_count" class="form-control">
                     <span class="error">{!!  $errors->first('year_count')  !!}</span>
                 </div>
                 <div class="col-md-4 form-group">
-                    {!!  Form::label('year', 'Starting Year: ')  !!}
-                    {!!  Form::text('year', null, ['class' => 'form-control'])  !!}
+                    <label for="year">Starting Year</label>
+                    <input type="text" name="year" class="form-control">
                     <span class="error">{!!  $errors->first('year')  !!}</span>
                 </div>
             </div>
