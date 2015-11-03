@@ -123,15 +123,20 @@ class GovernmentDataController extends Controller {
       else {
         throw new \Exception("Unknown format $format in data upload");
       }
+      $organization = GovernmentOrganization::find($govt_org_id);
+      $datasourceId = $request->get('datasource');
+      $datasource = DataSource::find($datasourceId);
       $parameters = new \stdClass();
-      $parameters->organization = $govt_org_id;
-      $parameters->data_source = $request->get('datasource');
+      $parameters->organization = $organization->name;
+      $parameters->organization_id = $govt_org_id;
+      $parameters->datasource_name = $datasource->name;
+      $parameters->data_source_id = $request->get('datasource');
       $parameters->format = $format;
       if ($parameters->format == 'simplebudget') {
         $parameters->type = $request->get('type');
         $parameters->year_count = $request->get('year_count');
-        $parameters->start_year = $request->get('start_year');
-        $parameters->category_count = $request->get('categories_count');
+        $parameters->start_year = $request->get('year');
+        $parameters->category_count = $request->get('categories');
       }
       else if ($parameters->format = 'simpleproject') {
 
