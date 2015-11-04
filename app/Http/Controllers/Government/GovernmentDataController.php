@@ -4,6 +4,8 @@ use Aws\CloudFront\Exception\Exception;
 use DemocracyApps\GB\Data\DataSource;
 use DemocracyApps\GB\Data\DatasourceAction;
 use DemocracyApps\GB\Http\Controllers\Controller;
+use DemocracyApps\GB\Data\DataUtilities;
+use DemocracyApps\GB\Utility\CurlUtilities;
 
 use DemocracyApps\GB\Jobs\ProcessUpload;
 use DemocracyApps\GB\Organizations\GovernmentOrganization;
@@ -29,27 +31,32 @@ class GovernmentDataController extends Controller {
    */
   public function index($govt_org_id, Request $request)
   {
-    $params = ['first'=>1, 'second'=>'abcdefg'];
-    $url = 'http://gbe.dev:53821/doit'; // Standard AWS IP for instance queries
-
-//        $data = array("name" => "Hagrid", "age" => "36");
-//        $data_string = json_encode($data);
-//
-//        $ch = curl_init($url);
-//        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-//        curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
-//        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-//        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-//            'Content-Type: application/json',
-//            'Content-Length: ' . strlen($data_string))
-//        );
-//
-//        $result = curl_exec($ch);
-//        curl_close($ch);
-//        echo "Now back" . PHP_EOL;
-//        dd($result);
-//        //DONE
-
+    // Query the data server for any datasets associated with this entity.
+    $url = DataUtilities::getDataserverEndpoint($govt_org_id) . '/api/v1/datasets';
+    $params = [];
+    $returnValue = CurlUtilities::curlJsonGet($url, 10);
+    $error = false;
+    $errorMessage = "No response from data server.";
+    if (!isset($returnValue)) {
+      $error = true;
+    }
+    else {
+      $returnValue = json_decode($returnValue, true);
+      if (!is_array($returnValue)) {
+        $error = true;
+        $errorMessage = "Unknown error requesting data.";
+      }
+      else {
+        if (array_key_exists("error", $returnValue)) {
+          $error = true;
+          $errorMessage = $returnValue['message'];
+        }
+      }
+    }
+    $datasets = [];
+    if (!$error) {
+      $datasets = $returnValue['data'];
+    }
     $organization = GovernmentOrganization::find($govt_org_id);
     $dataSources = DataSource::where('organization', '=', $govt_org_id)->orderBy('id')->get();
 
@@ -62,7 +69,8 @@ class GovernmentDataController extends Controller {
     }
     //dd($actions[1]->id);
     return view('government.data.index', array('organization'=>$organization,
-      'dataSources' => $dataSources, 'actions'=> $actions));
+      'dataSources' => $dataSources, 'actions'=> $actions, 'datasets' => $datasets, 'dataError' => $error,
+      'dataErrorMessage' => $errorMessage));
   }
 
   /**
@@ -130,7 +138,7 @@ class GovernmentDataController extends Controller {
       $parameters->organization = $organization->name;
       $parameters->organization_id = $govt_org_id;
       $parameters->datasource_name = $datasource->name;
-      $parameters->data_source_id = $request->get('datasource');
+      $parameters->datasource_id = $request->get('datasource');
       $parameters->format = $format;
       if ($parameters->format == 'simplebudget') {
         $parameters->type = $request->get('type');

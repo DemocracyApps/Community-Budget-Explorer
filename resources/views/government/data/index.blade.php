@@ -58,12 +58,27 @@
             <!-- Default panel contents -->
             <div class="panel-heading"><b>Datasets</b></div>
             <div class="panel-body">
-                <p>...</p>
+                <p>{!! $dataError?$dataErrorMessage:"All ok" !!}</p>
             </div>
 
             <!-- Table -->
             <table class="table">
-                ...
+                <th>ID</th>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Year</th>
+                <th>Datasource ID</th>
+                <th>Last Updated</th>
+                @foreach($datasets as $item)
+                    <tr>
+                        <td>{!! $item['id'] !!}</td>
+                        <td>{!! $item['name'] !!}</td>
+                        <td>{!! $item['type']!!}</td>
+                        <td>{!! $item['year'] !!}</td>
+                        <td>{!! $item['datasource_id'] !!} </td>
+                        <td>{!! $item['created_at'] !!}</td>
+                    </tr>
+                @endforeach
             </table>
         </div>
     </div>

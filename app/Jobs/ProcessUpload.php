@@ -61,6 +61,7 @@ class ProcessUpload extends Job implements SelfHandling, ShouldQueue
     \Log::info("Going to the URL " . $url . " with file data of length ". sizeof($fileData) . PHP_EOL);
 
     $params['fileData'] = $fileData;
+    \Log::info("JSON: " . json_encode($params));
     $returnValue = CurlUtilities::curlJsonPost($url, json_encode($params));
     \Log::info("What we got in return: " . json_encode($returnValue));
   }
