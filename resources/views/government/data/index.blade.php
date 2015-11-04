@@ -76,11 +76,10 @@
                         <td>{!! $item['type']!!}</td>
                         <td>{!! $item['year'] !!}</td>
                         <td>{!! $item['datasource_id'] !!} </td>
-                        <td>{!! $item['created_at'] !!}</td>
+                        <td>{!! $item['updated_at'] !!}</td>
                     </tr>
                 @endforeach
             </table>
         </div>
     </div>
-
 @stop
