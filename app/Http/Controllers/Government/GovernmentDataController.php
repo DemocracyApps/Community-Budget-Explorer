@@ -8,6 +8,7 @@ use DemocracyApps\GB\Data\DataUtilities;
 use DemocracyApps\GB\Utility\CurlUtilities;
 
 use DemocracyApps\GB\Jobs\ProcessUpload;
+use DemocracyApps\GB\Jobs\RegisterDataSource;
 use DemocracyApps\GB\Organizations\GovernmentOrganization;
 use Illuminate\Http\Request;
 
@@ -90,20 +91,38 @@ class GovernmentDataController extends Controller {
    *
    * @return Response
    */
-  public function store($govt_org_id, Request $request)
-  {
-    $rules = ['name' => 'required', 'type' => 'in:file,api'];
+    public function store($govt_org_id, Request $request)
+    {
+        $rules = null;
+        if ($request->has('type') && $request->get('type') == 'api') {
+            $rules = ['name' => 'required', 'type' => 'in:file,api', 'endpoint' => 'required | url'];
+        }
+        else {
+            $rules = ['name' => 'required', 'type' => 'in:file,api'];
+        }
+        $this->validate($request, $rules);
 
-    $this->validate($request, $rules);
-    $organization = $request->get('organization');
-    $this->dataSource->name = $request->get('name');
-    $this->dataSource->organization = $organization;
-    $this->dataSource->source_type = $request->get('type');
-    if ($request->has('description')) $this->dataSource->description = $request->get('description');
-    $this->dataSource->save();
+        $organizationId = $request->get('organization');
+        $this->dataSource->name = $request->get('name');
+        $this->dataSource->organization = $organizationId;
+        $this->dataSource->source_type = $request->get('type');
+        if ($request->has('description')) $this->dataSource->description = $request->get('description');
+        $organization = GovernmentOrganization::find($govt_org_id);
+        if ($this->dataSource->source_type == 'api') {
+            $parameters = new \stdClass();
+            $parameters->endpoint = $request->get('endpoint');
+            $parameters->apiformat = $request->get('api-format');
+            $parameters->dataformat = $request->get('data-format');
+            $parameters->frequency = $request->get('frequency');
+            $this->dataSource->setProperty('source_parameters', $parameters);
+        }
+        $this->dataSource->save();
 
-    return redirect("/governments/$organization/data");
-  }
+        $job = new RegisterDataSource($this->dataSource);
+        $this->dispatch($job);
+
+        return redirect("/governments/$organizationId/data");
+    }
 
   public function upload($govt_org_id, Request $request)
   {
@@ -115,7 +134,7 @@ class GovernmentDataController extends Controller {
     else { // POST
 
       $format = $request->get('format');
-      if ($format == 'simplebudget') {
+      if ($format == 'simple-budget') {
         $rules = ['year' => 'required | digits:4', 'year_count'=>'required | integer',
           'categories' => 'required | integer'];
         $this->validate($request, $rules);
@@ -125,7 +144,7 @@ class GovernmentDataController extends Controller {
         }
 
       }
-      else if ($format == 'simpleproject') {
+      else if ($format == 'simple-project') {
 
       }
       else {
@@ -140,13 +159,13 @@ class GovernmentDataController extends Controller {
       $parameters->datasource_name = $datasource->name;
       $parameters->datasource_id = $request->get('datasource');
       $parameters->format = $format;
-      if ($parameters->format == 'simplebudget') {
+      if ($parameters->format == 'simple-budget') {
         $parameters->type = $request->get('type');
         $parameters->year_count = $request->get('year_count');
         $parameters->start_year = $request->get('year');
         $parameters->category_count = $request->get('categories');
       }
-      else if ($parameters->format = 'simpleproject') {
+      else if ($parameters->format = 'simple-project') {
 
       }
       $this->dataSource = DataSource::find($request->get('datasource'));

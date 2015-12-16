@@ -14,8 +14,8 @@
             <div class="col-md-4 form-group">
                 <label for="format">Format: </label>
                 <select id="format" name="format" class="form-control" onchange="setFormat()">
-                    <option value="simplebudget" selected>Simple Budget</option>
-                    <option value="simpleproject">Simple Project</option>
+                    <option value="simple-budget" selected>Simple Budget</option>
+                    <option value="simple-project">Simple Project</option>
                 </select>
                 <span class="error">{!!  $errors->first('format')  !!}</span>
             </div>

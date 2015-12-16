@@ -40,6 +40,11 @@ class EloquentPropertiedObject extends \Eloquent
         return $instance;
     }
 
+    public function getPropertiesAsJson()
+    {
+        return json_encode($this->properties);
+    }
+
     public function setProperty ($propName, $propValue)
     {
         $this->properties[$propName] = $propValue;

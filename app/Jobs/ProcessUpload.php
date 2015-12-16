@@ -12,57 +12,57 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 
 class ProcessUpload extends Job implements SelfHandling, ShouldQueue
 {
-  use InteractsWithQueue, SerializesModels;
+    use InteractsWithQueue, SerializesModels;
 
-  protected $dataSource = null;
+    protected $dataSource = null;
 
-  public function __construct(DataSource $dataSource)
-  {
-    $this->dataSource = $dataSource;
-  }
-
-  protected function readCSVFile ($filePath)
-  {
-    $myFile = false;
-    $fileData = null;
-    ini_set("auto_detect_line_endings", true); // Deal with Mac line endings
-    if ( !file_exists($filePath)) {
-      \Log::info("ProcessUpload Job: The file " . $filePath . " does not exist");
+    public function __construct(DataSource $dataSource)
+    {
+        $this->dataSource = $dataSource;
     }
-    else {
-      $myFile = fopen($filePath, "r");
+
+    protected function readCSVFile ($filePath)
+    {
+        $myFile = false;
+        $fileData = null;
+        ini_set("auto_detect_line_endings", true); // Deal with Mac line endings
+        if ( !file_exists($filePath)) {
+            \Log::info("ProcessUpload Job: The file " . $filePath . " does not exist");
+        }
+        else {
+            $myFile = fopen($filePath, "r");
+        }
+        if (!$myFile) {
+            \Log::info("ProcessUpload Job: Unable to open file $filePath");
+        }
+        else {
+            $fileData = [];
+            while (!feof($myFile)) {
+                $columns = fgetcsv($myFile);
+                $fileData[] = $columns;
+            }
+        }
+        return $fileData;
     }
-    if (!$myFile) {
-      \Log::info("ProcessUpload Job: Unable to open file $filePath");
+
+    /**
+     * Execute the job.
+     *
+     * @return void
+     */
+    public function handle()
+    {
+        $params = $this->dataSource->getProperty('upload_parameters');
+
+        $url = DataUtilities::getDataserverEndpoint($params['organization']) . '/api/v1/upload';
+
+        \Log::info("The file path to the data is " . $params['file_path']);
+        $fileData = $this->readCSVFile($params['file_path']);
+        \Log::info("Going to the URL " . $url . " with file data of length ". sizeof($fileData) . PHP_EOL);
+
+        $params['fileData'] = $fileData;
+        \Log::info("JSON: " . json_encode($params));
+        $returnValue = CurlUtilities::curlJsonPost($url, json_encode($params));
+        \Log::info("What we got in return: " . json_encode($returnValue));
     }
-    else {
-      $fileData = [];
-      while (!feof($myFile)) {
-        $columns = fgetcsv($myFile);
-        $fileData[] = $columns;
-      }
-    }
-    return $fileData;
-  }
-
-  /**
-   * Execute the job.
-   *
-   * @return void
-   */
-  public function handle()
-  {
-    $params = $this->dataSource->getProperty('upload_parameters');
-
-    $url = DataUtilities::getDataserverEndpoint($params['organization']) . '/api/v1/upload';
-
-    \Log::info("The file path to the data is " . $params['file_path']);
-    $fileData = $this->readCSVFile($params['file_path']);
-    \Log::info("Going to the URL " . $url . " with file data of length ". sizeof($fileData) . PHP_EOL);
-
-    $params['fileData'] = $fileData;
-    \Log::info("JSON: " . json_encode($params));
-    $returnValue = CurlUtilities::curlJsonPost($url, json_encode($params));
-    \Log::info("What we got in return: " . json_encode($returnValue));
-  }
 }
