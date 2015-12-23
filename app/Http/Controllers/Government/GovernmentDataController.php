@@ -19,11 +19,10 @@ class GovernmentDataController extends Controller {
 
   protected $dataSource = null;
 
-  public function __construct(GovernmentOrganization $org, DataSource $dataSource)
-  {
-    $this->governmentOrganization = $org;
-    $this->dataSource = $dataSource;
-  }
+    public function __construct(GovernmentOrganization $org)
+    {
+      $this->governmentOrganization = $org;
+    }
 
 
     public function index($govt_org_id, Request $request)
@@ -115,94 +114,90 @@ class GovernmentDataController extends Controller {
         \Log::info("What we got in return: " . json_encode($returnValue));
 
         return redirect("/governments/$organization->id/data");
-
-
-        // $organizationId = $request->get('organization');
-        // $this->dataSource->name = $request->get('name');
-        // $this->dataSource->organization = $organizationId;
-        // $this->dataSource->source_type = $request->get('type');
-        // if ($request->has('description')) $this->dataSource->description = $request->get('description');
-        // $organization = GovernmentOrganization::find($govt_org_id);
-        // if ($this->dataSource->source_type == 'api') {
-        //     $parameters = new \stdClass();
-        //     $parameters->endpoint = $request->get('endpoint');
-        //     $parameters->apiformat = $request->get('api-format');
-        //     $parameters->dataformat = $request->get('data-format');
-        //     $parameters->frequency = $request->get('frequency');
-        //     $this->dataSource->setProperty('source_parameters', $parameters);
-        //     if ($request->get('frequency') != 'ondemand') {
-        //         $this->dataSource->status = "inactive";
-        //     }
-        // }
-        // $this->dataSource->save();
-
-        // $job = new RegisterDataSource($this->dataSource);
-        // $this->dispatch($job);
-
-        // return redirect("/governments/$organizationId/data");
     }
 
-  public function upload($govt_org_id, Request $request)
-  {
-    if ($request->method() == 'GET') {
-      $organization = GovernmentOrganization::find($govt_org_id);
-      $dataSourceId = $request->get('datasource');
-      return view('government.data.upload', array('organization' => $organization, 'datasource' => $dataSourceId));
-    }
-    else { // POST
+    public function upload($govt_org_id, Request $request)
+    {
+        if ($request->method() == 'GET') {
+          $organization = GovernmentOrganization::find($govt_org_id);
+          $dataSourceId = $request->get('datasource');
+          $url = DataUtilities::getDataserverEndpoint($govt_org_id) . '/api/v1/datasources/'.$dataSourceId;
+          $params = [];
+          $timeout = 10;
+          $attempts = 2;
+          $returnValue = CurlUtilities::curlJsonGet($url, $timeout, $attempts);
+          $error = false;
+          $errorMessage = "No response from data server.";
 
-      $format = $request->get('format');
-      if ($format == 'simple-budget') {
-        $rules = ['year' => 'required | digits:4', 'year_count'=>'required | integer',
-          'categories' => 'required | integer'];
-        $this->validate($request, $rules);
-
-        if (! $request->hasFile('data')) {
-          return redirect()->back()->withInput()->withErrors(array('file'=>'You must select a file to upload'));
+          if (!isset($returnValue)) {
+                $error = true;
+          }
+          else {
+            $returnValue = json_decode($returnValue, true);
+            if (!is_array($returnValue)) {
+              $error = true;
+              $errorMessage = "Unknown error requesting data.";
+            }
+            else {
+              if (array_key_exists("error", $returnValue)) {
+                $error = true;
+                $errorMessage = $returnValue['message'];
+              }
+            }
+          }
+          if ($error) {
+              return view('government.data.error_upload', array('organization'=>$organization, 'message'=>$errorMessage));
+          }
+          else {
+              return view('government.data.upload', array('organization' => $organization, 'datasource' => $dataSourceId,
+                                                          'format'=>$returnValue['data']['dataFormat']));
+          }
         }
+        else { // POST
 
-      }
-      else if ($format == 'simple-project') {
+            $format = $request->get('format');
+            if ($format == 'simple-budget') {
+              $rules = ['year' => 'required | digits:4', 'year_count'=>'required | integer',
+                'categories' => 'required | integer'];
+              $this->validate($request, $rules);
 
-      }
-      else {
-        throw new \Exception("Unknown format $format in data upload");
-      }
-      $organization = GovernmentOrganization::find($govt_org_id);
-      $datasourceId = $request->get('datasource');
-      $datasource = DataSource::find($datasourceId);
-      $parameters = new \stdClass();
-      $parameters->organization = $organization->name;
-      $parameters->organization_id = $govt_org_id;
-      $parameters->datasource_name = $datasource->name;
-      $parameters->datasource_id = $request->get('datasource');
-      $parameters->format = $format;
-      if ($parameters->format == 'simple-budget') {
-        $parameters->type = $request->get('type');
-        $parameters->year_count = $request->get('year_count');
-        $parameters->start_year = $request->get('year');
-        $parameters->category_count = $request->get('categories');
-      }
-      else if ($parameters->format = 'simple-project') {
+              if (! $request->hasFile('data')) {
+                  return redirect()->back()->withInput()->withErrors(array('file'=>'You must select a file to upload'));
+              }
+            }
+            else if ($format == 'simple-project') {
 
-      }
-      $this->dataSource = DataSource::find($request->get('datasource'));
-      $this->dataSource->status = 'queued';
-      $this->dataSource->status_date = date("M d, Y H:i:s");
+            }
+            else {
+              throw new \Exception("Unknown format $format in data upload");
+            }
+            $organization = GovernmentOrganization::find($govt_org_id);
+            $datasourceId = $request->get('datasource');
+            $parameters = new \stdClass();
+            $parameters->organization = $organization->name;
+            $parameters->organization_id = $govt_org_id;
+            $parameters->datasource_id = $request->get('datasource');
+            $parameters->format = $format;
+            if ($parameters->format == 'simple-budget') {
+                $parameters->type = $request->get('type');
+                $parameters->year_count = $request->get('year_count');
+                $parameters->start_year = $request->get('year');
+                $parameters->category_count = $request->get('categories');
+            }
+            else if ($parameters->format = 'simple-project') {
 
-      $file = $request->file('data');
-      $name = uniqid('upload');
-      $file->move('/var/www/cbe/public/downloads', $name);
-      $parameters->file_path = '/var/www/cbe/public/downloads/' . $name;
+            }
 
-      $this->dataSource->setProperty('upload_parameters', $parameters);
-      $this->dataSource->save();
+            $file = $request->file('data');
+            $name = uniqid('upload');
+            $file->move('/var/www/cbe/public/downloads', $name);
+            $parameters->file_path = '/var/www/cbe/public/downloads/' . $name;
 
-      $job = new ProcessUpload($this->dataSource);
-      $this->dispatch($job);
-      return redirect("/governments/$govt_org_id/data");
+            $job = new ProcessUpload($parameters);
+            $this->dispatch($job);
+            return redirect("/governments/$govt_org_id/data");
+        }
     }
-  }
 
   /**
    * Display the specified resource.

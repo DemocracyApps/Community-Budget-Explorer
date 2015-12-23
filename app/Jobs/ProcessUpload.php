@@ -14,11 +14,11 @@ class ProcessUpload extends Job implements SelfHandling, ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 
-    protected $dataSource = null;
+    protected $parameters = null;
 
-    public function __construct(DataSource $dataSource)
+    public function __construct($parameters)
     {
-        $this->dataSource = $dataSource;
+        $this->parameters = $parameters;
     }
 
     protected function readCSVFile ($filePath)
@@ -52,15 +52,15 @@ class ProcessUpload extends Job implements SelfHandling, ShouldQueue
      */
     public function handle()
     {
-        $params = $this->dataSource->getProperty('upload_parameters');
+        $params = $this->parameters;
 
-        $url = DataUtilities::getDataserverEndpoint($params['organization']) . '/api/v1/upload';
+        $url = DataUtilities::getDataserverEndpoint($params->organization) . '/api/v1/upload';
 
-        \Log::info("The file path to the data is " . $params['file_path']);
-        $fileData = $this->readCSVFile($params['file_path']);
+        \Log::info("The file path to the data is " . $params->file_path);
+        $fileData = $this->readCSVFile($params->file_path);
         \Log::info("Going to the URL " . $url . " with file data of length ". sizeof($fileData) . PHP_EOL);
 
-        $params['fileData'] = $fileData;
+        $params->fileData = $fileData;
         \Log::info("JSON: " . json_encode($params));
         $returnValue = CurlUtilities::curlJsonPost($url, json_encode($params));
         \Log::info("What we got in return: " . json_encode($returnValue));

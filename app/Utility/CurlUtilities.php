@@ -42,6 +42,7 @@ class CurlUtilities
             curl_close($session);
             if ($returnValue != null && $returnValue != "") $retry = false;
         }
+        if ($returnValue == "") $returnValue = null;
         return $returnValue;
     }
 }
