@@ -29,6 +29,15 @@
                 <span class="error">{!!  $errors->first('description')  !!}</span>
             </div>
         </div>
+        <div class="row" id="fileparams" style="display:none;">
+            <div class="col-md-6">
+                <label for="data-format">Data Format</label>
+                <select name="data-format" class="form-control">
+                    <option value="simple-budget">Simple Budget</option>
+                    <option value="simple-project">Simple Project</option>
+                </select>
+            </div>        
+        </div>
         <div class="row" id="apiparams" style="display:none;">
             <div class="col-md-6">
                 <label for="api-format">API Format</label>
@@ -79,9 +88,11 @@
             console.log("Here's the value: " + value);
             if (value == 'api') {
                 document.getElementById("apiparams").style.display = "block";
+                document.getElementById("fileparams").style.display = "none";
             }
             else if (value == 'file') {
                 document.getElementById("apiparams").style.display = "none ";
+                document.getElementById("fileparams").style.display = "block";
             }
         }
     </script>

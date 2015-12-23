@@ -25,72 +25,61 @@ class GovernmentDataController extends Controller {
     $this->dataSource = $dataSource;
   }
 
-  /**
-   * Display a listing of the resource.
-   *
-   * @return Response
-   */
-  public function index($govt_org_id, Request $request)
-  {
-    // Query the data server for any datasets associated with this entity.
-    $url = DataUtilities::getDataserverEndpoint($govt_org_id) . '/api/v1/datasets';
-    $params = [];
-    $returnValue = CurlUtilities::curlJsonGet($url, 10);
-    $error = false;
-    $errorMessage = "No response from data server.";
-    if (!isset($returnValue)) {
-      $error = true;
-    }
-    else {
-      $returnValue = json_decode($returnValue, true);
-      if (!is_array($returnValue)) {
-        $error = true;
-        $errorMessage = "Unknown error requesting data.";
+
+    public function index($govt_org_id, Request $request)
+    {
+      // Query the data server for any datasets associated with this entity.
+      $url = DataUtilities::getDataserverEndpoint($govt_org_id) . '/api/v1/get_entity_info?entity_id='.$govt_org_id;
+      $params = [];
+      $retry = true;
+      $timeout = 10;
+      $attempts = 2;
+      $returnValue = CurlUtilities::curlJsonGet($url, $timeout, $attempts);
+      $error = false;
+      $errorMessage = "No response from data server.";
+
+      if (!isset($returnValue) || $returnValue == "") {
+            $error = true;
       }
       else {
-        if (array_key_exists("error", $returnValue)) {
+        $returnValue = json_decode($returnValue, true);
+        if (!is_array($returnValue)) {
           $error = true;
-          $errorMessage = $returnValue['message'];
+          $errorMessage = "Unknown error requesting data.";
+        }
+        else {
+          if (array_key_exists("error", $returnValue)) {
+            $error = true;
+            $errorMessage = $returnValue['message'];
+          }
         }
       }
-    }
-    $datasets = [];
-    if (!$error) {
-      $datasets = $returnValue['data'];
-    }
-    $organization = GovernmentOrganization::find($govt_org_id);
-    $dataSources = DataSource::where('organization', '=', $govt_org_id)->orderBy('id')->get();
 
-    $actions = array();
-    foreach ($dataSources as $source) {
-      $atmp = DatasourceAction::where('datasource_id', '=', $source->id)->orderBy('id', 'desc')->get();
-      if (isset($atmp) && sizeof($atmp) > 0) {
-        $actions[$source->id] = $atmp[0];
+      $datasets = [];
+      $dataSources = [];
+      if (!$error) {
+        $datasets = $returnValue['data']['datasets'];
+        $dataSources = $returnValue['data']['datasources'];
       }
+      $organization = GovernmentOrganization::find($govt_org_id);
+      return view('government.data.index', array('organization'=>$organization,
+        'dataSources' => $dataSources, 'datasets' => $datasets, 'dataError' => $error,
+        'dataErrorMessage' => $errorMessage));
     }
-    //dd($actions[1]->id);
-    return view('government.data.index', array('organization'=>$organization,
-      'dataSources' => $dataSources, 'actions'=> $actions, 'datasets' => $datasets, 'dataError' => $error,
-      'dataErrorMessage' => $errorMessage));
-  }
 
-  /**
-   * Show the form for creating a new resource.
-   *
-   * @return Response
-   */
-  public function create($govt_org_id, Request $request)
-  {
-    $organization = GovernmentOrganization::find($govt_org_id);
-    $sourceId = $request->get('datasource');
-    return view('government.data.create', array('organization'=>$organization, 'datasource' => $sourceId));
-  }
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return Response
+     */
+    public function create($govt_org_id, Request $request)
+    {
+      $organization = GovernmentOrganization::find($govt_org_id);
+      $sourceId = $request->get('datasource');
+      \Log::info("Got the datasource: " . $sourceId);
+      return view('government.data.create', array('organization'=>$organization, 'datasource' => $sourceId));
+    }
 
-  /**
-   * Store a newly created resource in storage.
-   *
-   * @return Response
-   */
     public function store($govt_org_id, Request $request)
     {
         $rules = null;
@@ -102,26 +91,55 @@ class GovernmentDataController extends Controller {
         }
         $this->validate($request, $rules);
 
-        $organizationId = $request->get('organization');
-        $this->dataSource->name = $request->get('name');
-        $this->dataSource->organization = $organizationId;
-        $this->dataSource->source_type = $request->get('type');
-        if ($request->has('description')) $this->dataSource->description = $request->get('description');
+        $parameters = array();
         $organization = GovernmentOrganization::find($govt_org_id);
-        if ($this->dataSource->source_type == 'api') {
-            $parameters = new \stdClass();
-            $parameters->endpoint = $request->get('endpoint');
-            $parameters->apiformat = $request->get('api-format');
-            $parameters->dataformat = $request->get('data-format');
-            $parameters->frequency = $request->get('frequency');
-            $this->dataSource->setProperty('source_parameters', $parameters);
+        $parameters['name'] = $request->get('name');
+        $parameters['sourceType'] = $request->get('type');
+        if ($request->has('description')) $parameters['description'] = $request->get('description');
+        $parameters['entity'] = $organization->name;
+        $parameters['entityId'] = $organization->id;
+        if ($parameters['sourceType'] == 'api') {
+            $parameters['endpoint'] = $request->get('endpoint');
+            $parameters['apiFormat'] = $request->get('api-format');
+            $parameters['dataFormat'] = $request->get('data-format');
+            $parameters['frequency'] = $request->get('frequency');
         }
-        $this->dataSource->save();
+        else if ($parameters['sourceType'] == 'file') {
+            $parameters['dataFormat'] = $request->get('data-format');
+        }
 
-        $job = new RegisterDataSource($this->dataSource);
-        $this->dispatch($job);
+        $url = DataUtilities::getDataserverEndpoint($organization->id) . '/api/v1/register_data_source';
 
-        return redirect("/governments/$organizationId/data");
+        \Log::info("The parameters for registering the datasource are " . json_encode($parameters));
+        $returnValue = CurlUtilities::curlJsonPost($url, json_encode($parameters));
+        \Log::info("What we got in return: " . json_encode($returnValue));
+
+        return redirect("/governments/$organization->id/data");
+
+
+        // $organizationId = $request->get('organization');
+        // $this->dataSource->name = $request->get('name');
+        // $this->dataSource->organization = $organizationId;
+        // $this->dataSource->source_type = $request->get('type');
+        // if ($request->has('description')) $this->dataSource->description = $request->get('description');
+        // $organization = GovernmentOrganization::find($govt_org_id);
+        // if ($this->dataSource->source_type == 'api') {
+        //     $parameters = new \stdClass();
+        //     $parameters->endpoint = $request->get('endpoint');
+        //     $parameters->apiformat = $request->get('api-format');
+        //     $parameters->dataformat = $request->get('data-format');
+        //     $parameters->frequency = $request->get('frequency');
+        //     $this->dataSource->setProperty('source_parameters', $parameters);
+        //     if ($request->get('frequency') != 'ondemand') {
+        //         $this->dataSource->status = "inactive";
+        //     }
+        // }
+        // $this->dataSource->save();
+
+        // $job = new RegisterDataSource($this->dataSource);
+        // $this->dispatch($job);
+
+        // return redirect("/governments/$organizationId/data");
     }
 
   public function upload($govt_org_id, Request $request)

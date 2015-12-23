@@ -7,6 +7,13 @@
     </div>
     @include('government.tabs', ['page'=>'data'])
 
+    @if ($dataError) 
+        <br>
+        <div class="row">
+            <p class="error text-danger bg-danger"><b>There was no response from the dataserver. Please contact the server administrator.</b></p>
+        </div>
+        <br>
+    @endif
     <div class="row">
         <div class="panel panel-default">
             <!-- Default panel contents -->
@@ -23,30 +30,63 @@
             <!-- Table -->
             <table class="table">
                 <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Source Type</th>
-                    <th>Description</th>
+                    <th>Status</th>
                     <th>Action</th>
-                    <th>Last Action</th>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                    <th>Parameters</th>
                 </tr>
                 @foreach($dataSources as $item)
+                    <?php 
+                        if ($item['sourceType'] == 'api') {
+                            $apiUrl = $item['endpoint'];
+                            $apiUrlName = (strlen($apiUrl)<20)?$apiUrl:substr($apiUrl,0,17) . "...";
+                        }
+                    ?>
                     <tr>
-                        <td>{!! $item->id !!}</td>
-                        <td>{!! $item->name !!}</td>
-                        <td>{!! ($item->source_type == 'file')?'File Upload':'API' !!}</td>
-                        <td>{!! $item->description !!}</td>
-                        @if ($item->source_type == 'file')
+                        <td>{!! ucfirst($item['status']) !!}</td>
+                        @if ($item['sourceType'] == 'file')
                             <td>
-                                <a href="/governments/{!! $organization->id !!}/data/upload?datasource={!! $item->id !!}"
+                                <a href="/governments/{!! $organization->id !!}/data/upload?datasource={!! $item['id'] !!}"
                                    class="btn btn-primary btn-xs">Upload</a>
                             </td>
                         @else
-                            <td>TBD</td>
+                            <td>
+                                @if ($item['frequency'] == 'ondemand')
+                                    <a href="/governments/{!! $organization->id !!}/data/execute?datasource={!! $item['id'] !!}"
+                                       class="btn btn-primary btn-xs">Execute</a>
+                                @else 
+                                    <a href="/governments/{!! $organization->id !!}/data/execute?datasource={!! $item['id'] !!}"
+                                       class="btn btn-primary btn-xs">{!! $item['status'] == 'active'?"Deactivate":"Activate"!!}</a>
+                                @endif
+                            </td>
                         @endif
 
-                        <td> {!! isset($actions[$item->id])?$actions[$item->id]->status:"Fuggit" !!}</td>
-                        {{--<td> {!! ($item->last_update == null)?'Never':date('M d, Y', strtotime($item->last_update)) !!}</td>--}}
+                        <td>{!! $item['name'] !!}</td>
+                        <td>{!! ($item['sourceType'] == 'file')?'File Upload':'API' !!}</td>
+                        <td>{!! $item['description'] !!}</td>
+                        <td> 
+                            @if ($item['sourceType'] == 'file')
+                                <p>
+                                    <ul>
+                                        <li><b>Data Format:</b> {!! strtoupper($item['dataFormat']) !!}</li>
+                                    </ul>
+                                </p>
+                            @elseif ($item['sourceType'] == 'api')
+                                <p>
+                                    <ul>
+                                        <li><b>Frequency:</b> {!! strtoupper($item['frequency']) !!}</li>
+                                        <li>
+                                            <b>Endpoint:</b>
+                                            <a href="{!! $apiUrl !!}">{!! $apiUrlName !!}</a>
+                                        </li>
+                                        <li><b>API Format:</b> {!! strtoupper($item['apiFormat']) !!}</li>
+                                        <li><b>Data Format:</b> {!! strtoupper($item['dataFormat']) !!}</li>
+                                    </ul>
+                                </p>
+                            @endif
+                        </td>
                     </tr>
                 @endforeach
             </table>

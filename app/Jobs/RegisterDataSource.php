@@ -25,9 +25,9 @@ class RegisterDataSource extends Job implements SelfHandling, ShouldQueue
     public function handle()
     {
         $parameters = $this->dataSource->getProperty('source_parameters');
-        $parameters['sourceType'] = $this->dataSource->type;
+        $parameters['sourceType'] = $this->dataSource->source_type;
         $parameters['datasource'] = $this->dataSource->name;
-        $parameters['datasourceId'] = $this->dataSource->name;
+        $parameters['datasourceId'] = $this->dataSource->id;
         $organization = GovernmentOrganization::find($this->dataSource->organization);
         $parameters['entity'] = $organization->name;
         $parameters['entityId'] = $organization->id;

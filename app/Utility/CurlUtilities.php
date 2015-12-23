@@ -26,18 +26,22 @@ class CurlUtilities
     return $returnValue;
   }
 
-  public static function curlJsonGet ($url, $timeout = 0)
-  {
-
-    $headers = array("Content-Type: application/json");
-    $session = curl_init($url);
-    curl_setopt($session, CURLOPT_CUSTOMREQUEST, "GET");
-    curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($session, CURLOPT_TIMEOUT, $timeout);
-    curl_setopt($session, CURLOPT_HTTPHEADER, $headers);
-
-    $returnValue = curl_exec($session);
-    curl_close($session);
-    return $returnValue;
-  }
+    public static function curlJsonGet ($url, $timeout = 0, $maxAttempts = 1)
+    {
+        $headers = array("Content-Type: application/json");
+        $attempts = 0;
+        $retry = ($maxAttempts > 1);
+        while ($attempts < $maxAttempts && $retry) {
+            ++$attempts;
+            $session = curl_init($url);
+            curl_setopt($session, CURLOPT_CUSTOMREQUEST, "GET");
+            curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($session, CURLOPT_TIMEOUT, $timeout);
+            curl_setopt($session, CURLOPT_HTTPHEADER, $headers);
+            $returnValue = curl_exec($session);
+            curl_close($session);
+            if ($returnValue != null && $returnValue != "") $retry = false;
+        }
+        return $returnValue;
+    }
 }
