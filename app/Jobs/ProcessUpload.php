@@ -1,8 +1,5 @@
-<?php
+<?php namespace DemocracyApps\GB\Jobs;
 
-namespace DemocracyApps\GB\Jobs;
-
-use DemocracyApps\GB\Data\DataSource;
 use DemocracyApps\GB\Data\DataUtilities;
 use DemocracyApps\GB\Utility\CurlUtilities;
 use Illuminate\Queue\SerializesModels;

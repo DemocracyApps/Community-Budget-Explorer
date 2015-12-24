@@ -1,14 +1,11 @@
 <?php namespace DemocracyApps\GB\Http\Controllers\Government;
 
 use Aws\CloudFront\Exception\Exception;
-use DemocracyApps\GB\Data\DataSource;
-use DemocracyApps\GB\Data\DatasourceAction;
 use DemocracyApps\GB\Http\Controllers\Controller;
 use DemocracyApps\GB\Data\DataUtilities;
 use DemocracyApps\GB\Utility\CurlUtilities;
 
 use DemocracyApps\GB\Jobs\ProcessUpload;
-use DemocracyApps\GB\Jobs\RegisterDataSource;
 use DemocracyApps\GB\Organizations\GovernmentOrganization;
 use Illuminate\Http\Request;
 
@@ -75,7 +72,6 @@ class GovernmentDataController extends Controller {
     {
       $organization = GovernmentOrganization::find($govt_org_id);
       $sourceId = $request->get('datasource');
-      \Log::info("Got the datasource: " . $sourceId);
       return view('government.data.create', array('organization'=>$organization, 'datasource' => $sourceId));
     }
 
@@ -109,9 +105,7 @@ class GovernmentDataController extends Controller {
 
         $url = DataUtilities::getDataserverEndpoint($organization->id) . '/api/v1/register_data_source';
 
-        \Log::info("The parameters for registering the datasource are " . json_encode($parameters));
         $returnValue = CurlUtilities::curlJsonPost($url, json_encode($parameters));
-        \Log::info("What we got in return: " . json_encode($returnValue));
 
         return redirect("/governments/$organization->id/data");
     }
