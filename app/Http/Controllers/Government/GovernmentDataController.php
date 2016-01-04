@@ -33,7 +33,6 @@ class GovernmentDataController extends Controller {
       $returnValue = CurlUtilities::curlJsonGet($url, $timeout, $attempts);
       $error = false;
       $errorMessage = "No response from data server.";
-
       if (!isset($returnValue) || $returnValue == "") {
             $error = true;
       }
@@ -61,6 +60,23 @@ class GovernmentDataController extends Controller {
       return view('government.data.index', array('organization'=>$organization,
         'dataSources' => $dataSources, 'datasets' => $datasets, 'dataError' => $error,
         'dataErrorMessage' => $errorMessage));
+    }
+
+    public function activate($govt_org_id, Request $request) 
+    {
+        $dataSource = $request->get('datasource');
+
+        $url = DataUtilities::getDataserverEndpoint($govt_org_id) . '/api/v1/datasources/'.$dataSource;
+        $toggle = ($request->get('activated') == 1)?"inactive":"active";
+        $parameters = array('status'=>$toggle);
+        $returnValue = CurlUtilities::curlJsonPut($url, json_encode($parameters));
+
+        return redirect("/governments/$govt_org_id/data");
+    }
+
+    public function execute($govt_org_id, Request $request) 
+    {
+        $dataSource = $request->get('datasource');
     }
 
     /**

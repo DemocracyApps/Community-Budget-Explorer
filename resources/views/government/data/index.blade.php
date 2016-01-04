@@ -22,7 +22,7 @@
                 <button style="float:right; position:relative; right:50px; bottom:5px;" class="btn btn-success btn-sm" onclick="window.location.href='/governments/{!! $organization->id !!}/data/create'">Add Data Source</button>
             </div>
             <div class="panel-body">
-                <p>The data sources configured here give rise to the datasets listed in the next section below. Datasets
+                <p>The data sources configured here generate the datasets listed in the next section. Note that on-demand and uploaded datasets
                     will not appear immediately - wait a few minutes and refresh the page to see them.
                 </p>
             </div>
@@ -57,7 +57,7 @@
                                     <a href="/governments/{!! $organization->id !!}/data/execute?datasource={!! $item['id'] !!}"
                                        class="btn btn-primary btn-xs">Execute</a>
                                 @else 
-                                    <a href="/governments/{!! $organization->id !!}/data/execute?datasource={!! $item['id'] !!}"
+                                    <a href="/governments/{!! $organization->id !!}/data/activate?datasource={!! $item['id'] !!}&activated={!! $item['status']=='active'?1:0 !!}"
                                        class="btn btn-primary btn-xs">{!! $item['status'] == 'active'?"Deactivate":"Activate"!!}</a>
                                 @endif
                             </td>
