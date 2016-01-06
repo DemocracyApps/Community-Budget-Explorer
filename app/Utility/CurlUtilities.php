@@ -44,7 +44,7 @@ class CurlUtilities
         $headers = array("Content-Type: application/json");
         $attempts = 0;
         $retry = ($maxAttempts > 1);
-        while ($attempts < $maxAttempts && $retry) {
+        while ($attempts < $maxAttempts && ($attempts == 0 || $retry)) {
             ++$attempts;
             $session = curl_init($url);
             curl_setopt($session, CURLOPT_CUSTOMREQUEST, "GET");

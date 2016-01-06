@@ -55,7 +55,7 @@
                         @else
                             <td>
                                 @if ($item['frequency'] == 'ondemand')
-                                    <a href="/governments/{!! $organization->id !!}/data/execute?datasource={!! $item['id'] !!}"
+                                    <a href="/governments/{!! $organization->id !!}/data/{!! $item['id'] !!}/execute"
                                        class="btn btn-primary btn-xs">Execute</a>
                                 @else 
                                     <a href="/governments/{!! $organization->id !!}/data/activate?datasource={!! $item['id'] !!}&activated={!! $item['status']=='active'?1:0 !!}"

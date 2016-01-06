@@ -21,7 +21,7 @@ Route::resource('governments', 'Government\GovernmentOrganizationsController');
 Route::resource('governments/{govId}/users', 'Government\GovernmentUsersController');
 Route::get('governments/{govId}/data/upload', 'Government\GovernmentDataController@upload');
 Route::post('governments/{govId}/data/upload', 'Government\GovernmentDataController@upload');
-Route::get('governments/{govId}/data/execute', 'Government\GovernmentDataController@execute');
+Route::get('governments/{govId}/data/{dsId}/execute', 'Government\GovernmentDataController@execute');
 Route::get('governments/{govId}/data/activate', 'Government\GovernmentDataController@activate');
 Route::resource('governments/{govId}/data', 'Government\GovernmentDataController');
 

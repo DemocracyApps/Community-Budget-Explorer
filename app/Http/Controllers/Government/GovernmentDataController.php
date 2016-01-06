@@ -6,19 +6,18 @@ use DemocracyApps\GB\Data\DataUtilities;
 use DemocracyApps\GB\Utility\CurlUtilities;
 
 use DemocracyApps\GB\Jobs\ProcessUpload;
+use DemocracyApps\GB\Jobs\ExecuteDataSource;
 use DemocracyApps\GB\Organizations\GovernmentOrganization;
 use Illuminate\Http\Request;
 
 class GovernmentDataController extends Controller {
 
-  protected $governmentOrganization = null;
-
-
-  protected $dataSource = null;
+    protected $governmentOrganization = null;
+    protected $dataSource = null;
 
     public function __construct(GovernmentOrganization $org)
     {
-      $this->governmentOrganization = $org;
+        $this->governmentOrganization = $org;
     }
 
 
@@ -74,9 +73,14 @@ class GovernmentDataController extends Controller {
         return redirect("/governments/$govt_org_id/data");
     }
 
-    public function execute($govt_org_id, Request $request) 
+    public function execute($govt_org_id, $id, Request $request) 
     {
-        $dataSource = $request->get('datasource');
+        $parameters = new \stdClass();
+        $parameters->organization = $govt_org_id;
+        $parameters->datasource = $id;
+        $job = new ExecuteDataSource($parameters);
+        $this->dispatch($job);
+        return redirect("/governments/$govt_org_id/data");
     }
 
     public function create($govt_org_id, Request $request)
