@@ -79,16 +79,10 @@ class GovernmentDataController extends Controller {
         $dataSource = $request->get('datasource');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return Response
-     */
     public function create($govt_org_id, Request $request)
     {
       $organization = GovernmentOrganization::find($govt_org_id);
-      $sourceId = $request->get('datasource');
-      return view('government.data.create', array('organization'=>$organization, 'datasource' => $sourceId));
+      return view('government.data.create', array('organization'=>$organization));
     }
 
     public function store($govt_org_id, Request $request)
@@ -125,6 +119,79 @@ class GovernmentDataController extends Controller {
 
         return redirect("/governments/$organization->id/data");
     }
+
+    public function edit ($govt_org_id, $id, Request $request)
+    {
+      $organization = GovernmentOrganization::find($govt_org_id);
+      // Query the data server for any datasets associated with this entity.
+      $url = DataUtilities::getDataserverEndpoint($govt_org_id) . '/api/v1/datasources/'.$id;
+      $params = [];
+      $retry = true;
+      $timeout = 10;
+      $attempts = 2;
+      $returnValue = CurlUtilities::curlJsonGet($url, $timeout, $attempts);
+      $error = false;
+      $errorMessage = "No response from data server.";
+      if (!isset($returnValue) || $returnValue == "") {
+            $error = true;
+      }
+      else {
+        $returnValue = json_decode($returnValue, true);
+        if (!is_array($returnValue)) {
+          $error = true;
+          $errorMessage = "Unknown error requesting data.";
+        }
+        else {
+          if (array_key_exists("error", $returnValue)) {
+            $error = true;
+            $errorMessage = $returnValue['message'];
+          }
+        }
+      }
+
+      if ($error) throw new \Exception("Unable to load datasource $id: " . $errorMessage);
+
+      $ds = $returnValue['data'];
+      //dd($ds);
+      return view('government.data.edit', array('organization'=>$organization, 'datasource' => $ds));
+    }
+
+  public function update($govt_org_id, $id, Request $request)
+  {
+    \Log::info("GovDataController update gov=$govt_org_id, id=$id");
+        $rules = null;
+        if ($request->has('type') && $request->get('type') == 'api') {
+            $rules = ['name' => 'required', 'type' => 'in:file,api', 'endpoint' => 'required | url'];
+        }
+        else {
+            $rules = ['name' => 'required', 'type' => 'in:file,api'];
+        }
+        $this->validate($request, $rules);
+    //dd($request);
+
+        $parameters = array();
+        $organization = GovernmentOrganization::find($govt_org_id);
+        $parameters['name'] = $request->get('name');
+        $parameters['sourceType'] = $request->get('type');
+        if ($request->has('description')) $parameters['description'] = $request->get('description');
+        $parameters['entity'] = $organization->name;
+        $parameters['entityId'] = $organization->id;
+        if ($parameters['sourceType'] == 'api') {
+            $parameters['endpoint'] = $request->get('endpoint');
+            $parameters['apiFormat'] = $request->get('api-format');
+            $parameters['dataFormat'] = $request->get('data-format');
+            $parameters['frequency'] = $request->get('frequency');
+        }
+        else if ($parameters['sourceType'] == 'file') {
+            $parameters['dataFormat'] = $request->get('data-format');
+        }
+
+        $url = DataUtilities::getDataserverEndpoint($govt_org_id) . '/api/v1/datasources/'.$id;
+
+        $returnValue = CurlUtilities::curlJsonPut($url, json_encode($parameters));
+
+        return redirect("/governments/$organization->id/data");
+  }
 
     public function upload($govt_org_id, Request $request)
     {
@@ -218,38 +285,6 @@ class GovernmentDataController extends Controller {
   public function show($id)
   {
     //
-  }
-
-  /**
-   * Show the form for editing the specified resource.
-   *
-   * @param  int  $id
-   * @return Response
-   */
-  public function edit($govt_org_id, $id)
-  {
-//        $organization = GovernmentOrganization::find($govt_org_id);
-//        $orgUser = GovernmentOrganizationUser::find($id);
-//        $user = User::find($orgUser->user_id);
-//        return view('government.users.edit', array('organization'=>$organization, 'orgUser'=>$orgUser, 'user'=>$user));
-  }
-
-  /**
-   * Update the specified resource in storage.
-   *
-   * @param  int  $id
-   * @return Response
-   */
-  public function update($govt_org_id, $id, Request $request)
-  {
-//        $rules = ['access'=>'required'];
-//        $this->validate($request, $rules);
-//        $orgUser = GovernmentOrganizationUser::find($id);
-//        $orgUser->access = $request->get('access');
-//        $orgUser->save();
-//
-//        return redirect('/governments/'.$govt_org_id.'/users');
-
   }
 
   /**

@@ -2,29 +2,31 @@
 
 @section('content')
 
-    <form method="POST" action="/governments/{!!$organization->id!!}/data" accept-charset="UTF-8" enctype="multipart/form-data">
+    <form method="POST" action="/governments/{!!$organization->id!!}/data/{!! $datasource['id'] !!}" accept-charset="UTF-8" enctype="multipart/form-data">
         <input type="hidden" name="_token" value="{!! csrf_token() !!}">
         <input type="hidden" name="organization" value="{!! $organization->id !!}">
+        <input type="hidden" name="datasource" value="{!! $datasource['id'] !!}">
+        <input name="_method" type="hidden" value="PUT">
 
-        <h1>Create A New Data Source</h1>
+        <h1>Edit Data Source</h1>
 
         <br>
         <div class="row">
             <div class="col-md-6 form-group">
                 {!!  Form::label('name', 'Name: ')  !!}
-                {!!  Form::text('name', null, ['class' => 'form-control'])  !!}
+                {!!  Form::text('name', $datasource['name'], ['class' => 'form-control'])  !!}
                 <span class="error">{!!  $errors->first('name')  !!}</span>
             </div>
             <div class="col-md-6 form-group">
                 <label for="type">Source Type: </label>
                 <!-- Using laravel form-builder to retain selection on error -->
-                {!! Form::select('type', array('file'=>'File Upload', 'api'=>'API'), '--', 
+                {!! Form::select('type', array('file'=>'File Upload', 'api'=>'API'), $datasource['sourceType'], 
                                  ['id'=>'sourcetype', 'onchange'=>'setType()', 'class' => 'form-control']) !!}
                 <span class="error">{!!  $errors->first('type')  !!}</span>
             </div>
             <div class="col-md-12 form-group">
                 <label for="description">Description</label>
-                <input name="description" type="text" class="form-control">
+                <input name="description" type="text" class="form-control" value="{!! $datasource['description'] !!}">
                 <span class="error">{!!  $errors->first('description')  !!}</span>
             </div>
         </div>
@@ -41,20 +43,20 @@
             <div class="col-md-6">
                 <label for="api-format">API Format</label>
                 <select name="api-format" class="form-control">
-                    <option value="json">JSON</option>
-                    <option value="csv">CSV</option>
+                    <option {!! ($datasource['apiFormat'] == 'json')?'selected':'' !!} value="json">JSON</option>
+                    <option {!! ($datasource['apiFormat'] == 'csv')?'selected':'' !!} value="csv">CSV</option>
                 </select>
             </div>
             <div class="col-md-6">
                 <label for="endpoint">API Endpoint</label>
-                <input name="endpoint" type="text" class="form-control">
+                <input name="endpoint" type="text" class="form-control" value="{!! $datasource['endpoint'] !!}">
                 <span class="error">{!!  $errors->first('endpoint')  !!}</span>
             </div>
             <div class="col-md-6">
                 <label for="data-format">Data Format</label>
                 <select name="data-format" class="form-control">
-                    <option value="simple-budget">Simple Budget</option>
-                    <option value="simple-project">Simple Project</option>
+                    <option {!! ($datasource['dataFormat'] == 'simple-budget')?'selected':'' !!} value="simple-budget">Simple Budget</option>
+                    <option {!! ($datasource['dataFormat'] == 'simple-project')?'selected':'' !!} value="simple-project">Simple Project</option>
                 </select>
             </div>
             <div class="col-md-6">
@@ -62,7 +64,7 @@
                 <label for="frequency">Frequency</label>
                 {!! Form::select('frequency', 
                                  array('ondemand'=>'On-Demand', 'day'=>'Daily', 'hour'=>'Hourly', 'week'=>'Weekly'),
-                                 '--', ['class' => 'form-control']) !!}
+                                 $datasource['frequency'], ['class' => 'form-control']) !!}
             </div>
         </div>
         <br>
@@ -96,4 +98,3 @@
         }
     </script>
 @stop
-

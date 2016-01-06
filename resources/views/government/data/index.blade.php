@@ -36,6 +36,7 @@
                     <th>Type</th>
                     <th>Description</th>
                     <th>Parameters</th>
+                    <th></th>
                 </tr>
                 @foreach($dataSources as $item)
                     <?php 
@@ -86,6 +87,12 @@
                                     </ul>
                                 </p>
                             @endif
+                        </td>
+                        <td>
+                            <a href="/governments/{!! $organization->id !!}/data/{!! $item['id'] !!}/edit"
+                               class="btn btn-primary btn-xs">Edit</a>
+                            <a href="/governments/{!! $organization->id !!}/data/{!! $item['id'] !!}/delete"
+                               class="btn btn-danger disabled btn-xs">Delete</a>
                         </td>
                     </tr>
                 @endforeach
